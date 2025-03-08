@@ -15,6 +15,7 @@ export type ConsumerProfile = {
   profilePicture?: string; // URL to profile picture
   chatEnabled: boolean; // New field for chat settings
   appointments: string[]; // IDs of appointments
+  startTimeline: 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' | null; // When they want to start
 };
 
 // Time slot type for weekly availability
@@ -35,6 +36,17 @@ export type AppointmentCategory = {
   enabled: boolean;
 };
 
+// Service categories for advisors
+export type ServiceCategory = 
+  'retirement' | 
+  'investment' | 
+  'tax' | 
+  'estate' | 
+  'business' | 
+  'insurance' | 
+  'philanthropic' | 
+  'education';
+
 export type AdvisorProfile = {
   id: string;
   name: string;
@@ -48,7 +60,7 @@ export type AdvisorProfile = {
     portfolioFee?: number;
   };
   assetsUnderManagement: number;
-  expertise: string[];
+  expertise: ServiceCategory[]; // Now explicitly typed
   matches: string[];
   chats: string[];
   profilePicture?: string; // URL to profile picture
@@ -116,6 +128,14 @@ type UserContextType = {
   setAppointments: (appointments: Appointment[]) => void;
   addAppointment: (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateAppointmentStatus: (appointmentId: string, status: AppointmentStatus) => void;
+  getFilteredAdvisors: (filters: {
+    languages?: string[];
+    services?: ServiceCategory[];
+  }) => AdvisorProfile[];
+  getFilteredConsumers: (filters: {
+    startTimeline?: ConsumerProfile['startTimeline'][];
+    preferredLanguage?: string[];
+  }) => ConsumerProfile[];
 };
 
 // Create the context with default values
@@ -136,6 +156,8 @@ const UserContext = createContext<UserContextType>({
   setAppointments: () => {},
   addAppointment: () => {},
   updateAppointmentStatus: () => {},
+  getFilteredAdvisors: () => [],
+  getFilteredConsumers: () => [],
 });
 
 // Provider component
@@ -249,6 +271,124 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  // Mock data for filtering
+  const mockConsumers: ConsumerProfile[] = [
+    {
+      id: 'consumer-1',
+      name: 'Alex Johnson',
+      age: 35,
+      status: 'employed',
+      investableAssets: 250000,
+      riskTolerance: 'medium',
+      preferredCommunication: ['email', 'phone'],
+      preferredLanguage: ['english', 'spanish'],
+      startTimeline: 'immediately',
+      matches: [],
+      chats: [],
+      chatEnabled: true,
+      appointments: []
+    },
+    {
+      id: 'consumer-2',
+      name: 'Taylor Smith',
+      age: 42,
+      status: 'self-employed',
+      investableAssets: 500000,
+      riskTolerance: 'high',
+      preferredCommunication: ['video', 'inPerson'],
+      preferredLanguage: ['english', 'french'],
+      startTimeline: 'next_3_months',
+      matches: [],
+      chats: [],
+      chatEnabled: true,
+      appointments: []
+    },
+    {
+      id: 'consumer-3',
+      name: 'Jordan Lee',
+      age: 29,
+      status: 'employed',
+      investableAssets: 150000,
+      riskTolerance: 'low',
+      preferredCommunication: ['email'],
+      preferredLanguage: ['english', 'mandarin'],
+      startTimeline: 'next_6_months',
+      matches: [],
+      chats: [],
+      chatEnabled: true,
+      appointments: []
+    },
+    {
+      id: 'consumer-4',
+      name: 'Morgan Chen',
+      age: 55,
+      status: 'retired',
+      investableAssets: 1200000,
+      riskTolerance: 'medium',
+      preferredCommunication: ['phone', 'inPerson'],
+      preferredLanguage: ['english', 'cantonese'],
+      startTimeline: 'not_sure',
+      matches: [],
+      chats: [],
+      chatEnabled: true,
+      appointments: []
+    }
+  ];
+
+  // Filter advisors based on criteria
+  const getFilteredAdvisors = (filters: {
+    languages?: string[];
+    services?: ServiceCategory[];
+  }) => {
+    // This would usually be a server call
+    // For now, use our mock data from MatchingInterface
+    const mockAdvisors = [
+      // ... simplified for brevity, would use the real mockAdvisors list
+    ];
+
+    return mockAdvisors.filter(advisor => {
+      // Check language match
+      if (filters.languages && filters.languages.length > 0) {
+        if (!filters.languages.some(lang => advisor.languages.includes(lang))) {
+          return false;
+        }
+      }
+
+      // Check service match
+      if (filters.services && filters.services.length > 0) {
+        if (!filters.services.some(service => advisor.expertise.includes(service as ServiceCategory))) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  };
+
+  // Filter consumers based on criteria
+  const getFilteredConsumers = (filters: {
+    startTimeline?: ConsumerProfile['startTimeline'][];
+    preferredLanguage?: string[];
+  }) => {
+    return mockConsumers.filter(consumer => {
+      // Check timeline match
+      if (filters.startTimeline && filters.startTimeline.length > 0) {
+        if (!filters.startTimeline.includes(consumer.startTimeline)) {
+          return false;
+        }
+      }
+
+      // Check language match
+      if (filters.preferredLanguage && filters.preferredLanguage.length > 0) {
+        if (!filters.preferredLanguage.some(lang => consumer.preferredLanguage.includes(lang))) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  };
+
   const value = {
     userType,
     setUserType,
@@ -265,7 +405,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     appointments,
     setAppointments,
     addAppointment,
-    updateAppointmentStatus
+    updateAppointmentStatus,
+    getFilteredAdvisors,
+    getFilteredConsumers
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

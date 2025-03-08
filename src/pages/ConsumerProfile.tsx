@@ -4,7 +4,7 @@ import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useUser, ConsumerProfile as ConsumerProfileType } from '../context/UserContext';
-import { ArrowRight, Save, CheckCircle, MessageCircle } from 'lucide-react';
+import { ArrowRight, Save, CheckCircle, MessageCircle, Clock } from 'lucide-react';
 import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
 
 const riskToleranceOptions = [
@@ -31,6 +31,13 @@ const languageOptions = [
   { value: 'arabic', label: 'Arabic' }
 ];
 
+const startTimelineOptions = [
+  { value: 'immediately', label: 'Immediately' },
+  { value: 'next_3_months', label: 'In the next 3 months' },
+  { value: 'next_6_months', label: 'In the next 6 months' },
+  { value: 'not_sure', label: 'Not sure yet' }
+];
+
 const ConsumerProfile: React.FC = () => {
   const { consumerProfile, setConsumerProfile } = useUser();
   const navigate = useNavigate();
@@ -46,9 +53,11 @@ const ConsumerProfile: React.FC = () => {
     preferredCommunication: consumerProfile?.preferredCommunication || [],
     preferredLanguage: consumerProfile?.preferredLanguage || [],
     profilePicture: consumerProfile?.profilePicture || '',
+    startTimeline: consumerProfile?.startTimeline || 'not_sure',
     matches: [],
     chats: [],
-    chatEnabled: consumerProfile?.chatEnabled !== undefined ? consumerProfile.chatEnabled : true
+    chatEnabled: consumerProfile?.chatEnabled !== undefined ? consumerProfile.chatEnabled : true,
+    appointments: []
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -281,6 +290,31 @@ const ConsumerProfile: React.FC = () => {
                             className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-slate-300 rounded"
                           />
                           <label htmlFor={`lang-${option.value}`} className="ml-2 block text-sm text-slate-700">
+                            {option.label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-navy-800 mb-1 flex items-center">
+                      <Clock className="mr-2 h-4 w-4" />
+                      When do you want to start working with an advisor?
+                    </label>
+                    <div className="space-y-2">
+                      {startTimelineOptions.map((option) => (
+                        <div key={option.value} className="flex items-center">
+                          <input
+                            type="radio"
+                            id={`timeline-${option.value}`}
+                            name="startTimeline"
+                            value={option.value}
+                            checked={formData.startTimeline === option.value}
+                            onChange={handleChange}
+                            className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-slate-300"
+                          />
+                          <label htmlFor={`timeline-${option.value}`} className="ml-2 block text-sm text-slate-700">
                             {option.label}
                           </label>
                         </div>

@@ -1,14 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import AdvisorCard from '../components/advisor/AdvisorCard';
-import { useUser, AdvisorProfile } from '../context/UserContext';
+import ConsumerCard from '../components/consumer/ConsumerCard';
+import { useUser, AdvisorProfile, ConsumerProfile, ServiceCategory } from '../context/UserContext';
 import { Inbox, Calendar } from 'lucide-react';
 import AvailabilityViewer from '../components/advisor/AvailabilityViewer';
+import SearchFilters from '../components/search/SearchFilters';
 
-// Default appointment categories for mock data
 const DEFAULT_CATEGORIES = [
   {
     id: 'cat-free_consultation',
@@ -36,7 +36,6 @@ const DEFAULT_CATEGORIES = [
   }
 ];
 
-// Mock data for advisors with availability
 const mockAdvisors: AdvisorProfile[] = [
   {
     id: 'advisor-1',
@@ -58,7 +57,6 @@ const mockAdvisors: AdvisorProfile[] = [
     expertise: ['retirement', 'investment', 'tax'],
     matches: [],
     chats: [],
-    // Added availability
     availability: [
       { day: 'monday', startTime: '09:00', endTime: '11:00', isAvailable: true },
       { day: 'wednesday', startTime: '13:00', endTime: '15:00', isAvailable: true },
@@ -88,7 +86,6 @@ const mockAdvisors: AdvisorProfile[] = [
     expertise: ['tax', 'estate', 'business'],
     matches: [],
     chats: [],
-    // Added availability
     availability: [
       { day: 'tuesday', startTime: '14:00', endTime: '16:00', isAvailable: true },
       { day: 'thursday', startTime: '10:00', endTime: '12:00', isAvailable: true },
@@ -119,7 +116,6 @@ const mockAdvisors: AdvisorProfile[] = [
     expertise: ['estate', 'investment', 'philanthropic'],
     matches: [],
     chats: [],
-    // Added availability
     availability: [
       { day: 'monday', startTime: '15:00', endTime: '17:00', isAvailable: true },
       { day: 'wednesday', startTime: '09:00', endTime: '11:00', isAvailable: true },
@@ -173,7 +169,6 @@ const mockAdvisors: AdvisorProfile[] = [
     expertise: ['investment', 'retirement', 'insurance'],
     matches: [],
     chats: [],
-    // Added availability
     availability: [
       { day: 'tuesday', startTime: '09:00', endTime: '11:00', isAvailable: true },
       { day: 'thursday', startTime: '14:00', endTime: '16:00', isAvailable: true }
@@ -184,30 +179,160 @@ const mockAdvisors: AdvisorProfile[] = [
   }
 ];
 
+const mockConsumers: ConsumerProfile[] = [
+  {
+    id: 'consumer-1',
+    name: 'Alex Johnson',
+    age: 35,
+    status: 'employed',
+    investableAssets: 250000,
+    riskTolerance: 'medium',
+    preferredCommunication: ['email', 'phone'],
+    preferredLanguage: ['english', 'spanish'],
+    startTimeline: 'immediately',
+    matches: [],
+    chats: [],
+    chatEnabled: true,
+    appointments: []
+  },
+  {
+    id: 'consumer-2',
+    name: 'Taylor Smith',
+    age: 42,
+    status: 'self-employed',
+    investableAssets: 500000,
+    riskTolerance: 'high',
+    preferredCommunication: ['video', 'inPerson'],
+    preferredLanguage: ['english', 'french'],
+    startTimeline: 'next_3_months',
+    matches: [],
+    chats: [],
+    chatEnabled: true,
+    appointments: []
+  },
+  {
+    id: 'consumer-3',
+    name: 'Jordan Lee',
+    age: 29,
+    status: 'employed',
+    investableAssets: 150000,
+    riskTolerance: 'low',
+    preferredCommunication: ['email'],
+    preferredLanguage: ['english', 'mandarin'],
+    startTimeline: 'next_6_months',
+    matches: [],
+    chats: [],
+    chatEnabled: true,
+    appointments: []
+  },
+  {
+    id: 'consumer-4',
+    name: 'Morgan Chen',
+    age: 55,
+    status: 'retired',
+    investableAssets: 1200000,
+    riskTolerance: 'medium',
+    preferredCommunication: ['phone', 'inPerson'],
+    preferredLanguage: ['english', 'cantonese'],
+    startTimeline: 'not_sure',
+    matches: [],
+    chats: [],
+    chatEnabled: true,
+    appointments: []
+  }
+];
+
 const MatchingInterface: React.FC = () => {
   const { userType } = useUser();
   const [advisors, setAdvisors] = useState<AdvisorProfile[]>([]);
+  const [consumers, setConsumers] = useState<ConsumerProfile[]>([]);
+  const [filteredItems, setFilteredItems] = useState<AdvisorProfile[] | ConsumerProfile[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [matches, setMatches] = useState<string[]>([]);
   const [empty, setEmpty] = useState(false);
   const [showAvailability, setShowAvailability] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // In a real app, this would fetch advisors from an API with filtering
-    setAdvisors(mockAdvisors);
-  }, []);
+    if (userType === 'consumer') {
+      setAdvisors(mockAdvisors);
+      setFilteredItems(mockAdvisors);
+    } else {
+      setConsumers(mockConsumers);
+      setFilteredItems(mockConsumers);
+    }
+  }, [userType]);
 
-  const handleSwipeRight = (advisor: AdvisorProfile) => {
-    setMatches(prev => [...prev, advisor.id]);
-    nextAdvisor();
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    applySearchAndFilters(term, {});
   };
 
-  const handleSwipeLeft = (advisor: AdvisorProfile) => {
-    nextAdvisor();
+  const handleFilterChange = (filters: any) => {
+    applySearchAndFilters(searchTerm, filters);
   };
 
-  const nextAdvisor = () => {
-    if (currentIndex < advisors.length - 1) {
+  const applySearchAndFilters = (term: string, filters: any) => {
+    let results: AdvisorProfile[] | ConsumerProfile[] = [];
+    
+    if (userType === 'consumer') {
+      results = advisors.filter(advisor => {
+        if (term && !advisor.name.toLowerCase().includes(term.toLowerCase())) {
+          return false;
+        }
+        
+        if (filters.languages && filters.languages.length > 0) {
+          if (!filters.languages.some((lang: string) => advisor.languages.includes(lang))) {
+            return false;
+          }
+        }
+        
+        if (filters.services && filters.services.length > 0) {
+          if (!filters.services.some((service: ServiceCategory) => advisor.expertise.includes(service))) {
+            return false;
+          }
+        }
+        
+        return true;
+      });
+    } else {
+      results = consumers.filter(consumer => {
+        if (term && !consumer.name.toLowerCase().includes(term.toLowerCase())) {
+          return false;
+        }
+        
+        if (filters.preferredLanguage && filters.preferredLanguage.length > 0) {
+          if (!filters.preferredLanguage.some((lang: string) => consumer.preferredLanguage.includes(lang))) {
+            return false;
+          }
+        }
+        
+        if (filters.startTimeline && filters.startTimeline.length > 0) {
+          if (!filters.startTimeline.includes(consumer.startTimeline)) {
+            return false;
+          }
+        }
+        
+        return true;
+      });
+    }
+    
+    setFilteredItems(results);
+    setCurrentIndex(0);
+    setEmpty(results.length === 0);
+  };
+
+  const handleSwipeRight = (item: AdvisorProfile | ConsumerProfile) => {
+    setMatches(prev => [...prev, item.id]);
+    nextItem();
+  };
+
+  const handleSwipeLeft = (item: AdvisorProfile | ConsumerProfile) => {
+    nextItem();
+  };
+
+  const nextItem = () => {
+    if (currentIndex < filteredItems.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setShowAvailability(false);
     } else {
@@ -215,14 +340,19 @@ const MatchingInterface: React.FC = () => {
     }
   };
 
-  const resetAdvisors = () => {
+  const resetItems = () => {
     setCurrentIndex(0);
     setEmpty(false);
     setShowAvailability(false);
+    applySearchAndFilters(searchTerm, {});
   };
 
   const toggleAvailability = () => {
     setShowAvailability(!showAvailability);
+  };
+
+  const getCurrentItem = () => {
+    return filteredItems[currentIndex];
   };
 
   return (
@@ -243,6 +373,12 @@ const MatchingInterface: React.FC = () => {
               </p>
             </div>
 
+            <SearchFilters 
+              userType={userType}
+              onSearch={handleSearch}
+              onFilterChange={handleFilterChange}
+            />
+
             {matches.length > 0 && (
               <div className="mb-8 p-4 bg-teal-50 border border-teal-200 rounded-lg text-center">
                 <p className="text-teal-800 font-medium">
@@ -255,15 +391,23 @@ const MatchingInterface: React.FC = () => {
             )}
 
             <div className="max-w-md mx-auto">
-              {!empty && advisors.length > 0 ? (
+              {!empty && filteredItems.length > 0 ? (
                 <div>
-                  <AdvisorCard 
-                    advisor={advisors[currentIndex]} 
-                    onSwipeRight={handleSwipeRight} 
-                    onSwipeLeft={handleSwipeLeft} 
-                  />
+                  {userType === 'consumer' ? (
+                    <AdvisorCard 
+                      advisor={getCurrentItem() as AdvisorProfile} 
+                      onSwipeRight={handleSwipeRight} 
+                      onSwipeLeft={handleSwipeLeft} 
+                    />
+                  ) : (
+                    <ConsumerCard 
+                      consumer={getCurrentItem() as ConsumerProfile}
+                      onSwipeRight={handleSwipeRight}
+                      onSwipeLeft={handleSwipeLeft}
+                    />
+                  )}
                   
-                  {userType === 'consumer' && advisors[currentIndex].availability && (
+                  {userType === 'consumer' && (getCurrentItem() as AdvisorProfile).availability && (
                     <div className="mt-4">
                       <button
                         onClick={toggleAvailability}
@@ -276,9 +420,9 @@ const MatchingInterface: React.FC = () => {
                       {showAvailability && (
                         <div className="mt-4 glass-card rounded-2xl p-6">
                           <AvailabilityViewer 
-                            availability={advisors[currentIndex].availability || []}
-                            advisorName={advisors[currentIndex].name}
-                            advisorId={advisors[currentIndex].id}
+                            availability={(getCurrentItem() as AdvisorProfile).availability || []}
+                            advisorName={(getCurrentItem() as AdvisorProfile).name}
+                            advisorId={(getCurrentItem() as AdvisorProfile).id}
                           />
                         </div>
                       )}
@@ -291,16 +435,18 @@ const MatchingInterface: React.FC = () => {
                     <Inbox className="w-8 h-8 text-slate-400" />
                   </div>
                   <h3 className="text-xl font-serif font-semibold text-navy-900 mb-2">
-                    No More Profiles
+                    No Matching Profiles
                   </h3>
                   <p className="text-slate-600 mb-6">
-                    You've reviewed all available profiles for now. Check back later for more matches.
+                    {empty 
+                      ? "You've reviewed all available profiles for now. Adjust your filters or check back later."
+                      : "No profiles match your current filters. Try adjusting your search criteria."}
                   </p>
                   <button
-                    onClick={resetAdvisors}
+                    onClick={resetItems}
                     className="btn-outline"
                   >
-                    Start Over
+                    {empty ? "Start Over" : "Clear Filters"}
                   </button>
                 </div>
               )}
