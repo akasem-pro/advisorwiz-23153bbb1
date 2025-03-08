@@ -39,11 +39,11 @@ const Index: React.FC = () => {
                   </div>
                 </div>
                 <div className="relative">
-                  <div className="aspect-square max-w-lg ml-auto bg-white shadow-xl rounded-2xl p-8 rotate-3 animate-slide-up">
-                    <div className="w-full h-full bg-navy-100 rounded-xl flex items-center justify-center">
-                      <span className="text-navy-500 font-serif text-2xl">AdvisorWiz Demo</span>
-                    </div>
-                  </div>
+                  <img 
+                    src="https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b" 
+                    alt="Person holding a financial chart" 
+                    className="rounded-2xl shadow-2xl transform rotate-3 animate-slide-up"
+                  />
                   <div className="absolute top-1/2 -left-8 transform -translate-y-1/2 bg-white shadow-lg rounded-xl p-4 -rotate-6 animate-pulse-scale">
                     <div className="flex items-center space-x-2">
                       <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
@@ -104,7 +104,7 @@ const Index: React.FC = () => {
             </div>
           </section>
 
-          {/* Benefits Section */}
+          {/* Benefits Section with Images */}
           <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-navy-50">
             <div className="container mx-auto">
               <div className="text-center max-w-3xl mx-auto mb-16">
@@ -118,67 +118,94 @@ const Index: React.FC = () => {
               </div>
 
               <div className="grid md:grid-cols-3 gap-8">
-                <div className="bg-white rounded-xl shadow-sm p-8">
-                  <h3 className="text-2xl font-serif font-semibold text-navy-900 mb-6">
-                    For Consumers
-                  </h3>
-                  <ul className="space-y-4">
-                    {[
-                      "Personalized matching based on your financial goals and preferences",
-                      "Transparent advisor profiles with verified credentials",
-                      "Direct communication with potential advisors",
-                      "Free initial consultations to ensure compatibility",
-                      "Secure platform to share financial information",
-                      "Rate and review your experience"
-                    ].map((benefit, index) => (
-                      <li key={index} className="flex items-start">
-                        <CheckCircle className="w-5 h-5 text-teal-500 mt-1 mr-3 flex-shrink-0" />
-                        <span className="text-slate-700">{benefit}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                  <div className="h-48 overflow-hidden">
+                    <img 
+                      src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7" 
+                      alt="Consumer using financial planning app" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-8">
+                    <h3 className="text-2xl font-serif font-semibold text-navy-900 mb-6">
+                      For Consumers
+                    </h3>
+                    <ul className="space-y-4">
+                      {[
+                        "Personalized matching based on your financial goals and preferences",
+                        "Transparent advisor profiles with verified credentials",
+                        "Direct communication with potential advisors",
+                        "Free initial consultations to ensure compatibility",
+                        "Secure platform to share financial information",
+                        "Rate and review your experience"
+                      ].map((benefit, index) => (
+                        <li key={index} className="flex items-start">
+                          <CheckCircle className="w-5 h-5 text-teal-500 mt-1 mr-3 flex-shrink-0" />
+                          <span className="text-slate-700">{benefit}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm p-8">
-                  <h3 className="text-2xl font-serif font-semibold text-navy-900 mb-6">
-                    For Advisors
-                  </h3>
-                  <ul className="space-y-4">
-                    {[
-                      "Connect with pre-qualified potential clients",
-                      "Showcase your expertise and credentials",
-                      "Display client testimonials and success stories",
-                      "Efficient client acquisition without cold calling",
-                      "Manage appointments and communications in one place",
-                      "Build your reputation through verified reviews"
-                    ].map((benefit, index) => (
-                      <li key={index} className="flex items-start">
-                        <CheckCircle className="w-5 h-5 text-navy-500 mt-1 mr-3 flex-shrink-0" />
-                        <span className="text-slate-700">{benefit}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                  <div className="h-48 overflow-hidden">
+                    <img 
+                      src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" 
+                      alt="Financial advisor working on computer" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-8">
+                    <h3 className="text-2xl font-serif font-semibold text-navy-900 mb-6">
+                      For Advisors
+                    </h3>
+                    <ul className="space-y-4">
+                      {[
+                        "Connect with pre-qualified potential clients",
+                        "Showcase your expertise and credentials",
+                        "Display client testimonials and success stories",
+                        "Efficient client acquisition without cold calling",
+                        "Manage appointments and communications in one place",
+                        "Build your reputation through verified reviews"
+                      ].map((benefit, index) => (
+                        <li key={index} className="flex items-start">
+                          <CheckCircle className="w-5 h-5 text-navy-500 mt-1 mr-3 flex-shrink-0" />
+                          <span className="text-slate-700">{benefit}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm p-8">
-                  <h3 className="text-2xl font-serif font-semibold text-navy-900 mb-6">
-                    For Financial Firms
-                  </h3>
-                  <ul className="space-y-4">
-                    {[
-                      "Manage multiple advisor profiles under one organization",
-                      "Streamline client acquisition for your entire team",
-                      "Maintain consistent branding across all advisors",
-                      "Track performance metrics for your firm",
-                      "Centralized management and administration",
-                      "Showcase your firm's unique value proposition"
-                    ].map((benefit, index) => (
-                      <li key={index} className="flex items-start">
-                        <CheckCircle className="w-5 h-5 text-purple-500 mt-1 mr-3 flex-shrink-0" />
-                        <span className="text-slate-700">{benefit}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                  <div className="h-48 overflow-hidden">
+                    <img 
+                      src="https://images.unsplash.com/photo-1721322800607-8c38375eef04" 
+                      alt="Financial firm office space" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-8">
+                    <h3 className="text-2xl font-serif font-semibold text-navy-900 mb-6">
+                      For Financial Firms
+                    </h3>
+                    <ul className="space-y-4">
+                      {[
+                        "Manage multiple advisor profiles under one organization",
+                        "Streamline client acquisition for your entire team",
+                        "Maintain consistent branding across all advisors",
+                        "Track performance metrics for your firm",
+                        "Centralized management and administration",
+                        "Showcase your firm's unique value proposition"
+                      ].map((benefit, index) => (
+                        <li key={index} className="flex items-start">
+                          <CheckCircle className="w-5 h-5 text-purple-500 mt-1 mr-3 flex-shrink-0" />
+                          <span className="text-slate-700">{benefit}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
