@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import { ArrowRight, CheckCircle, ShieldCheck, Clock, Users, BarChart } from 'lucide-react';
+import { ArrowRight, CheckCircle, ShieldCheck, Clock, Users, BarChart, Building } from 'lucide-react';
 
 const Index: React.FC = () => {
   return (
@@ -113,11 +113,11 @@ const Index: React.FC = () => {
                   Why Choose AdvisorWiz
                 </h2>
                 <p className="mt-4 text-lg text-slate-600">
-                  Our platform provides unique advantages for both consumers and financial advisors.
+                  Our platform provides unique advantages for consumers, financial advisors, and firms.
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid md:grid-cols-3 gap-8">
                 <div className="bg-white rounded-xl shadow-sm p-8">
                   <h3 className="text-2xl font-serif font-semibold text-navy-900 mb-6">
                     For Consumers
@@ -154,6 +154,27 @@ const Index: React.FC = () => {
                     ].map((benefit, index) => (
                       <li key={index} className="flex items-start">
                         <CheckCircle className="w-5 h-5 text-navy-500 mt-1 mr-3 flex-shrink-0" />
+                        <span className="text-slate-700">{benefit}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm p-8">
+                  <h3 className="text-2xl font-serif font-semibold text-navy-900 mb-6">
+                    For Financial Firms
+                  </h3>
+                  <ul className="space-y-4">
+                    {[
+                      "Manage multiple advisor profiles under one organization",
+                      "Streamline client acquisition for your entire team",
+                      "Maintain consistent branding across all advisors",
+                      "Track performance metrics for your firm",
+                      "Centralized management and administration",
+                      "Showcase your firm's unique value proposition"
+                    ].map((benefit, index) => (
+                      <li key={index} className="flex items-start">
+                        <CheckCircle className="w-5 h-5 text-purple-500 mt-1 mr-3 flex-shrink-0" />
                         <span className="text-slate-700">{benefit}</span>
                       </li>
                     ))}

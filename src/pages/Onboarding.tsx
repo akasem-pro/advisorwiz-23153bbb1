@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import { ArrowRight, ArrowLeft, User, Briefcase } from 'lucide-react';
+import { ArrowRight, ArrowLeft, User, Briefcase, Building } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 
 const Onboarding: React.FC = () => {
   const [step, setStep] = useState(1);
-  const [selectedUserType, setSelectedUserType] = useState<'consumer' | 'advisor' | null>(null);
+  const [selectedUserType, setSelectedUserType] = useState<'consumer' | 'advisor' | 'firm_admin' | null>(null);
   const { setUserType, setIsAuthenticated } = useUser();
   const navigate = useNavigate();
 
@@ -22,8 +22,10 @@ const Onboarding: React.FC = () => {
       
       if (selectedUserType === 'consumer') {
         navigate('/consumer-profile');
-      } else {
+      } else if (selectedUserType === 'advisor') {
         navigate('/advisor-profile');
+      } else if (selectedUserType === 'firm_admin') {
+        navigate('/firm-profile');
       }
     }
   };
@@ -54,7 +56,7 @@ const Onboarding: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-10">
+                    <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-10">
                       <button
                         className={`relative p-8 rounded-xl border-2 transition-all duration-300 text-left ${
                           selectedUserType === 'consumer'
@@ -104,6 +106,34 @@ const Onboarding: React.FC = () => {
                         </p>
                         {selectedUserType === 'advisor' && (
                           <div className="absolute top-4 right-4 w-5 h-5 bg-navy-500 rounded-full flex items-center justify-center">
+                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        )}
+                      </button>
+
+                      <button
+                        className={`relative p-8 rounded-xl border-2 transition-all duration-300 text-left ${
+                          selectedUserType === 'firm_admin'
+                            ? 'border-purple-500 bg-purple-50'
+                            : 'border-slate-200 hover:border-purple-200 hover:bg-slate-50'
+                        }`}
+                        onClick={() => setSelectedUserType('firm_admin')}
+                      >
+                        <div className="flex items-center space-x-4 mb-4">
+                          <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                            <Building className="w-6 h-6 text-purple-600" />
+                          </div>
+                          <h3 className="text-xl font-serif font-semibold text-navy-900">
+                            I'm a Financial Firm
+                          </h3>
+                        </div>
+                        <p className="text-slate-600">
+                          I represent a financial firm and want to manage multiple advisor profiles for our organization.
+                        </p>
+                        {selectedUserType === 'firm_admin' && (
+                          <div className="absolute top-4 right-4 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
                             <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                             </svg>
