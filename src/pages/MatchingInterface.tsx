@@ -35,7 +35,8 @@ const mockAdvisors: AdvisorProfile[] = [
       { day: 'monday', startTime: '09:00', endTime: '11:00', isAvailable: true },
       { day: 'wednesday', startTime: '13:00', endTime: '15:00', isAvailable: true },
       { day: 'friday', startTime: '10:00', endTime: '12:00', isAvailable: true }
-    ]
+    ],
+    chatEnabled: true // Added missing property
   },
   {
     id: 'advisor-2',
@@ -62,7 +63,8 @@ const mockAdvisors: AdvisorProfile[] = [
       { day: 'tuesday', startTime: '14:00', endTime: '16:00', isAvailable: true },
       { day: 'thursday', startTime: '10:00', endTime: '12:00', isAvailable: true },
       { day: 'saturday', startTime: '09:00', endTime: '12:00', isAvailable: true }
-    ]
+    ],
+    chatEnabled: true // Added missing property
   },
   {
     id: 'advisor-3',
@@ -90,7 +92,8 @@ const mockAdvisors: AdvisorProfile[] = [
       { day: 'monday', startTime: '15:00', endTime: '17:00', isAvailable: true },
       { day: 'wednesday', startTime: '09:00', endTime: '11:00', isAvailable: true },
       { day: 'friday', startTime: '13:00', endTime: '15:00', isAvailable: true }
-    ]
+    ],
+    chatEnabled: true // Added missing property
   },
   {
     id: 'advisor-4',
@@ -111,7 +114,8 @@ const mockAdvisors: AdvisorProfile[] = [
     assetsUnderManagement: 15000000,
     expertise: ['business', 'investment', 'education'],
     matches: [],
-    chats: []
+    chats: [],
+    chatEnabled: true // Added missing property
   },
   {
     id: 'advisor-5',
@@ -137,7 +141,8 @@ const mockAdvisors: AdvisorProfile[] = [
     availability: [
       { day: 'tuesday', startTime: '09:00', endTime: '11:00', isAvailable: true },
       { day: 'thursday', startTime: '14:00', endTime: '16:00', isAvailable: true }
-    ]
+    ],
+    chatEnabled: true // Added missing property
   }
 ];
 
