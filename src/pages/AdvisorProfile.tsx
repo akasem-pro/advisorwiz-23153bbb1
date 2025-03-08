@@ -4,7 +4,7 @@ import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useUser, AdvisorProfile as AdvisorProfileType, TimeSlot } from '../context/UserContext';
-import { ArrowRight, Save, CheckCircle, Plus, Trash2, Clock } from 'lucide-react';
+import { ArrowRight, Save, CheckCircle, Plus, Trash2, Clock, MessageCircle } from 'lucide-react';
 import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
 import AvailabilityScheduler from '../components/advisor/AvailabilityScheduler';
 
@@ -53,7 +53,8 @@ const AdvisorProfile: React.FC = () => {
     profilePicture: advisorProfile?.profilePicture || '',
     matches: [],
     chats: [],
-    availability: advisorProfile?.availability || []
+    availability: advisorProfile?.availability || [],
+    chatEnabled: advisorProfile?.chatEnabled !== undefined ? advisorProfile.chatEnabled : true
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -154,6 +155,13 @@ const AdvisorProfile: React.FC = () => {
     }));
   };
 
+  const handleToggleChat = () => {
+    setFormData(prev => ({
+      ...prev,
+      chatEnabled: !prev.chatEnabled
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setAdvisorProfile(formData as AdvisorProfileType);
@@ -195,7 +203,6 @@ const AdvisorProfile: React.FC = () => {
                   </div>
 
                   <div className="space-y-6">
-                    {/* Personal Information */}
                     <div>
                       <h2 className="text-xl font-serif font-semibold text-navy-800 mb-4">Personal Information</h2>
                       <div className="grid md:grid-cols-2 gap-6">
@@ -262,7 +269,6 @@ const AdvisorProfile: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Professional Information */}
                     <div>
                       <h2 className="text-xl font-serif font-semibold text-navy-800 mb-4">Professional Information</h2>
                       
@@ -319,7 +325,6 @@ const AdvisorProfile: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Expertise and Languages */}
                     <div>
                       <h2 className="text-xl font-serif font-semibold text-navy-800 mb-4">Expertise & Languages</h2>
                       
@@ -368,7 +373,6 @@ const AdvisorProfile: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Availability Schedule */}
                     <div>
                       <h2 className="text-xl font-serif font-semibold text-navy-800 mb-4">
                         <Clock className="inline-block mr-2 h-5 w-5" />
@@ -384,7 +388,6 @@ const AdvisorProfile: React.FC = () => {
                       />
                     </div>
 
-                    {/* Testimonials */}
                     <div>
                       <h2 className="text-xl font-serif font-semibold text-navy-800 mb-4">Client Testimonials</h2>
                       
@@ -448,6 +451,31 @@ const AdvisorProfile: React.FC = () => {
                           <Plus className="mr-1 w-4 h-4" />
                           Add Testimonial
                         </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h2 className="text-xl font-serif font-semibold text-navy-800 mb-4 flex items-center">
+                        <MessageCircle className="inline-block mr-2 h-5 w-5" />
+                        Communication Settings
+                      </h2>
+                      
+                      <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                        <div>
+                          <p className="text-slate-700 font-medium">Enable Chat</p>
+                          <p className="text-sm text-slate-500">
+                            When enabled, clients can message you directly
+                          </p>
+                        </div>
+                        <label className="inline-flex items-center cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            className="sr-only peer"
+                            checked={formData.chatEnabled}
+                            onChange={handleToggleChat}
+                          />
+                          <div className="relative w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+                        </label>
                       </div>
                     </div>
                   </div>

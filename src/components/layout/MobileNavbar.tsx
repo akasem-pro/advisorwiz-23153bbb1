@@ -7,9 +7,20 @@ import { cn } from '@/lib/utils';
 
 const MobileNavbar: React.FC = () => {
   const location = useLocation();
-  const { isAuthenticated, userType } = useUser();
+  const { isAuthenticated, userType, chats, consumerProfile, advisorProfile } = useUser();
 
   if (!isAuthenticated) return null;
+
+  // Check if there are unread messages
+  const hasUnreadMessages = chats.some(chat => {
+    const currentUserId = userType === 'consumer' 
+      ? consumerProfile?.id 
+      : advisorProfile?.id;
+    
+    return chat.messages.some(msg => 
+      msg.recipientId === currentUserId && !msg.read
+    );
+  });
 
   const navItems = [
     {
@@ -26,6 +37,7 @@ const MobileNavbar: React.FC = () => {
       icon: MessageCircle,
       label: 'Chat',
       path: '/chat',
+      badge: hasUnreadMessages
     },
     {
       icon: Calendar,
@@ -46,14 +58,17 @@ const MobileNavbar: React.FC = () => {
           key={item.path}
           to={item.path}
           className={cn(
-            "flex flex-col items-center justify-center w-full h-full text-xs",
-            location.pathname === item.path 
+            "flex flex-col items-center justify-center w-full h-full text-xs relative",
+            location.pathname === item.path || (location.pathname.startsWith('/chat/') && item.path === '/chat')
               ? "text-teal-600" 
               : "text-slate-500"
           )}
         >
           <item.icon className="w-6 h-6 mb-1" />
           <span>{item.label}</span>
+          {item.badge && (
+            <span className="absolute top-1 right-6 h-2 w-2 bg-red-500 rounded-full"></span>
+          )}
         </Link>
       ))}
     </nav>

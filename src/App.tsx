@@ -11,6 +11,7 @@ import Onboarding from "./pages/Onboarding";
 import ConsumerProfile from "./pages/ConsumerProfile";
 import AdvisorProfile from "./pages/AdvisorProfile";
 import MatchingInterface from "./pages/MatchingInterface";
+import Chat from "./pages/Chat";
 import MobileLayout from "./components/layout/MobileLayout";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,8 @@ const App = () => (
               <Route path="/consumer-profile" element={<ConsumerProfile />} />
               <Route path="/advisor-profile" element={<AdvisorProfile />} />
               <Route path="/matches" element={<MatchingInterface />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/chat/:chatId" element={<Chat />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Route>

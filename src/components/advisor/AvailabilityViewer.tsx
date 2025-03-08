@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Calendar, Clock, ArrowRight } from 'lucide-react';
-import { TimeSlot } from '../../context/UserContext';
+import { useNavigate } from 'react-router-dom';
+import { Calendar, Clock, ArrowRight, MessageCircle } from 'lucide-react';
+import { TimeSlot, Chat, useUser } from '../../context/UserContext';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { toast } from "@/hooks/use-toast";
 
@@ -18,6 +19,8 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const { consumerProfile, userType, chats, setChats } = useUser();
+  const navigate = useNavigate();
 
   if (!availability || availability.length === 0) {
     return (
@@ -75,6 +78,42 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
 
     // Reset selection
     setSelectedSlot(null);
+  };
+
+  const handleStartChat = () => {
+    if (!consumerProfile) {
+      toast({
+        title: "Please complete your profile",
+        description: "You need to complete your profile to chat with advisors",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check if chat already exists
+    const existingChat = chats.find(chat => 
+      chat.participants.includes(consumerProfile.id) && 
+      chat.participants.includes(advisorId)
+    );
+
+    if (existingChat) {
+      // If chat exists, navigate to it
+      navigate(`/chat/${existingChat.id}`);
+      return;
+    }
+
+    // Create a new chat
+    const newChat: Chat = {
+      id: `chat-${Date.now()}`,
+      participants: [consumerProfile.id, advisorId],
+      messages: [],
+      lastUpdated: new Date().toISOString()
+    };
+
+    setChats([...chats, newChat]);
+    
+    // Navigate to the new chat
+    navigate(`/chat/${newChat.id}`);
   };
 
   return (
@@ -139,8 +178,17 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
         )}
       </div>
 
-      {selectedSlot && (
-        <div className="flex justify-end">
+      <div className="flex justify-between">
+        <button
+          type="button"
+          onClick={handleStartChat}
+          className="btn-outline inline-flex items-center"
+        >
+          <MessageCircle className="mr-2 w-4 h-4" />
+          Message {advisorName}
+        </button>
+
+        {selectedSlot && (
           <button
             type="button"
             onClick={handleBooking}
@@ -149,8 +197,8 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
             Book Consultation
             <ArrowRight className="ml-2 w-4 h-4" />
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useUser, ConsumerProfile as ConsumerProfileType } from '../context/UserContext';
-import { ArrowRight, Save, CheckCircle } from 'lucide-react';
+import { ArrowRight, Save, CheckCircle, MessageCircle } from 'lucide-react';
 import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
 
 const riskToleranceOptions = [
@@ -47,7 +47,8 @@ const ConsumerProfile: React.FC = () => {
     preferredLanguage: consumerProfile?.preferredLanguage || [],
     profilePicture: consumerProfile?.profilePicture || '',
     matches: [],
-    chats: []
+    chats: [],
+    chatEnabled: consumerProfile?.chatEnabled !== undefined ? consumerProfile.chatEnabled : true
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -96,6 +97,13 @@ const ConsumerProfile: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       profilePicture: imageBase64
+    }));
+  };
+
+  const handleToggleChat = () => {
+    setFormData(prev => ({
+      ...prev,
+      chatEnabled: !prev.chatEnabled
     }));
   };
 
@@ -277,6 +285,30 @@ const ConsumerProfile: React.FC = () => {
                           </label>
                         </div>
                       ))}
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-6 mt-6">
+                    <h3 className="text-lg font-medium text-navy-800 mb-4 flex items-center">
+                      <MessageCircle className="mr-2 h-5 w-5" />
+                      Communication Settings
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-slate-700">Enable Chat</p>
+                        <p className="text-sm text-slate-500">
+                          When enabled, advisors can message you directly
+                        </p>
+                      </div>
+                      <label className="inline-flex items-center cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          className="sr-only peer"
+                          checked={formData.chatEnabled}
+                          onChange={handleToggleChat}
+                        />
+                        <div className="relative w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+                      </label>
                     </div>
                   </div>
 
