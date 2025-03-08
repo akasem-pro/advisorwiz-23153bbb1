@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
@@ -6,6 +5,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useUser, ConsumerProfile as ConsumerProfileType } from '../context/UserContext';
 import { ArrowRight, Save, CheckCircle } from 'lucide-react';
+import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
 
 const riskToleranceOptions = [
   { value: 'low', label: 'Low - I prefer safe investments with steady returns' },
@@ -45,6 +45,7 @@ const ConsumerProfile: React.FC = () => {
     riskTolerance: consumerProfile?.riskTolerance || 'medium',
     preferredCommunication: consumerProfile?.preferredCommunication || [],
     preferredLanguage: consumerProfile?.preferredLanguage || [],
+    profilePicture: consumerProfile?.profilePicture || '',
     matches: [],
     chats: []
   });
@@ -91,6 +92,13 @@ const ConsumerProfile: React.FC = () => {
     });
   };
 
+  const handlePictureChange = (imageBase64: string) => {
+    setFormData(prev => ({
+      ...prev,
+      profilePicture: imageBase64
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setConsumerProfile(formData as ConsumerProfileType);
@@ -123,6 +131,14 @@ const ConsumerProfile: React.FC = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
+                  <div className="flex justify-center mb-8">
+                    <ProfilePictureUpload 
+                      currentPicture={formData.profilePicture}
+                      onPictureChange={handlePictureChange}
+                      size="lg"
+                    />
+                  </div>
+
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-navy-800 mb-1">

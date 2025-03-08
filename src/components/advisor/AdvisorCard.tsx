@@ -38,7 +38,15 @@ const AdvisorCard: React.FC<AdvisorCardProps> = ({ advisor, onSwipeRight, onSwip
       <div className="relative p-6">
         <div className="flex items-center space-x-4">
           <div className="relative w-20 h-20 bg-navy-100 rounded-full overflow-hidden border-2 border-teal-400">
-            <User className="absolute inset-0 w-full h-full p-4 text-navy-500" />
+            {advisor.profilePicture ? (
+              <img 
+                src={advisor.profilePicture} 
+                alt={advisor.name} 
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <User className="absolute inset-0 w-full h-full p-4 text-navy-500" />
+            )}
           </div>
           <div>
             <h3 className="text-xl font-serif font-semibold text-navy-900">{advisor.name}</h3>

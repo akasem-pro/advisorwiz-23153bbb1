@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
@@ -6,6 +5,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useUser, AdvisorProfile as AdvisorProfileType } from '../context/UserContext';
 import { ArrowRight, Save, CheckCircle, Plus, Trash2 } from 'lucide-react';
+import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
 
 const expertiseOptions = [
   { value: 'retirement', label: 'Retirement Planning' },
@@ -49,6 +49,7 @@ const AdvisorProfile: React.FC = () => {
     },
     assetsUnderManagement: advisorProfile?.assetsUnderManagement || 0,
     expertise: advisorProfile?.expertise || [],
+    profilePicture: advisorProfile?.profilePicture || '',
     matches: [],
     chats: []
   });
@@ -137,6 +138,13 @@ const AdvisorProfile: React.FC = () => {
     }));
   };
 
+  const handlePictureChange = (imageBase64: string) => {
+    setFormData(prev => ({
+      ...prev,
+      profilePicture: imageBase64
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setAdvisorProfile(formData as AdvisorProfileType);
@@ -169,6 +177,14 @@ const AdvisorProfile: React.FC = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
+                  <div className="flex justify-center mb-8">
+                    <ProfilePictureUpload 
+                      currentPicture={formData.profilePicture}
+                      onPictureChange={handlePictureChange}
+                      size="lg"
+                    />
+                  </div>
+
                   <div className="space-y-6">
                     {/* Personal Information */}
                     <div>

@@ -13,6 +13,7 @@ export type ConsumerProfile = {
   preferredLanguage: string[];
   matches: string[];
   chats: string[];
+  profilePicture?: string; // URL to profile picture
 };
 
 export type AdvisorProfile = {
@@ -31,6 +32,7 @@ export type AdvisorProfile = {
   expertise: string[];
   matches: string[];
   chats: string[];
+  profilePicture?: string; // URL to profile picture
 };
 
 // Type for the user context
