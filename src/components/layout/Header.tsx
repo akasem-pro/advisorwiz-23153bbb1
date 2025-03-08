@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, LogOut } from 'lucide-react';
+import { Menu, X, LogOut, Building } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated, setIsAuthenticated, setUserType, setConsumerProfile, setAdvisorProfile } = useUser();
+  const { isAuthenticated, setIsAuthenticated, setUserType, setConsumerProfile, setAdvisorProfile, userType } = useUser();
   const location = useLocation();
 
   const toggleMenu = () => {
@@ -21,7 +21,9 @@ const Header: React.FC = () => {
   };
 
   const navLinks = isAuthenticated
-    ? []
+    ? userType === 'firm_admin'
+      ? [{ name: 'Manage Firm', path: '/firm-profile' }]
+      : []
     : [
         { name: 'Home', path: '/' },
         { name: 'For Advisors', path: '/for-advisors' },
@@ -36,10 +38,40 @@ const Header: React.FC = () => {
           <span className="text-navy-900 font-serif text-xl font-bold">AdvisorWiz</span>
         </Link>
 
+        {/* Conditional Navigation */}
+        <div className="hidden md:flex items-center space-x-6">
+          {navLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              className={`py-2 px-1 font-medium ${
+                location.pathname === link.path
+                  ? 'text-teal-600'
+                  : 'text-navy-700 hover:text-teal-600'
+              } transition-colors`}
+            >
+              {link.name}
+            </Link>
+          ))}
+          
+          {!isAuthenticated && (
+            <Link to="/onboarding" className="btn-primary">
+              Get Started
+            </Link>
+          )}
+          
+          {isAuthenticated && userType === 'firm_admin' && (
+            <Link to="/firm-profile" className="flex items-center text-navy-700 hover:text-teal-600">
+              <Building className="w-5 h-5 mr-1" />
+              <span>Firm Dashboard</span>
+            </Link>
+          )}
+        </div>
+
         {!isAuthenticated && (
           <>
             <button
-              className="text-navy-900 focus:outline-none"
+              className="text-navy-900 md:hidden focus:outline-none"
               onClick={toggleMenu}
               aria-label="Toggle menu"
             >

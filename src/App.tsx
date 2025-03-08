@@ -15,6 +15,9 @@ import Chat from './pages/Chat';
 import Schedule from './pages/Schedule';
 import NotFound from './pages/NotFound';
 import FirmProfile from './pages/FirmProfile';
+import ForFirms from './pages/ForFirms';
+import ForAdvisors from './pages/ForAdvisors';
+import ForConsumers from './pages/ForConsumers';
 
 import './App.css';
 
@@ -36,6 +39,9 @@ function App() {
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/firm-profile" element={<FirmProfile />} />
             <Route path="/firm/:id" element={<FirmProfile />} />
+            <Route path="/for-firms" element={<ForFirms />} />
+            <Route path="/for-advisors" element={<ForAdvisors />} />
+            <Route path="/for-consumers" element={<ForConsumers />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
