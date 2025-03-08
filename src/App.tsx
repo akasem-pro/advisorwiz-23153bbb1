@@ -35,6 +35,7 @@ function App() {
             <Route path="/chat/:id" element={<Chat />} />
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/firm-profile" element={<FirmProfile />} />
+            <Route path="/firm/:id" element={<FirmProfile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>

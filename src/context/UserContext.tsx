@@ -416,7 +416,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }) => {
     // This would usually be a server call
     // For now, use our mock data from MatchingInterface
-    const mockAdvisors = [
+    const mockAdvisors: AdvisorProfile[] = [
       {
         id: 'advisor-1',
         name: 'Alice Brown',
@@ -431,7 +431,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           hourlyRate: 150,
         },
         assetsUnderManagement: 5000000,
-        expertise: ['retirement', 'investment'],
+        expertise: ['retirement', 'investment'] as ServiceCategory[],
         matches: [],
         chats: [],
         profilePicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b82a7e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
@@ -457,7 +457,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           portfolioFee: 1.0,
         },
         assetsUnderManagement: 2500000,
-        expertise: ['tax', 'estate'],
+        expertise: ['tax', 'estate'] as ServiceCategory[],
         matches: [],
         chats: [],
         profilePicture: 'https://images.unsplash.com/photo-1570295999919-56bcae5b0189?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80',
@@ -483,7 +483,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           hourlyRate: 200,
         },
         assetsUnderManagement: 7500000,
-        expertise: ['business', 'insurance'],
+        expertise: ['business', 'insurance'] as ServiceCategory[],
         matches: [],
         chats: [],
         profilePicture: 'https://images.unsplash.com/photo-1580489944761-15a19d674c80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80',
@@ -509,7 +509,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           portfolioFee: 1.2,
         },
         assetsUnderManagement: 10000000,
-        expertise: ['philanthropic', 'education'],
+        expertise: ['philanthropic', 'education'] as ServiceCategory[],
         matches: [],
         chats: [],
         profilePicture: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80',
@@ -533,7 +533,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
       // Check service match
       if (filters.services && filters.services.length > 0) {
-        if (!filters.services.some(service => advisor.expertise.includes(service as ServiceCategory))) {
+        if (!filters.services.some(service => advisor.expertise.includes(service))) {
           return false;
         }
       }

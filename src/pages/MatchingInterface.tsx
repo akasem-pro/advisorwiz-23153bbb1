@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -54,7 +55,7 @@ const mockAdvisors: AdvisorProfile[] = [
       hourlyRate: 175
     },
     assetsUnderManagement: 25000000,
-    expertise: ['retirement', 'investment', 'tax'],
+    expertise: ['retirement', 'investment', 'tax'] as ServiceCategory[],
     matches: [],
     chats: [],
     availability: [
@@ -64,7 +65,10 @@ const mockAdvisors: AdvisorProfile[] = [
     ],
     chatEnabled: true,
     appointmentCategories: DEFAULT_CATEGORIES,
-    appointments: []
+    appointments: [],
+    onlineStatus: 'online',
+    lastOnline: new Date().toISOString(),
+    showOnlineStatus: true
   },
   {
     id: 'advisor-2',
@@ -83,7 +87,7 @@ const mockAdvisors: AdvisorProfile[] = [
       portfolioFee: 1.2
     },
     assetsUnderManagement: 40000000,
-    expertise: ['tax', 'estate', 'business'],
+    expertise: ['tax', 'estate', 'business'] as ServiceCategory[],
     matches: [],
     chats: [],
     availability: [
@@ -93,7 +97,10 @@ const mockAdvisors: AdvisorProfile[] = [
     ],
     chatEnabled: true,
     appointmentCategories: DEFAULT_CATEGORIES,
-    appointments: []
+    appointments: [],
+    onlineStatus: 'away',
+    lastOnline: new Date().toISOString(),
+    showOnlineStatus: true
   },
   {
     id: 'advisor-3',
@@ -113,7 +120,7 @@ const mockAdvisors: AdvisorProfile[] = [
       portfolioFee: 0.9
     },
     assetsUnderManagement: 30000000,
-    expertise: ['estate', 'investment', 'philanthropic'],
+    expertise: ['estate', 'investment', 'philanthropic'] as ServiceCategory[],
     matches: [],
     chats: [],
     availability: [
@@ -123,7 +130,10 @@ const mockAdvisors: AdvisorProfile[] = [
     ],
     chatEnabled: true,
     appointmentCategories: DEFAULT_CATEGORIES,
-    appointments: []
+    appointments: [],
+    onlineStatus: 'online',
+    lastOnline: new Date().toISOString(),
+    showOnlineStatus: true
   },
   {
     id: 'advisor-4',
@@ -142,12 +152,15 @@ const mockAdvisors: AdvisorProfile[] = [
       hourlyRate: 125
     },
     assetsUnderManagement: 15000000,
-    expertise: ['business', 'investment', 'education'],
+    expertise: ['business', 'investment', 'education'] as ServiceCategory[],
     matches: [],
     chats: [],
     chatEnabled: true,
     appointmentCategories: DEFAULT_CATEGORIES,
-    appointments: []
+    appointments: [],
+    onlineStatus: 'offline',
+    lastOnline: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    showOnlineStatus: true
   },
   {
     id: 'advisor-5',
@@ -166,7 +179,7 @@ const mockAdvisors: AdvisorProfile[] = [
       portfolioFee: 1.0
     },
     assetsUnderManagement: 35000000,
-    expertise: ['investment', 'retirement', 'insurance'],
+    expertise: ['investment', 'retirement', 'insurance'] as ServiceCategory[],
     matches: [],
     chats: [],
     availability: [
@@ -175,7 +188,10 @@ const mockAdvisors: AdvisorProfile[] = [
     ],
     chatEnabled: true,
     appointmentCategories: DEFAULT_CATEGORIES,
-    appointments: []
+    appointments: [],
+    onlineStatus: 'online',
+    lastOnline: new Date().toISOString(),
+    showOnlineStatus: true
   }
 ];
 
@@ -193,7 +209,10 @@ const mockConsumers: ConsumerProfile[] = [
     matches: [],
     chats: [],
     chatEnabled: true,
-    appointments: []
+    appointments: [],
+    onlineStatus: 'online',
+    lastOnline: new Date().toISOString(),
+    showOnlineStatus: true
   },
   {
     id: 'consumer-2',
@@ -208,7 +227,10 @@ const mockConsumers: ConsumerProfile[] = [
     matches: [],
     chats: [],
     chatEnabled: true,
-    appointments: []
+    appointments: [],
+    onlineStatus: 'away',
+    lastOnline: new Date().toISOString(),
+    showOnlineStatus: true
   },
   {
     id: 'consumer-3',
@@ -223,7 +245,10 @@ const mockConsumers: ConsumerProfile[] = [
     matches: [],
     chats: [],
     chatEnabled: true,
-    appointments: []
+    appointments: [],
+    onlineStatus: 'offline',
+    lastOnline: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    showOnlineStatus: false
   },
   {
     id: 'consumer-4',
@@ -238,7 +263,10 @@ const mockConsumers: ConsumerProfile[] = [
     matches: [],
     chats: [],
     chatEnabled: true,
-    appointments: []
+    appointments: [],
+    onlineStatus: 'offline',
+    lastOnline: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
+    showOnlineStatus: true
   }
 ];
 
@@ -257,7 +285,7 @@ const MatchingInterface: React.FC = () => {
     if (userType === 'consumer') {
       setAdvisors(mockAdvisors);
       setFilteredItems(mockAdvisors);
-    } else {
+    } else if (userType === 'advisor') {
       setConsumers(mockConsumers);
       setFilteredItems(mockConsumers);
     }
@@ -374,7 +402,7 @@ const MatchingInterface: React.FC = () => {
             </div>
 
             <SearchFilters 
-              userType={userType}
+              userType={userType as 'consumer' | 'advisor'}
               onSearch={handleSearch}
               onFilterChange={handleFilterChange}
             />

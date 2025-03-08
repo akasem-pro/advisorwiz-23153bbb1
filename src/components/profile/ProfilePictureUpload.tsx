@@ -6,12 +6,14 @@ interface ProfilePictureUploadProps {
   currentPicture?: string;
   onPictureChange: (imageBase64: string) => void;
   size?: 'sm' | 'md' | 'lg';
+  label?: string;
 }
 
 const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({ 
   currentPicture, 
   onPictureChange,
-  size = 'md'
+  size = 'md',
+  label
 }) => {
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(currentPicture);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,6 +55,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
 
   return (
     <div className="flex flex-col items-center">
+      {label && <p className="mb-2 text-sm text-center text-slate-600">{label}</p>}
       <div 
         className={`${sizeClasses[size]} relative rounded-full overflow-hidden border-2 border-teal-400 bg-navy-50 cursor-pointer group`}
         onClick={triggerFileInput}
