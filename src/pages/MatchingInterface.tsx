@@ -8,6 +8,34 @@ import { useUser, AdvisorProfile } from '../context/UserContext';
 import { Inbox, Calendar } from 'lucide-react';
 import AvailabilityViewer from '../components/advisor/AvailabilityViewer';
 
+// Default appointment categories for mock data
+const DEFAULT_CATEGORIES = [
+  {
+    id: 'cat-free_consultation',
+    name: 'free_consultation' as const,
+    label: 'Free Consultation',
+    description: 'A short introductory call to discuss your financial needs.',
+    duration: 30,
+    enabled: true
+  },
+  {
+    id: 'cat-discovery_call',
+    name: 'discovery_call' as const,
+    label: 'Discovery Call',
+    description: 'An in-depth discussion to understand your financial situation.',
+    duration: 60,
+    enabled: true
+  },
+  {
+    id: 'cat-investment_call',
+    name: 'investment_call' as const,
+    label: 'Investment Strategy',
+    description: 'Review and discuss your investment portfolio and strategies.',
+    duration: 60,
+    enabled: true
+  }
+];
+
 // Mock data for advisors with availability
 const mockAdvisors: AdvisorProfile[] = [
   {
@@ -36,7 +64,9 @@ const mockAdvisors: AdvisorProfile[] = [
       { day: 'wednesday', startTime: '13:00', endTime: '15:00', isAvailable: true },
       { day: 'friday', startTime: '10:00', endTime: '12:00', isAvailable: true }
     ],
-    chatEnabled: true // Added missing property
+    chatEnabled: true,
+    appointmentCategories: DEFAULT_CATEGORIES,
+    appointments: []
   },
   {
     id: 'advisor-2',
@@ -64,7 +94,9 @@ const mockAdvisors: AdvisorProfile[] = [
       { day: 'thursday', startTime: '10:00', endTime: '12:00', isAvailable: true },
       { day: 'saturday', startTime: '09:00', endTime: '12:00', isAvailable: true }
     ],
-    chatEnabled: true // Added missing property
+    chatEnabled: true,
+    appointmentCategories: DEFAULT_CATEGORIES,
+    appointments: []
   },
   {
     id: 'advisor-3',
@@ -93,7 +125,9 @@ const mockAdvisors: AdvisorProfile[] = [
       { day: 'wednesday', startTime: '09:00', endTime: '11:00', isAvailable: true },
       { day: 'friday', startTime: '13:00', endTime: '15:00', isAvailable: true }
     ],
-    chatEnabled: true // Added missing property
+    chatEnabled: true,
+    appointmentCategories: DEFAULT_CATEGORIES,
+    appointments: []
   },
   {
     id: 'advisor-4',
@@ -115,7 +149,9 @@ const mockAdvisors: AdvisorProfile[] = [
     expertise: ['business', 'investment', 'education'],
     matches: [],
     chats: [],
-    chatEnabled: true // Added missing property
+    chatEnabled: true,
+    appointmentCategories: DEFAULT_CATEGORIES,
+    appointments: []
   },
   {
     id: 'advisor-5',
@@ -142,7 +178,9 @@ const mockAdvisors: AdvisorProfile[] = [
       { day: 'tuesday', startTime: '09:00', endTime: '11:00', isAvailable: true },
       { day: 'thursday', startTime: '14:00', endTime: '16:00', isAvailable: true }
     ],
-    chatEnabled: true // Added missing property
+    chatEnabled: true,
+    appointmentCategories: DEFAULT_CATEGORIES,
+    appointments: []
   }
 ];
 
