@@ -3,21 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import { useUser, AdvisorProfile as AdvisorProfileType, TimeSlot, AppointmentCategory } from '../context/UserContext';
+import { useUser, AdvisorProfile as AdvisorProfileType, TimeSlot, AppointmentCategory, ServiceCategory } from '../context/UserContext';
 import { ArrowRight, Save, CheckCircle, Plus, Trash2, Clock, MessageCircle, BookText } from 'lucide-react';
 import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
 import AvailabilityScheduler from '../components/advisor/AvailabilityScheduler';
 import AppointmentCategoryManager from '../components/scheduler/AppointmentCategoryManager';
 
 const expertiseOptions = [
-  { value: 'retirement', label: 'Retirement Planning' },
-  { value: 'investment', label: 'Investment Management' },
-  { value: 'tax', label: 'Tax Planning' },
-  { value: 'estate', label: 'Estate Planning' },
-  { value: 'insurance', label: 'Insurance Planning' },
-  { value: 'education', label: 'Education Planning' },
-  { value: 'business', label: 'Business Planning' },
-  { value: 'philanthropic', label: 'Philanthropic Planning' }
+  { value: 'retirement' as ServiceCategory, label: 'Retirement Planning' },
+  { value: 'investment' as ServiceCategory, label: 'Investment Management' },
+  { value: 'tax' as ServiceCategory, label: 'Tax Planning' },
+  { value: 'estate' as ServiceCategory, label: 'Estate Planning' },
+  { value: 'insurance' as ServiceCategory, label: 'Insurance Planning' },
+  { value: 'education' as ServiceCategory, label: 'Education Planning' },
+  { value: 'business' as ServiceCategory, label: 'Business Planning' },
+  { value: 'philanthropic' as ServiceCategory, label: 'Philanthropic Planning' }
 ];
 
 const languageOptions = [
@@ -129,7 +129,7 @@ const AdvisorProfile: React.FC = () => {
     }
   };
 
-  const handleExpertiseChange = (expertise: string) => {
+  const handleExpertiseChange = (expertise: ServiceCategory) => {
     setFormData(prev => {
       const currentExpertise = prev.expertise || [];
       if (currentExpertise.includes(expertise)) {
