@@ -18,7 +18,7 @@ const mockAdvisors: AdvisorProfile[] = [
     testimonials: [
       {
         client: 'Michael Chen',
-        text: 'Sarah helped me plan for retirement and invest my savings wisely. I feel much more secure about my financial future now.'
+        text: "Sarah helped me plan for retirement and invest my savings wisely. I feel much more secure about my financial future now."
       }
     ],
     languages: ['english', 'french'],
@@ -39,7 +39,7 @@ const mockAdvisors: AdvisorProfile[] = [
     testimonials: [
       {
         client: 'Emma Rodriguez',
-        text: 'David's expertise in tax planning saved me thousands of dollars. His advice was clear and easy to follow.'
+        text: "David's expertise in tax planning saved me thousands of dollars. His advice was clear and easy to follow."
       }
     ],
     languages: ['english', 'punjabi', 'hindi'],
@@ -60,7 +60,7 @@ const mockAdvisors: AdvisorProfile[] = [
     testimonials: [
       {
         client: 'Robert Wilson',
-        text: 'Michelle helped me navigate a complex inheritance situation with professionalism and clarity. Highly recommend!'
+        text: "Michelle helped me navigate a complex inheritance situation with professionalism and clarity. Highly recommend!"
       }
     ],
     languages: ['english', 'mandarin', 'cantonese'],
@@ -82,7 +82,7 @@ const mockAdvisors: AdvisorProfile[] = [
     testimonials: [
       {
         client: 'Sophia Adams',
-        text: 'Carlos provided excellent guidance for my small business finances and helped me plan for growth.'
+        text: "Carlos provided excellent guidance for my small business finances and helped me plan for growth."
       }
     ],
     languages: ['english', 'spanish'],
@@ -103,7 +103,7 @@ const mockAdvisors: AdvisorProfile[] = [
     testimonials: [
       {
         client: 'James Taylor',
-        text: 'Amanda's investment strategy helped me achieve better returns than I expected while maintaining a comfortable risk level.'
+        text: "Amanda's investment strategy helped me achieve better returns than I expected while maintaining a comfortable risk level."
       }
     ],
     languages: ['english', 'french'],
@@ -164,8 +164,8 @@ const MatchingInterface: React.FC = () => {
               </h1>
               <p className="text-slate-600 max-w-2xl mx-auto">
                 {userType === 'consumer' 
-                  ? 'Swipe right on advisors you'd like to connect with. If they match with you too, you can start chatting.' 
-                  : 'Review potential clients who might benefit from your services.'}
+                  ? "Swipe right on advisors you'd like to connect with. If they match with you too, you can start chatting." 
+                  : "Review potential clients who might benefit from your services."}
               </p>
             </div>
 
