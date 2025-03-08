@@ -4,7 +4,7 @@ import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useUser, AdvisorProfile as AdvisorProfileType, TimeSlot, AppointmentCategory, ServiceCategory } from '../context/UserContext';
-import { ArrowRight, Save, CheckCircle, Plus, Trash2, Clock, MessageCircle, BookText } from 'lucide-react';
+import { ArrowRight, Save, CheckCircle, Plus, Trash2, Clock, MessageCircle, BookText, Activity } from 'lucide-react';
 import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
 import AvailabilityScheduler from '../components/advisor/AvailabilityScheduler';
 import AppointmentCategoryManager from '../components/scheduler/AppointmentCategoryManager';
@@ -75,7 +75,7 @@ const DEFAULT_CATEGORIES: AppointmentCategory[] = [
 ];
 
 const AdvisorProfile: React.FC = () => {
-  const { advisorProfile, setAdvisorProfile } = useUser();
+  const { advisorProfile, setAdvisorProfile, updateOnlineStatus } = useUser();
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
   const [newTestimonial, setNewTestimonial] = useState({ client: '', text: '' });
@@ -101,7 +101,10 @@ const AdvisorProfile: React.FC = () => {
     availability: advisorProfile?.availability || [],
     chatEnabled: advisorProfile?.chatEnabled !== undefined ? advisorProfile.chatEnabled : true,
     appointmentCategories: advisorProfile?.appointmentCategories || DEFAULT_CATEGORIES,
-    appointments: advisorProfile?.appointments || []
+    appointments: advisorProfile?.appointments || [],
+    onlineStatus: advisorProfile?.onlineStatus || 'online',
+    lastOnline: advisorProfile?.lastOnline || new Date().toISOString(),
+    showOnlineStatus: advisorProfile?.showOnlineStatus !== undefined ? advisorProfile.showOnlineStatus : true
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -209,9 +212,25 @@ const AdvisorProfile: React.FC = () => {
     }));
   };
 
+  const handleToggleOnlineStatus = () => {
+    setFormData(prev => ({
+      ...prev,
+      showOnlineStatus: !prev.showOnlineStatus
+    }));
+  };
+
+  const handleStatusChange = (status: 'online' | 'offline' | 'away') => {
+    setFormData(prev => ({
+      ...prev,
+      onlineStatus: status
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setAdvisorProfile(formData as AdvisorProfileType);
+    const updatedProfile = formData as AdvisorProfileType;
+    setAdvisorProfile(updatedProfile);
+    updateOnlineStatus(updatedProfile.onlineStatus);
     setSaved(true);
     setTimeout(() => {
       setSaved(false);
@@ -524,6 +543,86 @@ const AdvisorProfile: React.FC = () => {
                           <Plus className="mr-1 w-4 h-4" />
                           Add Testimonial
                         </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h2 className="text-xl font-serif font-semibold text-navy-800 mb-4 flex items-center">
+                        <Activity className="inline-block mr-2 h-5 w-5" />
+                        Online Status
+                      </h2>
+                      
+                      <div className="space-y-4 p-4 bg-slate-50 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-slate-700 font-medium">Current Status</p>
+                            <p className="text-sm text-slate-500">
+                              Set your availability for potential clients
+                            </p>
+                          </div>
+                          <div className="flex space-x-2">
+                            <button
+                              type="button"
+                              onClick={() => handleStatusChange('online')}
+                              className={`px-3 py-1.5 rounded-full text-sm flex items-center ${
+                                formData.onlineStatus === 'online' 
+                                  ? 'bg-green-100 text-green-700' 
+                                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                              }`}
+                            >
+                              <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${
+                                formData.onlineStatus === 'online' ? 'bg-green-500' : 'bg-slate-400'
+                              }`}></span>
+                              Online
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleStatusChange('away')}
+                              className={`px-3 py-1.5 rounded-full text-sm flex items-center ${
+                                formData.onlineStatus === 'away' 
+                                  ? 'bg-amber-100 text-amber-700' 
+                                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                              }`}
+                            >
+                              <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${
+                                formData.onlineStatus === 'away' ? 'bg-amber-500' : 'bg-slate-400'
+                              }`}></span>
+                              Away
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleStatusChange('offline')}
+                              className={`px-3 py-1.5 rounded-full text-sm flex items-center ${
+                                formData.onlineStatus === 'offline' 
+                                  ? 'bg-slate-100 text-slate-700 font-medium' 
+                                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                              }`}
+                            >
+                              <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${
+                                formData.onlineStatus === 'offline' ? 'bg-slate-500' : 'bg-slate-400'
+                              }`}></span>
+                              Offline
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between pt-2 border-t border-slate-200">
+                          <div>
+                            <p className="text-slate-700 font-medium">Show Status</p>
+                            <p className="text-sm text-slate-500">
+                              Display your online status to potential clients
+                            </p>
+                          </div>
+                          <label className="inline-flex items-center cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              className="sr-only peer"
+                              checked={formData.showOnlineStatus}
+                              onChange={handleToggleOnlineStatus}
+                            />
+                            <div className="relative w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+                          </label>
+                        </div>
                       </div>
                     </div>
 

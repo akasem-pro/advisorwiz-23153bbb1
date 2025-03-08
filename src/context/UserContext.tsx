@@ -16,6 +16,9 @@ export type ConsumerProfile = {
   chatEnabled: boolean; // New field for chat settings
   appointments: string[]; // IDs of appointments
   startTimeline: 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' | null; // When they want to start
+  onlineStatus: 'online' | 'offline' | 'away'; // New field for online status
+  lastOnline: string; // ISO string for last online time
+  showOnlineStatus: boolean; // Toggle to show/hide online status
 };
 
 // Time slot type for weekly availability
@@ -68,6 +71,21 @@ export type AdvisorProfile = {
   chatEnabled: boolean; // New field for chat settings
   appointmentCategories: AppointmentCategory[]; // Available appointment types
   appointments: string[]; // IDs of appointments
+  onlineStatus: 'online' | 'offline' | 'away'; // New field for online status
+  lastOnline: string; // ISO string for last online time
+  showOnlineStatus: boolean; // Toggle to show/hide online status
+};
+
+// New type for financial firm
+export type FinancialFirm = {
+  id: string;
+  name: string;
+  description: string;
+  website: string;
+  logo?: string;
+  adminId: string; // ID of the user who administers this firm
+  advisorIds: string[]; // IDs of advisors in this firm
+  createdAt: string;
 };
 
 // Appointment status type
@@ -112,8 +130,8 @@ export type Chat = {
 
 // Type for the user context
 type UserContextType = {
-  userType: 'consumer' | 'advisor' | null;
-  setUserType: (type: 'consumer' | 'advisor' | null) => void;
+  userType: 'consumer' | 'advisor' | 'firm_admin' | null;
+  setUserType: (type: 'consumer' | 'advisor' | 'firm_admin' | null) => void;
   consumerProfile: ConsumerProfile | null;
   setConsumerProfile: (profile: ConsumerProfile | null) => void;
   advisorProfile: AdvisorProfile | null;
@@ -136,6 +154,11 @@ type UserContextType = {
     startTimeline?: ConsumerProfile['startTimeline'][];
     preferredLanguage?: string[];
   }) => ConsumerProfile[];
+  updateOnlineStatus: (status: 'online' | 'offline' | 'away') => void;
+  firms: FinancialFirm[];
+  setFirms: (firms: FinancialFirm[]) => void;
+  addFirm: (firm: Omit<FinancialFirm, 'id' | 'createdAt'>) => void;
+  getFirmByAdmin: (adminId: string) => FinancialFirm[];
 };
 
 // Create the context with default values
@@ -158,16 +181,22 @@ const UserContext = createContext<UserContextType>({
   updateAppointmentStatus: () => {},
   getFilteredAdvisors: () => [],
   getFilteredConsumers: () => [],
+  updateOnlineStatus: () => {},
+  firms: [],
+  setFirms: () => {},
+  addFirm: () => {},
+  getFirmByAdmin: () => [],
 });
 
 // Provider component
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [userType, setUserType] = useState<'consumer' | 'advisor' | null>(null);
+  const [userType, setUserType] = useState<'consumer' | 'advisor' | 'firm_admin' | null>(null);
   const [consumerProfile, setConsumerProfile] = useState<ConsumerProfile | null>(null);
   const [advisorProfile, setAdvisorProfile] = useState<AdvisorProfile | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [chats, setChats] = useState<Chat[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [firms, setFirms] = useState<FinancialFirm[]>([]);
 
   // Function to add a message to a chat
   const addMessage = (chatId: string, message: Omit<ChatMessage, 'id'>) => {
@@ -271,6 +300,39 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  // Function to update user's online status
+  const updateOnlineStatus = (status: 'online' | 'offline' | 'away') => {
+    if (consumerProfile) {
+      setConsumerProfile({
+        ...consumerProfile,
+        onlineStatus: status,
+        lastOnline: new Date().toISOString()
+      });
+    } else if (advisorProfile) {
+      setAdvisorProfile({
+        ...advisorProfile,
+        onlineStatus: status,
+        lastOnline: new Date().toISOString()
+      });
+    }
+  };
+
+  // Function to add a new financial firm
+  const addFirm = (firmData: Omit<FinancialFirm, 'id' | 'createdAt'>) => {
+    const newFirm: FinancialFirm = {
+      ...firmData,
+      id: `firm-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: new Date().toISOString(),
+    };
+    
+    setFirms(prevFirms => [...prevFirms, newFirm]);
+  };
+
+  // Function to get firms by admin ID
+  const getFirmByAdmin = (adminId: string) => {
+    return firms.filter(firm => firm.adminId === adminId);
+  };
+
   // Mock data for filtering
   const mockConsumers: ConsumerProfile[] = [
     {
@@ -286,7 +348,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       matches: [],
       chats: [],
       chatEnabled: true,
-      appointments: []
+      appointments: [],
+      onlineStatus: 'online',
+      lastOnline: new Date().toISOString(),
+      showOnlineStatus: true
     },
     {
       id: 'consumer-2',
@@ -301,7 +366,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       matches: [],
       chats: [],
       chatEnabled: true,
-      appointments: []
+      appointments: [],
+      onlineStatus: 'offline',
+      lastOnline: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+      showOnlineStatus: true
     },
     {
       id: 'consumer-3',
@@ -316,7 +384,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       matches: [],
       chats: [],
       chatEnabled: true,
-      appointments: []
+      appointments: [],
+      onlineStatus: 'away',
+      lastOnline: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+      showOnlineStatus: false
     },
     {
       id: 'consumer-4',
@@ -331,7 +402,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       matches: [],
       chats: [],
       chatEnabled: true,
-      appointments: []
+      appointments: [],
+      onlineStatus: 'offline',
+      lastOnline: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
+      showOnlineStatus: true
     }
   ];
 
@@ -343,7 +417,110 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     // This would usually be a server call
     // For now, use our mock data from MatchingInterface
     const mockAdvisors = [
-      // ... simplified for brevity, would use the real mockAdvisors list
+      {
+        id: 'advisor-1',
+        name: 'Alice Brown',
+        organization: 'ABC Financial',
+        isAccredited: true,
+        website: 'https://www.abcfinancial.com',
+        testimonials: [
+          { client: 'John Doe', text: 'Great advisor, highly recommended!' }
+        ],
+        languages: ['english', 'spanish'],
+        pricing: {
+          hourlyRate: 150,
+        },
+        assetsUnderManagement: 5000000,
+        expertise: ['retirement', 'investment'],
+        matches: [],
+        chats: [],
+        profilePicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b82a7e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
+        availability: [],
+        chatEnabled: true,
+        appointmentCategories: [],
+        appointments: [],
+        onlineStatus: 'online',
+        lastOnline: new Date().toISOString(),
+        showOnlineStatus: true
+      },
+      {
+        id: 'advisor-2',
+        name: 'Bob Miller',
+        organization: 'XYZ Investments',
+        isAccredited: false,
+        website: 'https://www.xyzinvestments.com',
+        testimonials: [
+          { client: 'Jane Smith', text: 'Excellent service and advice.' }
+        ],
+        languages: ['english', 'french'],
+        pricing: {
+          portfolioFee: 1.0,
+        },
+        assetsUnderManagement: 2500000,
+        expertise: ['tax', 'estate'],
+        matches: [],
+        chats: [],
+        profilePicture: 'https://images.unsplash.com/photo-1570295999919-56bcae5b0189?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80',
+        availability: [],
+        chatEnabled: true,
+        appointmentCategories: [],
+        appointments: [],
+        onlineStatus: 'offline',
+        lastOnline: new Date().toISOString(),
+        showOnlineStatus: true
+      },
+      {
+        id: 'advisor-3',
+        name: 'Charlie Davis',
+        organization: '123 Wealth Mgmt',
+        isAccredited: true,
+        website: 'https://www.123wealth.com',
+        testimonials: [
+          { client: 'Tom Brown', text: 'Very knowledgeable and helpful.' }
+        ],
+        languages: ['english', 'mandarin'],
+        pricing: {
+          hourlyRate: 200,
+        },
+        assetsUnderManagement: 7500000,
+        expertise: ['business', 'insurance'],
+        matches: [],
+        chats: [],
+        profilePicture: 'https://images.unsplash.com/photo-1580489944761-15a19d674c80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80',
+        availability: [],
+        chatEnabled: true,
+        appointmentCategories: [],
+        appointments: [],
+        onlineStatus: 'online',
+        lastOnline: new Date().toISOString(),
+        showOnlineStatus: true
+      },
+      {
+        id: 'advisor-4',
+        name: 'Diana Wilson',
+        organization: 'LMN Financial',
+        isAccredited: false,
+        website: 'https://www.lmnfinancial.com',
+        testimonials: [
+          { client: 'Sarah Lee', text: 'Provided great financial advice.' }
+        ],
+        languages: ['english', 'cantonese'],
+        pricing: {
+          portfolioFee: 1.2,
+        },
+        assetsUnderManagement: 10000000,
+        expertise: ['philanthropic', 'education'],
+        matches: [],
+        chats: [],
+        profilePicture: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80',
+        availability: [],
+        chatEnabled: true,
+        appointmentCategories: [],
+        appointments: [],
+        onlineStatus: 'offline',
+        lastOnline: new Date().toISOString(),
+        showOnlineStatus: true
+      }
     ];
 
     return mockAdvisors.filter(advisor => {
@@ -407,7 +584,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     addAppointment,
     updateAppointmentStatus,
     getFilteredAdvisors,
-    getFilteredConsumers
+    getFilteredConsumers,
+    updateOnlineStatus,
+    firms,
+    setFirms,
+    addFirm,
+    getFirmByAdmin
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

@@ -1,47 +1,47 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { UserProvider } from "./context/UserContext";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import Onboarding from "./pages/Onboarding";
-import ConsumerProfile from "./pages/ConsumerProfile";
-import AdvisorProfile from "./pages/AdvisorProfile";
-import MatchingInterface from "./pages/MatchingInterface";
-import Chat from "./pages/Chat";
-import Schedule from "./pages/Schedule";
-import MobileLayout from "./components/layout/MobileLayout";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { UserProvider } from './context/UserContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from './components/ui/toaster';
+
+// Pages
+import Index from './pages/Index';
+import Onboarding from './pages/Onboarding';
+import AdvisorProfile from './pages/AdvisorProfile';
+import ConsumerProfile from './pages/ConsumerProfile';
+import MatchingInterface from './pages/MatchingInterface';
+import Chat from './pages/Chat';
+import Schedule from './pages/Schedule';
+import NotFound from './pages/NotFound';
+import FirmProfile from './pages/FirmProfile';
+
+import './App.css';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <UserProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <Router>
           <Routes>
-            <Route element={<MobileLayout />}>
-              <Route path="/" element={<Index />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/consumer-profile" element={<ConsumerProfile />} />
-              <Route path="/advisor-profile" element={<AdvisorProfile />} />
-              <Route path="/matches" element={<MatchingInterface />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/chat/:chatId" element={<Chat />} />
-              <Route path="/schedule" element={<Schedule />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Route>
+            <Route path="/" element={<Index />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/advisor-profile" element={<AdvisorProfile />} />
+            <Route path="/consumer-profile" element={<ConsumerProfile />} />
+            <Route path="/matches" element={<MatchingInterface />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/chat/:id" element={<Chat />} />
+            <Route path="/schedule" element={<Schedule />} />
+            <Route path="/firm-profile" element={<FirmProfile />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </UserProvider>
-  </QueryClientProvider>
-);
+        </Router>
+        <Toaster />
+      </UserProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;

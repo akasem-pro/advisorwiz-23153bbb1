@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useUser, ConsumerProfile as ConsumerProfileType } from '../context/UserContext';
-import { ArrowRight, Save, CheckCircle, MessageCircle, Clock } from 'lucide-react';
+import { ArrowRight, Save, CheckCircle, MessageCircle, Clock, Activity, Eye, EyeOff } from 'lucide-react';
 import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
 
 const riskToleranceOptions = [
@@ -39,7 +40,7 @@ const startTimelineOptions = [
 ];
 
 const ConsumerProfile: React.FC = () => {
-  const { consumerProfile, setConsumerProfile } = useUser();
+  const { consumerProfile, setConsumerProfile, updateOnlineStatus } = useUser();
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
   
@@ -57,7 +58,10 @@ const ConsumerProfile: React.FC = () => {
     matches: [],
     chats: [],
     chatEnabled: consumerProfile?.chatEnabled !== undefined ? consumerProfile.chatEnabled : true,
-    appointments: []
+    appointments: [],
+    onlineStatus: consumerProfile?.onlineStatus || 'online',
+    lastOnline: consumerProfile?.lastOnline || new Date().toISOString(),
+    showOnlineStatus: consumerProfile?.showOnlineStatus !== undefined ? consumerProfile.showOnlineStatus : true
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -116,9 +120,25 @@ const ConsumerProfile: React.FC = () => {
     }));
   };
 
+  const handleToggleOnlineStatus = () => {
+    setFormData(prev => ({
+      ...prev,
+      showOnlineStatus: !prev.showOnlineStatus
+    }));
+  };
+
+  const handleStatusChange = (status: 'online' | 'offline' | 'away') => {
+    setFormData(prev => ({
+      ...prev,
+      onlineStatus: status
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setConsumerProfile(formData as ConsumerProfileType);
+    const updatedProfile = formData as ConsumerProfileType;
+    setConsumerProfile(updatedProfile);
+    updateOnlineStatus(updatedProfile.onlineStatus);
     setSaved(true);
     setTimeout(() => {
       setSaved(false);
@@ -319,6 +339,85 @@ const ConsumerProfile: React.FC = () => {
                           </label>
                         </div>
                       ))}
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-6 mt-6">
+                    <h3 className="text-lg font-medium text-navy-800 mb-4 flex items-center">
+                      <Activity className="mr-2 h-5 w-5" />
+                      Online Status
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-slate-700">Current Status</p>
+                          <p className="text-sm text-slate-500">
+                            Set your availability for advisors
+                          </p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <button
+                            type="button"
+                            onClick={() => handleStatusChange('online')}
+                            className={`px-3 py-1.5 rounded-full text-sm flex items-center ${
+                              formData.onlineStatus === 'online' 
+                                ? 'bg-green-100 text-green-700' 
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            }`}
+                          >
+                            <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${
+                              formData.onlineStatus === 'online' ? 'bg-green-500' : 'bg-slate-400'
+                            }`}></span>
+                            Online
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleStatusChange('away')}
+                            className={`px-3 py-1.5 rounded-full text-sm flex items-center ${
+                              formData.onlineStatus === 'away' 
+                                ? 'bg-amber-100 text-amber-700' 
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            }`}
+                          >
+                            <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${
+                              formData.onlineStatus === 'away' ? 'bg-amber-500' : 'bg-slate-400'
+                            }`}></span>
+                            Away
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleStatusChange('offline')}
+                            className={`px-3 py-1.5 rounded-full text-sm flex items-center ${
+                              formData.onlineStatus === 'offline' 
+                                ? 'bg-slate-100 text-slate-700 font-medium' 
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            }`}
+                          >
+                            <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${
+                              formData.onlineStatus === 'offline' ? 'bg-slate-500' : 'bg-slate-400'
+                            }`}></span>
+                            Offline
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-slate-700">Show Status</p>
+                          <p className="text-sm text-slate-500">
+                            Display your online status to advisors
+                          </p>
+                        </div>
+                        <label className="inline-flex items-center cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            className="sr-only peer"
+                            checked={formData.showOnlineStatus}
+                            onChange={handleToggleOnlineStatus}
+                          />
+                          <div className="relative w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
+                        </label>
+                      </div>
                     </div>
                   </div>
 

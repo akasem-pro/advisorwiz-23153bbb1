@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Star, User, DollarSign, Briefcase, Globe, MessageCircle, Award, ChevronDown, ChevronUp } from 'lucide-react';
+import { Star, User, DollarSign, Briefcase, Globe, MessageCircle, Award, ChevronDown, ChevronUp, CircleDot } from 'lucide-react';
 import { AdvisorProfile } from '../../context/UserContext';
+import { formatDistanceToNow } from 'date-fns';
 
 interface AdvisorCardProps {
   advisor: AdvisorProfile;
@@ -29,6 +30,40 @@ const AdvisorCard: React.FC<AdvisorCardProps> = ({ advisor, onSwipeRight, onSwip
     }, 500);
   };
 
+  const renderOnlineStatus = (status: 'online' | 'offline' | 'away') => {
+    switch (status) {
+      case 'online': 
+        return (
+          <span className="flex items-center">
+            <CircleDot className="w-3 h-3 mr-1 text-green-500" />
+            <span className="text-green-600">Online</span>
+          </span>
+        );
+      case 'away': 
+        return (
+          <span className="flex items-center">
+            <CircleDot className="w-3 h-3 mr-1 text-amber-500" />
+            <span className="text-amber-600">Away</span>
+          </span>
+        );
+      case 'offline': 
+        return (
+          <span className="flex items-center">
+            <CircleDot className="w-3 h-3 mr-1 text-slate-400" />
+            <span className="text-slate-500">Offline</span>
+          </span>
+        );
+    }
+  };
+
+  const formatLastOnline = (dateString: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+    } catch (error) {
+      return "Unknown";
+    }
+  };
+
   return (
     <div 
       className={`w-full max-w-md mx-auto relative overflow-hidden glass-card rounded-2xl transition-transform ${
@@ -47,10 +82,23 @@ const AdvisorCard: React.FC<AdvisorCardProps> = ({ advisor, onSwipeRight, onSwip
             ) : (
               <User className="absolute inset-0 w-full h-full p-4 text-navy-500" />
             )}
+            {advisor.showOnlineStatus && (
+              <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white ${
+                advisor.onlineStatus === 'online' ? 'bg-green-500' : 
+                advisor.onlineStatus === 'away' ? 'bg-amber-500' : 'bg-slate-400'
+              }`}></div>
+            )}
           </div>
           <div>
             <h3 className="text-xl font-serif font-semibold text-navy-900">{advisor.name}</h3>
             <p className="text-slate-600">{advisor.organization}</p>
+            {advisor.showOnlineStatus && (
+              <div className="mt-1 flex items-center text-sm">
+                {renderOnlineStatus(advisor.onlineStatus)}
+                <span className="mx-1.5 text-slate-400">•</span>
+                <span className="text-slate-500">Last seen {formatLastOnline(advisor.lastOnline)}</span>
+              </div>
+            )}
             <div className="flex items-center mt-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star 

@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { ConsumerProfile } from '../../context/UserContext';
-import { Clock, CreditCard, TrendingUp, Languages, Check, X } from 'lucide-react';
+import { Clock, CreditCard, TrendingUp, Languages, Check, X, CircleDot, SquareDashedBottom, Activity } from 'lucide-react';
 import { Button } from '../ui/button';
+import { formatDistanceToNow } from 'date-fns';
 
 interface ConsumerCardProps {
   consumer: ConsumerProfile;
@@ -38,6 +39,40 @@ const ConsumerCard: React.FC<ConsumerCardProps> = ({ consumer, onSwipeRight, onS
     }
   };
 
+  const renderOnlineStatus = (status: 'online' | 'offline' | 'away') => {
+    switch (status) {
+      case 'online': 
+        return (
+          <span className="flex items-center">
+            <CircleDot className="w-3 h-3 mr-1 text-green-500" />
+            <span className="text-green-600">Online</span>
+          </span>
+        );
+      case 'away': 
+        return (
+          <span className="flex items-center">
+            <CircleDot className="w-3 h-3 mr-1 text-amber-500" />
+            <span className="text-amber-600">Away</span>
+          </span>
+        );
+      case 'offline': 
+        return (
+          <span className="flex items-center">
+            <CircleDot className="w-3 h-3 mr-1 text-slate-400" />
+            <span className="text-slate-500">Offline</span>
+          </span>
+        );
+    }
+  };
+
+  const formatLastOnline = (dateString: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+    } catch (error) {
+      return "Unknown";
+    }
+  };
+
   return (
     <div className="glass-card rounded-2xl overflow-hidden shadow-lg">
       <div className="p-6">
@@ -47,16 +82,39 @@ const ConsumerCard: React.FC<ConsumerCardProps> = ({ consumer, onSwipeRight, onS
             <p className="text-slate-600 capitalize">
               {consumer.age} years old • {consumer.status}
             </p>
+            {consumer.showOnlineStatus && (
+              <div className="mt-1 flex items-center text-sm">
+                {renderOnlineStatus(consumer.onlineStatus)}
+                <span className="mx-1.5 text-slate-400">•</span>
+                <span className="text-slate-500">Last seen {formatLastOnline(consumer.lastOnline)}</span>
+              </div>
+            )}
           </div>
           {consumer.profilePicture ? (
-            <img
-              src={consumer.profilePicture}
-              alt={consumer.name}
-              className="w-16 h-16 rounded-full object-cover border-2 border-white shadow"
-            />
+            <div className="relative">
+              <img
+                src={consumer.profilePicture}
+                alt={consumer.name}
+                className="w-16 h-16 rounded-full object-cover border-2 border-white shadow"
+              />
+              {consumer.showOnlineStatus && (
+                <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white ${
+                  consumer.onlineStatus === 'online' ? 'bg-green-500' : 
+                  consumer.onlineStatus === 'away' ? 'bg-amber-500' : 'bg-slate-400'
+                }`}></div>
+              )}
+            </div>
           ) : (
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-teal-500 to-navy-500 flex items-center justify-center text-white text-xl font-bold">
-              {consumer.name.charAt(0)}
+            <div className="relative">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-teal-500 to-navy-500 flex items-center justify-center text-white text-xl font-bold">
+                {consumer.name.charAt(0)}
+              </div>
+              {consumer.showOnlineStatus && (
+                <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white ${
+                  consumer.onlineStatus === 'online' ? 'bg-green-500' : 
+                  consumer.onlineStatus === 'away' ? 'bg-amber-500' : 'bg-slate-400'
+                }`}></div>
+              )}
             </div>
           )}
         </div>
