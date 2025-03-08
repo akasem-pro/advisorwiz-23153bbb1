@@ -12,6 +12,7 @@ import ConsumerProfile from "./pages/ConsumerProfile";
 import AdvisorProfile from "./pages/AdvisorProfile";
 import MatchingInterface from "./pages/MatchingInterface";
 import Chat from "./pages/Chat";
+import Schedule from "./pages/Schedule";
 import MobileLayout from "./components/layout/MobileLayout";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/matches" element={<MatchingInterface />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/chat/:chatId" element={<Chat />} />
+              <Route path="/schedule" element={<Schedule />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Route>

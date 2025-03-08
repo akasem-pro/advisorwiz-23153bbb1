@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import { useUser, AdvisorProfile as AdvisorProfileType, TimeSlot } from '../context/UserContext';
-import { ArrowRight, Save, CheckCircle, Plus, Trash2, Clock, MessageCircle } from 'lucide-react';
+import { useUser, AdvisorProfile as AdvisorProfileType, TimeSlot, AppointmentCategory } from '../context/UserContext';
+import { ArrowRight, Save, CheckCircle, Plus, Trash2, Clock, MessageCircle, BookText } from 'lucide-react';
 import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
 import AvailabilityScheduler from '../components/advisor/AvailabilityScheduler';
+import AppointmentCategoryManager from '../components/scheduler/AppointmentCategoryManager';
 
 const expertiseOptions = [
   { value: 'retirement', label: 'Retirement Planning' },
@@ -30,11 +31,55 @@ const languageOptions = [
   { value: 'arabic', label: 'Arabic' }
 ];
 
+const DEFAULT_CATEGORIES: AppointmentCategory[] = [
+  {
+    id: 'cat-free_consultation',
+    name: 'free_consultation',
+    label: 'Free Consultation',
+    description: 'A short introductory call to discuss your financial needs.',
+    duration: 30,
+    enabled: true
+  },
+  {
+    id: 'cat-discovery_call',
+    name: 'discovery_call',
+    label: 'Discovery Call',
+    description: 'An in-depth discussion to understand your financial situation.',
+    duration: 60,
+    enabled: true
+  },
+  {
+    id: 'cat-investment_call',
+    name: 'investment_call',
+    label: 'Investment Strategy',
+    description: 'Review and discuss your investment portfolio and strategies.',
+    duration: 60,
+    enabled: true
+  },
+  {
+    id: 'cat-tax_planning',
+    name: 'tax_planning',
+    label: 'Tax Planning',
+    description: 'Consultation for tax optimization strategies.',
+    duration: 60,
+    enabled: true
+  },
+  {
+    id: 'cat-business_entrepreneurship',
+    name: 'business_entrepreneurship',
+    label: 'Business & Entrepreneurship',
+    description: 'Financial advice for business owners and entrepreneurs.',
+    duration: 90,
+    enabled: true
+  }
+];
+
 const AdvisorProfile: React.FC = () => {
   const { advisorProfile, setAdvisorProfile } = useUser();
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
   const [newTestimonial, setNewTestimonial] = useState({ client: '', text: '' });
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
   
   const [formData, setFormData] = useState<Partial<AdvisorProfileType>>({
     id: 'advisor-1',
@@ -54,7 +99,9 @@ const AdvisorProfile: React.FC = () => {
     matches: [],
     chats: [],
     availability: advisorProfile?.availability || [],
-    chatEnabled: advisorProfile?.chatEnabled !== undefined ? advisorProfile.chatEnabled : true
+    chatEnabled: advisorProfile?.chatEnabled !== undefined ? advisorProfile.chatEnabled : true,
+    appointmentCategories: advisorProfile?.appointmentCategories || DEFAULT_CATEGORIES,
+    appointments: advisorProfile?.appointments || []
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -389,6 +436,32 @@ const AdvisorProfile: React.FC = () => {
                     </div>
 
                     <div>
+                      <h2 className="text-xl font-serif font-semibold text-navy-800 mb-4 flex items-center">
+                        <BookText className="inline-block mr-2 h-5 w-5" />
+                        Appointment Types
+                      </h2>
+                      <p className="text-slate-600 mb-4">
+                        Configure the types of appointments clients can book with you.
+                      </p>
+                      
+                      <button
+                        type="button"
+                        onClick={() => setShowCategoryManager(true)}
+                        className="btn-outline inline-flex items-center mb-4"
+                      >
+                        <Plus className="mr-2 w-4 h-4" />
+                        Manage Appointment Categories
+                      </button>
+
+                      <div className="bg-slate-50 p-4 rounded-lg">
+                        <p className="text-sm text-slate-600">
+                          You have {(formData.appointmentCategories || []).filter(cat => cat.enabled).length} active appointment categories.
+                          Click the button above to manage your appointment types.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
                       <h2 className="text-xl font-serif font-semibold text-navy-800 mb-4">Client Testimonials</h2>
                       
                       {(formData.testimonials || []).length > 0 && (
@@ -515,6 +588,11 @@ const AdvisorProfile: React.FC = () => {
 
         <Footer />
       </div>
+      
+      <AppointmentCategoryManager 
+        isOpen={showCategoryManager} 
+        onClose={() => setShowCategoryManager(false)} 
+      />
     </AnimatedRoute>
   );
 };

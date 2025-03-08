@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight, MessageCircle } from 'lucide-react';
-import { TimeSlot, Chat, useUser } from '../../context/UserContext';
+import { TimeSlot, Chat, useUser, Appointment } from '../../context/UserContext';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { toast } from "@/hooks/use-toast";
 
@@ -19,7 +19,7 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const { consumerProfile, userType, chats, setChats } = useUser();
+  const { consumerProfile, userType, chats, setChats, addAppointment } = useUser();
   const navigate = useNavigate();
 
   if (!availability || availability.length === 0) {
@@ -61,23 +61,59 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
   });
 
   const handleBooking = () => {
-    if (!selectedSlot) {
+    if (!selectedSlot || !consumerProfile) {
       toast({
         title: "Please select a time slot",
-        description: "You need to select a time slot to book a meeting",
+        description: "You need to select a time slot and be logged in to book a meeting",
         variant: "destructive"
       });
       return;
     }
 
-    // In a real app, this would send a booking request to the backend
+    // Parse the selected time slot
+    const [startTimeStr, endTimeStr] = selectedSlot.split(' - ');
+    
+    // Convert from AM/PM format to 24-hour format
+    const convertTo24Hour = (timeStr: string) => {
+      const [timePart, period] = timeStr.split(' ');
+      let [hours, minutes] = timePart.split(':').map(Number);
+      
+      if (period === 'PM' && hours < 12) {
+        hours += 12;
+      } else if (period === 'AM' && hours === 12) {
+        hours = 0;
+      }
+      
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    };
+    
+    const startTime = convertTo24Hour(startTimeStr);
+    const endTime = convertTo24Hour(endTimeStr);
+    
+    // Create a new appointment
+    const newAppointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'> = {
+      advisorId: advisorId,
+      consumerId: consumerProfile.id,
+      categoryId: 'cat-free_consultation', // Default to free consultation
+      title: `Consultation with ${advisorName}`,
+      date: selectedDate.toISOString(),
+      startTime,
+      endTime,
+      status: 'pending',
+      notes: '',
+      location: 'video'
+    };
+    
+    // Add the appointment to the user's appointments
+    addAppointment(newAppointment);
+    
     toast({
       title: "Booking Request Sent",
       description: `Your booking request with ${advisorName} has been sent for ${format(selectedDate, 'EEEE, MMMM d')} at ${selectedSlot}.`,
     });
 
-    // Reset selection
-    setSelectedSlot(null);
+    // Navigate to the schedule page
+    navigate('/schedule');
   };
 
   const handleStartChat = () => {

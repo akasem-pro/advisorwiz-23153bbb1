@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Types for the consumer and advisor profiles
@@ -15,6 +14,7 @@ export type ConsumerProfile = {
   chats: string[];
   profilePicture?: string; // URL to profile picture
   chatEnabled: boolean; // New field for chat settings
+  appointments: string[]; // IDs of appointments
 };
 
 // Time slot type for weekly availability
@@ -23,6 +23,16 @@ export type TimeSlot = {
   startTime: string; // Format: "HH:MM" in 24-hour format
   endTime: string; // Format: "HH:MM" in 24-hour format
   isAvailable: boolean;
+};
+
+// Appointment category type
+export type AppointmentCategory = {
+  id: string;
+  name: 'free_consultation' | 'discovery_call' | 'investment_call' | 'tax_planning' | 'business_entrepreneurship';
+  label: string;
+  description: string;
+  duration: number; // in minutes
+  enabled: boolean;
 };
 
 export type AdvisorProfile = {
@@ -44,6 +54,28 @@ export type AdvisorProfile = {
   profilePicture?: string; // URL to profile picture
   availability?: TimeSlot[]; // Weekly availability slots
   chatEnabled: boolean; // New field for chat settings
+  appointmentCategories: AppointmentCategory[]; // Available appointment types
+  appointments: string[]; // IDs of appointments
+};
+
+// Appointment status type
+export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
+
+// Appointment type
+export type Appointment = {
+  id: string;
+  advisorId: string;
+  consumerId: string;
+  categoryId: string;
+  title: string;
+  date: string; // ISO string format
+  startTime: string; // Format: "HH:MM" in 24-hour format
+  endTime: string; // Format: "HH:MM" in 24-hour format
+  status: AppointmentStatus;
+  notes?: string;
+  location?: string; // Could be 'video', 'phone', physical address, etc.
+  createdAt: string; // ISO string format
+  updatedAt: string; // ISO string format
 };
 
 // Message type for the chat
@@ -80,6 +112,10 @@ type UserContextType = {
   setChats: (chats: Chat[]) => void;
   addMessage: (chatId: string, message: Omit<ChatMessage, 'id'>) => void;
   markChatAsRead: (chatId: string, userId: string) => void;
+  appointments: Appointment[];
+  setAppointments: (appointments: Appointment[]) => void;
+  addAppointment: (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updateAppointmentStatus: (appointmentId: string, status: AppointmentStatus) => void;
 };
 
 // Create the context with default values
@@ -96,6 +132,10 @@ const UserContext = createContext<UserContextType>({
   setChats: () => {},
   addMessage: () => {},
   markChatAsRead: () => {},
+  appointments: [],
+  setAppointments: () => {},
+  addAppointment: () => {},
+  updateAppointmentStatus: () => {},
 });
 
 // Provider component
@@ -105,6 +145,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [advisorProfile, setAdvisorProfile] = useState<AdvisorProfile | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [chats, setChats] = useState<Chat[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
   // Function to add a message to a chat
   const addMessage = (chatId: string, message: Omit<ChatMessage, 'id'>) => {
@@ -161,6 +202,53 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  // Function to add a new appointment
+  const addAppointment = (appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newAppointment: Appointment = {
+      ...appointmentData,
+      id: `appointment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    
+    setAppointments(prevAppointments => [...prevAppointments, newAppointment]);
+    
+    // Update consumer and advisor appointment lists
+    if (consumerProfile && appointmentData.consumerId === consumerProfile.id) {
+      setConsumerProfile({
+        ...consumerProfile,
+        appointments: [...(consumerProfile.appointments || []), newAppointment.id]
+      });
+    }
+    
+    if (advisorProfile && appointmentData.advisorId === advisorProfile.id) {
+      setAdvisorProfile({
+        ...advisorProfile,
+        appointments: [...(advisorProfile.appointments || []), newAppointment.id]
+      });
+    }
+  };
+
+  // Function to update appointment status
+  const updateAppointmentStatus = (appointmentId: string, status: AppointmentStatus) => {
+    setAppointments(prevAppointments => {
+      const appointmentIndex = prevAppointments.findIndex(appt => appt.id === appointmentId);
+      
+      if (appointmentIndex === -1) return prevAppointments;
+      
+      const updatedAppointment = {
+        ...prevAppointments[appointmentIndex],
+        status,
+        updatedAt: new Date().toISOString()
+      };
+      
+      const newAppointments = [...prevAppointments];
+      newAppointments[appointmentIndex] = updatedAppointment;
+      
+      return newAppointments;
+    });
+  };
+
   const value = {
     userType,
     setUserType,
@@ -173,7 +261,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     chats,
     setChats,
     addMessage,
-    markChatAsRead
+    markChatAsRead,
+    appointments,
+    setAppointments,
+    addAppointment,
+    updateAppointmentStatus
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
