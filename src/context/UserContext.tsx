@@ -16,6 +16,14 @@ export type ConsumerProfile = {
   profilePicture?: string; // URL to profile picture
 };
 
+// Time slot type for weekly availability
+export type TimeSlot = {
+  day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+  startTime: string; // Format: "HH:MM" in 24-hour format
+  endTime: string; // Format: "HH:MM" in 24-hour format
+  isAvailable: boolean;
+};
+
 export type AdvisorProfile = {
   id: string;
   name: string;
@@ -33,6 +41,7 @@ export type AdvisorProfile = {
   matches: string[];
   chats: string[];
   profilePicture?: string; // URL to profile picture
+  availability?: TimeSlot[]; // Weekly availability slots
 };
 
 // Type for the user context

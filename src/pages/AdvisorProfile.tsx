@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import { useUser, AdvisorProfile as AdvisorProfileType } from '../context/UserContext';
-import { ArrowRight, Save, CheckCircle, Plus, Trash2 } from 'lucide-react';
+import { useUser, AdvisorProfile as AdvisorProfileType, TimeSlot } from '../context/UserContext';
+import { ArrowRight, Save, CheckCircle, Plus, Trash2, Clock } from 'lucide-react';
 import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
+import AvailabilityScheduler from '../components/advisor/AvailabilityScheduler';
 
 const expertiseOptions = [
   { value: 'retirement', label: 'Retirement Planning' },
@@ -51,7 +52,8 @@ const AdvisorProfile: React.FC = () => {
     expertise: advisorProfile?.expertise || [],
     profilePicture: advisorProfile?.profilePicture || '',
     matches: [],
-    chats: []
+    chats: [],
+    availability: advisorProfile?.availability || []
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -142,6 +144,13 @@ const AdvisorProfile: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       profilePicture: imageBase64
+    }));
+  };
+
+  const handleAvailabilityChange = (newAvailability: TimeSlot[]) => {
+    setFormData(prev => ({
+      ...prev,
+      availability: newAvailability
     }));
   };
 
@@ -357,6 +366,22 @@ const AdvisorProfile: React.FC = () => {
                           ))}
                         </div>
                       </div>
+                    </div>
+
+                    {/* Availability Schedule */}
+                    <div>
+                      <h2 className="text-xl font-serif font-semibold text-navy-800 mb-4">
+                        <Clock className="inline-block mr-2 h-5 w-5" />
+                        Weekly Availability
+                      </h2>
+                      <p className="text-slate-600 mb-4">
+                        Set your weekly availability for consultations and meetings. Clients will be able to book time slots based on this schedule.
+                      </p>
+                      
+                      <AvailabilityScheduler 
+                        availability={formData.availability || []}
+                        onChange={handleAvailabilityChange}
+                      />
                     </div>
 
                     {/* Testimonials */}

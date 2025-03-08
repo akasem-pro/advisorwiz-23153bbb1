@@ -5,9 +5,10 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import AdvisorCard from '../components/advisor/AdvisorCard';
 import { useUser, AdvisorProfile } from '../context/UserContext';
-import { Inbox } from 'lucide-react';
+import { Inbox, Calendar } from 'lucide-react';
+import AvailabilityViewer from '../components/advisor/AvailabilityViewer';
 
-// Mock data for advisors
+// Mock data for advisors with availability
 const mockAdvisors: AdvisorProfile[] = [
   {
     id: 'advisor-1',
@@ -28,7 +29,13 @@ const mockAdvisors: AdvisorProfile[] = [
     assetsUnderManagement: 25000000,
     expertise: ['retirement', 'investment', 'tax'],
     matches: [],
-    chats: []
+    chats: [],
+    // Added availability
+    availability: [
+      { day: 'monday', startTime: '09:00', endTime: '11:00', isAvailable: true },
+      { day: 'wednesday', startTime: '13:00', endTime: '15:00', isAvailable: true },
+      { day: 'friday', startTime: '10:00', endTime: '12:00', isAvailable: true }
+    ]
   },
   {
     id: 'advisor-2',
@@ -49,7 +56,13 @@ const mockAdvisors: AdvisorProfile[] = [
     assetsUnderManagement: 40000000,
     expertise: ['tax', 'estate', 'business'],
     matches: [],
-    chats: []
+    chats: [],
+    // Added availability
+    availability: [
+      { day: 'tuesday', startTime: '14:00', endTime: '16:00', isAvailable: true },
+      { day: 'thursday', startTime: '10:00', endTime: '12:00', isAvailable: true },
+      { day: 'saturday', startTime: '09:00', endTime: '12:00', isAvailable: true }
+    ]
   },
   {
     id: 'advisor-3',
@@ -71,7 +84,13 @@ const mockAdvisors: AdvisorProfile[] = [
     assetsUnderManagement: 30000000,
     expertise: ['estate', 'investment', 'philanthropic'],
     matches: [],
-    chats: []
+    chats: [],
+    // Added availability
+    availability: [
+      { day: 'monday', startTime: '15:00', endTime: '17:00', isAvailable: true },
+      { day: 'wednesday', startTime: '09:00', endTime: '11:00', isAvailable: true },
+      { day: 'friday', startTime: '13:00', endTime: '15:00', isAvailable: true }
+    ]
   },
   {
     id: 'advisor-4',
@@ -113,7 +132,12 @@ const mockAdvisors: AdvisorProfile[] = [
     assetsUnderManagement: 35000000,
     expertise: ['investment', 'retirement', 'insurance'],
     matches: [],
-    chats: []
+    chats: [],
+    // Added availability
+    availability: [
+      { day: 'tuesday', startTime: '09:00', endTime: '11:00', isAvailable: true },
+      { day: 'thursday', startTime: '14:00', endTime: '16:00', isAvailable: true }
+    ]
   }
 ];
 
@@ -123,6 +147,7 @@ const MatchingInterface: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [matches, setMatches] = useState<string[]>([]);
   const [empty, setEmpty] = useState(false);
+  const [showAvailability, setShowAvailability] = useState(false);
 
   useEffect(() => {
     // In a real app, this would fetch advisors from an API with filtering
@@ -141,6 +166,7 @@ const MatchingInterface: React.FC = () => {
   const nextAdvisor = () => {
     if (currentIndex < advisors.length - 1) {
       setCurrentIndex(currentIndex + 1);
+      setShowAvailability(false);
     } else {
       setEmpty(true);
     }
@@ -149,6 +175,11 @@ const MatchingInterface: React.FC = () => {
   const resetAdvisors = () => {
     setCurrentIndex(0);
     setEmpty(false);
+    setShowAvailability(false);
+  };
+
+  const toggleAvailability = () => {
+    setShowAvailability(!showAvailability);
   };
 
   return (
@@ -182,11 +213,35 @@ const MatchingInterface: React.FC = () => {
 
             <div className="max-w-md mx-auto">
               {!empty && advisors.length > 0 ? (
-                <AdvisorCard 
-                  advisor={advisors[currentIndex]} 
-                  onSwipeRight={handleSwipeRight} 
-                  onSwipeLeft={handleSwipeLeft} 
-                />
+                <div>
+                  <AdvisorCard 
+                    advisor={advisors[currentIndex]} 
+                    onSwipeRight={handleSwipeRight} 
+                    onSwipeLeft={handleSwipeLeft} 
+                  />
+                  
+                  {userType === 'consumer' && advisors[currentIndex].availability && (
+                    <div className="mt-4">
+                      <button
+                        onClick={toggleAvailability}
+                        className="btn-outline w-full flex items-center justify-center"
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {showAvailability ? 'Hide Availability' : 'View Availability & Book'}
+                      </button>
+                      
+                      {showAvailability && (
+                        <div className="mt-4 glass-card rounded-2xl p-6">
+                          <AvailabilityViewer 
+                            availability={advisors[currentIndex].availability || []}
+                            advisorName={advisors[currentIndex].name}
+                            advisorId={advisors[currentIndex].id}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="glass-card rounded-2xl p-10 text-center">
                   <div className="mx-auto w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
