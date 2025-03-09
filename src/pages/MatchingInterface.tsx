@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -5,7 +6,7 @@ import Footer from '../components/layout/Footer';
 import AdvisorCard from '../components/advisor/AdvisorCard';
 import ConsumerCard from '../components/consumer/ConsumerCard';
 import { useUser, AdvisorProfile, ConsumerProfile, ServiceCategory } from '../context/UserContext';
-import { Inbox, Calendar, RotateCcw, ArrowLeft } from 'lucide-react';
+import { Inbox, Calendar, RotateCcw, ArrowLeft, Briefcase, DollarSign, CreditCard, TrendingUp } from 'lucide-react';
 import AvailabilityViewer from '../components/advisor/AvailabilityViewer';
 import SearchFilters from '../components/search/SearchFilters';
 import { useLocation } from 'react-router-dom';
