@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
@@ -7,6 +7,7 @@ import { Check, X, ArrowRight, Star } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 
 // Feature list component with check/x icons
 const FeatureItem = ({ included, text }: { included: boolean; text: string }) => (
@@ -54,7 +55,8 @@ const PlanCard = ({
   discount,
   features,
   recommended = false,
-  ctaText = "Get Started"
+  ctaText = "Get Started",
+  advisorCount = null
 }: { 
   name: string; 
   description: string;
@@ -64,6 +66,7 @@ const PlanCard = ({
   features: string[];
   recommended?: boolean;
   ctaText?: string;
+  advisorCount?: string | null;
 }) => {
   const navigate = useNavigate();
   const [billingPeriod, setBillingPeriod] = React.useState<'monthly' | 'annually'>('annually');
@@ -105,6 +108,14 @@ const PlanCard = ({
         discount={billingPeriod === 'annually' ? discount : null}
       />
       
+      {advisorCount && (
+        <div className="mb-4 mt-2">
+          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+            {advisorCount}
+          </Badge>
+        </div>
+      )}
+      
       <div className="border-t border-slate-200 my-6 pt-6">
         <p className="font-medium mb-4">Key Features</p>
         <div className="space-y-2">
@@ -125,6 +136,8 @@ const PlanCard = ({
 };
 
 const Pricing: React.FC = () => {
+  const [userType, setUserType] = useState<'consumer' | 'advisor' | 'enterprise'>('consumer');
+
   return (
     <AnimatedRoute animation="fade">
       <div className="min-h-screen flex flex-col">
@@ -133,122 +146,169 @@ const Pricing: React.FC = () => {
         <main className="flex-grow pt-20">
           <section className="py-16 md:py-24 bg-gradient-to-b from-white to-slate-50">
             <div className="container mx-auto px-4">
-              <div className="text-center max-w-3xl mx-auto mb-16">
+              <div className="text-center max-w-3xl mx-auto mb-8">
                 <h1 className="text-4xl md:text-5xl font-serif font-bold text-navy-900 mb-6">
                   Simple, Transparent Pricing
                 </h1>
-                <p className="text-xl text-slate-600">
-                  Choose the plan that's right for your advisory business.
+                <p className="text-xl text-slate-600 mb-8">
+                  Choose the plan that's right for your needs.
                 </p>
+                
+                <Tabs defaultValue="consumer" value={userType} onValueChange={(value) => setUserType(value as 'consumer' | 'advisor' | 'enterprise')} className="w-full max-w-md mx-auto">
+                  <TabsList className="grid w-full grid-cols-3 mb-8">
+                    <TabsTrigger value="consumer">Consumer</TabsTrigger>
+                    <TabsTrigger value="advisor">Advisor</TabsTrigger>
+                    <TabsTrigger value="enterprise">Enterprise</TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
               
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-6 max-w-7xl mx-auto">
-                {/* Free for Consumers */}
-                <div className="rounded-xl p-6 border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md">
-                  <h3 className="text-xl font-bold">For Consumers</h3>
-                  <p className="text-slate-500 mt-2 h-12">Find your perfect financial advisor, completely free.</p>
-                  
-                  <PriceDisplay price={0} period="monthly" />
-                  
-                  <div className="border-t border-slate-200 my-6 pt-6">
-                    <p className="font-medium mb-4">Included Features</p>
-                    <div className="space-y-2">
-                      <FeatureItem included={true} text="Advisor matching" />
-                      <FeatureItem included={true} text="Secure communication" />
-                      <FeatureItem included={true} text="Appointment scheduling" />
-                      <FeatureItem included={true} text="Financial profile creation" />
-                      <FeatureItem included={true} text="Advisor reviews" />
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    className="w-full bg-navy-800 hover:bg-navy-900"
-                    onClick={() => window.location.href = '/onboarding'}
-                  >
-                    Get Started <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-                
-                {/* Basic Plan */}
-                <PlanCard 
-                  name="Basic"
-                  description="Essential tools for independent advisors"
-                  monthlyPrice={49}
-                  annualPrice={499}
-                  discount="Save 15%"
-                  features={[
-                    "Advisor profile listing",
-                    "Access to potential clients",
-                    "Standard support",
-                    "Client messaging",
-                    "Basic scheduling tools"
-                  ]}
-                />
-                
-                {/* Professional Plan - Recommended */}
-                <PlanCard 
-                  name="Professional"
-                  description="Enhanced visibility and client insights"
-                  monthlyPrice={99}
-                  annualPrice={999}
-                  discount="Save 16%"
-                  features={[
-                    "Priority listing",
-                    "Higher visibility",
-                    "Client insights",
-                    "Enhanced scheduling",
-                    "Priority support",
-                    "Performance analytics"
-                  ]}
-                  recommended={true}
-                  ctaText="Try Professional"
-                />
-                
-                {/* Premium Plan - Spans full width on larger screens */}
-                <div className="md:col-span-2 lg:col-span-3 mt-8">
-                  <div className="rounded-xl p-8 border border-navy-300 bg-navy-50 shadow-sm transition-all hover:shadow-md">
-                    <div className="grid md:grid-cols-2 gap-8">
-                      <div>
-                        <h3 className="text-2xl font-bold text-navy-900">Premium Plan</h3>
-                        <p className="text-navy-700 mt-2">The ultimate solution for serious advisory firms</p>
-                        
-                        <div className="flex gap-2 mt-4 mb-4">
-                          <Badge variant="default" className="bg-navy-700">Monthly $199</Badge>
-                          <Badge variant="default" className="bg-navy-700">Annual $1,999 (Save 17%)</Badge>
-                        </div>
-                        
-                        <Button 
-                          className="mt-4 bg-navy-800 hover:bg-navy-900"
-                          onClick={() => window.location.href = '/onboarding'}
-                        >
-                          Contact Sales <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="font-medium mb-2 text-navy-800">Exclusive Features</p>
-                          <div className="space-y-1">
-                            <FeatureItem included={true} text="Featured advisor status" />
-                            <FeatureItem included={true} text="Exclusive marketing tools" />
-                            <FeatureItem included={true} text="Unlimited leads" />
-                            <FeatureItem included={true} text="Advanced analytics dashboard" />
-                          </div>
-                        </div>
-                        <div>
-                          <p className="font-medium mb-2 text-navy-800">Additional Benefits</p>
-                          <div className="space-y-1">
-                            <FeatureItem included={true} text="Dedicated account manager" />
-                            <FeatureItem included={true} text="White label options" />
-                            <FeatureItem included={true} text="API access" />
-                            <FeatureItem included={true} text="Customizable workflows" />
-                          </div>
-                        </div>
+              {userType === 'consumer' && (
+                <div className="max-w-md mx-auto">
+                  <div className="rounded-xl p-6 border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md">
+                    <h3 className="text-xl font-bold">For Consumers</h3>
+                    <p className="text-slate-500 mt-2 h-12">Find your perfect financial advisor, completely free.</p>
+                    
+                    <PriceDisplay price={0} period="monthly" />
+                    
+                    <div className="border-t border-slate-200 my-6 pt-6">
+                      <p className="font-medium mb-4">Included Features</p>
+                      <div className="space-y-2">
+                        <FeatureItem included={true} text="Advisor matching" />
+                        <FeatureItem included={true} text="Secure communication" />
+                        <FeatureItem included={true} text="Appointment scheduling" />
+                        <FeatureItem included={true} text="Financial profile creation" />
+                        <FeatureItem included={true} text="Advisor reviews" />
                       </div>
                     </div>
+                    
+                    <Button 
+                      className="w-full bg-navy-800 hover:bg-navy-900"
+                      onClick={() => window.location.href = '/onboarding'}
+                    >
+                      Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
-              </div>
+              )}
+              
+              {userType === 'advisor' && (
+                <div className="grid md:grid-cols-3 gap-8 lg:gap-6 max-w-7xl mx-auto">
+                  {/* Basic Plan */}
+                  <PlanCard 
+                    name="Basic"
+                    description="Essential tools for independent advisors"
+                    monthlyPrice={49}
+                    annualPrice={499}
+                    discount="Save 15%"
+                    features={[
+                      "Advisor profile listing",
+                      "Access to potential clients",
+                      "Standard support",
+                      "Client messaging",
+                      "Basic scheduling tools"
+                    ]}
+                  />
+                  
+                  {/* Professional Plan - Recommended */}
+                  <PlanCard 
+                    name="Professional"
+                    description="Enhanced visibility and client insights"
+                    monthlyPrice={99}
+                    annualPrice={999}
+                    discount="Save 16%"
+                    features={[
+                      "Priority listing",
+                      "Higher visibility",
+                      "Client insights",
+                      "Enhanced scheduling",
+                      "Priority support",
+                      "Performance analytics"
+                    ]}
+                    recommended={true}
+                    ctaText="Try Professional"
+                  />
+                  
+                  {/* Premium Plan */}
+                  <PlanCard 
+                    name="Premium"
+                    description="The ultimate solution for serious advisors"
+                    monthlyPrice={199}
+                    annualPrice={1999}
+                    discount="Save 17%"
+                    features={[
+                      "Featured advisor status",
+                      "Exclusive marketing tools",
+                      "Unlimited leads",
+                      "Advanced analytics dashboard",
+                      "Dedicated account manager",
+                      "Priority client matching"
+                    ]}
+                    ctaText="Get Premium"
+                  />
+                </div>
+              )}
+              
+              {userType === 'enterprise' && (
+                <div className="grid md:grid-cols-3 gap-8 lg:gap-6 max-w-7xl mx-auto">
+                  {/* Small Firm Plan */}
+                  <PlanCard 
+                    name="Small Firm"
+                    description="Perfect for growing advisory firms"
+                    monthlyPrice={399}
+                    annualPrice={3999}
+                    discount="Save 15%"
+                    advisorCount="Up to 5 advisors"
+                    features={[
+                      "Standard advisor listings",
+                      "Firm branding",
+                      "Lead access",
+                      "Basic CRM tools",
+                      "Standard support"
+                    ]}
+                  />
+                  
+                  {/* Growth Plan - Recommended */}
+                  <PlanCard 
+                    name="Growth"
+                    description="For established firms looking to scale"
+                    monthlyPrice={799}
+                    annualPrice={7999}
+                    discount="Save 17%"
+                    advisorCount="Up to 15 advisors"
+                    features={[
+                      "Priority firm listing",
+                      "CRM tools",
+                      "Client insights",
+                      "Analytics dashboard",
+                      "Team management tools",
+                      "Priority support"
+                    ]}
+                    recommended={true}
+                    ctaText="Try Growth Plan"
+                  />
+                  
+                  {/* Enterprise Plan */}
+                  <PlanCard 
+                    name="Enterprise"
+                    description="For large firms with extensive needs"
+                    monthlyPrice={1499}
+                    annualPrice={14999}
+                    discount="Save 20%"
+                    advisorCount="Unlimited advisors"
+                    features={[
+                      "Featured firm status",
+                      "Unlimited leads",
+                      "Exclusive marketing tools",
+                      "VIP client matching",
+                      "Advanced analytics",
+                      "Customizable workflows",
+                      "Dedicated account team"
+                    ]}
+                    ctaText="Contact Sales"
+                  />
+                </div>
+              )}
             </div>
           </section>
           
@@ -276,6 +336,16 @@ const Pricing: React.FC = () => {
                 <div>
                   <h3 className="text-xl font-semibold mb-2">How do I get featured as an advisor?</h3>
                   <p className="text-slate-600">The Premium plan includes featured advisor status, which gives you priority placement in search results and highlighted profiles.</p>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Do you offer discounts for non-profits?</h3>
+                  <p className="text-slate-600">Yes, we offer special pricing for non-profit organizations. Please contact our sales team for more information.</p>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">How does the enterprise plan differ from individual advisor plans?</h3>
+                  <p className="text-slate-600">Enterprise plans are designed for firms with multiple advisors and include features for team management, firm branding, and more extensive client matching capabilities.</p>
                 </div>
               </div>
             </div>
