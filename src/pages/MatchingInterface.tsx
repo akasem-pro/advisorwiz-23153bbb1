@@ -1,14 +1,14 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import AdvisorCard from '../components/advisor/AdvisorCard';
 import ConsumerCard from '../components/consumer/ConsumerCard';
 import { useUser, AdvisorProfile, ConsumerProfile, ServiceCategory } from '../context/UserContext';
-import { Inbox, Calendar } from 'lucide-react';
+import { Inbox, Calendar, RotateCcw, ArrowLeft } from 'lucide-react';
 import AvailabilityViewer from '../components/advisor/AvailabilityViewer';
 import SearchFilters from '../components/search/SearchFilters';
+import { useLocation } from 'react-router-dom';
 
 const DEFAULT_CATEGORIES = [
   {
@@ -159,7 +159,7 @@ const mockAdvisors: AdvisorProfile[] = [
     appointmentCategories: DEFAULT_CATEGORIES,
     appointments: [],
     onlineStatus: 'offline',
-    lastOnline: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    lastOnline: new Date(Date.now() - 86400000).toISOString(),
     showOnlineStatus: true
   },
   {
@@ -247,7 +247,7 @@ const mockConsumers: ConsumerProfile[] = [
     chatEnabled: true,
     appointments: [],
     onlineStatus: 'offline',
-    lastOnline: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    lastOnline: new Date(Date.now() - 86400000).toISOString(),
     showOnlineStatus: false
   },
   {
@@ -265,13 +265,13 @@ const mockConsumers: ConsumerProfile[] = [
     chatEnabled: true,
     appointments: [],
     onlineStatus: 'offline',
-    lastOnline: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
+    lastOnline: new Date(Date.now() - 259200000).toISOString(),
     showOnlineStatus: true
   }
 ];
 
 const MatchingInterface: React.FC = () => {
-  const { userType } = useUser();
+  const { userType, consumerProfile, advisorProfile } = useUser();
   const [advisors, setAdvisors] = useState<AdvisorProfile[]>([]);
   const [consumers, setConsumers] = useState<ConsumerProfile[]>([]);
   const [filteredItems, setFilteredItems] = useState<AdvisorProfile[] | ConsumerProfile[]>([]);
@@ -280,16 +280,57 @@ const MatchingInterface: React.FC = () => {
   const [empty, setEmpty] = useState(false);
   const [showAvailability, setShowAvailability] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [viewingMatches, setViewingMatches] = useState(false);
+  const [matchedProfiles, setMatchedProfiles] = useState<(AdvisorProfile | ConsumerProfile)[]>([]);
+  
+  const location = useLocation();
+  
+  useEffect(() => {
+    if (location.pathname.includes('/matches')) {
+      setViewingMatches(true);
+      loadMatchedProfiles();
+    } else {
+      setViewingMatches(false);
+    }
+  }, [location]);
 
   useEffect(() => {
     if (userType === 'consumer') {
       setAdvisors(mockAdvisors);
       setFilteredItems(mockAdvisors);
+      
+      if (consumerProfile?.matches) {
+        setMatches(consumerProfile.matches);
+      }
     } else if (userType === 'advisor') {
       setConsumers(mockConsumers);
       setFilteredItems(mockConsumers);
+      
+      if (advisorProfile?.matches) {
+        setMatches(advisorProfile.matches);
+      }
     }
-  }, [userType]);
+  }, [userType, consumerProfile, advisorProfile]);
+
+  const loadMatchedProfiles = useCallback(() => {
+    if (!matches.length) return;
+    
+    let profiles: (AdvisorProfile | ConsumerProfile)[] = [];
+    
+    if (userType === 'consumer') {
+      profiles = mockAdvisors.filter(advisor => matches.includes(advisor.id));
+    } else if (userType === 'advisor') {
+      profiles = mockConsumers.filter(consumer => matches.includes(consumer.id));
+    }
+    
+    setMatchedProfiles(profiles);
+  }, [matches, userType]);
+
+  useEffect(() => {
+    if (viewingMatches) {
+      loadMatchedProfiles();
+    }
+  }, [viewingMatches, loadMatchedProfiles]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -383,6 +424,11 @@ const MatchingInterface: React.FC = () => {
     return filteredItems[currentIndex];
   };
 
+  const goBackToMatching = () => {
+    setViewingMatches(false);
+    window.history.pushState({}, '', '/');
+  };
+
   return (
     <AnimatedRoute animation="fade">
       <div className="min-h-screen flex flex-col">
@@ -391,92 +437,220 @@ const MatchingInterface: React.FC = () => {
         <main className="flex-grow pt-20">
           <div className="container mx-auto px-4 py-12 max-w-4xl">
             <div className="text-center mb-10">
-              <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4">
-                {userType === 'consumer' ? 'Find Your Advisor' : 'Find Potential Clients'}
-              </h1>
-              <p className="text-slate-600 max-w-2xl mx-auto">
-                {userType === 'consumer' 
-                  ? "Swipe right on advisors you'd like to connect with. If they match with you too, you can start chatting." 
-                  : "Review potential clients who might benefit from your services."}
-              </p>
+              {viewingMatches ? (
+                <div>
+                  <div className="flex items-center justify-center mb-4">
+                    <button 
+                      onClick={goBackToMatching}
+                      className="mr-2 flex items-center text-sm text-navy-900 hover:text-teal-600 transition-colors"
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-1" />
+                      Back to Matching
+                    </button>
+                  </div>
+                  <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4">
+                    Your Matches
+                  </h1>
+                  <p className="text-slate-600 max-w-2xl mx-auto">
+                    Here are the {userType === 'consumer' ? 'advisors' : 'potential clients'} you've matched with.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4">
+                    {userType === 'consumer' ? 'Find Your Advisor' : 'Find Potential Clients'}
+                  </h1>
+                  <p className="text-slate-600 max-w-2xl mx-auto">
+                    {userType === 'consumer' 
+                      ? "Swipe right on advisors you'd like to connect with. If they match with you too, you can start chatting." 
+                      : "Review potential clients who might benefit from your services."}
+                  </p>
+                </div>
+              )}
             </div>
 
-            <SearchFilters 
-              userType={userType as 'consumer' | 'advisor'}
-              onSearch={handleSearch}
-              onFilterChange={handleFilterChange}
-            />
+            {!viewingMatches && (
+              <SearchFilters 
+                userType={userType as 'consumer' | 'advisor'}
+                onSearch={handleSearch}
+                onFilterChange={handleFilterChange}
+              />
+            )}
 
-            {matches.length > 0 && (
+            {matches.length > 0 && !viewingMatches && (
               <div className="mb-8 p-4 bg-teal-50 border border-teal-200 rounded-lg text-center">
                 <p className="text-teal-800 font-medium">
                   You have {matches.length} match{matches.length !== 1 ? 'es' : ''}!
                 </p>
                 <p className="text-teal-600 text-sm mt-1">
-                  Check your messages to connect with them.
+                  View your matches to connect with them.
                 </p>
               </div>
             )}
 
             <div className="max-w-md mx-auto">
-              {!empty && filteredItems.length > 0 ? (
+              {viewingMatches ? (
                 <div>
-                  {userType === 'consumer' ? (
-                    <AdvisorCard 
-                      advisor={getCurrentItem() as AdvisorProfile} 
-                      onSwipeRight={handleSwipeRight} 
-                      onSwipeLeft={handleSwipeLeft} 
-                    />
-                  ) : (
-                    <ConsumerCard 
-                      consumer={getCurrentItem() as ConsumerProfile}
-                      onSwipeRight={handleSwipeRight}
-                      onSwipeLeft={handleSwipeLeft}
-                    />
-                  )}
-                  
-                  {userType === 'consumer' && (getCurrentItem() as AdvisorProfile).availability && (
-                    <div className="mt-4">
-                      <button
-                        onClick={toggleAvailability}
-                        className="btn-outline w-full flex items-center justify-center"
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {showAvailability ? 'Hide Availability' : 'View Availability & Book'}
-                      </button>
-                      
-                      {showAvailability && (
-                        <div className="mt-4 glass-card rounded-2xl p-6">
-                          <AvailabilityViewer 
-                            availability={(getCurrentItem() as AdvisorProfile).availability || []}
-                            advisorName={(getCurrentItem() as AdvisorProfile).name}
-                            advisorId={(getCurrentItem() as AdvisorProfile).id}
-                          />
+                  {matchedProfiles.length > 0 ? (
+                    <div className="space-y-8">
+                      {matchedProfiles.map((profile) => (
+                        <div key={profile.id} className="glass-card rounded-2xl p-6">
+                          {userType === 'consumer' ? (
+                            <div>
+                              <h3 className="text-xl font-serif font-semibold text-navy-900 mb-2">
+                                {(profile as AdvisorProfile).name}
+                              </h3>
+                              <p className="text-slate-600 mb-2">
+                                {(profile as AdvisorProfile).organization}
+                              </p>
+                              
+                              <div className="mt-4 grid grid-cols-2 gap-4">
+                                <div className="flex items-center">
+                                  <Briefcase className="w-4 h-4 text-teal-600 mr-2" />
+                                  <span className="text-sm text-slate-700">
+                                    {(profile as AdvisorProfile).expertise.join(', ')}
+                                  </span>
+                                </div>
+                                
+                                <div className="flex items-center">
+                                  <DollarSign className="w-4 h-4 text-teal-600 mr-2" />
+                                  <span className="text-sm text-slate-700">
+                                    {(profile as AdvisorProfile).pricing.hourlyRate 
+                                      ? `$${(profile as AdvisorProfile).pricing.hourlyRate}/hr` 
+                                      : `${(profile as AdvisorProfile).pricing.portfolioFee}% AUM`}
+                                  </span>
+                                </div>
+                              </div>
+                              
+                              <div className="mt-6 flex justify-center space-x-4">
+                                <button className="btn-outline px-4 py-2">
+                                  <Calendar className="w-4 h-4 mr-2" />
+                                  Schedule
+                                </button>
+                                <button className="btn-primary px-4 py-2">
+                                  <Inbox className="w-4 h-4 mr-2" />
+                                  Message
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <h3 className="text-xl font-serif font-semibold text-navy-900 mb-2">
+                                {(profile as ConsumerProfile).name}
+                              </h3>
+                              
+                              <div className="mt-4 grid grid-cols-2 gap-4">
+                                <div className="flex items-center">
+                                  <CreditCard className="w-4 h-4 text-teal-600 mr-2" />
+                                  <span className="text-sm text-slate-700">
+                                    ${(profile as ConsumerProfile).investableAssets.toLocaleString()} assets
+                                  </span>
+                                </div>
+                                
+                                <div className="flex items-center">
+                                  <TrendingUp className="w-4 h-4 text-teal-600 mr-2" />
+                                  <span className="text-sm text-slate-700">
+                                    {(profile as ConsumerProfile).riskTolerance} risk
+                                  </span>
+                                </div>
+                              </div>
+                              
+                              <div className="mt-6 flex justify-center space-x-4">
+                                <button className="btn-outline px-4 py-2">
+                                  <Calendar className="w-4 h-4 mr-2" />
+                                  Schedule
+                                </button>
+                                <button className="btn-primary px-4 py-2">
+                                  <Inbox className="w-4 h-4 mr-2" />
+                                  Message
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      )}
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="glass-card rounded-2xl p-10 text-center">
+                      <div className="mx-auto w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                        <Inbox className="w-8 h-8 text-slate-400" />
+                      </div>
+                      <h3 className="text-xl font-serif font-semibold text-navy-900 mb-2">
+                        No Matches Yet
+                      </h3>
+                      <p className="text-slate-600 mb-6">
+                        You haven't matched with any {userType === 'consumer' ? 'advisors' : 'clients'} yet.
+                        Start swiping to find your perfect match!
+                      </p>
+                      <button
+                        onClick={goBackToMatching}
+                        className="btn-outline"
+                      >
+                        Start Matching
+                      </button>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="glass-card rounded-2xl p-10 text-center">
-                  <div className="mx-auto w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                    <Inbox className="w-8 h-8 text-slate-400" />
+                !empty && filteredItems.length > 0 ? (
+                  <div>
+                    {userType === 'consumer' ? (
+                      <AdvisorCard 
+                        advisor={getCurrentItem() as AdvisorProfile} 
+                        onSwipeRight={handleSwipeRight} 
+                        onSwipeLeft={handleSwipeLeft} 
+                      />
+                    ) : (
+                      <ConsumerCard 
+                        consumer={getCurrentItem() as ConsumerProfile}
+                        onSwipeRight={handleSwipeRight}
+                        onSwipeLeft={handleSwipeLeft}
+                      />
+                    )}
+                    
+                    {userType === 'consumer' && (getCurrentItem() as AdvisorProfile).availability && (
+                      <div className="mt-4">
+                        <button
+                          onClick={toggleAvailability}
+                          className="btn-outline w-full flex items-center justify-center"
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {showAvailability ? 'Hide Availability' : 'View Availability & Book'}
+                        </button>
+                        
+                        {showAvailability && (
+                          <div className="mt-4 glass-card rounded-2xl p-6">
+                            <AvailabilityViewer 
+                              availability={(getCurrentItem() as AdvisorProfile).availability || []}
+                              advisorName={(getCurrentItem() as AdvisorProfile).name}
+                              advisorId={(getCurrentItem() as AdvisorProfile).id}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  <h3 className="text-xl font-serif font-semibold text-navy-900 mb-2">
-                    No Matching Profiles
-                  </h3>
-                  <p className="text-slate-600 mb-6">
-                    {empty 
-                      ? "You've reviewed all available profiles for now. Adjust your filters or check back later."
-                      : "No profiles match your current filters. Try adjusting your search criteria."}
-                  </p>
-                  <button
-                    onClick={resetItems}
-                    className="btn-outline"
-                  >
-                    {empty ? "Start Over" : "Clear Filters"}
-                  </button>
-                </div>
+                ) : (
+                  <div className="glass-card rounded-2xl p-10 text-center">
+                    <div className="mx-auto w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                      <Inbox className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <h3 className="text-xl font-serif font-semibold text-navy-900 mb-2">
+                      No Matching Profiles
+                    </h3>
+                    <p className="text-slate-600 mb-6">
+                      {empty 
+                        ? "You've reviewed all available profiles for now. Adjust your filters or check back later."
+                        : "No profiles match your current filters. Try adjusting your search criteria."}
+                    </p>
+                    <button
+                      onClick={resetItems}
+                      className="btn-outline"
+                    >
+                      {empty ? "Start Over" : "Clear Filters"}
+                    </button>
+                  </div>
+                )
               )}
             </div>
           </div>
