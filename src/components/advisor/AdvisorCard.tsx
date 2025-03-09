@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Star, User, DollarSign, Briefcase, Globe, Heart, Award, ChevronDown, ChevronUp, CircleDot, X } from 'lucide-react';
+import { Star, User, DollarSign, Briefcase, Globe, Award, ChevronDown, ChevronUp, CircleDot, X } from 'lucide-react';
 import { AdvisorProfile } from '../../context/UserContext';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -237,7 +237,7 @@ const AdvisorCard: React.FC<AdvisorCardProps> = ({ advisor, onSwipeRight, onSwip
             className="w-14 h-14 flex items-center justify-center rounded-full bg-teal-500 text-white hover:bg-teal-600 transition-colors shadow-sm"
             aria-label="Connect"
           >
-            <Heart className="w-6 h-6" />
+            <DollarSign className="w-6 h-6" />
           </button>
         </div>
       </div>

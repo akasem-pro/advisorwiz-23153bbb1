@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { ConsumerProfile } from '../../context/UserContext';
-import { Clock, CreditCard, TrendingUp, Languages, Check, X, CircleDot, Heart } from 'lucide-react';
+import { Clock, CreditCard, TrendingUp, Languages, Check, X, CircleDot, DollarSign } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface ConsumerCardProps {
@@ -200,7 +200,7 @@ const ConsumerCard: React.FC<ConsumerCardProps> = ({ consumer, onSwipeRight, onS
             className="w-14 h-14 flex items-center justify-center rounded-full bg-teal-500 text-white hover:bg-teal-600 transition-colors shadow-sm"
             aria-label="Connect"
           >
-            <Heart className="w-6 h-6" />
+            <DollarSign className="w-6 h-6" />
           </button>
         </div>
       </div>
