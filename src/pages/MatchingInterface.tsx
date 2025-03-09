@@ -1,15 +1,15 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import AdvisorCard from '../components/advisor/AdvisorCard';
 import ConsumerCard from '../components/consumer/ConsumerCard';
-import { useUser, AdvisorProfile, ConsumerProfile, ServiceCategory } from '../context/UserContext';
+import { useUser, AdvisorProfile, ConsumerProfile, ServiceCategory, Chat } from '../context/UserContext';
 import { Inbox, Calendar, RotateCcw, ArrowLeft, Briefcase, DollarSign, CreditCard, TrendingUp } from 'lucide-react';
 import AvailabilityViewer from '../components/advisor/AvailabilityViewer';
 import SearchFilters from '../components/search/SearchFilters';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const DEFAULT_CATEGORIES = [
   {
@@ -272,7 +272,7 @@ const mockConsumers: ConsumerProfile[] = [
 ];
 
 const MatchingInterface: React.FC = () => {
-  const { userType, consumerProfile, advisorProfile } = useUser();
+  const { userType, consumerProfile, advisorProfile, chats, setChats } = useUser();
   const [advisors, setAdvisors] = useState<AdvisorProfile[]>([]);
   const [consumers, setConsumers] = useState<ConsumerProfile[]>([]);
   const [filteredItems, setFilteredItems] = useState<AdvisorProfile[] | ConsumerProfile[]>([]);
@@ -285,6 +285,7 @@ const MatchingInterface: React.FC = () => {
   const [matchedProfiles, setMatchedProfiles] = useState<(AdvisorProfile | ConsumerProfile)[]>([]);
   
   const location = useLocation();
+  const navigate = useNavigate();
   
   useEffect(() => {
     if (location.pathname.includes('/matches')) {
@@ -390,6 +391,40 @@ const MatchingInterface: React.FC = () => {
     setFilteredItems(results);
     setCurrentIndex(0);
     setEmpty(results.length === 0);
+  };
+
+  const handleSchedule = (profileId: string) => {
+    navigate('/schedule', { state: { selectedProfileId: profileId } });
+  };
+
+  const handleMessage = (profileId: string) => {
+    const currentUserId = userType === 'consumer' 
+      ? consumerProfile?.id 
+      : advisorProfile?.id;
+    
+    if (!currentUserId) {
+      toast.error("You need to be logged in to send messages");
+      return;
+    }
+    
+    let existingChat = chats.find(chat => 
+      chat.participants.includes(currentUserId) && 
+      chat.participants.includes(profileId)
+    );
+    
+    if (!existingChat) {
+      const newChat: Chat = {
+        id: `chat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        participants: [currentUserId, profileId],
+        messages: [],
+        lastUpdated: new Date().toISOString()
+      };
+      
+      setChats(prevChats => [...prevChats, newChat]);
+      existingChat = newChat;
+    }
+    
+    navigate(`/chat/${existingChat.id}`);
   };
 
   const handleSwipeRight = (item: AdvisorProfile | ConsumerProfile) => {
@@ -524,11 +559,17 @@ const MatchingInterface: React.FC = () => {
                               </div>
                               
                               <div className="mt-6 flex justify-center space-x-4">
-                                <button className="btn-outline px-4 py-2">
+                                <button 
+                                  className="btn-outline px-4 py-2"
+                                  onClick={() => handleSchedule(profile.id)}
+                                >
                                   <Calendar className="w-4 h-4 mr-2" />
                                   Schedule
                                 </button>
-                                <button className="btn-primary px-4 py-2">
+                                <button 
+                                  className="btn-primary px-4 py-2"
+                                  onClick={() => handleMessage(profile.id)}
+                                >
                                   <Inbox className="w-4 h-4 mr-2" />
                                   Message
                                 </button>
@@ -557,11 +598,17 @@ const MatchingInterface: React.FC = () => {
                               </div>
                               
                               <div className="mt-6 flex justify-center space-x-4">
-                                <button className="btn-outline px-4 py-2">
+                                <button 
+                                  className="btn-outline px-4 py-2"
+                                  onClick={() => handleSchedule(profile.id)}
+                                >
                                   <Calendar className="w-4 h-4 mr-2" />
                                   Schedule
                                 </button>
-                                <button className="btn-primary px-4 py-2">
+                                <button 
+                                  className="btn-primary px-4 py-2"
+                                  onClick={() => handleMessage(profile.id)}
+                                >
                                   <Inbox className="w-4 h-4 mr-2" />
                                   Message
                                 </button>
