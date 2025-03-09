@@ -420,7 +420,8 @@ const MatchingInterface: React.FC = () => {
         lastUpdated: new Date().toISOString()
       };
       
-      setChats(prevChats => [...prevChats, newChat]);
+      const updatedChats = [...chats, newChat];
+      setChats(updatedChats);
       existingChat = newChat;
     }
     
