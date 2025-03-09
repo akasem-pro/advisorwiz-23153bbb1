@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -8,6 +8,7 @@ import ChatList from '../components/chat/ChatList';
 import ChatWindow from '../components/chat/ChatWindow';
 import { useUser } from '../context/UserContext';
 import { MessageCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
@@ -24,15 +25,19 @@ const Chat: React.FC = () => {
     
     const handleToggleChat = () => {
       if (userType === 'consumer' && consumerProfile) {
+        const newState = !consumerProfile.chatEnabled;
         setConsumerProfile({
           ...consumerProfile,
-          chatEnabled: !consumerProfile.chatEnabled
+          chatEnabled: newState
         });
+        toast.success(newState ? "Chat enabled successfully" : "Chat disabled");
       } else if (userType === 'advisor' && advisorProfile) {
+        const newState = !advisorProfile.chatEnabled;
         setAdvisorProfile({
           ...advisorProfile,
-          chatEnabled: !advisorProfile.chatEnabled
+          chatEnabled: newState
         });
+        toast.success(newState ? "Chat enabled successfully" : "Chat disabled");
       }
     };
     
@@ -63,6 +68,19 @@ const Chat: React.FC = () => {
       </div>
     );
   };
+  
+  // Effect to update local state when profile changes
+  useEffect(() => {
+    // This ensures our component state is always in sync with the profile
+    const currentChatEnabled = userType === 'consumer' 
+      ? consumerProfile?.chatEnabled 
+      : advisorProfile?.chatEnabled;
+      
+    // If nothing has loaded yet, return early
+    if (userType === null || (userType === 'consumer' && !consumerProfile) || (userType === 'advisor' && !advisorProfile)) {
+      return;
+    }
+  }, [userType, consumerProfile, advisorProfile]);
   
   return (
     <AnimatedRoute animation="fade">

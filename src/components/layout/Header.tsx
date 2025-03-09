@@ -24,7 +24,7 @@ const Header: React.FC = () => {
   const navLinks = isAuthenticated
     ? userType === 'firm_admin'
       ? [{ name: 'Manage Firm', path: '/firm-profile' }]
-      : []
+      : [{ name: 'Matches', path: '/matches' }]
     : [
         { name: 'Home', path: '/' },
         { name: 'For Advisors', path: '/for-advisors' },
@@ -76,7 +76,7 @@ const Header: React.FC = () => {
         )}
 
         {/* Navigation for authenticated users */}
-        {isAuthenticated && userType !== 'firm_admin' && (
+        {isAuthenticated && (
           <div className="hidden md:flex items-center space-x-6">
             {authNavLinks.map((link) => (
               <Link
@@ -150,7 +150,7 @@ const Header: React.FC = () => {
             </button>
 
             {/* Mobile Menu for authenticated users */}
-            {isMenuOpen && userType !== 'firm_admin' && (
+            {isMenuOpen && (
               <div className="bg-white shadow-md py-4 px-6 absolute top-full left-0 right-0 animate-slide-down">
                 <nav className="flex flex-col space-y-4">
                   {authNavLinks.map((link) => (
