@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Star, User, DollarSign, Briefcase, Globe, MessageCircle, Award, ChevronDown, ChevronUp, CircleDot } from 'lucide-react';
+import { Star, User, DollarSign, Briefcase, Globe, Heart, Award, ChevronDown, ChevronUp, CircleDot, X } from 'lucide-react';
 import { AdvisorProfile } from '../../context/UserContext';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -13,20 +13,25 @@ interface AdvisorCardProps {
 const AdvisorCard: React.FC<AdvisorCardProps> = ({ advisor, onSwipeRight, onSwipeLeft }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [animation, setAnimation] = useState<string | null>(null);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
 
   const handleSwipeRight = () => {
+    setSwipeDirection('right');
     setAnimation('swipe-right');
     setTimeout(() => {
       onSwipeRight(advisor);
       setAnimation(null);
+      setSwipeDirection(null);
     }, 500);
   };
 
   const handleSwipeLeft = () => {
+    setSwipeDirection('left');
     setAnimation('swipe-left');
     setTimeout(() => {
       onSwipeLeft(advisor);
       setAnimation(null);
+      setSwipeDirection(null);
     }, 500);
   };
 
@@ -70,6 +75,14 @@ const AdvisorCard: React.FC<AdvisorCardProps> = ({ advisor, onSwipeRight, onSwip
         animation ? `animate-${animation}` : ''
       }`}
     >
+      {swipeDirection && (
+        <div 
+          className={`absolute top-6 ${swipeDirection === 'left' ? 'left-6' : 'right-6'} z-10 bg-${swipeDirection === 'left' ? 'red-500' : 'teal-500'} text-white p-2 rounded-lg uppercase text-xl font-bold transform ${swipeDirection === 'left' ? 'rotate-[-20deg]' : 'rotate-[20deg]'} opacity-90 border-2 border-white shadow-md`}
+        >
+          {swipeDirection === 'left' ? 'Skip' : 'Connect'}
+        </div>
+      )}
+      
       <div className="relative p-6">
         <div className="flex items-center space-x-4">
           <div className="relative w-20 h-20 bg-navy-100 rounded-full overflow-hidden border-2 border-teal-400">
@@ -214,19 +227,17 @@ const AdvisorCard: React.FC<AdvisorCardProps> = ({ advisor, onSwipeRight, onSwip
           <button 
             onClick={handleSwipeLeft}
             className="w-14 h-14 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:border-red-400 hover:text-red-500 transition-colors shadow-sm"
-            aria-label="Decline"
+            aria-label="Skip"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <X className="w-6 h-6" />
           </button>
           
           <button 
             onClick={handleSwipeRight}
             className="w-14 h-14 flex items-center justify-center rounded-full bg-teal-500 text-white hover:bg-teal-600 transition-colors shadow-sm"
-            aria-label="Accept"
+            aria-label="Connect"
           >
-            <MessageCircle className="w-6 h-6" />
+            <Heart className="w-6 h-6" />
           </button>
         </div>
       </div>

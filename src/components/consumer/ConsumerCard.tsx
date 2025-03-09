@@ -1,8 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ConsumerProfile } from '../../context/UserContext';
-import { Clock, CreditCard, TrendingUp, Languages, Check, X, CircleDot, SquareDashedBottom, Activity } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Clock, CreditCard, TrendingUp, Languages, Check, X, CircleDot, Heart } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface ConsumerCardProps {
@@ -12,6 +11,9 @@ interface ConsumerCardProps {
 }
 
 const ConsumerCard: React.FC<ConsumerCardProps> = ({ consumer, onSwipeRight, onSwipeLeft }) => {
+  const [animation, setAnimation] = useState<string | null>(null);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -19,6 +21,26 @@ const ConsumerCard: React.FC<ConsumerCardProps> = ({ consumer, onSwipeRight, onS
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(amount);
+  };
+
+  const handleSwipeRight = () => {
+    setSwipeDirection('right');
+    setAnimation('swipe-right');
+    setTimeout(() => {
+      onSwipeRight(consumer);
+      setAnimation(null);
+      setSwipeDirection(null);
+    }, 500);
+  };
+
+  const handleSwipeLeft = () => {
+    setSwipeDirection('left');
+    setAnimation('swipe-left');
+    setTimeout(() => {
+      onSwipeLeft(consumer);
+      setAnimation(null);
+      setSwipeDirection(null);
+    }, 500);
   };
 
   const renderTimelineText = (timeline: string | null) => {
@@ -74,7 +96,19 @@ const ConsumerCard: React.FC<ConsumerCardProps> = ({ consumer, onSwipeRight, onS
   };
 
   return (
-    <div className="glass-card rounded-2xl overflow-hidden shadow-lg">
+    <div 
+      className={`glass-card rounded-2xl overflow-hidden shadow-lg relative transition-transform ${
+        animation ? `animate-${animation}` : ''
+      }`}
+    >
+      {swipeDirection && (
+        <div 
+          className={`absolute top-6 ${swipeDirection === 'left' ? 'left-6' : 'right-6'} z-10 bg-${swipeDirection === 'left' ? 'red-500' : 'teal-500'} text-white p-2 rounded-lg uppercase text-xl font-bold transform ${swipeDirection === 'left' ? 'rotate-[-20deg]' : 'rotate-[20deg]'} opacity-90 border-2 border-white shadow-md`}
+        >
+          {swipeDirection === 'left' ? 'Skip' : 'Connect'}
+        </div>
+      )}
+      
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -152,22 +186,22 @@ const ConsumerCard: React.FC<ConsumerCardProps> = ({ consumer, onSwipeRight, onS
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <Button 
-            variant="outline" 
-            onClick={() => onSwipeLeft(consumer)}
-            className="flex items-center justify-center"
+        <div className="flex justify-between mt-8">
+          <button 
+            onClick={handleSwipeLeft}
+            className="w-14 h-14 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:border-red-400 hover:text-red-500 transition-colors shadow-sm"
+            aria-label="Skip"
           >
-            <X className="mr-1 h-4 w-4" />
-            Skip
-          </Button>
-          <Button 
-            onClick={() => onSwipeRight(consumer)}
-            className="bg-teal-600 hover:bg-teal-700 text-white flex items-center justify-center"
+            <X className="w-6 h-6" />
+          </button>
+          
+          <button 
+            onClick={handleSwipeRight}
+            className="w-14 h-14 flex items-center justify-center rounded-full bg-teal-500 text-white hover:bg-teal-600 transition-colors shadow-sm"
+            aria-label="Connect"
           >
-            <Check className="mr-1 h-4 w-4" />
-            Connect
-          </Button>
+            <Heart className="w-6 h-6" />
+          </button>
         </div>
       </div>
     </div>
