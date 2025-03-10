@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -10,6 +10,7 @@ import {
   generateOrganizationSchema, 
   generateWebsiteSchema
 } from './utils/jsonLdData';
+import { trackWebVitals, setupLazyLoading } from './utils/performanceTracking';
 
 // Pages
 import Index from './pages/Index';
@@ -31,7 +32,17 @@ import Privacy from './pages/Privacy';
 
 import './App.css';
 
-const queryClient = new QueryClient();
+// Configure React Query for performance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000, // 1 minute stale time
+      cacheTime: 5 * 60 * 1000, // 5 minutes cache time
+      retry: 1, // Retry failed requests once
+      refetchOnWindowFocus: false, // Don't refetch on window focus for better performance
+    },
+  },
+});
 
 // Combine all global structured data
 const globalStructuredData = [
@@ -40,6 +51,19 @@ const globalStructuredData = [
 ];
 
 function App() {
+  // Track web vitals metrics on mount
+  useEffect(() => {
+    trackWebVitals();
+    
+    // Set up lazy loading for images when DOM is loaded
+    if (document.readyState === 'complete') {
+      setupLazyLoading();
+    } else {
+      window.addEventListener('load', setupLazyLoading);
+      return () => window.removeEventListener('load', setupLazyLoading);
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
@@ -57,6 +81,9 @@ function App() {
           <meta name="apple-mobile-web-app-status-bar-style" content="default" />
           <meta name="format-detection" content="telephone=no" />
           <meta name="mobile-web-app-capable" content="yes" />
+          
+          {/* Preload critical assets */}
+          <link rel="preload" href="/fonts/main-font.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         </Helmet>
         <StructuredData data={globalStructuredData} />
         <Router>
