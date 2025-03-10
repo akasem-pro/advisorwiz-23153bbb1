@@ -25,7 +25,7 @@ export const useAppointmentFilters = ({
     return appointments.filter(appointment => {
       const matchesStatus = statusFilter === 'all' || appointment.status === statusFilter;
       const matchesSearch = appointment.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                           (appointment.description?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
+                           (appointment.notes && appointment.notes.toLowerCase().includes(searchTerm.toLowerCase()));
       return matchesStatus && matchesSearch;
     });
   }, [appointments, searchTerm, statusFilter]);

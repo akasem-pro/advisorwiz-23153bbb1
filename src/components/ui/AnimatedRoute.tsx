@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 interface AnimatedRouteProps {
   children: ReactNode;
-  animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right';
+  animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale';
 }
 
 export const AnimatedRoute: React.FC<AnimatedRouteProps> = ({ children, animation = 'fade' }) => {
@@ -33,6 +33,11 @@ export const AnimatedRoute: React.FC<AnimatedRouteProps> = ({ children, animatio
       initial: { x: 20, opacity: 0 },
       animate: { x: 0, opacity: 1 },
       exit: { x: -20, opacity: 0 },
+    },
+    'scale': {
+      initial: { scale: 0.95, opacity: 0 },
+      animate: { scale: 1, opacity: 1 },
+      exit: { scale: 0.95, opacity: 0 },
     },
   };
 

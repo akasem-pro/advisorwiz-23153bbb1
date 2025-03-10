@@ -7,7 +7,7 @@ import { Toaster } from '../ui/toaster';
 
 interface AppLayoutProps {
   children: React.ReactNode;
-  animation?: 'fade' | 'slide' | 'scale' | 'none';
+  animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale' | 'none';
   withHeader?: boolean;
   withFooter?: boolean;
 }
@@ -26,7 +26,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       
       <main className="flex-grow">
         {animation !== 'none' ? (
-          <AnimatedRoute animation={animation}>
+          <AnimatedRoute animation={animation as 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale'}>
             <Content />
           </AnimatedRoute>
         ) : (
