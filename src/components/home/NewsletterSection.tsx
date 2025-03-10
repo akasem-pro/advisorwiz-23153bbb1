@@ -67,7 +67,7 @@ const NewsletterSection: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
           <Mail className="w-12 h-12 text-teal-400 mb-4 mx-auto" aria-hidden="true" />
-          <h2 className="text-3xl font-serif font-bold mb-4">
+          <h2 className="text-3xl font-serif font-bold mb-4 text-white">
             Stay Updated with Financial Insights
           </h2>
           <p className="text-lg text-slate-300 mb-8">
