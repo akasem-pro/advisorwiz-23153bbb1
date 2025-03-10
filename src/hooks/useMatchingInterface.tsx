@@ -162,11 +162,13 @@ export const useMatchingInterface = () => {
       return;
     }
     
+    // Check if chat is enabled for the other profile
     if (!otherProfile.chatEnabled) {
       toast.error("Chat is not available for this user");
       return;
     }
     
+    // Find existing chat or create a new one
     let existingChat = chats.find(chat => 
       chat.participants.includes(currentUserId) && 
       chat.participants.includes(profileId)
@@ -180,10 +182,11 @@ export const useMatchingInterface = () => {
         lastUpdated: new Date().toISOString()
       };
       
-      setChats([...chats, newChat]);
+      setChats(prevChats => [...prevChats, newChat]);
       existingChat = newChat;
     }
     
+    // Navigate to the chat page with the chat ID
     navigate(`/chat/${existingChat.id}`);
   };
 
@@ -212,7 +215,7 @@ export const useMatchingInterface = () => {
 
   const goBackToMatching = () => {
     setViewingMatches(false);
-    window.history.pushState({}, '', '/');
+    navigate('/');
   };
 
   const getCurrentItem = () => {
