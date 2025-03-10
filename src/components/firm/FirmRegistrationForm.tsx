@@ -78,6 +78,64 @@ const consentItems = [
   'I have read and agree to the Terms & Conditions and Privacy Policy of AdvisorWiz.'
 ];
 
+// Define proper types for the form state
+interface FirmAddress {
+  street: string;
+  city: string;
+  province: string;
+  postalCode: string;
+}
+
+interface PrimaryContact {
+  name: string;
+  email: string;
+  phone: string;
+}
+
+interface FirmDetails {
+  name: string;
+  legalBusinessName: string;
+  firmType: string;
+  firmTypeOther: string;
+  registrationNumber: string;
+  address: FirmAddress;
+  website: string;
+  primaryContact: PrimaryContact;
+  advisorCount: number;
+}
+
+interface ComplianceOfficer {
+  name: string;
+  email: string;
+  phone: string;
+}
+
+interface ComplianceDetails {
+  regulatoryBodies: string[];
+  otherRegulatoryBody: string;
+  complianceOfficer: ComplianceOfficer;
+  hasViolations: boolean;
+  violationDetails: string;
+  licensingDocuments: File | null;
+}
+
+interface Advisor {
+  name: string;
+  email: string;
+  phone: string;
+  licensingBody: string;
+  experience: string;
+  specialization: string;
+}
+
+interface Consents {
+  accurateInfo: boolean;
+  verifyLicensing: boolean;
+  backgroundChecks: boolean;
+  marketing: boolean;
+  termsAndConditions: boolean;
+}
+
 const FirmRegistrationForm: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -88,7 +146,7 @@ const FirmRegistrationForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Form state
-  const [firmDetails, setFirmDetails] = useState({
+  const [firmDetails, setFirmDetails] = useState<FirmDetails>({
     name: '',
     legalBusinessName: '',
     firmType: '',
@@ -109,7 +167,7 @@ const FirmRegistrationForm: React.FC = () => {
     advisorCount: 1
   });
   
-  const [complianceDetails, setComplianceDetails] = useState({
+  const [complianceDetails, setComplianceDetails] = useState<ComplianceDetails>({
     regulatoryBodies: [] as string[],
     otherRegulatoryBody: '',
     complianceOfficer: {
@@ -119,16 +177,16 @@ const FirmRegistrationForm: React.FC = () => {
     },
     hasViolations: false,
     violationDetails: '',
-    licensingDocuments: null as File | null
+    licensingDocuments: null
   });
   
-  const [advisors, setAdvisors] = useState([
+  const [advisors, setAdvisors] = useState<Advisor[]>([
     { name: '', email: '', phone: '', licensingBody: '', experience: '', specialization: '' }
   ]);
   
   const [selectedPlan, setSelectedPlan] = useState('');
   
-  const [consents, setConsents] = useState({
+  const [consents, setConsents] = useState<Consents>({
     accurateInfo: false,
     verifyLicensing: false,
     backgroundChecks: false,
@@ -143,7 +201,7 @@ const FirmRegistrationForm: React.FC = () => {
       setFirmDetails({
         ...firmDetails,
         [parentField]: {
-          ...firmDetails[parentField as keyof typeof firmDetails],
+          ...(firmDetails[parentField as keyof FirmDetails] as any),
           [childField]: value
         }
       });
@@ -161,7 +219,7 @@ const FirmRegistrationForm: React.FC = () => {
       setComplianceDetails({
         ...complianceDetails,
         [parentField]: {
-          ...complianceDetails[parentField as keyof typeof complianceDetails],
+          ...(complianceDetails[parentField as keyof ComplianceDetails] as any),
           [childField]: value
         }
       });
@@ -215,7 +273,7 @@ const FirmRegistrationForm: React.FC = () => {
     }
   };
   
-  const toggleConsent = (key: keyof typeof consents) => {
+  const toggleConsent = (key: keyof Consents) => {
     setConsents({
       ...consents,
       [key]: !consents[key]
