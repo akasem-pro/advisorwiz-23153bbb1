@@ -33,11 +33,22 @@ const FAQAccordion: React.FC<FAQAccordionProps> = ({
   collapsible = true,
   className = ""
 }) => {
+  // Create the correct props based on the type
+  const accordionProps = type === "single" 
+    ? { 
+        type: "single" as const, 
+        defaultValue, 
+        collapsible 
+      } 
+    : { 
+        type: "multiple" as const, 
+        defaultValue: defaultValue ? [defaultValue] : undefined,
+        collapsible 
+      };
+
   return (
     <Accordion 
-      type={type} 
-      defaultValue={defaultValue} 
-      collapsible={collapsible}
+      {...accordionProps}
       className={`w-full ${className}`}
     >
       {faqs.map((faq, index) => (
