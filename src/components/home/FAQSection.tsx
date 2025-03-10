@@ -1,18 +1,10 @@
 
-import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
+import React from 'react';
+import { ArrowRight } from 'lucide-react';
 import { generateFAQSchema } from '../../utils/schemas';
 import StructuredData from '../seo/StructuredData';
 import { Link } from 'react-router-dom';
-
-type FAQItem = {
-  question: string;
-  answer: string;
-  relatedLinks?: Array<{
-    text: string;
-    url: string;
-  }>;
-};
+import FAQAccordion, { FAQItem } from '../shared/FAQAccordion';
 
 const faqs: FAQItem[] = [
   {
@@ -65,12 +57,6 @@ const faqs: FAQItem[] = [
 ];
 
 const FAQSection: React.FC = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
-
-  const toggleFAQ = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
   return (
     <section id="faq" className="py-16 bg-slate-50" aria-labelledby="faq-heading">
       <StructuredData data={generateFAQSchema(faqs.map(faq => ({
@@ -89,55 +75,7 @@ const FAQSection: React.FC = () => {
         
         <div className="max-w-3xl mx-auto">
           <div className="faq-schema-container" itemScope itemType="https://schema.org/FAQPage">
-            {faqs.map((faq, index) => (
-              <div 
-                key={index} 
-                className="mb-4 border border-slate-200 rounded-lg overflow-hidden"
-                itemScope
-                itemType="https://schema.org/Question"
-              >
-                <button
-                  className="w-full px-6 py-4 text-left bg-white hover:bg-slate-50 transition-colors flex justify-between items-center"
-                  onClick={() => toggleFAQ(index)}
-                  aria-expanded={openIndex === index}
-                  aria-controls={`faq-answer-${index}`}
-                >
-                  <span className="font-medium text-navy-900" itemProp="name">{faq.question}</span>
-                  {openIndex === index ? (
-                    <ChevronUp className="w-5 h-5 text-teal-600 flex-shrink-0" aria-hidden="true" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-teal-600 flex-shrink-0" aria-hidden="true" />
-                  )}
-                </button>
-                <div 
-                  id={`faq-answer-${index}`}
-                  className={`px-6 py-4 bg-white text-slate-700 ${openIndex === index ? 'block' : 'hidden'}`}
-                  itemScope
-                  itemProp="acceptedAnswer"
-                  itemType="https://schema.org/Answer"
-                >
-                  <div itemProp="text">
-                    <p>{faq.answer}</p>
-                    
-                    {faq.relatedLinks && faq.relatedLinks.length > 0 && (
-                      <div className="mt-4 space-y-2">
-                        {faq.relatedLinks.map((link, linkIndex) => (
-                          <div key={linkIndex} className="text-sm">
-                            <Link 
-                              to={link.url} 
-                              className="text-teal-600 hover:underline inline-flex items-center"
-                            >
-                              {link.text}
-                              <ArrowRight className="ml-1 h-3 w-3" />
-                            </Link>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
+            <FAQAccordion faqs={faqs} defaultValue="item-0" />
           </div>
           
           <div className="mt-10 text-center">

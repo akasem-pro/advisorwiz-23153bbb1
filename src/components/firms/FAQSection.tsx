@@ -2,14 +2,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-
-interface FAQ {
-  question: string;
-  answer: string;
-}
+import FAQAccordion, { FAQItem } from '../shared/FAQAccordion';
 
 interface FAQSectionProps {
-  faqs: FAQ[];
+  faqs: FAQItem[];
 }
 
 const FAQSection: React.FC<FAQSectionProps> = ({ faqs }) => {
@@ -20,14 +16,7 @@ const FAQSection: React.FC<FAQSectionProps> = ({ faqs }) => {
           Frequently Asked Questions
         </h2>
         
-        <div className="space-y-6">
-          {faqs.map((faq, index) => (
-            <div key={index} className="bg-slate-50 rounded-xl p-6">
-              <h3 className="text-lg font-bold mb-2">{faq.question}</h3>
-              <p className="text-slate-600">{faq.answer}</p>
-            </div>
-          ))}
-        </div>
+        <FAQAccordion faqs={faqs} defaultValue="item-0" />
         
         <div className="mt-8 text-center">
           <p className="text-slate-600 mb-4">Have more questions about how AdvisorWiz can help your firm?</p>

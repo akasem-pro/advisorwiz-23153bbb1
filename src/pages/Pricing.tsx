@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -8,6 +7,7 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
+import FAQAccordion, { FAQItem } from '../components/shared/FAQAccordion';
 
 // Feature list component with check/x icons
 const FeatureItem = ({ included, text }: { included: boolean; text: string }) => (
@@ -137,6 +137,33 @@ const PlanCard = ({
 
 const Pricing: React.FC = () => {
   const [userType, setUserType] = useState<'consumer' | 'advisor' | 'enterprise'>('consumer');
+
+  const pricingFaqs: FAQItem[] = [
+    {
+      question: "Can I change plans later?",
+      answer: "Yes, you can upgrade or downgrade your plan at any time. Changes will be applied at the start of your next billing cycle."
+    },
+    {
+      question: "Is there a trial period?",
+      answer: "We offer a 14-day free trial for all advisor plans. No credit card required until you're ready to continue."
+    },
+    {
+      question: "What payment methods do you accept?",
+      answer: "We accept all major credit cards, and for annual plans, we can also accommodate invoicing for enterprise customers."
+    },
+    {
+      question: "How do I get featured as an advisor?",
+      answer: "The Premium plan includes featured advisor status, which gives you priority placement in search results and highlighted profiles."
+    },
+    {
+      question: "Do you offer discounts for non-profits?",
+      answer: "Yes, we offer special pricing for non-profit organizations. Please contact our sales team for more information."
+    },
+    {
+      question: "How does the enterprise plan differ from individual advisor plans?",
+      answer: "Enterprise plans are designed for firms with multiple advisors and include features for team management, firm branding, and more extensive client matching capabilities."
+    }
+  ];
 
   return (
     <AnimatedRoute animation="fade">
@@ -317,36 +344,8 @@ const Pricing: React.FC = () => {
             <div className="container mx-auto px-4">
               <h2 className="text-3xl font-serif font-bold text-center text-navy-900 mb-12">Frequently Asked Questions</h2>
               
-              <div className="max-w-3xl mx-auto space-y-8">
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Can I change plans later?</h3>
-                  <p className="text-slate-600">Yes, you can upgrade or downgrade your plan at any time. Changes will be applied at the start of your next billing cycle.</p>
-                </div>
-                
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Is there a trial period?</h3>
-                  <p className="text-slate-600">We offer a 14-day free trial for all advisor plans. No credit card required until you're ready to continue.</p>
-                </div>
-                
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">What payment methods do you accept?</h3>
-                  <p className="text-slate-600">We accept all major credit cards, and for annual plans, we can also accommodate invoicing for enterprise customers.</p>
-                </div>
-                
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">How do I get featured as an advisor?</h3>
-                  <p className="text-slate-600">The Premium plan includes featured advisor status, which gives you priority placement in search results and highlighted profiles.</p>
-                </div>
-                
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Do you offer discounts for non-profits?</h3>
-                  <p className="text-slate-600">Yes, we offer special pricing for non-profit organizations. Please contact our sales team for more information.</p>
-                </div>
-                
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">How does the enterprise plan differ from individual advisor plans?</h3>
-                  <p className="text-slate-600">Enterprise plans are designed for firms with multiple advisors and include features for team management, firm branding, and more extensive client matching capabilities.</p>
-                </div>
+              <div className="max-w-3xl mx-auto">
+                <FAQAccordion faqs={pricingFaqs} defaultValue="item-0" />
               </div>
             </div>
           </section>
