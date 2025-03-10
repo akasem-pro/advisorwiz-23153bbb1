@@ -20,6 +20,7 @@ import ForAdvisors from './pages/ForAdvisors';
 import ForConsumers from './pages/ForConsumers';
 import Pricing from './pages/Pricing';
 import ContactUs from './pages/ContactUs';
+import Terms from './pages/Terms';
 
 import './App.css';
 
@@ -46,6 +47,7 @@ function App() {
             <Route path="/for-consumers" element={<ForConsumers />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/contact" element={<ContactUs />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
