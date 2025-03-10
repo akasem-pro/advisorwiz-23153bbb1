@@ -5,7 +5,7 @@ import {
   calculateCompatibilityBetweenProfiles,
   getWeightedCompatibilityScore,
   getRecommendedProfilesBasedOnActivity
-} from '../services/matchingService';
+} from '../services/matching';
 
 /**
  * Hook that provides matching algorithm operations
