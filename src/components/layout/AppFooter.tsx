@@ -9,7 +9,15 @@ const AppFooter: React.FC = () => {
         {/* Main footer content */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
-            <h3 className="text-navy-900 font-serif font-semibold mb-4">AdvisorWiz</h3>
+            <div className="flex items-center space-x-2 mb-4">
+              <img 
+                src="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" 
+                alt="AdvisorWiz Logo" 
+                className="h-8 w-auto" 
+                loading="lazy"
+              />
+              <h3 className="text-navy-900 font-serif font-semibold">AdvisorWiz</h3>
+            </div>
             <p className="text-slate-600 text-sm">
               Connecting consumers with qualified financial advisors.
             </p>

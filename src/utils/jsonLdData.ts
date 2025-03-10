@@ -6,7 +6,7 @@ export const generateOrganizationSchema = () => {
     "@type": "Organization",
     "name": "AdvisorWiz",
     "url": "https://advisorwiz.com",
-    "logo": "https://advisorwiz.com/logo.png",
+    "logo": "https://advisorwiz.com/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png",
     "sameAs": [
       "https://www.facebook.com/advisorwiz",
       "https://www.twitter.com/advisorwiz",
@@ -159,6 +159,7 @@ export const generateWebsiteSchema = () => {
         "urlTemplate": "https://advisorwiz.com/search?q={search_term_string}"
       },
       "query-input": "required name=search_term_string"
-    }
+    },
+    "logo": "https://advisorwiz.com/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png"
   };
 };

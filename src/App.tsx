@@ -76,8 +76,8 @@ function App() {
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
           <meta name="theme-color" content="#1E3A8A" />
-          <link rel="icon" href="/favicon.ico" />
-          <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+          <link rel="icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
+          <link rel="apple-touch-icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
           
           {/* Global metadata */}
           <meta name="application-name" content="AdvisorWiz" />
@@ -88,6 +88,7 @@ function App() {
           
           {/* Preload critical assets */}
           <link rel="preload" href="/fonts/main-font.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+          <link rel="preload" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" as="image" />
         </Helmet>
         <StructuredData data={globalStructuredData} />
         <Router>
