@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -408,7 +407,6 @@ const MatchingInterface: React.FC = () => {
       return;
     }
     
-    // Check if both participants have chat enabled
     const otherProfile = userType === 'consumer' 
       ? mockAdvisors.find(a => a.id === profileId)
       : mockConsumers.find(c => c.id === profileId);
@@ -431,11 +429,10 @@ const MatchingInterface: React.FC = () => {
         lastUpdated: new Date().toISOString()
       };
       
-      setChats(prevChats => [...prevChats, newChat]);
+      setChats([...chats, newChat]);
       existingChat = newChat;
     }
     
-    // Use navigate to go to the chat page
     navigate(`/chat/${existingChat.id}`);
   };
 
