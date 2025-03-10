@@ -31,6 +31,7 @@ const Header: React.FC = () => {
         { name: 'For Consumers', path: '/for-consumers' },
         { name: 'For Firms', path: '/for-firms' },
         { name: 'Pricing', path: '/pricing' },
+        { name: 'Contact', path: '/contact' },
       ];
 
   // Auth user nav links
