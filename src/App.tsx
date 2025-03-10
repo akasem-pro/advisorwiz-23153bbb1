@@ -50,6 +50,8 @@ function App() {
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/disclaimer" element={<Privacy />} /> {/* Redirecting disclaimer to privacy for now */}
+            <Route path="/cookies" element={<Privacy />} /> {/* Redirecting cookies to privacy for now */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
