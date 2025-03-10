@@ -3,30 +3,40 @@
 User-agent: *
 Allow: /
 
-# Primary Pages - High Priority
-Allow: /for-advisors
-Allow: /for-consumers
-Allow: /for-firms
-Allow: /pricing
-Allow: /contact
+# High Priority Pages - Allow Immediate Crawling
+Allow: /$
+Allow: /for-advisors$
+Allow: /for-consumers$
+Allow: /for-firms$
+Allow: /pricing$
+Allow: /onboarding$
+Allow: /contact$
 
 # Secondary Pages
-Allow: /terms
-Allow: /privacy
+Allow: /terms$
+Allow: /privacy$
+Allow: /disclaimer$
+Allow: /cookies$
 
-# Disallow specific admin or private paths
+# Disallow Patterns
 Disallow: /admin/
 Disallow: /private/
 Disallow: /api/
 Disallow: /auth/
 Disallow: /internal/
+Disallow: /*?*  # Block URLs with query parameters
+Disallow: /*?$ # Block URLs ending with ?
 
-# Crawl-delay for specific bots
+# Crawl-delay Directives
 User-agent: Googlebot
-Crawl-delay: 2
+Crawl-delay: 1
 
 User-agent: Bingbot
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
 Crawl-delay: 2
 
-# Sitemap location
+# Sitemap Location
 Sitemap: https://advisorwiz.com/sitemap.xml
+

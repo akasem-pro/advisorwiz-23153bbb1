@@ -17,29 +17,37 @@
       <image:loc>https://advisorwiz.com/og-image.png</image:loc>
       <image:title>AdvisorWiz - Financial Advisor Matching Platform</image:title>
     </image:image>
-    <lastmod>2023-11-01</lastmod>
+    <lastmod>2024-02-01</lastmod>
   </url>
   
   <!-- Main Service Pages -->
   <url>
     <loc>https://advisorwiz.com/for-advisors</loc>
-    <changefreq>monthly</changefreq>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <lastmod>2023-10-15</lastmod>
+    <lastmod>2024-02-01</lastmod>
   </url>
   
   <url>
     <loc>https://advisorwiz.com/for-consumers</loc>
-    <changefreq>monthly</changefreq>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <lastmod>2023-10-15</lastmod>
+    <lastmod>2024-02-01</lastmod>
   </url>
   
   <url>
     <loc>https://advisorwiz.com/for-firms</loc>
-    <changefreq>monthly</changefreq>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <lastmod>2023-10-15</lastmod>
+    <lastmod>2024-02-01</lastmod>
+  </url>
+  
+  <!-- Onboarding -->
+  <url>
+    <loc>https://advisorwiz.com/onboarding</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2024-02-01</lastmod>
   </url>
   
   <!-- Commercial Pages -->
@@ -47,14 +55,14 @@
     <loc>https://advisorwiz.com/pricing</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <lastmod>2023-10-01</lastmod>
+    <lastmod>2024-02-01</lastmod>
   </url>
   
   <url>
     <loc>https://advisorwiz.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2023-09-15</lastmod>
+    <lastmod>2024-02-01</lastmod>
   </url>
   
   <!-- Legal Pages -->
@@ -62,13 +70,27 @@
     <loc>https://advisorwiz.com/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <lastmod>2023-01-10</lastmod>
+    <lastmod>2024-02-01</lastmod>
   </url>
   
   <url>
     <loc>https://advisorwiz.com/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
-    <lastmod>2023-01-10</lastmod>
+    <lastmod>2024-02-01</lastmod>
+  </url>
+
+  <url>
+    <loc>https://advisorwiz.com/disclaimer</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+    <lastmod>2024-02-01</lastmod>
+  </url>
+
+  <url>
+    <loc>https://advisorwiz.com/cookies</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+    <lastmod>2024-02-01</lastmod>
   </url>
 </urlset>
