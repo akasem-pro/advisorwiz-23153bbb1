@@ -4,7 +4,7 @@ import { Calendar, Clock, PlusCircle, Calendar as CalendarIcon } from 'lucide-re
 import { useUser } from '../context/UserContext';
 import AdvisorAppointmentManager from '../components/scheduler/AdvisorAppointmentManager';
 import ConsumerAppointmentList from '../components/scheduler/ConsumerAppointmentList';
-import AppointmentCalendar from '../components/scheduler/AppointmentCalendar';
+import AppointmentCalendar from '../components/scheduler/calendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
