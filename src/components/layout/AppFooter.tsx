@@ -9,14 +9,13 @@ const AppFooter: React.FC = () => {
         {/* Main footer content */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
-            <div className="flex items-center space-x-2 mb-4">
+            <div className="flex items-center mb-4">
               <img 
-                src="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" 
+                src="/lovable-uploads/d66162b8-d098-4ffe-a300-d14aa6ffe38e.png" 
                 alt="AdvisorWiz Logo" 
-                className="h-8 w-auto" 
+                className="h-10 w-auto" 
                 loading="lazy"
               />
-              <h3 className="text-navy-900 font-serif font-semibold">AdvisorWiz</h3>
             </div>
             <p className="text-slate-600 text-sm">
               Connecting consumers with qualified financial advisors.
@@ -65,7 +64,6 @@ const AppFooter: React.FC = () => {
           </div>
         </div>
         
-        {/* Disclaimer section */}
         <div className="border-t border-slate-200 pt-6">
           <div className="bg-white p-4 rounded-lg border border-slate-200 mb-4">
             <p className="text-sm text-slate-600 mb-3">

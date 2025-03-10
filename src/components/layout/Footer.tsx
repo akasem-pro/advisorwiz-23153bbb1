@@ -8,14 +8,13 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center">
               <img 
-                src="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" 
+                src="/lovable-uploads/d66162b8-d098-4ffe-a300-d14aa6ffe38e.png" 
                 alt="AdvisorWiz Logo" 
-                className="h-10 w-auto" 
+                className="h-16 w-auto" 
                 loading="lazy"
               />
-              <h3 className="text-2xl font-serif font-medium text-white">AdvisorWiz</h3>
             </div>
             <p className="text-slate-300 max-w-xs">
               Connecting consumers with trusted financial advisors through an innovative matching platform.
