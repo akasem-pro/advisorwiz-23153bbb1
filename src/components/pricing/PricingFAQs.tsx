@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { FAQItem } from '../shared/FAQAccordion';
+import FAQAccordion, { FAQItem } from '../shared/FAQAccordion';
 
 // Export the FAQ data to be reused
 export const pricingFaqs: FAQItem[] = [
@@ -31,7 +31,14 @@ export const pricingFaqs: FAQItem[] = [
 ];
 
 const PricingFAQs: React.FC = () => {
-  return pricingFaqs;
+  return (
+    <FAQAccordion 
+      faqs={pricingFaqs} 
+      defaultValue="item-0"
+      type="single"
+      collapsible={true}
+    />
+  );
 };
 
 export default PricingFAQs;
