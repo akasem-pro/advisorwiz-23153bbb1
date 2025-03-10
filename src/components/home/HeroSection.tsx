@@ -51,7 +51,7 @@ const HeroSection: React.FC = () => {
               width="600"
               height="400"
               loading="eager"
-              fetchpriority="high"
+              fetchPriority="high"
             />
             <div className="absolute top-1/2 -left-8 transform -translate-y-1/2 bg-white shadow-lg rounded-xl p-4 -rotate-6 animate-pulse-scale">
               <div className="flex items-center space-x-2">
