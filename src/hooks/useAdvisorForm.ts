@@ -40,6 +40,7 @@ export const useAdvisorForm = (initialAdvisorProfile?: AdvisorProfile) => {
     expertise: initialAdvisorProfile?.expertise || [],
     profilePicture: initialAdvisorProfile?.profilePicture || '',
     matches: initialAdvisorProfile?.matches || [],
+    compatibilityScores: initialAdvisorProfile?.compatibilityScores || {},
     chats: initialAdvisorProfile?.chats || [],
     availability: initialAdvisorProfile?.availability || [],
     chatEnabled: initialAdvisorProfile?.chatEnabled ?? true,
@@ -138,4 +139,3 @@ export const useAdvisorForm = (initialAdvisorProfile?: AdvisorProfile) => {
     handleMultiSelectChange
   };
 };
-

@@ -65,7 +65,7 @@ const AdvisorProfile: React.FC = () => {
       expertise: formData.expertise || [],
       profilePicture: formData.profilePicture || '',
       matches: formData.matches || [],
-      compatibilityScores: formData.compatibilityScores || {},
+      // Don't include compatibilityScores in the AdvisorProfileType
       chats: formData.chats || [],
       availability: formData.availability || [],
       chatEnabled: formData.chatEnabled || false,

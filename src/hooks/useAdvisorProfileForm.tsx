@@ -40,7 +40,7 @@ export const useAdvisorProfileForm = (advisorProfile?: AdvisorProfile | null) =>
     expertise: advisorProfile?.expertise || [],
     profilePicture: advisorProfile?.profilePicture || '',
     matches: advisorProfile?.matches || [],
-    compatibilityScores: advisorProfile?.compatibilityScores || {},
+    compatibilityScores: {},  // Initialize with empty object
     chats: advisorProfile?.chats || [],
     availability: advisorProfile?.availability || [],
     chatEnabled: advisorProfile?.chatEnabled !== undefined ? advisorProfile.chatEnabled : true,

@@ -10,11 +10,19 @@ export type ConsumerProfile = {
   riskTolerance: 'low' | 'medium' | 'high';
   preferredCommunication: string[];
   preferredLanguage: string[];
+  serviceNeeds?: ServiceCategory[];
+  investmentAmount?: number;
+  advisorPreferences?: {
+    experience?: string;
+    feeStructure?: string;
+    minimumInvestment?: number;
+  };
+  languages?: string[];
   matches: string[];
   chats: string[];
   profilePicture?: string; // URL to profile picture
   chatEnabled: boolean; // New field for chat settings
-  appointments: string[]; // IDs of appointments
+  appointments: string[];
   startTimeline: 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' | null; // When they want to start
   onlineStatus: 'online' | 'offline' | 'away'; // New field for online status
   lastOnline: string; // ISO string for last online time
@@ -65,6 +73,7 @@ export type AdvisorProfile = {
   assetsUnderManagement: number;
   expertise: ServiceCategory[]; // Now explicitly typed
   matches: string[];
+  compatibilityScores?: Record<string, number>; // Add this optional property
   chats: string[];
   profilePicture?: string; // URL to profile picture
   availability?: TimeSlot[]; // Weekly availability slots
@@ -597,3 +606,4 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
 // Custom hook to use the user context
 export const useUser = () => useContext(UserContext);
+
