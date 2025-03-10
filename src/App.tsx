@@ -6,7 +6,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/toaster';
 import { Helmet } from 'react-helmet';
 import StructuredData from './components/seo/StructuredData';
-import { generateOrganizationSchema } from './utils/jsonLdData';
+import { 
+  generateOrganizationSchema, 
+  generateWebsiteSchema
+} from './utils/jsonLdData';
 
 // Pages
 import Index from './pages/Index';
@@ -30,6 +33,12 @@ import './App.css';
 
 const queryClient = new QueryClient();
 
+// Combine all global structured data
+const globalStructuredData = [
+  generateOrganizationSchema(),
+  generateWebsiteSchema()
+];
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -37,11 +46,19 @@ function App() {
         <Helmet>
           <html lang="en" />
           <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
           <meta name="theme-color" content="#1E3A8A" />
           <link rel="icon" href="/favicon.ico" />
+          <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+          
+          {/* Global metadata */}
+          <meta name="application-name" content="AdvisorWiz" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+          <meta name="format-detection" content="telephone=no" />
+          <meta name="mobile-web-app-capable" content="yes" />
         </Helmet>
-        <StructuredData data={generateOrganizationSchema()} />
+        <StructuredData data={globalStructuredData} />
         <Router>
           <Routes>
             <Route path="/" element={<Index />} />

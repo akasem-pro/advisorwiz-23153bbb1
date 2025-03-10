@@ -1,16 +1,32 @@
 
+# AdvisorWiz Robots.txt
 User-agent: *
 Allow: /
 
-# Important pages
+# Primary Pages - High Priority
 Allow: /for-advisors
 Allow: /for-consumers
 Allow: /for-firms
 Allow: /pricing
 Allow: /contact
 
+# Secondary Pages
+Allow: /terms
+Allow: /privacy
+
 # Disallow specific admin or private paths
 Disallow: /admin/
 Disallow: /private/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /internal/
 
+# Crawl-delay for specific bots
+User-agent: Googlebot
+Crawl-delay: 2
+
+User-agent: Bingbot
+Crawl-delay: 2
+
+# Sitemap location
 Sitemap: https://advisorwiz.com/sitemap.xml
