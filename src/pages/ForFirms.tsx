@@ -3,8 +3,7 @@ import React from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import SEO from '../components/seo/SEO';
-import StructuredData from '../components/seo/StructuredData';
+import PageSEO from '../components/seo/PageSEO';
 import { generateServiceSchema, generateFAQSchema, generateBreadcrumbSchema } from '../utils/schemas';
 
 // Import our new components
@@ -47,13 +46,13 @@ const ForFirms: React.FC = () => {
   
   return (
     <AnimatedRoute animation="fade">
-      <SEO 
+      <PageSEO 
         title="Financial Advisory Firm Solutions | AdvisorWiz"
         description="Empower your financial advisory firm with tools to manage multiple advisors, streamline client matching, and grow your business with our comprehensive platform."
         keywords="financial advisory firm, wealth management firm, advisory firm solutions, financial practice management, advisor team management"
         canonicalUrl="https://advisorwiz.com/for-firms"
+        structuredData={structuredData}
       />
-      <StructuredData data={structuredData} />
       
       <div className="min-h-screen flex flex-col">
         <Header />

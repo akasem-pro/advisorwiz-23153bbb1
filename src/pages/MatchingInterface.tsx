@@ -1,4 +1,3 @@
-
 import React from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -9,8 +8,7 @@ import EmptyState from '../components/matching/EmptyState';
 import MatchedProfileList from '../components/matching/MatchedProfileList';
 import MatchHeader from '../components/matching/MatchHeader';
 import { useMatchingInterface } from '../hooks/useMatchingInterface';
-import SEO from '../components/seo/SEO';
-import StructuredData from '../components/seo/StructuredData';
+import PageSEO from '../components/seo/PageSEO';
 import { generateServiceSchema, generateBreadcrumbSchema } from '../utils/schemas';
 import { Link } from 'react-router-dom';
 
@@ -67,13 +65,13 @@ const MatchingInterface: React.FC = () => {
 
   return (
     <AnimatedRoute animation="fade">
-      <SEO 
+      <PageSEO 
         title={pageTitle}
         description={pageDescription}
         keywords="financial advisor matching, find financial advisor, connect with clients, advisor-client matching"
         canonicalUrl="https://advisorwiz.com/matches"
+        structuredData={structuredData}
       />
-      <StructuredData data={structuredData} />
       
       <div className="min-h-screen flex flex-col">
         <Header />
