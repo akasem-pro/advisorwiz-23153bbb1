@@ -10,7 +10,7 @@ import {
   generateOrganizationSchema, 
   generateWebsiteSchema
 } from './utils/jsonLdData';
-import { trackWebVitals, setupLazyLoading } from './utils/performanceTracking';
+import { trackWebVitals, setupLazyLoading, optimizeCriticalRendering } from './utils/performanceTracking';
 
 // Pages
 import Index from './pages/Index';
@@ -53,7 +53,11 @@ const globalStructuredData = [
 function App() {
   // Track web vitals metrics on mount
   useEffect(() => {
+    // Track performance metrics
     trackWebVitals();
+    
+    // Apply critical rendering optimizations
+    optimizeCriticalRendering();
     
     // Set up lazy loading for images when DOM is loaded
     if (document.readyState === 'complete') {

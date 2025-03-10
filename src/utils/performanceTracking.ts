@@ -22,7 +22,7 @@ export const trackWebVitals = () => {
 };
 
 // Send metrics to analytics
-const sendToAnalytics = (metric: { name: string; value: number }) => {
+const sendToAnalytics = (metric: { name: string; value: number; rating?: string; delta: number; entries: any[]; id: string; navigationType?: string }) => {
   // Check if gtag is available
   if (typeof window !== 'undefined' && 'gtag' in window) {
     // @ts-ignore
