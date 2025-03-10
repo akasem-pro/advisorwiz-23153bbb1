@@ -6,7 +6,7 @@ import Footer from '../components/layout/Footer';
 import SEO from '../components/seo/SEO';
 import StructuredData from '../components/seo/StructuredData';
 import Preload from '../components/seo/Preload';
-import { generateFAQSchema, generateWebsiteSchema, generateOrganizationSchema } from '../utils/jsonLdData';
+import { generateFAQSchema, generateWebsiteSchema, generateOrganizationSchema } from '../utils/schemas';
 import { initPerformanceOptimizations } from '../utils/performanceTracking';
 
 // Import all the component sections

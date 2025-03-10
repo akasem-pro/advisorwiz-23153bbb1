@@ -1,4 +1,3 @@
-
 import React from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -7,7 +6,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Building, Users, ArrowRight } from 'lucide-react';
 import SEO from '../components/seo/SEO';
 import StructuredData from '../components/seo/StructuredData';
-import { generateServiceSchema, generateFAQSchema, generateBreadcrumbSchema } from '../utils/jsonLdData';
+import { generateServiceSchema, generateFAQSchema, generateBreadcrumbSchema } from '../utils/schemas';
 
 const ForFirms: React.FC = () => {
   const navigate = useNavigate();

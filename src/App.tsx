@@ -10,7 +10,7 @@ import Preload from './components/seo/Preload';
 import { 
   generateOrganizationSchema, 
   generateWebsiteSchema
-} from './utils/jsonLdData';
+} from './utils/schemas';
 import { trackWebVitals, setupLazyLoading, optimizeCriticalRendering } from './utils/performanceTracking';
 
 // Pages

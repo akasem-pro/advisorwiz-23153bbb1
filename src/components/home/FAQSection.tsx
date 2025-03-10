@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
-import { generateFAQSchema } from '../../utils/jsonLdData';
+import { generateFAQSchema } from '../../utils/schemas';
 import StructuredData from '../seo/StructuredData';
 import { Link } from 'react-router-dom';
 

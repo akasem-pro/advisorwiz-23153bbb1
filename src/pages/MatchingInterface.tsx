@@ -11,7 +11,7 @@ import MatchHeader from '../components/matching/MatchHeader';
 import { useMatchingInterface } from '../hooks/useMatchingInterface';
 import SEO from '../components/seo/SEO';
 import StructuredData from '../components/seo/StructuredData';
-import { generateServiceSchema, generateBreadcrumbSchema } from '../utils/jsonLdData';
+import { generateServiceSchema, generateBreadcrumbSchema } from '../utils/schemas';
 import { Link } from 'react-router-dom';
 
 const MatchingInterface: React.FC = () => {
