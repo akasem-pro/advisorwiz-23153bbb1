@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { AdvisorProfile, ConsumerProfile } from '../../context/UserContext';
-import { Calendar, Inbox } from 'lucide-react';
+import { Calendar, Inbox, FilterX } from 'lucide-react';
 import MatchFilterSort from './MatchFilterSort';
 import { useMatchFiltering } from '../../hooks/useMatchFiltering';
 
