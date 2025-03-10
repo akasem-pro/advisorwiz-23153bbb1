@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
 
 const AppFooter: React.FC = () => {
   return (
@@ -13,6 +13,20 @@ const AppFooter: React.FC = () => {
             <p className="text-slate-600 text-sm">
               Connecting consumers with qualified financial advisors.
             </p>
+            <div className="flex space-x-3 mt-4">
+              <a href="https://www.x.com/advisorwiz" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-teal-600 transition-colors" aria-label="Twitter">
+                <Twitter className="w-4 h-4" />
+              </a>
+              <a href="https://www.facebook.com/379597858579446" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-teal-600 transition-colors" aria-label="Facebook">
+                <Facebook className="w-4 h-4" />
+              </a>
+              <a href="https://www.linkedin.com/company/advisorwiz/" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-teal-600 transition-colors" aria-label="LinkedIn">
+                <Linkedin className="w-4 h-4" />
+              </a>
+              <a href="https://www.instagram.com/advisorwiz" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-teal-600 transition-colors" aria-label="Instagram">
+                <Instagram className="w-4 h-4" />
+              </a>
+            </div>
           </div>
           
           <div>
