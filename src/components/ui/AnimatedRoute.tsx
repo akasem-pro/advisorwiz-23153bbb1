@@ -50,4 +50,3 @@ export const AnimatedRoute = ({ children, animation = 'fade' }: AnimatedRoutePro
 };
 
 export default AnimatedRoute;
-

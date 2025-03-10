@@ -891,4 +891,4 @@ const AdvisorProfile: React.FC = () => {
                   {/* Professional Credentials Section */}
                   <div className="rounded-lg border border-slate-200 overflow-hidden">
                     <div 
-                      className={`flex justify-between items-center p-4 cursor-pointer ${sections[1].isCompleted ? 'bg-
+                      className={`flex justify-between items-center p-4 cursor-pointer ${sections[1].isCompleted ? '
