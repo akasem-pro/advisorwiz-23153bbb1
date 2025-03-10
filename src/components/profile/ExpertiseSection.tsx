@@ -4,7 +4,7 @@ import { ProfileSection } from './ProfileSection';
 import { ExtendedAdvisorProfileForm, Section } from '../../types/advisorTypes';
 import { ServiceCategory } from '../../context/UserContext';
 import { Check, Info } from 'lucide-react';
-import { Tooltip } from '../ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 interface ExpertiseSectionProps {
   section: Section;
@@ -15,17 +15,6 @@ interface ExpertiseSectionProps {
   isExpertiseSelected: (expertise: ServiceCategory) => boolean;
   serviceCategories: Array<{ value: ServiceCategory; label: string; description: string }>;
 }
-
-const serviceCategoryDescriptions = {
-  retirement: "Retirement planning, pension optimization, and retirement income strategies",
-  investment: "Portfolio management, asset allocation, and market analysis",
-  tax: "Tax planning, optimization strategies, and tax implications of investments",
-  estate: "Estate planning, wealth transfer, and inheritance tax minimization",
-  business: "Business succession planning, business valuation, and key person insurance",
-  insurance: "Life, disability, critical illness, and long-term care insurance needs",
-  philanthropic: "Charitable giving strategies, donor-advised funds, and foundation setup",
-  education: "Education savings, RESP optimization, and financial aid planning"
-};
 
 export const ExpertiseSection: React.FC<ExpertiseSectionProps> = ({
   section,
@@ -69,9 +58,16 @@ export const ExpertiseSection: React.FC<ExpertiseSectionProps> = ({
               >
                 <div className="flex items-center space-x-2">
                   <span className="font-medium text-navy-800">{category.label}</span>
-                  <Tooltip content={serviceCategoryDescriptions[category.value]} side="top">
-                    <Info className="h-3.5 w-3.5 text-slate-400" />
-                  </Tooltip>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3.5 w-3.5 text-slate-400 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        {category.description}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
                 {isExpertiseSelected(category.value) && (
                   <Check className="h-4 w-4 text-teal-500" />

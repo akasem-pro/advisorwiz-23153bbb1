@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, ChangeEvent, MouseEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -163,6 +164,7 @@ const AdvisorProfile: React.FC = () => {
     expertise: advisorProfile?.expertise || [],
     profilePicture: advisorProfile?.profilePicture || '',
     matches: advisorProfile?.matches || [],
+    compatibilityScores: advisorProfile?.compatibilityScores || {},
     chats: advisorProfile?.chats || [],
     availability: advisorProfile?.availability || [],
     chatEnabled: advisorProfile?.chatEnabled !== undefined ? advisorProfile.chatEnabled : true,
