@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -411,7 +412,12 @@ const MatchingInterface: React.FC = () => {
       ? mockAdvisors.find(a => a.id === profileId)
       : mockConsumers.find(c => c.id === profileId);
     
-    if (!otherProfile?.chatEnabled) {
+    if (!otherProfile) {
+      toast.error("Could not find the selected profile");
+      return;
+    }
+    
+    if (!otherProfile.chatEnabled) {
       toast.error("Chat is not available for this user");
       return;
     }
