@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/toaster';
 import { Helmet } from 'react-helmet';
 import StructuredData from './components/seo/StructuredData';
+import Preload from './components/seo/Preload';
 import { 
   generateOrganizationSchema, 
   generateWebsiteSchema
@@ -43,6 +44,31 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// Critical resources to preload
+const criticalResources = [
+  {
+    url: '/lovable-uploads/d66162b8-d098-4ffe-a300-d14aa6ffe38e.png',
+    as: 'image' as const,
+    importance: 'high' as const,
+  },
+  {
+    url: '/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png',
+    as: 'image' as const,
+  }
+];
+
+// Domains to preconnect to
+const preconnectDomains = [
+  'https://fonts.googleapis.com',
+  'https://fonts.gstatic.com'
+];
+
+// DNS prefetch domains
+const dnsPrefetchDomains = [
+  'https://www.google-analytics.com',
+  'https://cdn.gpteng.co'
+];
 
 // Combine all global structured data
 const globalStructuredData = [
@@ -85,11 +111,12 @@ function App() {
           <meta name="apple-mobile-web-app-status-bar-style" content="default" />
           <meta name="format-detection" content="telephone=no" />
           <meta name="mobile-web-app-capable" content="yes" />
-          
-          {/* Preload critical assets */}
-          <link rel="preload" href="/fonts/main-font.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-          <link rel="preload" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" as="image" />
         </Helmet>
+        <Preload 
+          resources={criticalResources}
+          preconnect={preconnectDomains}
+          dnsPrefetch={dnsPrefetchDomains}
+        />
         <StructuredData data={globalStructuredData} />
         <Router>
           <Routes>

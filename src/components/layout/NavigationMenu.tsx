@@ -6,6 +6,11 @@ interface NavLink {
   name: string;
   path: string;
   icon?: React.ReactNode;
+  description?: string;
+  subLinks?: Array<{
+    name: string;
+    path: string;
+  }>;
 }
 
 interface NavigationMenuProps {
@@ -20,19 +25,43 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ links, showGetStarted =
   return (
     <nav className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-6 md:items-center">
       {links.map((link) => (
-        <Link
-          key={link.path}
-          to={link.path}
-          className={`py-2 px-1 font-medium text-lg md:text-base flex items-center ${
-            location.pathname === link.path
-              ? 'text-teal-600'
-              : 'text-navy-700 hover:text-teal-600'
-          } transition-colors`}
-          onClick={onClick}
-        >
-          {link.icon && <span className="mr-2 md:mr-1">{link.icon}</span>}
-          <span>{link.name}</span>
-        </Link>
+        <div key={link.path} className="relative group">
+          <Link
+            to={link.path}
+            className={`py-2 px-1 font-medium text-lg md:text-base flex items-center ${
+              location.pathname === link.path
+                ? 'text-teal-600'
+                : 'text-navy-700 hover:text-teal-600'
+            } transition-colors`}
+            onClick={onClick}
+            aria-describedby={link.description ? `desc-${link.path.replace('/', '')}` : undefined}
+          >
+            {link.icon && <span className="mr-2 md:mr-1">{link.icon}</span>}
+            <span>{link.name}</span>
+          </Link>
+          
+          {link.description && (
+            <span id={`desc-${link.path.replace('/', '')}`} className="sr-only">
+              {link.description}
+            </span>
+          )}
+          
+          {/* Dropdown menu for links with subLinks */}
+          {link.subLinks && link.subLinks.length > 0 && (
+            <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md overflow-hidden z-10 hidden group-hover:block">
+              {link.subLinks.map((subLink) => (
+                <Link
+                  key={subLink.path}
+                  to={subLink.path}
+                  className="block px-4 py-2 text-sm text-navy-700 hover:bg-slate-50 hover:text-teal-600"
+                  onClick={onClick}
+                >
+                  {subLink.name}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       ))}
       
       {showGetStarted && (
