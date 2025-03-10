@@ -5,6 +5,7 @@ import { useContext } from 'react';
 
 // Re-export all the types
 export * from '../types/userTypes';
+export * from './UserContextDefinition';
 
 // Custom hook to use the user context
 export const useUser = () => useContext(UserContext);

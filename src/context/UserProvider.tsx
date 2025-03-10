@@ -1,6 +1,6 @@
 
 import React, { useState, ReactNode } from 'react';
-import UserContext from './UserContextDefinition';
+import UserContext, { MatchPreferences } from './UserContextDefinition';
 import { 
   UserType, 
   ConsumerProfile, 
@@ -29,6 +29,11 @@ import {
   filterAdvisors, 
   filterConsumers 
 } from '../services/filterService';
+import {
+  calculateCompatibilityBetweenProfiles,
+  getWeightedCompatibilityScore,
+  getRecommendedProfilesBasedOnActivity
+} from '../services/matchingService';
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [userType, setUserType] = useState<UserType>(null);
@@ -38,6 +43,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [firms, setFirms] = useState<FinancialFirm[]>([]);
+  const [matchPreferences, setMatchPreferences] = useState<MatchPreferences>({
+    prioritizeLanguage: true,
+    prioritizeAvailability: true,
+    prioritizeExpertise: true,
+    prioritizeLocation: false,
+    minimumMatchScore: 40
+  });
 
   // Chat operations
   const addMessage = (chatId: string, message: Omit<ChatMessage, 'id'>) => {
@@ -116,6 +128,60 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     return filterConsumers(filters);
   };
 
+  // New matching algorithm enhanced operations
+  const calculateCompatibilityScore = (advisorId: string, consumerId: string) => {
+    // Enhanced logic using matchPreferences to compute more accurate scores
+    return getWeightedCompatibilityScore(
+      advisorId, 
+      consumerId, 
+      matchPreferences
+    );
+  };
+
+  const updateMatchPreferences = (preferences: MatchPreferences) => {
+    setMatchPreferences(prev => ({
+      ...prev,
+      ...preferences
+    }));
+  };
+
+  const getTopMatches = (limit: number = 5) => {
+    if (userType === 'consumer' && consumerProfile) {
+      // Get top advisor matches for consumer
+      return calculateCompatibilityBetweenProfiles(
+        'consumer',
+        consumerProfile.id,
+        matchPreferences,
+        limit
+      );
+    } else if (userType === 'advisor' && advisorProfile) {
+      // Get top consumer matches for advisor
+      return calculateCompatibilityBetweenProfiles(
+        'advisor',
+        advisorProfile.id,
+        matchPreferences,
+        limit
+      );
+    }
+    return [];
+  };
+
+  const getRecommendedMatches = () => {
+    const currentUserId = userType === 'consumer' 
+      ? consumerProfile?.id 
+      : advisorProfile?.id;
+    
+    if (!currentUserId) return [];
+
+    return getRecommendedProfilesBasedOnActivity(
+      userType as 'consumer' | 'advisor',
+      currentUserId,
+      chats,
+      appointments,
+      matchPreferences
+    );
+  };
+
   const value = {
     userType,
     setUserType,
@@ -139,7 +205,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     firms,
     setFirms,
     addFirm,
-    getFirmByAdmin
+    getFirmByAdmin,
+    calculateCompatibilityScore,
+    updateMatchPreferences,
+    getTopMatches,
+    getRecommendedMatches
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

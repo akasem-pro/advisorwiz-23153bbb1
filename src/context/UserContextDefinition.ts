@@ -43,6 +43,20 @@ export type UserContextType = {
   setFirms: (firms: FinancialFirm[]) => void;
   addFirm: (firm: Omit<FinancialFirm, 'id' | 'createdAt'>) => void;
   getFirmByAdmin: (adminId: string) => FinancialFirm[];
+  calculateCompatibilityScore: (advisorId: string, consumerId: string) => number;
+  updateMatchPreferences: (preferences: MatchPreferences) => void;
+  getTopMatches: (limit?: number) => AdvisorProfile[] | ConsumerProfile[];
+  getRecommendedMatches: () => AdvisorProfile[] | ConsumerProfile[];
+};
+
+// New type for match preferences
+export type MatchPreferences = {
+  prioritizeLanguage?: boolean;
+  prioritizeAvailability?: boolean;
+  prioritizeExpertise?: boolean;
+  prioritizeLocation?: boolean;
+  minimumMatchScore?: number;
+  excludedCategories?: ServiceCategory[];
 };
 
 // Create the context with default values
@@ -70,6 +84,10 @@ const UserContext = createContext<UserContextType>({
   setFirms: () => {},
   addFirm: () => {},
   getFirmByAdmin: () => [],
+  calculateCompatibilityScore: () => 0,
+  updateMatchPreferences: () => {},
+  getTopMatches: () => [],
+  getRecommendedMatches: () => []
 });
 
 export default UserContext;
