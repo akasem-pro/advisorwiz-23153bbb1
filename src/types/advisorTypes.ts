@@ -131,3 +131,59 @@ export function getMatchCategory(score: number): MatchScoreRange {
     range => score >= range.minScore && score <= range.maxScore
   ) || MATCH_SCORE_RANGES[MATCH_SCORE_RANGES.length - 1];
 }
+
+// Add new interfaces for the refactored data types
+export interface LicensingBody {
+  value: string;
+  label: string;
+}
+
+export interface ExperienceOption {
+  value: string;
+  label: string;
+}
+
+export interface FeeStructureOption {
+  value: string;
+  label: string;
+  fieldType: string;
+  placeholder: string;
+}
+
+export interface MinimumInvestmentOption {
+  value: string;
+  label: string;
+  range: string;
+}
+
+export interface ClientTypeOption {
+  value: string;
+  label: string;
+}
+
+export interface MeetingMethodOption {
+  value: string;
+  label: string;
+}
+
+export interface ProvinceOption {
+  value: string;
+  label: string;
+}
+
+export interface EmploymentStatusOption {
+  value: string;
+  label: string;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  price: number;
+  features: string[];
+}
+
+export interface LanguageOption {
+  value: string;
+  label: string;
+}
