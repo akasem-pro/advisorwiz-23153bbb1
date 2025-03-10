@@ -1,6 +1,8 @@
 
 import React from 'react';
-import { Appointment, useUser } from '../../../context/UserContext';
+import { Appointment } from '../../../context/UserContext';
+import { formatAppointmentDate, formatAppointmentTime } from './FormatUtils';
+import { getStatusColor } from './StatusUtils';
 import AppointmentTitle from './AppointmentTitle';
 import AppointmentDate from './AppointmentDate';
 import AppointmentTime from './AppointmentTime';
@@ -9,31 +11,56 @@ import AppointmentCategory from './AppointmentCategory';
 
 interface AppointmentItemProps {
   appointment: Appointment;
-  onClick: () => void;
+  onClick?: (appointment: Appointment) => void;
+  showAdvisorName?: boolean;
+  showConsumerName?: boolean;
 }
 
-const AppointmentItem: React.FC<AppointmentItemProps> = ({ appointment, onClick }) => {
-  const { advisorProfile } = useUser();
+const AppointmentItem: React.FC<AppointmentItemProps> = ({
+  appointment,
+  onClick,
+  showAdvisorName = false,
+  showConsumerName = false,
+}) => {
+  const handleClick = () => {
+    if (onClick) {
+      onClick(appointment);
+    }
+  };
+
+  // Get the title of the appointment based on who's viewing it
+  const getTitle = () => {
+    if (showAdvisorName && appointment.advisorName) {
+      return `Meeting with ${appointment.advisorName}`;
+    }
+    if (showConsumerName && appointment.consumerName) {
+      return `Meeting with ${appointment.consumerName}`;
+    }
+    return appointment.title || 'Appointment';
+  };
 
   return (
     <div 
-      className="border rounded-lg p-4 bg-white hover:shadow-md transition-shadow cursor-pointer"
-      onClick={onClick}
+      className="p-4 border rounded-lg shadow-sm bg-white hover:shadow-md transition-shadow mb-3 cursor-pointer"
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div>
-          <AppointmentTitle title={appointment.title} />
-          <AppointmentDate date={appointment.date} />
-          <AppointmentTime startTime={appointment.startTime} endTime={appointment.endTime} />
+      <div className="flex justify-between items-start">
+        <div className="space-y-1">
+          <AppointmentTitle title={getTitle()} />
+          <div className="flex items-center space-x-2 text-sm text-slate-500">
+            <AppointmentDate date={appointment.date} />
+            <span>•</span>
+            <AppointmentTime startTime={appointment.startTime} endTime={appointment.endTime} />
+          </div>
+          {appointment.category && (
+            <div className="mt-2">
+              <AppointmentCategory category={appointment.category} />
+            </div>
+          )}
         </div>
-        
-        <div className="flex flex-col sm:items-end gap-2">
-          <AppointmentStatusBadge status={appointment.status} />
-          <AppointmentCategory 
-            appointment={appointment} 
-            advisorProfile={advisorProfile} 
-          />
-        </div>
+        <AppointmentStatusBadge status={appointment.status} />
       </div>
     </div>
   );
