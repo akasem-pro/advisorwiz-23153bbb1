@@ -1,185 +1,70 @@
 
-import React, { useState, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import UserContext, { MatchPreferences } from './UserContextDefinition';
-import { 
-  UserType, 
-  ConsumerProfile, 
-  AdvisorProfile, 
-  Chat, 
-  ChatMessage,
-  Appointment, 
-  AppointmentStatus, 
-  FinancialFirm,
-  ServiceCategory
-} from '../types/userTypes';
-import { 
-  addMessageToChat, 
-  markChatMessagesAsRead 
-} from '../services/chatService';
-import { 
-  createAppointment, 
-  updateAppointmentStatusById, 
-  updateProfileWithAppointment 
-} from '../services/appointmentService';
-import { 
-  createFirm, 
-  getFirmsByAdminId 
-} from '../services/firmService';
-import { 
-  filterAdvisors, 
-  filterConsumers 
-} from '../services/filterService';
-import {
-  calculateCompatibilityBetweenProfiles,
-  getWeightedCompatibilityScore,
-  getRecommendedProfilesBasedOnActivity
-} from '../services/matchingService';
+import { useUserState } from '../hooks/useUserState';
+import { useChatOperations } from '../hooks/useChatOperations';
+import { useAppointmentOperations } from '../hooks/useAppointmentOperations';
+import { useFirmOperations } from '../hooks/useFirmOperations';
+import { useMatchingAlgorithm } from '../hooks/useMatchingAlgorithm';
+import { useUserStatus } from '../hooks/useUserStatus';
+import { useFilterOperations } from '../hooks/useFilterOperations';
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [userType, setUserType] = useState<UserType>(null);
-  const [consumerProfile, setConsumerProfile] = useState<ConsumerProfile | null>(null);
-  const [advisorProfile, setAdvisorProfile] = useState<AdvisorProfile | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [chats, setChats] = useState<Chat[]>([]);
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [firms, setFirms] = useState<FinancialFirm[]>([]);
-  const [matchPreferences, setMatchPreferences] = useState<MatchPreferences>({
-    prioritizeLanguage: true,
-    prioritizeAvailability: true,
-    prioritizeExpertise: true,
-    prioritizeLocation: false,
-    minimumMatchScore: 40
-  });
+  // Core state management
+  const {
+    userType, setUserType,
+    consumerProfile, setConsumerProfile,
+    advisorProfile, setAdvisorProfile,
+    isAuthenticated, setIsAuthenticated,
+    chats, setChats,
+    appointments, setAppointments,
+    firms, setFirms,
+    matchPreferences, setMatchPreferences
+  } = useUserState();
 
   // Chat operations
-  const addMessage = (chatId: string, message: Omit<ChatMessage, 'id'>) => {
-    setChats(prevChats => addMessageToChat(prevChats, chatId, message));
-  };
-
-  const markChatAsRead = (chatId: string, userId: string) => {
-    setChats(prevChats => markChatMessagesAsRead(prevChats, chatId, userId));
-  };
+  const { addMessage, markChatAsRead } = useChatOperations(chats, setChats);
 
   // Appointment operations
-  const addAppointment = (appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newAppointment = createAppointment(appointmentData);
-    
-    setAppointments(prevAppointments => [...prevAppointments, newAppointment]);
-    
-    // Update consumer and advisor appointment lists
-    if (consumerProfile && appointmentData.consumerId === consumerProfile.id) {
-      setConsumerProfile(prevProfile => 
-        updateProfileWithAppointment(prevProfile, newAppointment.id) as ConsumerProfile | null
-      );
-    }
-    
-    if (advisorProfile && appointmentData.advisorId === advisorProfile.id) {
-      setAdvisorProfile(prevProfile => 
-        updateProfileWithAppointment(prevProfile, newAppointment.id) as AdvisorProfile | null
-      );
-    }
-  };
-
-  const updateAppointmentStatus = (appointmentId: string, status: AppointmentStatus) => {
-    setAppointments(prevAppointments => 
-      updateAppointmentStatusById(prevAppointments, appointmentId, status)
-    );
-  };
+  const { addAppointment, updateAppointmentStatus } = useAppointmentOperations(
+    appointments, 
+    setAppointments, 
+    consumerProfile, 
+    setConsumerProfile, 
+    advisorProfile, 
+    setAdvisorProfile
+  );
 
   // User status operations
-  const updateOnlineStatus = (status: 'online' | 'offline' | 'away') => {
-    if (consumerProfile) {
-      setConsumerProfile({
-        ...consumerProfile,
-        onlineStatus: status,
-        lastOnline: new Date().toISOString()
-      });
-    } else if (advisorProfile) {
-      setAdvisorProfile({
-        ...advisorProfile,
-        onlineStatus: status,
-        lastOnline: new Date().toISOString()
-      });
-    }
-  };
+  const { updateOnlineStatus } = useUserStatus(
+    consumerProfile, 
+    setConsumerProfile, 
+    advisorProfile, 
+    setAdvisorProfile
+  );
 
   // Firm operations
-  const addFirm = (firmData: Omit<FinancialFirm, 'id' | 'createdAt'>) => {
-    const newFirm = createFirm(firmData);
-    setFirms(prevFirms => [...prevFirms, newFirm]);
-  };
-
-  const getFirmByAdmin = (adminId: string) => {
-    return getFirmsByAdminId(firms, adminId);
-  };
+  const { addFirm, getFirmByAdmin } = useFirmOperations(firms, setFirms);
 
   // Filtering operations
-  const getFilteredAdvisors = (filters: {
-    languages?: string[];
-    services?: ServiceCategory[];
-  }) => {
-    return filterAdvisors(filters);
-  };
+  const { getFilteredAdvisors, getFilteredConsumers } = useFilterOperations();
 
-  const getFilteredConsumers = (filters: {
-    startTimeline?: ConsumerProfile['startTimeline'][];
-    preferredLanguage?: string[];
-  }) => {
-    return filterConsumers(filters);
-  };
+  // Matching algorithm operations
+  const matching = useMatchingAlgorithm(
+    userType,
+    consumerProfile,
+    advisorProfile,
+    matchPreferences,
+    chats,
+    appointments
+  );
 
-  // New matching algorithm enhanced operations
-  const calculateCompatibilityScore = (advisorId: string, consumerId: string) => {
-    // Enhanced logic using matchPreferences to compute more accurate scores
-    return getWeightedCompatibilityScore(
-      advisorId, 
-      consumerId, 
-      matchPreferences
-    );
-  };
-
+  // Enhanced with actual state update
   const updateMatchPreferences = (preferences: MatchPreferences) => {
     setMatchPreferences(prev => ({
       ...prev,
       ...preferences
     }));
-  };
-
-  const getTopMatches = (limit: number = 5): (AdvisorProfile | ConsumerProfile)[] => {
-    if (userType === 'consumer' && consumerProfile) {
-      // Get top advisor matches for consumer
-      return calculateCompatibilityBetweenProfiles(
-        'consumer',
-        consumerProfile.id,
-        matchPreferences,
-        limit
-      );
-    } else if (userType === 'advisor' && advisorProfile) {
-      // Get top consumer matches for advisor
-      return calculateCompatibilityBetweenProfiles(
-        'advisor',
-        advisorProfile.id,
-        matchPreferences,
-        limit
-      );
-    }
-    return [];
-  };
-
-  const getRecommendedMatches = (): (AdvisorProfile | ConsumerProfile)[] => {
-    const currentUserId = userType === 'consumer' 
-      ? consumerProfile?.id 
-      : advisorProfile?.id;
-    
-    if (!currentUserId) return [];
-
-    return getRecommendedProfilesBasedOnActivity(
-      userType as 'consumer' | 'advisor',
-      currentUserId,
-      chats,
-      appointments,
-      matchPreferences
-    );
   };
 
   const value = {
@@ -206,10 +91,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setFirms,
     addFirm,
     getFirmByAdmin,
-    calculateCompatibilityScore,
+    calculateCompatibilityScore: matching.calculateCompatibilityScore,
     updateMatchPreferences,
-    getTopMatches,
-    getRecommendedMatches
+    getTopMatches: matching.getTopMatches,
+    getRecommendedMatches: matching.getRecommendedMatches
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
