@@ -50,6 +50,7 @@ export interface ExtendedAdvisorProfileForm extends Partial<AdvisorProfile> {
   // Platform settings
   subscriptionPlan: string;
   matches: string[];
+  compatibilityScores: Record<string, number>; // Store scores for potential matches
   chats: string[];
   availability: TimeSlot[];
   chatEnabled: boolean;
@@ -75,3 +76,58 @@ export interface Section {
   isCompleted: boolean;
 }
 
+// Match score category enum
+export enum MatchCategory {
+  EXCELLENT = 'excellent',
+  GOOD = 'good',
+  AVERAGE = 'average',
+  POOR = 'poor'
+}
+
+// Match score range interface
+export interface MatchScoreRange {
+  category: MatchCategory;
+  minScore: number;
+  maxScore: number;
+  label: string;
+  description: string;
+}
+
+// Match score ranges
+export const MATCH_SCORE_RANGES: MatchScoreRange[] = [
+  {
+    category: MatchCategory.EXCELLENT,
+    minScore: 80,
+    maxScore: 100,
+    label: 'Excellent Match',
+    description: 'This advisor is highly compatible with your needs and preferences.'
+  },
+  {
+    category: MatchCategory.GOOD,
+    minScore: 60,
+    maxScore: 79,
+    label: 'Good Match',
+    description: 'This advisor matches well with most of your requirements.'
+  },
+  {
+    category: MatchCategory.AVERAGE,
+    minScore: 40,
+    maxScore: 59,
+    label: 'Average Match',
+    description: 'This advisor meets some of your needs but may not be ideal in all areas.'
+  },
+  {
+    category: MatchCategory.POOR,
+    minScore: 0,
+    maxScore: 39,
+    label: 'Low Match',
+    description: 'This advisor may not be the best fit for your specific needs.'
+  }
+];
+
+// Function to get match category from score
+export function getMatchCategory(score: number): MatchScoreRange {
+  return MATCH_SCORE_RANGES.find(
+    range => score >= range.minScore && score <= range.maxScore
+  ) || MATCH_SCORE_RANGES[MATCH_SCORE_RANGES.length - 1];
+}
