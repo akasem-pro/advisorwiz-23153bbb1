@@ -1,36 +1,25 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AdvisorProfile, FinancialFirm, useUser } from '../../context/UserContext';
+import { FinancialFirm, useUser } from '../../context/UserContext';
 import { UserPlus, Users, ExternalLink, UserCog, Mail, User, Search } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useToast } from '../../components/ui/use-toast';
+import { useAdvisorList } from '../../hooks/useAdvisorList';
 
 interface AdvisorProfileManagerProps {
   firm: FinancialFirm;
 }
 
 const AdvisorProfileManager: React.FC<AdvisorProfileManagerProps> = ({ firm }) => {
-  const { advisorProfile, getFilteredAdvisors } = useUser();
+  const { advisorProfile } = useUser();
   const navigate = useNavigate();
   const [showInvite, setShowInvite] = useState(false);
   const [email, setEmail] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
   
-  // Placeholder function to get advisors for this firm
-  // In a real implementation, this would filter from the database
-  const firmAdvisors = getFilteredAdvisors({}).filter(advisor => 
-    firm.advisorIds.includes(advisor.id)
-  );
-  
-  const filteredAdvisors = firmAdvisors.filter(advisor => 
-    advisor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    advisor.expertise.some(exp => exp.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const { filteredAdvisors, searchQuery, setSearchQuery } = useAdvisorList({ firm });
   
   const handleInvite = () => {
-    // In a real app, this would send an invitation email
     toast({
       title: "Invitation sent",
       description: `An invitation has been sent to ${email}`,
@@ -40,7 +29,6 @@ const AdvisorProfileManager: React.FC<AdvisorProfileManagerProps> = ({ firm }) =
   };
   
   const handleCreateAdvisor = () => {
-    // Navigate to a new advisor creation page with the firm context
     navigate(`/advisor-profile?firmId=${firm.id}`);
   };
   
