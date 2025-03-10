@@ -37,8 +37,8 @@ const ForAdvisors: React.FC = () => {
                 
                 <div className="rounded-xl overflow-hidden shadow-xl">
                   <img 
-                    src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" 
-                    alt="Financial advisor working on laptop" 
+                    src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a" 
+                    alt="Financial advisor analyzing investment charts" 
                     className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-500"
                   />
                 </div>

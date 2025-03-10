@@ -20,8 +20,8 @@ const ForConsumers: React.FC = () => {
               <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="order-2 md:order-1 rounded-xl overflow-hidden shadow-xl">
                   <img 
-                    src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" 
-                    alt="Person using financial planning application" 
+                    src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e" 
+                    alt="Person planning financial future with charts" 
                     className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-500"
                   />
                 </div>

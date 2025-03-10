@@ -39,8 +39,8 @@ const Index: React.FC = () => {
                 </div>
                 <div className="relative">
                   <img 
-                    src="https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b" 
-                    alt="Person holding a financial chart" 
+                    src="https://images.unsplash.com/photo-1460925895917-afdab827c52f" 
+                    alt="Financial growth chart with upward trend" 
                     className="rounded-2xl shadow-2xl transform rotate-3 animate-slide-up"
                   />
                   <div className="absolute top-1/2 -left-8 transform -translate-y-1/2 bg-white shadow-lg rounded-xl p-4 -rotate-6 animate-pulse-scale">
@@ -120,8 +120,8 @@ const Index: React.FC = () => {
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                   <div className="h-48 overflow-hidden">
                     <img 
-                      src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7" 
-                      alt="Consumer using financial planning app" 
+                      src="https://images.unsplash.com/photo-1565514020179-026b5cfd231c" 
+                      alt="Person planning for retirement with financial documents" 
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -150,8 +150,8 @@ const Index: React.FC = () => {
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                   <div className="h-48 overflow-hidden">
                     <img 
-                      src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" 
-                      alt="Financial advisor working on computer" 
+                      src="https://images.unsplash.com/photo-1543286386-713bdd548da4" 
+                      alt="Financial advisor working with investment data" 
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -180,8 +180,8 @@ const Index: React.FC = () => {
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                   <div className="h-48 overflow-hidden">
                     <img 
-                      src="https://images.unsplash.com/photo-1721322800607-8c38375eef04" 
-                      alt="Financial firm office space" 
+                      src="https://images.unsplash.com/photo-1563986768609-322da13575f3" 
+                      alt="Financial firm office with growth charts and investments" 
                       className="w-full h-full object-cover"
                     />
                   </div>
