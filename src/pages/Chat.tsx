@@ -1,7 +1,6 @@
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import AnimatedRoute from '../components/ui/AnimatedRoute';
 import { useParams } from 'react-router-dom';
-import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import ChatList from '../components/chat/ChatList';
@@ -19,7 +18,6 @@ const Chat: React.FC = () => {
     ? consumerProfile?.chatEnabled 
     : advisorProfile?.chatEnabled;
   
-  // Chat settings section
   const ChatSettings = () => {
     const { userType, consumerProfile, setConsumerProfile, advisorProfile, setAdvisorProfile } = useUser();
     
@@ -69,14 +67,11 @@ const Chat: React.FC = () => {
     );
   };
   
-  // Effect to update local state when profile changes
   useEffect(() => {
-    // This ensures our component state is always in sync with the profile
     const currentChatEnabled = userType === 'consumer' 
       ? consumerProfile?.chatEnabled 
       : advisorProfile?.chatEnabled;
       
-    // If nothing has loaded yet, return early
     if (userType === null || (userType === 'consumer' && !consumerProfile) || (userType === 'advisor' && !advisorProfile)) {
       return;
     }
@@ -115,14 +110,12 @@ const Chat: React.FC = () => {
             ) : (
               <div className="glass-card rounded-2xl overflow-hidden shadow-lg">
                 <div className="h-[600px] flex">
-                  {/* Mobile view - show either chat list or chat window */}
                   <div className="w-full md:w-1/3 border-r md:block bg-white">
                     {!selectedChatId && (
                       <ChatList onSelectChat={(id) => setSelectedChatId(id)} />
                     )}
                   </div>
                   
-                  {/* Chat window */}
                   <div className="w-full md:w-2/3 flex-1 bg-slate-50">
                     {selectedChatId ? (
                       <ChatWindow 

@@ -1,6 +1,5 @@
-
-import React, { useState } from 'react';
-import { AnimatedRoute } from '../components/ui/AnimatedRoute';
+import React from 'react';
+import AnimatedRoute from '../components/ui/AnimatedRoute';
 import { Calendar, Clock, PlusCircle, Check, X, User, Phone, Video, Book, Calendar as CalendarIcon } from 'lucide-react';
 import { useUser, Appointment, AppointmentStatus, AppointmentCategory } from '../context/UserContext';
 import { format, parseISO, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, addMonths, subMonths } from 'date-fns';
@@ -16,7 +15,6 @@ const Schedule = () => {
   const [view, setView] = useState<'calendar' | 'list'>('calendar');
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   
-  // Filter appointments based on user type
   const userAppointments = appointments.filter(appointment => {
     if (userType === 'consumer' && consumerProfile) {
       return appointment.consumerId === consumerProfile.id;

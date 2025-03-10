@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { AnimatedRoute } from '../ui/AnimatedRoute';
+import AnimatedRoute from '../ui/AnimatedRoute';
 import Header from './Header';
 import MobileNavbar from './MobileNavbar';
 

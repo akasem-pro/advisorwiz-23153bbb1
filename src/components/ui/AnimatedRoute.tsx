@@ -1,4 +1,3 @@
-
 import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 
@@ -7,7 +6,7 @@ interface AnimatedRouteProps {
   animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right';
 }
 
-const AnimatedRoute = ({ children, animation = 'fade' }: AnimatedRouteProps) => {
+export const AnimatedRoute: React.FC<AnimatedRouteProps> = ({ children, animation = 'fade' }) => {
   const animations = {
     fade: {
       initial: { opacity: 0 },

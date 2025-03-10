@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -658,6 +658,11 @@ const AdvisorProfile: React.FC = () => {
     navigate('/matches');
   };
 
+  const handleButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    handleChange(e as unknown as ChangeEvent<HTMLInputElement>);
+  };
+
   return (
     <AnimatedRoute animation="fade">
       <div className="min-h-screen flex flex-col">
@@ -1204,8 +1209,8 @@ const AdvisorProfile: React.FC = () => {
                               Profile Picture
                             </label>
                             <ProfilePictureUpload
-                              value={formData.profilePicture}
-                              onChange={handlePictureChange}
+                              currentUrl={formData.profilePicture}
+                              onUpload={handlePictureChange}
                             />
                           </div>
                           <div>

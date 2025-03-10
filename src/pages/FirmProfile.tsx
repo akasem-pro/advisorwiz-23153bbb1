@@ -1,7 +1,6 @@
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import AnimatedRoute from '../components/ui/AnimatedRoute';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AnimatedRoute } from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useUser, FinancialFirm, AdvisorProfile } from '../context/UserContext';
@@ -18,7 +17,6 @@ const FirmProfile: React.FC = () => {
   const [saved, setSaved] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
-  // If not authenticated or not a firm admin, redirect
   useEffect(() => {
     if (!isAuthenticated || userType !== 'firm_admin') {
       navigate('/');
@@ -28,7 +26,6 @@ const FirmProfile: React.FC = () => {
   const adminId = advisorProfile?.id || '';
   const userFirms = getFirmByAdmin(adminId);
   
-  // Find the active firm if we're viewing a specific firm
   const activeFirm = firmId 
     ? firms.find(firm => firm.id === firmId) 
     : undefined;
@@ -111,7 +108,6 @@ const FirmProfile: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Display existing firms if not viewing a specific firm */}
                 {!activeFirm && userFirms.length > 0 && (
                   <div className="mb-12">
                     <h2 className="text-2xl font-serif font-semibold text-navy-800 mb-6 flex items-center">
@@ -167,7 +163,6 @@ const FirmProfile: React.FC = () => {
                   </div>
                 )}
 
-                {/* Display specific firm management UI if viewing a specific firm */}
                 {activeFirm ? (
                   <Tabs defaultValue="overview" className="w-full" onValueChange={setActiveTab}>
                     <TabsList className="grid grid-cols-2 mb-8">
@@ -242,7 +237,6 @@ const FirmProfile: React.FC = () => {
                     </TabsContent>
                   </Tabs>
                 ) : (
-                  // Form to create a new firm
                   <div>
                     <h2 className="text-2xl font-serif font-semibold text-navy-800 mb-6 flex items-center">
                       <Plus className="mr-2 h-6 w-6" />

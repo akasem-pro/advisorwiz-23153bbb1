@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { AnimatedRoute } from '../components/ui/AnimatedRoute';
+import React from 'react';
+import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import AdvisorCard from '../components/advisor/AdvisorCard';
