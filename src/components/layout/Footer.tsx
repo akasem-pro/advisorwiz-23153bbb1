@@ -112,7 +112,16 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-navy-800">
+        <div className="mt-8 pt-8 border-t border-navy-800">
+          <div className="text-slate-400 text-sm mb-6 max-w-4xl mx-auto">
+            <p className="mb-4 text-center">
+              By using AdvisorWiz, you agree to our Terms & Conditions. AdvisorWiz connects consumers with financial advisors but does not provide financial advice. All advisors are independent professionals, and users are responsible for their own financial decisions.
+            </p>
+            <p className="text-center italic">
+              Disclaimer: All financial decisions should be reviewed with a licensed financial advisor. AdvisorWiz does not provide financial, legal, or tax advice. Any information provided on this platform is for informational purposes only and should not be considered as professional guidance.
+            </p>
+          </div>
+
           <p className="text-center text-slate-400 text-sm">
             &copy; {new Date().getFullYear()} AdvisorWiz. All rights reserved.
           </p>
