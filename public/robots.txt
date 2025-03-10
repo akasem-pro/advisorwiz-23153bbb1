@@ -27,16 +27,25 @@ Disallow: /internal/
 Disallow: /*?*  # Block URLs with query parameters
 Disallow: /*?$ # Block URLs ending with ?
 
-# Crawl-delay Directives
+# Google Bot Specific
 User-agent: Googlebot
+Allow: /
 Crawl-delay: 1
 
+# Bing Bot Specific
 User-agent: Bingbot
+Allow: /
 Crawl-delay: 1
 
+# DuckDuckGo Bot Specific
 User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 2
+
+# Archive.org Bot
+User-agent: ia_archiver
+Allow: /
 Crawl-delay: 2
 
 # Sitemap Location
 Sitemap: https://advisorwiz.com/sitemap.xml
-

@@ -8,9 +8,15 @@ interface StructuredDataProps {
 
 const StructuredData: React.FC<StructuredDataProps> = ({ data }) => {
   // Handle both single schema object and array of schema objects
-  const content = Array.isArray(data) 
-    ? data.map(item => JSON.stringify(item)).join('')
-    : JSON.stringify(data);
+  const formatData = (dataObj: Record<string, any> | Array<Record<string, any>>) => {
+    if (Array.isArray(dataObj)) {
+      return dataObj.map(item => JSON.stringify(item)).join('');
+    }
+    return JSON.stringify(dataObj);
+  };
+  
+  // Format data for insertion
+  const content = formatData(data);
     
   return (
     <Helmet>

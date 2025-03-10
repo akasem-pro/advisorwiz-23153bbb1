@@ -8,7 +8,7 @@ interface PreloadProps {
     as: 'image' | 'style' | 'script' | 'font' | 'fetch';
     type?: string;
     crossOrigin?: 'anonymous' | 'use-credentials';
-    // Removed importance property as it's not standard in HTML
+    importance?: 'high' | 'low' | 'auto';
   }[];
   preconnect?: string[];
   prefetch?: string[];
@@ -34,7 +34,7 @@ const Preload: React.FC<PreloadProps> = ({
           as={resource.as}
           type={resource.type}
           crossOrigin={resource.crossOrigin}
-          // Removed importance attribute
+          fetchPriority={resource.importance === 'high' ? 'high' : undefined}
         />
       ))}
 

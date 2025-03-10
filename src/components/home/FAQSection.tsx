@@ -61,37 +61,39 @@ const FAQSection: React.FC = () => {
         </div>
         
         <div className="max-w-3xl mx-auto">
-          {faqs.map((faq, index) => (
-            <div 
-              key={index} 
-              className="mb-4 border border-slate-200 rounded-lg overflow-hidden"
-              itemScope
-              itemType="https://schema.org/Question"
-            >
-              <button
-                className="w-full px-6 py-4 text-left bg-white hover:bg-slate-50 transition-colors flex justify-between items-center"
-                onClick={() => toggleFAQ(index)}
-                aria-expanded={openIndex === index}
-                aria-controls={`faq-answer-${index}`}
-              >
-                <span className="font-medium text-navy-900" itemProp="name">{faq.question}</span>
-                {openIndex === index ? (
-                  <ChevronUp className="w-5 h-5 text-teal-600 flex-shrink-0" aria-hidden="true" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-teal-600 flex-shrink-0" aria-hidden="true" />
-                )}
-              </button>
+          <div className="faq-schema-container" itemScope itemType="https://schema.org/FAQPage">
+            {faqs.map((faq, index) => (
               <div 
-                id={`faq-answer-${index}`}
-                className={`px-6 py-4 bg-white text-slate-700 ${openIndex === index ? 'block' : 'hidden'}`}
+                key={index} 
+                className="mb-4 border border-slate-200 rounded-lg overflow-hidden"
                 itemScope
-                itemProp="acceptedAnswer"
-                itemType="https://schema.org/Answer"
+                itemType="https://schema.org/Question"
               >
-                <p itemProp="text">{faq.answer}</p>
+                <button
+                  className="w-full px-6 py-4 text-left bg-white hover:bg-slate-50 transition-colors flex justify-between items-center"
+                  onClick={() => toggleFAQ(index)}
+                  aria-expanded={openIndex === index}
+                  aria-controls={`faq-answer-${index}`}
+                >
+                  <span className="font-medium text-navy-900" itemProp="name">{faq.question}</span>
+                  {openIndex === index ? (
+                    <ChevronUp className="w-5 h-5 text-teal-600 flex-shrink-0" aria-hidden="true" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-teal-600 flex-shrink-0" aria-hidden="true" />
+                  )}
+                </button>
+                <div 
+                  id={`faq-answer-${index}`}
+                  className={`px-6 py-4 bg-white text-slate-700 ${openIndex === index ? 'block' : 'hidden'}`}
+                  itemScope
+                  itemProp="acceptedAnswer"
+                  itemType="https://schema.org/Answer"
+                >
+                  <div itemProp="text">{faq.answer}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
