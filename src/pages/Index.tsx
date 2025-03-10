@@ -6,7 +6,8 @@ import Footer from '../components/layout/Footer';
 import SEO from '../components/seo/SEO';
 import StructuredData from '../components/seo/StructuredData';
 import Preload from '../components/seo/Preload';
-import { generateFAQSchema } from '../utils/jsonLdData';
+import { generateFAQSchema, generateWebsiteSchema, generateOrganizationSchema } from '../utils/jsonLdData';
+import { initPerformanceOptimizations } from '../utils/performanceTracking';
 
 // Import all the component sections
 import HeroSection from '../components/home/HeroSection';
@@ -40,14 +41,23 @@ const faqData = [
   {
     question: "How do financial advisors on AdvisorWiz get paid?",
     answer: "Financial advisors have different fee structures which are transparently displayed on their profiles. These may include fee-only, commission-based, or a combination of both."
+  },
+  {
+    question: "What types of financial services can I get through AdvisorWiz?",
+    answer: "Our network includes advisors specializing in retirement planning, investment management, tax planning, estate planning, insurance, college funding, and comprehensive financial planning."
+  },
+  {
+    question: "How is my personal information protected?",
+    answer: "We take data security seriously. All personal and financial information is encrypted using industry-standard protocols. We never share your information with third parties without your explicit consent."
   }
 ];
 
 // Critical resources to preload
 const criticalResources = [
   {
-    url: '/logo.png',
+    url: '/lovable-uploads/d66162b8-d098-4ffe-a300-d14aa6ffe38e.png',
     as: 'image' as const,
+    importance: 'high' as const,
   },
   {
     url: '/og-image.png',
@@ -59,17 +69,21 @@ const criticalResources = [
 const likelyNavigation = [
   '/onboarding',
   '/for-consumers',
-  '/for-advisors'
+  '/for-advisors',
+  '/pricing'
 ];
 
 const Index: React.FC = () => {
-  // Track page view on mount
+  // Track page view on mount and initialize performance optimizations
   useEffect(() => {
+    // Initialize performance tracking
+    initPerformanceOptimizations();
+    
     // For analytics tracking
     if (typeof window !== 'undefined' && 'gtag' in window) {
       // @ts-ignore
       window.gtag('event', 'page_view', {
-        page_title: 'Home',
+        page_title: 'Find Your Perfect Financial Advisor Match | AdvisorWiz',
         page_location: window.location.href,
         page_path: window.location.pathname
       });
@@ -79,12 +93,16 @@ const Index: React.FC = () => {
   return (
     <AnimatedRoute animation="fade">
       <SEO 
-        title="Match with the Perfect Financial Advisor"
-        description="AdvisorWiz connects you with experienced financial advisors who match your specific needs and preferences. Find your perfect financial match today."
-        keywords="financial advisor, advisor matching, financial planning, investment advisor, retirement planning"
+        title="Find Your Perfect Financial Advisor Match"
+        description="AdvisorWiz connects you with experienced financial advisors who match your specific needs and preferences. Our proprietary algorithm ensures you find your ideal financial match. Free for consumers."
+        keywords="financial advisor, advisor matching, financial planning, investment advisor, retirement planning, wealth management, CFP, certified financial planner"
         canonicalUrl="https://advisorwiz.com/"
       />
-      <StructuredData data={generateFAQSchema(faqData)} />
+      <StructuredData data={[
+        generateFAQSchema(faqData),
+        generateWebsiteSchema(),
+        generateOrganizationSchema()
+      ]} />
       <Preload 
         resources={criticalResources}
         preconnect={['https://fonts.googleapis.com', 'https://fonts.gstatic.com']}

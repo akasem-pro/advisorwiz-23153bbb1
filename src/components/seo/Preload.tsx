@@ -8,6 +8,7 @@ interface PreloadProps {
     as: 'image' | 'style' | 'script' | 'font' | 'fetch';
     type?: string;
     crossOrigin?: 'anonymous' | 'use-credentials';
+    importance?: 'high' | 'low' | 'auto';
   }[];
   preconnect?: string[];
   prefetch?: string[];
@@ -33,6 +34,7 @@ const Preload: React.FC<PreloadProps> = ({
           as={resource.as}
           type={resource.type}
           crossOrigin={resource.crossOrigin}
+          importance={resource.importance}
         />
       ))}
 
@@ -52,6 +54,7 @@ const Preload: React.FC<PreloadProps> = ({
           key={`prefetch-${index}`} 
           rel="prefetch" 
           href={url} 
+          crossOrigin="anonymous"
         />
       ))}
 

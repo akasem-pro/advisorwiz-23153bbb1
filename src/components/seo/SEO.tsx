@@ -34,8 +34,8 @@ const SEO: React.FC<SEOProps> = ({
   noIndex = false,
   alternateLanguages = [],
 }) => {
-  const siteTitle = 'AdvisorWiz';
-  const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
+  const siteTitle = 'AdvisorWiz | Find Your Perfect Financial Advisor Match';
+  const fullTitle = title ? `${title} | AdvisorWiz` : siteTitle;
   
   return (
     <Helmet>
@@ -46,6 +46,7 @@ const SEO: React.FC<SEOProps> = ({
       
       {/* Control search engine indexing */}
       {noIndex && <meta name="robots" content="noindex, nofollow" />}
+      {!noIndex && <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />}
       
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={ogType} />
@@ -54,6 +55,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:site_name" content="AdvisorWiz" />
+      <meta property="og:locale" content="en_US" />
       
       {/* Article specific Open Graph tags */}
       {articlePublishedTime && <meta property="article:published_time" content={articlePublishedTime} />}
@@ -79,6 +81,10 @@ const SEO: React.FC<SEOProps> = ({
       
       {/* Mobile viewport optimization */}
       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+      
+      {/* Additional SEO tags */}
+      <meta name="author" content="AdvisorWiz" />
+      <meta name="theme-color" content="#1E3A8A" />
     </Helmet>
   );
 };

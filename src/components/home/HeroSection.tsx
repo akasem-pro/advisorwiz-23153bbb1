@@ -19,14 +19,28 @@ const HeroSection: React.FC = () => {
             <p className="text-lg md:text-xl text-slate-700 max-w-xl">
               AdvisorWiz connects you with experienced financial advisors who match your specific needs and preferences.
             </p>
-            <div className="flex space-x-4">
-              <Link to="/onboarding" className="btn-primary inline-flex items-center">
+            <div className="flex flex-wrap gap-4">
+              <Link to="/onboarding" className="btn-primary inline-flex items-center" aria-label="Start finding your financial advisor">
                 Get Started
                 <ArrowRight className="ml-2 w-5 h-5" aria-hidden="true" />
               </Link>
-              <a href="#how-it-works" className="btn-outline inline-flex items-center">
+              <a href="#how-it-works" className="btn-outline inline-flex items-center" aria-label="Learn more about our process">
                 Learn More
               </a>
+            </div>
+            <div className="flex flex-wrap gap-4 pt-2">
+              <div className="flex items-center">
+                <CheckCircle className="w-5 h-5 text-teal-600 mr-2" aria-hidden="true" />
+                <span className="text-sm text-slate-700">Free for consumers</span>
+              </div>
+              <div className="flex items-center">
+                <CheckCircle className="w-5 h-5 text-teal-600 mr-2" aria-hidden="true" />
+                <span className="text-sm text-slate-700">Verified advisors</span>
+              </div>
+              <div className="flex items-center">
+                <CheckCircle className="w-5 h-5 text-teal-600 mr-2" aria-hidden="true" />
+                <span className="text-sm text-slate-700">Perfect match guarantee</span>
+              </div>
             </div>
           </div>
           <div className="relative">
@@ -37,6 +51,7 @@ const HeroSection: React.FC = () => {
               width="600"
               height="400"
               loading="eager"
+              fetchpriority="high"
             />
             <div className="absolute top-1/2 -left-8 transform -translate-y-1/2 bg-white shadow-lg rounded-xl p-4 -rotate-6 animate-pulse-scale">
               <div className="flex items-center space-x-2">

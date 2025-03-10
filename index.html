@@ -13,6 +13,10 @@
     <!-- Preconnect to Important Resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/lovable-uploads/d66162b8-d098-4ffe-a300-d14aa6ffe38e.png" as="image" fetchpriority="high" />
     
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="AdvisorWiz - Find Your Perfect Financial Advisor Match" />
@@ -21,6 +25,7 @@
     <meta property="og:url" content="https://advisorwiz.com" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="AdvisorWiz" />
+    <meta property="og:locale" content="en_US" />
     
     <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -38,6 +43,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="msapplication-TileColor" content="#1E3A8A" />
     <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://advisorwiz.com" />
@@ -48,8 +54,8 @@
     <link rel="manifest" href="/manifest.json" />
     
     <!-- Language and Region -->
-    <meta property="og:locale" content="en_US" />
     <link rel="alternate" hreflang="en" href="https://advisorwiz.com" />
+    <link rel="alternate" hreflang="x-default" href="https://advisorwiz.com" />
     
     <!-- Verification Tags -->
     <meta name="google-site-verification" content="your-verification-code" />
@@ -60,6 +66,7 @@
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
     <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Permissions-Policy" content="accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()" />
   </head>
 
   <body>
@@ -67,5 +74,26 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Structured data for the organization -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "AdvisorWiz",
+        "url": "https://advisorwiz.com",
+        "logo": "https://advisorwiz.com/lovable-uploads/d66162b8-d098-4ffe-a300-d14aa6ffe38e.png",
+        "sameAs": [
+          "https://www.facebook.com/advisorwiz",
+          "https://www.twitter.com/advisorwiz",
+          "https://www.linkedin.com/company/advisorwiz"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+1-800-555-1234",
+          "contactType": "customer service"
+        }
+      }
+    </script>
   </body>
 </html>

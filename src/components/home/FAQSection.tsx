@@ -33,6 +33,10 @@ const faqs: FAQItem[] = [
   {
     question: "How quickly can I expect to be matched with an advisor?",
     answer: "After completing our matching questionnaire, you'll typically receive advisor recommendations within 24-48 hours. You can then review their profiles and schedule initial consultations at your convenience."
+  },
+  {
+    question: "How is my personal information protected?",
+    answer: "We take data security seriously. All personal and financial information is encrypted using industry-standard protocols. We never share your information with third parties without your explicit consent."
   }
 ];
 
@@ -44,7 +48,7 @@ const FAQSection: React.FC = () => {
   };
 
   return (
-    <section className="py-16 bg-slate-50" aria-labelledby="faq-heading">
+    <section id="faq" className="py-16 bg-slate-50" aria-labelledby="faq-heading">
       <StructuredData data={generateFAQSchema(faqs)} />
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
@@ -61,6 +65,8 @@ const FAQSection: React.FC = () => {
             <div 
               key={index} 
               className="mb-4 border border-slate-200 rounded-lg overflow-hidden"
+              itemScope
+              itemType="https://schema.org/Question"
             >
               <button
                 className="w-full px-6 py-4 text-left bg-white hover:bg-slate-50 transition-colors flex justify-between items-center"
@@ -68,18 +74,21 @@ const FAQSection: React.FC = () => {
                 aria-expanded={openIndex === index}
                 aria-controls={`faq-answer-${index}`}
               >
-                <span className="font-medium text-navy-900">{faq.question}</span>
+                <span className="font-medium text-navy-900" itemProp="name">{faq.question}</span>
                 {openIndex === index ? (
-                  <ChevronUp className="w-5 h-5 text-teal-600" aria-hidden="true" />
+                  <ChevronUp className="w-5 h-5 text-teal-600 flex-shrink-0" aria-hidden="true" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-teal-600" aria-hidden="true" />
+                  <ChevronDown className="w-5 h-5 text-teal-600 flex-shrink-0" aria-hidden="true" />
                 )}
               </button>
               <div 
                 id={`faq-answer-${index}`}
                 className={`px-6 py-4 bg-white text-slate-700 ${openIndex === index ? 'block' : 'hidden'}`}
+                itemScope
+                itemProp="acceptedAnswer"
+                itemType="https://schema.org/Answer"
               >
-                <p>{faq.answer}</p>
+                <p itemProp="text">{faq.answer}</p>
               </div>
             </div>
           ))}

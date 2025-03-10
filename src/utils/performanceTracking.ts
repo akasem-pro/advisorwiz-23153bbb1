@@ -14,6 +14,7 @@ export const trackWebVitals = () => {
         webVitals.onLCP(sendToAnalytics);
         webVitals.onFCP(sendToAnalytics);
         webVitals.onTTFB(sendToAnalytics);
+        webVitals.onINP(sendToAnalytics);
       });
     } catch (error) {
       console.error('Failed to load web-vitals:', error);
@@ -56,6 +57,9 @@ export const setupLazyLoading = () => {
           imageObserver.unobserve(img);
         }
       });
+    }, {
+      rootMargin: '200px 0px',
+      threshold: [0.01]
     });
     
     lazyImages.forEach((img) => imageObserver.observe(img));
@@ -92,4 +96,30 @@ export const optimizeCriticalRendering = () => {
       script.setAttribute('defer', '');
     }
   });
+};
+
+// Optimize images for Core Web Vitals
+export const optimizeImagesForCWV = () => {
+  if ('loading' in HTMLImageElement.prototype) {
+    document.querySelectorAll('img').forEach((img) => {
+      if (!img.hasAttribute('loading') && !img.hasAttribute('fetchpriority')) {
+        img.setAttribute('loading', 'lazy');
+      }
+    });
+  }
+};
+
+// Initialize performance optimizations
+export const initPerformanceOptimizations = () => {
+  if (typeof window !== 'undefined') {
+    // Track web vitals
+    trackWebVitals();
+    
+    // Setup lazy loading for images
+    window.addEventListener('DOMContentLoaded', () => {
+      setupLazyLoading();
+      optimizeCriticalRendering();
+      optimizeImagesForCWV();
+    });
+  }
 };
