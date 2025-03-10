@@ -9,75 +9,42 @@ import ChatWindow from '../components/chat/ChatWindow';
 import { useUser } from '../context/UserContext';
 import { MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { Switch } from '../components/ui/switch';
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(chatId || null);
-  const { userType, consumerProfile, advisorProfile } = useUser();
+  const { userType, consumerProfile, setConsumerProfile, advisorProfile, setAdvisorProfile } = useUser();
   
   const chatEnabled = userType === 'consumer' 
     ? consumerProfile?.chatEnabled 
     : advisorProfile?.chatEnabled;
-  
-  const ChatSettings = () => {
-    const { userType, consumerProfile, setConsumerProfile, advisorProfile, setAdvisorProfile } = useUser();
-    
-    const handleToggleChat = () => {
-      if (userType === 'consumer' && consumerProfile) {
-        const newState = !consumerProfile.chatEnabled;
-        setConsumerProfile({
-          ...consumerProfile,
-          chatEnabled: newState
-        });
-        toast.success(newState ? "Chat enabled successfully" : "Chat disabled");
-      } else if (userType === 'advisor' && advisorProfile) {
-        const newState = !advisorProfile.chatEnabled;
-        setAdvisorProfile({
-          ...advisorProfile,
-          chatEnabled: newState
-        });
-        toast.success(newState ? "Chat enabled successfully" : "Chat disabled");
-      }
-    };
-    
-    return (
-      <div className="p-4 bg-white rounded-lg shadow-sm mb-6">
-        <h3 className="text-lg font-medium text-navy-800 mb-3">Chat Settings</h3>
-        
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-slate-700">Enable Chat</p>
-            <p className="text-sm text-slate-500">
-              When disabled, you won't receive new messages
-            </p>
-          </div>
-          <label className="inline-flex items-center cursor-pointer">
-            <input 
-              type="checkbox" 
-              className="sr-only peer"
-              checked={userType === 'consumer' 
-                ? consumerProfile?.chatEnabled || false
-                : advisorProfile?.chatEnabled || false
-              }
-              onChange={handleToggleChat}
-            />
-            <div className="relative w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"></div>
-          </label>
-        </div>
-      </div>
-    );
+
+  const handleToggleChat = () => {
+    if (userType === 'consumer' && consumerProfile) {
+      const newState = !consumerProfile.chatEnabled;
+      setConsumerProfile({
+        ...consumerProfile,
+        chatEnabled: newState
+      });
+      toast.success(newState ? "Chat enabled successfully" : "Chat disabled");
+    } else if (userType === 'advisor' && advisorProfile) {
+      const newState = !advisorProfile.chatEnabled;
+      setAdvisorProfile({
+        ...advisorProfile,
+        chatEnabled: newState
+      });
+      toast.success(newState ? "Chat enabled successfully" : "Chat disabled");
+    }
   };
-  
+
   useEffect(() => {
-    const currentChatEnabled = userType === 'consumer' 
-      ? consumerProfile?.chatEnabled 
-      : advisorProfile?.chatEnabled;
-      
-    if (userType === null || (userType === 'consumer' && !consumerProfile) || (userType === 'advisor' && !advisorProfile)) {
+    if (!userType || (userType === 'consumer' && !consumerProfile) || (userType === 'advisor' && !advisorProfile)) {
+      toast.error("Please complete your profile to use chat");
       return;
     }
   }, [userType, consumerProfile, advisorProfile]);
-  
+
   return (
     <AnimatedRoute animation="fade">
       <div className="min-h-screen flex flex-col">
@@ -94,7 +61,20 @@ const Chat: React.FC = () => {
               </p>
             </div>
             
-            <ChatSettings />
+            <div className="glass-card rounded-2xl p-4 bg-white shadow-sm mb-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-medium text-navy-800 mb-1">Chat Settings</h3>
+                  <p className="text-sm text-slate-500">
+                    When disabled, you won't receive new messages
+                  </p>
+                </div>
+                <Switch 
+                  checked={chatEnabled || false}
+                  onCheckedChange={handleToggleChat}
+                />
+              </div>
+            </div>
             
             {!chatEnabled ? (
               <div className="glass-card rounded-2xl p-10 text-center">
