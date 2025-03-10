@@ -21,6 +21,7 @@ import ForConsumers from './pages/ForConsumers';
 import Pricing from './pages/Pricing';
 import ContactUs from './pages/ContactUs';
 import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
 
 import './App.css';
 
@@ -48,6 +49,7 @@ function App() {
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
