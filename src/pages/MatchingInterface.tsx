@@ -33,10 +33,8 @@ const MatchingInterface: React.FC = () => {
   // Only show the interface for consumer or advisor users
   const validUserType = userType === 'consumer' || userType === 'advisor';
   
-  // TypeScript type narrowing to make sure userType is 'consumer' | 'advisor' for components that need it
-  const userTypeForComponents = userType === 'consumer' || userType === 'advisor' 
-    ? userType 
-    : null;
+  // TypeScript narrowing - ensures userType is 'consumer' | 'advisor' for components that need it
+  const userTypeForComponents = validUserType ? userType as 'consumer' | 'advisor' : null;
 
   return (
     <AnimatedRoute animation="fade">
@@ -56,7 +54,7 @@ const MatchingInterface: React.FC = () => {
 
                 {!viewingMatches && (
                   <SearchFilters 
-                    userType={userTypeForComponents as 'consumer' | 'advisor'}
+                    userType={userTypeForComponents}
                     onSearch={handleSearch}
                     onFilterChange={handleFilterChange}
                   />
