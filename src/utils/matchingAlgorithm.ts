@@ -46,17 +46,17 @@ export const calculateMatchScore = (advisor: AdvisorProfileTypes, consumer: Cons
   }
 
   // Consider experience level - low weight
-  if ('yearsOfExperience' in advisor && consumer.advisorPreferences?.experienceLevel) {
+  if ('yearsOfExperience' in advisor && consumer.advisorPreferences?.experience) {
     maxScore += 10;
     
     // Simple mapping of experience levels to scores
-    if (consumer.advisorPreferences.experienceLevel === 'experienced' && 
+    if (consumer.advisorPreferences.experience === 'experienced' && 
         (advisor.yearsOfExperience === '5_to_10' || advisor.yearsOfExperience === '10_plus')) {
       score += 10;
-    } else if (consumer.advisorPreferences.experienceLevel === 'mid_level' && 
+    } else if (consumer.advisorPreferences.experience === 'mid_level' && 
                advisor.yearsOfExperience === '1_to_5') {
       score += 10;
-    } else if (consumer.advisorPreferences.experienceLevel === 'any') {
+    } else if (consumer.advisorPreferences.experience === 'any') {
       score += 7; // Partial credit for any experience level
     }
   }
