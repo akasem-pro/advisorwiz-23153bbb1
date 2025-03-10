@@ -1,4 +1,3 @@
-
 import React from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -198,7 +197,7 @@ const ForConsumers: React.FC = () => {
           {/* CTA Section */}
           <section className="py-12 bg-navy-800 text-white" aria-labelledby="cta-heading">
             <div className="container mx-auto px-4 text-center">
-              <h2 id="cta-heading" className="text-3xl font-serif font-bold mb-4">
+              <h2 id="cta-heading" className="text-3xl font-serif font-bold mb-4 text-white">
                 Ready to Find Your Financial Advisor?
               </h2>
               <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
