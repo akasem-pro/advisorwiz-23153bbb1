@@ -11,6 +11,7 @@ import {
   ServiceCategory,
   FinancialFirm
 } from '../types/userTypes';
+import { CallSession, CallStatus, CallType, CallMetrics } from '../types/callTypes';
 
 // Type for the user context
 export type UserContextType = {
@@ -47,6 +48,12 @@ export type UserContextType = {
   updateMatchPreferences: (preferences: MatchPreferences) => void;
   getTopMatches: (limit?: number) => (AdvisorProfile | ConsumerProfile)[];
   getRecommendedMatches: () => (AdvisorProfile | ConsumerProfile)[];
+  // New call functionality
+  callSessions: CallSession[];
+  initiateCall: (recipientId: string, type: CallType) => CallSession | null;
+  updateCallStatus: (callId: string, status: CallStatus) => void;
+  activeCall: CallSession | null;
+  callMetrics: CallMetrics[];
 };
 
 // New type for match preferences
@@ -57,6 +64,8 @@ export type MatchPreferences = {
   prioritizeLocation?: boolean;
   minimumMatchScore?: number;
   excludedCategories?: ServiceCategory[];
+  // New field for considering call interaction data
+  considerInteractionData?: boolean;
 };
 
 // Create the context with default values
@@ -87,7 +96,13 @@ const UserContext = createContext<UserContextType>({
   calculateCompatibilityScore: () => 0,
   updateMatchPreferences: () => {},
   getTopMatches: () => [],
-  getRecommendedMatches: () => []
+  getRecommendedMatches: () => [],
+  // New call functionality
+  callSessions: [],
+  initiateCall: () => null,
+  updateCallStatus: () => {},
+  activeCall: null,
+  callMetrics: []
 });
 
 export default UserContext;

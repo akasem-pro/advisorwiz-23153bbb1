@@ -1,5 +1,5 @@
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import UserContext, { MatchPreferences } from './UserContextDefinition';
 import { useUserState } from '../hooks/useUserState';
 import { useChatOperations } from '../hooks/useChatOperations';
@@ -8,6 +8,8 @@ import { useFirmOperations } from '../hooks/useFirmOperations';
 import { useMatchingAlgorithm } from '../hooks/useMatchingAlgorithm';
 import { useUserStatus } from '../hooks/useUserStatus';
 import { useFilterOperations } from '../hooks/useFilterOperations';
+import { useCallManager } from '../hooks/useCallManager';
+import { CallMetrics } from '../types/callTypes';
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   // Core state management
@@ -19,7 +21,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     chats, setChats,
     appointments, setAppointments,
     firms, setFirms,
-    matchPreferences, setMatchPreferences
+    matchPreferences, setMatchPreferences,
+    callSessions, setCallSessions
   } = useUserState();
 
   // Chat operations
@@ -49,14 +52,42 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   // Filtering operations
   const { getFilteredAdvisors, getFilteredConsumers } = useFilterOperations();
 
-  // Matching algorithm operations
+  // Call operations
+  const handleMetricsUpdate = (metrics: CallMetrics[]) => {
+    // This will be used by the matching algorithm
+    console.log("Updated call metrics:", metrics);
+  };
+
+  const userId = userType === 'consumer' 
+    ? consumerProfile?.id 
+    : advisorProfile?.id;
+
+  const {
+    callSessions: managedCallSessions,
+    activeCall,
+    callMetrics,
+    initiateCall,
+    updateCall: updateCallStatus,
+  } = useCallManager(
+    userId || '', 
+    userType as 'consumer' | 'advisor' | null,
+    handleMetricsUpdate
+  );
+
+  // Sync call sessions with state
+  useEffect(() => {
+    setCallSessions(managedCallSessions);
+  }, [managedCallSessions, setCallSessions]);
+
+  // Matching algorithm operations with call metrics integration
   const matching = useMatchingAlgorithm(
     userType,
     consumerProfile,
     advisorProfile,
     matchPreferences,
     chats,
-    appointments
+    appointments,
+    callMetrics // Pass call metrics to matching algorithm
   );
 
   // Enhanced with actual state update
@@ -94,7 +125,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     calculateCompatibilityScore: matching.calculateCompatibilityScore,
     updateMatchPreferences,
     getTopMatches: matching.getTopMatches,
-    getRecommendedMatches: matching.getRecommendedMatches
+    getRecommendedMatches: matching.getRecommendedMatches,
+    // New call functionality
+    callSessions: managedCallSessions,
+    initiateCall,
+    updateCallStatus,
+    activeCall,
+    callMetrics
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

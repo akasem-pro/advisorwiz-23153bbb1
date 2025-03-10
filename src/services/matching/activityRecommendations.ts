@@ -1,19 +1,21 @@
 
 import { AdvisorProfile, ConsumerProfile, Chat, Appointment } from '../../types/userTypes';
 import { MatchPreferences } from '../../context/UserContextDefinition';
+import { CallMetrics } from '../../types/callTypes';
 
 // Mock data imports (these would be replaced with real data in a production environment)
 import { mockAdvisors, mockConsumers } from '../../data/mockUsers';
 
 /**
- * Analyzes chat and appointment history to recommend matches
+ * Analyzes chat, appointment, and call history to recommend matches
  */
 export const getRecommendedProfilesBasedOnActivity = (
   userType: 'consumer' | 'advisor',
   userId: string,
   chats: Chat[],
   appointments: Appointment[],
-  preferences: MatchPreferences
+  preferences: MatchPreferences,
+  callMetrics: CallMetrics[] = [] // New parameter
 ): (AdvisorProfile | ConsumerProfile)[] => {
   // Get user's most active contacts
   const userChats = chats.filter(chat => chat.participants.includes(userId));
@@ -58,20 +60,43 @@ export const getRecommendedProfilesBasedOnActivity = (
     appointmentCountByContact[contactId] += 1;
   });
   
-  // Combine activity scores
+  // Get call data per contact
+  const callScoreByContact: Record<string, number> = {};
+  
+  if (callMetrics.length > 0) {
+    callMetrics.forEach(metric => {
+      const contactId = userType === 'consumer' ? metric.advisorId : metric.consumerId;
+      
+      // Calculate a call engagement score based on calls and duration
+      const callCount = metric.totalCalls;
+      const callDuration = metric.totalDuration;
+      const completionRate = metric.totalCalls > 0 
+        ? metric.callOutcomes.completed / metric.totalCalls 
+        : 0;
+      
+      // Calculate a weighted score
+      const callScore = (callCount * 2) + (callDuration / 60) + (completionRate * 10);
+      
+      callScoreByContact[contactId] = callScore;
+    });
+  }
+  
+  // Combine activity scores with priority on call interactions
   const activityScores: Record<string, number> = {};
   
   // Merge all contact IDs
   const allContactIds = [
     ...Object.keys(messageCountByContact),
-    ...Object.keys(appointmentCountByContact)
+    ...Object.keys(appointmentCountByContact),
+    ...Object.keys(callScoreByContact)
   ].filter((id, index, array) => array.indexOf(id) === index);
   
   allContactIds.forEach(contactId => {
     const messageScore = messageCountByContact[contactId] || 0;
     const appointmentScore = (appointmentCountByContact[contactId] || 0) * 3; // Weight appointments higher
+    const callScore = (callScoreByContact[contactId] || 0) * 5; // Weight calls highest
     
-    activityScores[contactId] = messageScore + appointmentScore;
+    activityScores[contactId] = messageScore + appointmentScore + callScore;
   });
   
   // Get contacts with similar activity patterns

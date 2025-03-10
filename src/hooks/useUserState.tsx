@@ -8,6 +8,7 @@ import {
   Appointment,
   FinancialFirm
 } from '../types/userTypes';
+import { CallSession } from '../types/callTypes';
 import { MatchPreferences } from '../context/UserContextDefinition';
 
 /**
@@ -21,12 +22,14 @@ export const useUserState = () => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [firms, setFirms] = useState<FinancialFirm[]>([]);
+  const [callSessions, setCallSessions] = useState<CallSession[]>([]);
   const [matchPreferences, setMatchPreferences] = useState<MatchPreferences>({
     prioritizeLanguage: true,
     prioritizeAvailability: true,
     prioritizeExpertise: true,
     prioritizeLocation: false,
-    minimumMatchScore: 40
+    minimumMatchScore: 40,
+    considerInteractionData: true // Enable interaction data by default
   });
 
   return {
@@ -37,6 +40,7 @@ export const useUserState = () => {
     chats, setChats,
     appointments, setAppointments,
     firms, setFirms,
+    callSessions, setCallSessions,
     matchPreferences, setMatchPreferences
   };
 };
