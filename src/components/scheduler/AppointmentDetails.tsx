@@ -29,7 +29,22 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
   onOpenChange,
   onUpdateStatus
 }) => {
-  const { userType, initiateCall } = useUser();
+  const { userType, initiateCall, consumerProfile, advisorProfile } = useUser();
+
+  // Find consumer and advisor names
+  const getConsumerName = () => {
+    if (consumerProfile && consumerProfile.id === appointment.consumerId) {
+      return consumerProfile.name;
+    }
+    return "Consumer";
+  };
+
+  const getAdvisorName = () => {
+    if (advisorProfile && advisorProfile.id === appointment.advisorId) {
+      return advisorProfile.name;
+    }
+    return "Advisor";
+  };
 
   // Handle initiating calls
   const handleCall = (callType: CallType) => {
@@ -110,7 +125,8 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
               <div>
                 <h4 className="font-medium">Time</h4>
                 <p className="text-sm text-slate-600">
-                  {format(new Date(`${appointment.date}T${appointment.time}`), 'h:mm a')}
+                  {format(new Date(`${appointment.date}T${appointment.startTime}`), 'h:mm a')} - 
+                  {format(new Date(`${appointment.date}T${appointment.endTime}`), 'h:mm a')}
                 </p>
               </div>
             </div>
@@ -124,7 +140,7 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
                   {userType === 'advisor' ? 'Client' : 'Advisor'}
                 </h4>
                 <p className="text-sm text-slate-600">
-                  {userType === 'advisor' ? appointment.consumerName : appointment.advisorName}
+                  {userType === 'advisor' ? getConsumerName() : getAdvisorName()}
                 </p>
               </div>
             </div>
@@ -162,7 +178,7 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
           
           {onUpdateStatus && userType === 'advisor' && appointment.status !== 'completed' && appointment.status !== 'cancelled' && (
             <div className="flex gap-2">
-              {appointment.status !== 'confirmed' && (
+              {appointment.status === 'pending' && (
                 <Button 
                   variant="default" 
                   onClick={() => onUpdateStatus(appointment.id, 'confirmed')}
@@ -180,14 +196,12 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
                 </Button>
               )}
               
-              {appointment.status !== 'cancelled' && (
-                <Button 
-                  variant="destructive" 
-                  onClick={() => onUpdateStatus(appointment.id, 'cancelled')}
-                >
-                  Cancel
-                </Button>
-              )}
+              <Button 
+                variant="destructive" 
+                onClick={() => onUpdateStatus(appointment.id, 'cancelled')}
+              >
+                Cancel
+              </Button>
             </div>
           )}
         </DialogFooter>
