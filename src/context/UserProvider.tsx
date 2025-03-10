@@ -145,7 +145,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
-  const getTopMatches = (limit: number = 5) => {
+  const getTopMatches = (limit: number = 5): (AdvisorProfile | ConsumerProfile)[] => {
     if (userType === 'consumer' && consumerProfile) {
       // Get top advisor matches for consumer
       return calculateCompatibilityBetweenProfiles(
@@ -166,7 +166,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     return [];
   };
 
-  const getRecommendedMatches = () => {
+  const getRecommendedMatches = (): (AdvisorProfile | ConsumerProfile)[] => {
     const currentUserId = userType === 'consumer' 
       ? consumerProfile?.id 
       : advisorProfile?.id;

@@ -45,8 +45,8 @@ export type UserContextType = {
   getFirmByAdmin: (adminId: string) => FinancialFirm[];
   calculateCompatibilityScore: (advisorId: string, consumerId: string) => number;
   updateMatchPreferences: (preferences: MatchPreferences) => void;
-  getTopMatches: (limit?: number) => AdvisorProfile[] | ConsumerProfile[];
-  getRecommendedMatches: () => AdvisorProfile[] | ConsumerProfile[];
+  getTopMatches: (limit?: number) => (AdvisorProfile | ConsumerProfile)[];
+  getRecommendedMatches: () => (AdvisorProfile | ConsumerProfile)[];
 };
 
 // New type for match preferences
