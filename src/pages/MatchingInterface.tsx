@@ -32,13 +32,10 @@ const MatchingInterface: React.FC = () => {
     getCurrentItem
   } = useMatchingInterface();
 
-  // Only show the interface for consumer or advisor users
   const validUserType = userType === 'consumer' || userType === 'advisor';
   
-  // TypeScript narrowing - ensures userType is 'consumer' | 'advisor' for components that need it
   const userTypeForComponents = validUserType ? userType as 'consumer' | 'advisor' : null;
   
-  // Page title and description based on user type
   const pageTitle = userType === 'consumer' 
     ? 'Find Your Perfect Financial Advisor Match' 
     : userType === 'advisor' 
@@ -51,13 +48,11 @@ const MatchingInterface: React.FC = () => {
       ? 'Connect with potential clients who are looking for your specific expertise and services.'
       : 'AdvisorWiz matches financial advisors with consumers based on their specific needs and preferences.';
   
-  // Breadcrumb data
   const breadcrumbs = [
     { name: "Home", url: "https://advisorwiz.com/" },
     { name: "Matches", url: "https://advisorwiz.com/matches" }
   ];
   
-  // Combined structured data
   const structuredData = [
     generateServiceSchema(),
     generateBreadcrumbSchema(breadcrumbs)

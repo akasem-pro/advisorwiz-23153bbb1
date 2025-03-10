@@ -1,9 +1,12 @@
 
 import React from 'react';
-import SEO, { SEOProps } from './SEO';
+import SEO from './SEO';
 import StructuredData from './StructuredData';
 
-interface PageSEOProps extends SEOProps {
+// Import the SEOProps interface directly from the SEO file
+import type { SEOProps } from './SEO';
+
+export interface PageSEOProps extends SEOProps {
   structuredData?: Record<string, any> | Array<Record<string, any>>;
   breadcrumbs?: Array<{ name: string; url: string }>;
 }
