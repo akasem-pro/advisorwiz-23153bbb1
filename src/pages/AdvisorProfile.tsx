@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AnimatedRoute } from '../components/ui/AnimatedRoute';
+import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useUser, AdvisorProfile as AdvisorProfileType, TimeSlot, AppointmentCategory, ServiceCategory } from '../context/UserContext';
@@ -903,4 +903,447 @@ const AdvisorProfile: React.FC = () => {
                               name="licensingBody"
                               value={formData.licensingBody}
                               onChange={handleChange}
-                              className="
+                              className="input-field"
+                              required
+                            >
+                              <option value="">Select licensing body</option>
+                              {licensingBodies.map(option => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label htmlFor="registrationNumber" className="block text-sm font-medium text-navy-800 mb-1">
+                              Registration Number
+                            </label>
+                            <Input
+                              type="text"
+                              id="registrationNumber"
+                              name="registrationNumber"
+                              value={formData.registrationNumber}
+                              onChange={handleChange}
+                              placeholder="Your registration number"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="yearsOfExperience" className="block text-sm font-medium text-navy-800 mb-1">
+                              Years of Experience*
+                            </label>
+                            <select
+                              id="yearsOfExperience"
+                              name="yearsOfExperience"
+                              value={formData.yearsOfExperience}
+                              onChange={handleChange}
+                              className="input-field"
+                              required
+                            >
+                              <option value="">Select years of experience</option>
+                              {experienceOptions.map(option => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label htmlFor="hasViolations" className="block text-sm font-medium text-navy-800 mb-1">
+                              Has Violations?
+                            </label>
+                            <input
+                              type="checkbox"
+                              id="hasViolations"
+                              name="hasViolations"
+                              checked={formData.hasViolations}
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="consentToBackgroundCheck" className="block text-sm font-medium text-navy-800 mb-1">
+                              Consent to Background Check
+                            </label>
+                            <input
+                              type="checkbox"
+                              id="consentToBackgroundCheck"
+                              name="consentToBackgroundCheck"
+                              checked={formData.consentToBackgroundCheck}
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Expertise Section */}
+                  <div className="rounded-lg border border-slate-200 overflow-hidden">
+                    <div 
+                      className={`flex justify-between items-center p-4 cursor-pointer ${sections[2].isCompleted ? 'bg-green-50' : 'bg-slate-50'}`}
+                      onClick={() => toggleSection('expertise')}
+                    >
+                      <div className="flex items-center">
+                        <div className={`mr-3 ${sections[2].isCompleted ? 'text-green-600' : 'text-slate-700'}`}>
+                          {sections[2].icon}
+                        </div>
+                        <h3 className="text-lg font-medium text-navy-800 flex items-center">
+                          {sections[2].title}
+                          {sections[2].isCompleted && (
+                            <CheckCircle className="ml-2 h-4 w-4 text-green-600" />
+                          )}
+                        </h3>
+                      </div>
+                      <div>
+                        {sections[2].isOpen ? (
+                          <ChevronUp className="h-5 w-5 text-slate-500" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-slate-500" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    {sections[2].isOpen && (
+                      <div className="p-4 border-t border-slate-200 space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="expertise" className="block text-sm font-medium text-navy-800 mb-1">
+                              Expertise
+                            </label>
+                            <select
+                              id="expertise"
+                              name="expertise"
+                              value={formData.expertise}
+                              onChange={handleChange}
+                              className="input-field"
+                              multiple
+                            >
+                              {serviceCategories.map(category => (
+                                <option key={category.value} value={category.value}>
+                                  {category.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Fee Structure Section */}
+                  <div className="rounded-lg border border-slate-200 overflow-hidden">
+                    <div 
+                      className={`flex justify-between items-center p-4 cursor-pointer ${sections[3].isCompleted ? 'bg-green-50' : 'bg-slate-50'}`}
+                      onClick={() => toggleSection('fee-client')}
+                    >
+                      <div className="flex items-center">
+                        <div className={`mr-3 ${sections[3].isCompleted ? 'text-green-600' : 'text-slate-700'}`}>
+                          {sections[3].icon}
+                        </div>
+                        <h3 className="text-lg font-medium text-navy-800 flex items-center">
+                          {sections[3].title}
+                          {sections[3].isCompleted && (
+                            <CheckCircle className="ml-2 h-4 w-4 text-green-600" />
+                          )}
+                        </h3>
+                      </div>
+                      <div>
+                        {sections[3].isOpen ? (
+                          <ChevronUp className="h-5 w-5 text-slate-500" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-slate-500" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    {sections[3].isOpen && (
+                      <div className="p-4 border-t border-slate-200 space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="feeStructure" className="block text-sm font-medium text-navy-800 mb-1">
+                              Fee Structure
+                            </label>
+                            <select
+                              id="feeStructure"
+                              name="feeStructure"
+                              value={formData.feeStructure}
+                              onChange={handleChange}
+                              className="input-field"
+                              required
+                            >
+                              <option value="">Select fee structure</option>
+                              {feeStructureOptions.map(option => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label htmlFor="minimumInvestment" className="block text-sm font-medium text-navy-800 mb-1">
+                              Minimum Investment
+                            </label>
+                            <Input
+                              type="number"
+                              id="minimumInvestment"
+                              name="minimumInvestment"
+                              value={formData.minimumInvestment}
+                              onChange={handleChange}
+                              placeholder="Minimum investment amount"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Marketing & Visibility Section */}
+                  <div className="rounded-lg border border-slate-200 overflow-hidden">
+                    <div 
+                      className={`flex justify-between items-center p-4 cursor-pointer ${sections[4].isCompleted ? 'bg-green-50' : 'bg-slate-50'}`}
+                      onClick={() => toggleSection('marketing')}
+                    >
+                      <div className="flex items-center">
+                        <div className={`mr-3 ${sections[4].isCompleted ? 'text-green-600' : 'text-slate-700'}`}>
+                          {sections[4].icon}
+                        </div>
+                        <h3 className="text-lg font-medium text-navy-800 flex items-center">
+                          {sections[4].title}
+                          {sections[4].isCompleted && (
+                            <CheckCircle className="ml-2 h-4 w-4 text-green-600" />
+                          )}
+                        </h3>
+                      </div>
+                      <div>
+                        {sections[4].isOpen ? (
+                          <ChevronUp className="h-5 w-5 text-slate-500" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-slate-500" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    {sections[4].isOpen && (
+                      <div className="p-4 border-t border-slate-200 space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="profilePicture" className="block text-sm font-medium text-navy-800 mb-1">
+                              Profile Picture
+                            </label>
+                            <ProfilePictureUpload
+                              onUpload={handlePictureChange}
+                              imageBase64={formData.profilePicture}
+                            />
+                          </div>
+                          <div>
+                            <label htmlFor="bio" className="block text-sm font-medium text-navy-800 mb-1">
+                              Bio
+                            </label>
+                            <Textarea
+                              id="bio"
+                              name="bio"
+                              value={formData.bio}
+                              onChange={handleChange}
+                              placeholder="Tell us about yourself"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Identity Verification & Compliance Section */}
+                  <div className="rounded-lg border border-slate-200 overflow-hidden">
+                    <div 
+                      className={`flex justify-between items-center p-4 cursor-pointer ${sections[5].isCompleted ? 'bg-green-50' : 'bg-slate-50'}`}
+                      onClick={() => toggleSection('verification')}
+                    >
+                      <div className="flex items-center">
+                        <div className={`mr-3 ${sections[5].isCompleted ? 'text-green-600' : 'text-slate-700'}`}>
+                          {sections[5].icon}
+                        </div>
+                        <h3 className="text-lg font-medium text-navy-800 flex items-center">
+                          {sections[5].title}
+                          {sections[5].isCompleted && (
+                            <CheckCircle className="ml-2 h-4 w-4 text-green-600" />
+                          )}
+                        </h3>
+                      </div>
+                      <div>
+                        {sections[5].isOpen ? (
+                          <ChevronUp className="h-5 w-5 text-slate-500" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-slate-500" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    {sections[5].isOpen && (
+                      <div className="p-4 border-t border-slate-200 space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="consentToBackgroundCheck" className="block text-sm font-medium text-navy-800 mb-1">
+                              Consent to Background Check
+                            </label>
+                            <input
+                              type="checkbox"
+                              id="consentToBackgroundCheck"
+                              name="consentToBackgroundCheck"
+                              checked={formData.consentToBackgroundCheck}
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Choose Your Subscription Section */}
+                  <div className="rounded-lg border border-slate-200 overflow-hidden">
+                    <div 
+                      className={`flex justify-between items-center p-4 cursor-pointer ${sections[6].isCompleted ? 'bg-green-50' : 'bg-slate-50'}`}
+                      onClick={() => toggleSection('subscription')}
+                    >
+                      <div className="flex items-center">
+                        <div className={`mr-3 ${sections[6].isCompleted ? 'text-green-600' : 'text-slate-700'}`}>
+                          {sections[6].icon}
+                        </div>
+                        <h3 className="text-lg font-medium text-navy-800 flex items-center">
+                          {sections[6].title}
+                          {sections[6].isCompleted && (
+                            <CheckCircle className="ml-2 h-4 w-4 text-green-600" />
+                          )}
+                        </h3>
+                      </div>
+                      <div>
+                        {sections[6].isOpen ? (
+                          <ChevronUp className="h-5 w-5 text-slate-500" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-slate-500" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    {sections[6].isOpen && (
+                      <div className="p-4 border-t border-slate-200 space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="subscriptionPlan" className="block text-sm font-medium text-navy-800 mb-1">
+                              Subscription Plan
+                            </label>
+                            <select
+                              id="subscriptionPlan"
+                              name="subscriptionPlan"
+                              value={formData.subscriptionPlan}
+                              onChange={handleSubscriptionSelect}
+                              className="input-field"
+                              required
+                            >
+                              <option value="">Select subscription plan</option>
+                              {subscriptionPlans.map(plan => (
+                                <option key={plan.id} value={plan.id}>
+                                  {plan.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Consent & Communication Section */}
+                  <div className="rounded-lg border border-slate-200 overflow-hidden">
+                    <div 
+                      className={`flex justify-between items-center p-4 cursor-pointer ${sections[7].isCompleted ? 'bg-green-50' : 'bg-slate-50'}`}
+                      onClick={() => toggleSection('consent')}
+                    >
+                      <div className="flex items-center">
+                        <div className={`mr-3 ${sections[7].isCompleted ? 'text-green-600' : 'text-slate-700'}`}>
+                          {sections[7].icon}
+                        </div>
+                        <h3 className="text-lg font-medium text-navy-800 flex items-center">
+                          {sections[7].title}
+                          {sections[7].isCompleted && (
+                            <CheckCircle className="ml-2 h-4 w-4 text-green-600" />
+                          )}
+                        </h3>
+                      </div>
+                      <div>
+                        {sections[7].isOpen ? (
+                          <ChevronUp className="h-5 w-5 text-slate-500" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-slate-500" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    {sections[7].isOpen && (
+                      <div className="p-4 border-t border-slate-200 space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="consentToTerms" className="block text-sm font-medium text-navy-800 mb-1">
+                              Consent to Terms
+                            </label>
+                            <input
+                              type="checkbox"
+                              id="consentToTerms"
+                              name="consentToTerms"
+                              checked={formData.consentToTerms}
+                              onChange={handleChange}
+                            />
+                          </div>
+                          <div>
+                            <label htmlFor="consentToMarketing" className="block text-sm font-medium text-navy-800 mb-1">
+                              Consent to Marketing
+                            </label>
+                            <input
+                              type="checkbox"
+                              id="consentToMarketing"
+                              name="consentToMarketing"
+                              checked={formData.consentToMarketing}
+                              onChange={handleChange}
+                            />
+                          </div>
+                          <div>
+                            <label htmlFor="consentToContact" className="block text-sm font-medium text-navy-800 mb-1">
+                              Consent to Contact
+                            </label>
+                            <input
+                              type="checkbox"
+                              id="consentToContact"
+                              name="consentToContact"
+                              checked={formData.consentToContact}
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={handleContinue}
+                      className="btn btn-primary"
+                    >
+                      Continue
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </AnimatedRoute>
+  );
+};
+
+export default AdvisorProfile;

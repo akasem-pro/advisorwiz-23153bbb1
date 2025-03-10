@@ -7,38 +7,35 @@ interface AnimatedRouteProps {
   animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right';
 }
 
-const animations = {
-  fade: {
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 },
-  },
-  'slide-up': {
-    initial: { y: 20, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    exit: { y: -20, opacity: 0 },
-  },
-  'slide-down': {
-    initial: { y: -20, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    exit: { y: 20, opacity: 0 },
-  },
-  'slide-left': {
-    initial: { x: -20, opacity: 0 },
-    animate: { x: 0, opacity: 1 },
-    exit: { x: 20, opacity: 0 },
-  },
-  'slide-right': {
-    initial: { x: 20, opacity: 0 },
-    animate: { x: 0, opacity: 1 },
-    exit: { x: -20, opacity: 0 },
-  },
-};
+export const AnimatedRoute = ({ children, animation = 'fade' }: AnimatedRouteProps) => {
+  const animations = {
+    fade: {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+    },
+    'slide-up': {
+      initial: { y: 20, opacity: 0 },
+      animate: { y: 0, opacity: 1 },
+      exit: { y: -20, opacity: 0 },
+    },
+    'slide-down': {
+      initial: { y: -20, opacity: 0 },
+      animate: { y: 0, opacity: 1 },
+      exit: { y: 20, opacity: 0 },
+    },
+    'slide-left': {
+      initial: { x: -20, opacity: 0 },
+      animate: { x: 0, opacity: 1 },
+      exit: { x: 20, opacity: 0 },
+    },
+    'slide-right': {
+      initial: { x: 20, opacity: 0 },
+      animate: { x: 0, opacity: 1 },
+      exit: { x: -20, opacity: 0 },
+    },
+  };
 
-export const AnimatedRoute: React.FC<AnimatedRouteProps> = ({ 
-  children, 
-  animation = 'fade'
-}) => {
   return (
     <motion.div
       initial={animations[animation].initial}
@@ -51,3 +48,6 @@ export const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
     </motion.div>
   );
 };
+
+export default AnimatedRoute;
+
