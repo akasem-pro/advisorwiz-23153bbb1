@@ -408,6 +408,16 @@ const MatchingInterface: React.FC = () => {
       return;
     }
     
+    // Check if both participants have chat enabled
+    const otherProfile = userType === 'consumer' 
+      ? mockAdvisors.find(a => a.id === profileId)
+      : mockConsumers.find(c => c.id === profileId);
+    
+    if (!otherProfile?.chatEnabled) {
+      toast.error("Chat is not available for this user");
+      return;
+    }
+    
     let existingChat = chats.find(chat => 
       chat.participants.includes(currentUserId) && 
       chat.participants.includes(profileId)
@@ -421,11 +431,11 @@ const MatchingInterface: React.FC = () => {
         lastUpdated: new Date().toISOString()
       };
       
-      const updatedChats = [...chats, newChat];
-      setChats(updatedChats);
+      setChats(prevChats => [...prevChats, newChat]);
       existingChat = newChat;
     }
     
+    // Use navigate to go to the chat page
     navigate(`/chat/${existingChat.id}`);
   };
 
