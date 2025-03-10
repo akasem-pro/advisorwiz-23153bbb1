@@ -7,6 +7,7 @@ import AppointmentFilters from './AppointmentFilters';
 import AppointmentItem from './AppointmentItem';
 import AppointmentDetails from './AppointmentDetails';
 import EmptyAppointments from './EmptyAppointments';
+import { useAppointmentFilters } from '../../hooks/useAppointmentFilters';
 
 interface AdvisorAppointmentManagerProps {
   appointments: Appointment[];
@@ -17,14 +18,14 @@ const AdvisorAppointmentManager: React.FC<AdvisorAppointmentManagerProps> = ({ a
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<AppointmentStatus | 'all'>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const filteredAppointments = appointments.filter(appointment => {
-    const matchesStatus = statusFilter === 'all' || appointment.status === statusFilter;
-    const matchesSearch = appointment.title.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+  
+  const { 
+    filteredAppointments,
+    searchTerm, 
+    setSearchTerm,
+    statusFilter, 
+    setStatusFilter
+  } = useAppointmentFilters({ appointments });
 
   const handleUpdateStatus = (appointmentId: string, status: AppointmentStatus) => {
     updateAppointmentStatus(appointmentId, status);

@@ -1,15 +1,15 @@
 
 import React, { useState } from 'react';
-import AnimatedRoute from '../components/ui/AnimatedRoute';
-import { Calendar, Clock, PlusCircle, Check, X, User, Phone, Video, Book, Calendar as CalendarIcon } from 'lucide-react';
-import { useUser, Appointment, AppointmentStatus, AppointmentCategory } from '../context/UserContext';
-import { format, parseISO, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, addMonths, subMonths } from 'date-fns';
+import { Calendar, Clock, PlusCircle, Calendar as CalendarIcon } from 'lucide-react';
+import { useUser } from '../context/UserContext';
 import AdvisorAppointmentManager from '../components/scheduler/AdvisorAppointmentManager';
 import ConsumerAppointmentList from '../components/scheduler/ConsumerAppointmentList';
 import AppointmentCalendar from '../components/scheduler/AppointmentCalendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
+import AppLayout from '../components/layout/AppLayout';
+import { addMonths, subMonths } from 'date-fns';
 
 const Schedule = () => {
   const { userType, consumerProfile, advisorProfile, appointments } = useUser();
@@ -25,21 +25,6 @@ const Schedule = () => {
     return false;
   });
 
-  const getStatusClass = (status: AppointmentStatus) => {
-    switch (status) {
-      case 'confirmed':
-        return 'text-green-600';
-      case 'pending':
-        return 'text-amber-600';
-      case 'cancelled':
-        return 'text-red-600';
-      case 'completed':
-        return 'text-blue-600';
-      default:
-        return 'text-slate-600';
-    }
-  };
-
   const handlePreviousMonth = () => {
     setCurrentDate(prev => subMonths(prev, 1));
   };
@@ -49,7 +34,7 @@ const Schedule = () => {
   };
 
   return (
-    <AnimatedRoute animation="fade">
+    <AppLayout>
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="glass-card rounded-2xl overflow-hidden shadow-lg">
           <div className="p-6 md:p-8">
@@ -120,7 +105,7 @@ const Schedule = () => {
           </div>
         </div>
       </div>
-    </AnimatedRoute>
+    </AppLayout>
   );
 };
 
