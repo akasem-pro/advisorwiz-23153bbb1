@@ -10,6 +10,7 @@ import { useUserStatus } from '../hooks/useUserStatus';
 import { useFilterOperations } from '../hooks/useFilterOperations';
 import { useCallManager } from '../hooks/useCallManager';
 import { CallMetrics } from '../types/callTypes';
+import CallModal from '../components/call/CallModal';
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   // Core state management
@@ -68,6 +69,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     callMetrics,
     initiateCall,
     updateCall: updateCallStatus,
+    isCallModalOpen,
+    closeCallModal,
+    endCall
   } = useCallManager(
     userId || '', 
     userType as 'consumer' | 'advisor' | null,
@@ -126,7 +130,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     updateMatchPreferences,
     getTopMatches: matching.getTopMatches,
     getRecommendedMatches: matching.getRecommendedMatches,
-    // New call functionality
+    // Call functionality
     callSessions: managedCallSessions,
     initiateCall,
     updateCallStatus,
@@ -134,5 +138,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     callMetrics
   };
 
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={value}>
+      {children}
+      <CallModal 
+        callSession={activeCall} 
+        isOpen={isCallModalOpen}
+        onEnd={() => {
+          if (activeCall) {
+            endCall(activeCall.id);
+          }
+          closeCallModal();
+        }}
+      />
+    </UserContext.Provider>
+  );
 };

@@ -30,6 +30,15 @@ export const useCallManager = (
     setActiveCall(newSession);
     setIsCallModalOpen(true);
     
+    // Auto-connect after 1 second (simulating connection)
+    setTimeout(() => {
+      updateCall(newSession.id, 'connected');
+      toast({
+        title: "Call Connected",
+        description: `You are now in a ${type} call`
+      });
+    }, 1000);
+    
     return newSession;
   }, [userId]);
   
@@ -43,7 +52,6 @@ export const useCallManager = (
           // If this is the active call and it's ending, clear active call
           if (activeCall?.id === callId && ['completed', 'missed', 'declined'].includes(status)) {
             setActiveCall(null);
-            setIsCallModalOpen(false);
           }
           
           return updatedSession;
@@ -68,6 +76,10 @@ export const useCallManager = (
   // End active call
   const endCall = useCallback((callId: string) => {
     updateCall(callId, 'completed');
+    toast({
+      title: "Call Ended",
+      description: "Your call has ended"
+    });
   }, [updateCall]);
   
   // Close call modal

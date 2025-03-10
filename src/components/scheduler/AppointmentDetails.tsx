@@ -1,19 +1,26 @@
 
 import React from 'react';
-import { Check, X, Edit, CalendarCheck } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { format } from 'date-fns';
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Calendar, Clock, MapPin, Phone, Video, User } from 'lucide-react';
 import { Appointment, AppointmentStatus, useUser } from '../../context/UserContext';
-import { toast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { CallType } from '../../types/callTypes';
 
 interface AppointmentDetailsProps {
   appointment: Appointment;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onUpdateStatus: (appointmentId: string, status: AppointmentStatus) => void;
+  onUpdateStatus?: (id: string, status: AppointmentStatus) => void;
 }
 
 const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
@@ -22,135 +29,168 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
   onOpenChange,
   onUpdateStatus
 }) => {
-  const { advisorProfile } = useUser();
+  const { userType, initiateCall } = useUser();
 
-  const formatAppointmentTime = (start: string, end: string) => {
-    const formatTime = (time: string) => {
-      const [hours, minutes] = time.split(':');
-      const hour = parseInt(hours);
-      const period = hour >= 12 ? 'PM' : 'AM';
-      const adjustedHour = hour % 12 || 12;
-      return `${adjustedHour}:${minutes} ${period}`;
-    };
-
-    return `${formatTime(start)} - ${formatTime(end)}`;
+  // Handle initiating calls
+  const handleCall = (callType: CallType) => {
+    if (initiateCall) {
+      const recipientId = userType === 'advisor' 
+        ? appointment.consumerId 
+        : appointment.advisorId;
+      
+      initiateCall(recipientId, callType);
+    }
   };
 
-  const getStatusClass = (status: AppointmentStatus) => {
+  const getStatusBadgeColor = (status: AppointmentStatus) => {
     switch (status) {
-      case 'confirmed':
-        return 'text-green-700 bg-green-100';
-      case 'pending':
-        return 'text-amber-700 bg-amber-100';
-      case 'cancelled':
-        return 'text-red-700 bg-red-100';
-      case 'completed':
-        return 'text-blue-700 bg-blue-100';
-      default:
-        return 'text-slate-700 bg-slate-100';
+      case 'confirmed': return 'bg-green-100 text-green-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      case 'completed': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
-  };
-
-  const getCategoryLabel = (appointment: Appointment) => {
-    if (advisorProfile) {
-      const category = advisorProfile.appointmentCategories.find(
-        cat => cat.id === appointment.categoryId
-      );
-      return category ? category.label : 'Appointment';
-    }
-    return 'Appointment';
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{appointment.title}</DialogTitle>
+          <DialogTitle>Appointment Details</DialogTitle>
+          <DialogDescription>
+            View and manage your appointment.
+          </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4 mt-2">
-          <div className="grid grid-cols-[auto,1fr] gap-x-3 gap-y-2">
-            <div className="text-sm font-medium text-slate-500">Date:</div>
-            <div>{format(parseISO(appointment.date), 'EEEE, MMMM d, yyyy')}</div>
+        <div className="py-4">
+          <div className="mb-6 flex justify-between items-center">
+            <Badge className={cn("capitalize", getStatusBadgeColor(appointment.status))}>
+              {appointment.status}
+            </Badge>
             
-            <div className="text-sm font-medium text-slate-500">Time:</div>
-            <div>{formatAppointmentTime(appointment.startTime, appointment.endTime)}</div>
+            <div className="flex gap-2">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="flex items-center gap-1"
+                onClick={() => handleCall('audio')}
+              >
+                <Phone className="h-4 w-4" />
+                <span className="hidden sm:inline">Call</span>
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="flex items-center gap-1"
+                onClick={() => handleCall('video')}
+              >
+                <Video className="h-4 w-4" />
+                <span className="hidden sm:inline">Video</span>
+              </Button>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="bg-slate-100 p-2 rounded-full">
+                <Calendar className="h-5 w-5 text-navy-700" />
+              </div>
+              <div>
+                <h4 className="font-medium">Date</h4>
+                <p className="text-sm text-slate-600">
+                  {format(new Date(appointment.date), 'MMMM d, yyyy')}
+                </p>
+              </div>
+            </div>
             
-            <div className="text-sm font-medium text-slate-500">Category:</div>
-            <div>{getCategoryLabel(appointment)}</div>
+            <div className="flex items-start gap-3">
+              <div className="bg-slate-100 p-2 rounded-full">
+                <Clock className="h-5 w-5 text-navy-700" />
+              </div>
+              <div>
+                <h4 className="font-medium">Time</h4>
+                <p className="text-sm text-slate-600">
+                  {format(new Date(`${appointment.date}T${appointment.time}`), 'h:mm a')}
+                </p>
+              </div>
+            </div>
             
-            <div className="text-sm font-medium text-slate-500">Status:</div>
-            <div>
-              <Badge variant="outline" className={cn(getStatusClass(appointment.status), "capitalize")}>
-                {appointment.status}
-              </Badge>
+            <div className="flex items-start gap-3">
+              <div className="bg-slate-100 p-2 rounded-full">
+                <User className="h-5 w-5 text-navy-700" />
+              </div>
+              <div>
+                <h4 className="font-medium">
+                  {userType === 'advisor' ? 'Client' : 'Advisor'}
+                </h4>
+                <p className="text-sm text-slate-600">
+                  {userType === 'advisor' ? appointment.consumerName : appointment.advisorName}
+                </p>
+              </div>
             </div>
             
             {appointment.location && (
-              <>
-                <div className="text-sm font-medium text-slate-500">Location:</div>
-                <div>{appointment.location}</div>
-              </>
+              <div className="flex items-start gap-3">
+                <div className="bg-slate-100 p-2 rounded-full">
+                  <MapPin className="h-5 w-5 text-navy-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium">Location</h4>
+                  <p className="text-sm text-slate-600">
+                    {appointment.location}
+                  </p>
+                </div>
+              </div>
             )}
             
             {appointment.notes && (
-              <>
-                <div className="text-sm font-medium text-slate-500">Notes:</div>
-                <div className="text-sm">{appointment.notes}</div>
-              </>
+              <div className="mt-4 p-3 bg-slate-50 rounded-md">
+                <h4 className="font-medium mb-1">Notes</h4>
+                <p className="text-sm text-slate-600">{appointment.notes}</p>
+              </div>
             )}
           </div>
+        </div>
+        
+        <DialogFooter className="sm:justify-between">
+          <Button 
+            variant="ghost" 
+            onClick={() => onOpenChange(false)}
+          >
+            Close
+          </Button>
           
-          <div className="pt-4 border-t">
-            <h4 className="font-medium mb-2">Update Status</h4>
-            <div className="flex flex-wrap gap-2">
+          {onUpdateStatus && userType === 'advisor' && appointment.status !== 'completed' && appointment.status !== 'cancelled' && (
+            <div className="flex gap-2">
               {appointment.status !== 'confirmed' && (
                 <Button 
-                  variant="outline" 
-                  className="bg-green-50 text-green-700 hover:bg-green-100"
+                  variant="default" 
                   onClick={() => onUpdateStatus(appointment.id, 'confirmed')}
                 >
-                  <Check className="h-4 w-4 mr-1" />
                   Confirm
                 </Button>
               )}
               
-              {appointment.status !== 'completed' && appointment.status !== 'cancelled' && (
+              {appointment.status === 'confirmed' && (
                 <Button 
-                  variant="outline" 
-                  className="bg-blue-50 text-blue-700 hover:bg-blue-100"
+                  variant="default" 
                   onClick={() => onUpdateStatus(appointment.id, 'completed')}
                 >
-                  <CalendarCheck className="h-4 w-4 mr-1" />
                   Mark Completed
                 </Button>
               )}
               
               {appointment.status !== 'cancelled' && (
                 <Button 
-                  variant="outline" 
-                  className="bg-red-50 text-red-700 hover:bg-red-100"
+                  variant="destructive" 
                   onClick={() => onUpdateStatus(appointment.id, 'cancelled')}
                 >
-                  <X className="h-4 w-4 mr-1" />
                   Cancel
                 </Button>
               )}
-              
-              <Button 
-                variant="outline"
-                className="bg-slate-50 text-slate-700 hover:bg-slate-100"
-                onClick={() => toast({
-                  title: "Feature Coming Soon",
-                  description: "Appointment editing will be available soon.",
-                })}
-              >
-                <Edit className="h-4 w-4 mr-1" />
-                Edit
-              </Button>
             </div>
-          </div>
-        </div>
+          )}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

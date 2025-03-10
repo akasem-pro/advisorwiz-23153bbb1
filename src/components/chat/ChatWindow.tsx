@@ -2,9 +2,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { Send, ArrowLeft, Clock } from 'lucide-react';
+import { Send, ArrowLeft, Clock, Phone, Video } from 'lucide-react';
 import { Chat, ChatMessage, useUser } from '../../context/UserContext';
 import { cn } from '@/lib/utils';
+import { CallType } from '../../types/callTypes';
+import { Button } from '../ui/button';
 
 interface ChatWindowProps {
   chatId: string;
@@ -18,7 +20,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, onBack }) => {
     markChatAsRead,
     userType, 
     consumerProfile, 
-    advisorProfile 
+    advisorProfile,
+    initiateCall 
   } = useUser();
   const [message, setMessage] = useState('');
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -80,6 +83,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, onBack }) => {
     
     setMessage('');
   };
+
+  // Handle initiating calls
+  const handleCall = (callType: CallType) => {
+    if (initiateCall) {
+      initiateCall(otherParticipantId, callType);
+    }
+  };
   
   // Group messages by date
   const messagesByDate: { [date: string]: ChatMessage[] } = {};
@@ -105,11 +115,31 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, onBack }) => {
         <div className="h-10 w-10 bg-slate-300 rounded-full mr-3 flex items-center justify-center text-white font-medium">
           {otherParticipantName[0]?.toUpperCase()}
         </div>
-        <div>
+        <div className="flex-1">
           <h3 className="font-medium text-navy-800">{otherParticipantName}</h3>
           <p className="text-xs text-slate-500">
             {userType === 'consumer' ? 'Financial Advisor' : 'Client'}
           </p>
+        </div>
+        <div className="flex gap-2">
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="flex items-center gap-1" 
+            onClick={() => handleCall('audio')}
+          >
+            <Phone className="h-4 w-4" />
+            <span className="hidden sm:inline">Call</span>
+          </Button>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="flex items-center gap-1" 
+            onClick={() => handleCall('video')}
+          >
+            <Video className="h-4 w-4" />
+            <span className="hidden sm:inline">Video</span>
+          </Button>
         </div>
       </div>
       
@@ -123,7 +153,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, onBack }) => {
               </span>
             </div>
             
-            {messagesByDate[date].map((msg, index) => (
+            {messagesByDate[date].map((msg) => (
               <MessageBubble 
                 key={msg.id} 
                 message={msg} 
