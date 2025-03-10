@@ -5,6 +5,7 @@ import {
   ConsumerProfile,
   AdvisorProfile,
   Chat,
+  ChatMessage,
   Appointment,
   AppointmentStatus,
   ServiceCategory,

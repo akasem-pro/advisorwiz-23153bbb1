@@ -6,6 +6,7 @@ import {
   ConsumerProfile, 
   AdvisorProfile, 
   Chat, 
+  ChatMessage,
   Appointment, 
   AppointmentStatus, 
   FinancialFirm,
