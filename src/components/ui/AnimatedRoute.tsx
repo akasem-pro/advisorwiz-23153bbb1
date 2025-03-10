@@ -7,7 +7,7 @@ interface AnimatedRouteProps {
   animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right';
 }
 
-const AnimatedRoute: React.FC<AnimatedRouteProps> = ({ children, animation = 'fade' }) => {
+const AnimatedRoute = ({ children, animation = 'fade' }: AnimatedRouteProps) => {
   const animations = {
     fade: {
       initial: { opacity: 0 },
