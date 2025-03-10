@@ -234,7 +234,7 @@ const Index: React.FC = () => {
           {/* CTA Section */}
           <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-navy-800 to-navy-900 text-white">
             <div className="container mx-auto text-center max-w-3xl">
-              <h2 className="text-3xl md:text-4xl font-serif font-bold">
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-white">
                 Ready to Find Your Financial Advisor?
               </h2>
               <p className="mt-4 text-lg text-slate-300 mb-8">
