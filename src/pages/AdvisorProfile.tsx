@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, ChangeEvent, MouseEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -27,9 +26,6 @@ import {
   Link,
   Linkedin
 } from 'lucide-react';
-import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
-import AvailabilityScheduler from '../components/advisor/AvailabilityScheduler';
-import AppointmentCategoryManager from '../components/scheduler/AppointmentCategoryManager';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Checkbox } from '../components/ui/checkbox';
@@ -58,7 +54,7 @@ import {
   DEFAULT_CATEGORIES,
   languageOptions
 } from '../data/advisorProfileData';
-import { ExtendedAdvisorProfileForm } from '../types/advisorTypes';
+import { ExtendedAdvisorProfileForm, Section } from '../types/advisorTypes';
 
 const AdvisorProfile: React.FC = () => {
   const { advisorProfile, setAdvisorProfile, updateOnlineStatus } = useUser();
@@ -73,7 +69,7 @@ const AdvisorProfile: React.FC = () => {
   const totalSteps = 5;
 
   // State for accordion sections
-  const [sections, setSections] = useState([
+  const [sections, setSections] = useState<Section[]>([
     { 
       id: 'basic-info', 
       title: 'Basic Information', 
@@ -148,9 +144,8 @@ const AdvisorProfile: React.FC = () => {
     yearsOfExperience: '',
     hasViolations: false,
     consentToBackgroundCheck: false,
-    website: advisorProfile?.website || '',
+    websiteUrl: '',
     linkedinUrl: '',
-    websiteUrl: '', 
     bio: '',
     testimonials: advisorProfile?.testimonials || [],
     languages: advisorProfile?.languages || [],
@@ -167,8 +162,8 @@ const AdvisorProfile: React.FC = () => {
     assetsUnderManagement: advisorProfile?.assetsUnderManagement || 0,
     expertise: advisorProfile?.expertise || [],
     profilePicture: advisorProfile?.profilePicture || '',
-    matches: [],
-    chats: [],
+    matches: advisorProfile?.matches || [],
+    chats: advisorProfile?.chats || [],
     availability: advisorProfile?.availability || [],
     chatEnabled: advisorProfile?.chatEnabled !== undefined ? advisorProfile.chatEnabled : true,
     appointmentCategories: advisorProfile?.appointmentCategories || DEFAULT_CATEGORIES,
