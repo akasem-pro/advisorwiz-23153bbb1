@@ -7,7 +7,7 @@ interface AnimatedRouteProps {
   animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right';
 }
 
-export const AnimatedRoute = ({ children, animation = 'fade' }: AnimatedRouteProps) => {
+const AnimatedRoute = ({ children, animation = 'fade' }: AnimatedRouteProps) => {
   const animations = {
     fade: {
       initial: { opacity: 0 },

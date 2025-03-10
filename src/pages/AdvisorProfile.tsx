@@ -891,4 +891,109 @@ const AdvisorProfile: React.FC = () => {
                   {/* Professional Credentials Section */}
                   <div className="rounded-lg border border-slate-200 overflow-hidden">
                     <div 
-                      className={`flex justify-between items-center p-4 cursor-pointer ${sections[1].isCompleted ? '
+                      className={`flex justify-between items-center p-4 cursor-pointer ${sections[1].isCompleted ? 'bg-green-50' : 'bg-slate-50'}`}
+                      onClick={() => toggleSection('professional-credentials')}
+                    >
+                      <div className="flex items-center">
+                        <div className={`mr-3 ${sections[1].isCompleted ? 'text-green-600' : 'text-slate-700'}`}>
+                          {sections[1].icon}
+                        </div>
+                        <h3 className="text-lg font-medium text-navy-800 flex items-center">
+                          {sections[1].title}
+                          {sections[1].isCompleted && (
+                            <CheckCircle className="ml-2 h-4 w-4 text-green-600" />
+                          )}
+                        </h3>
+                      </div>
+                      <div>
+                        {sections[1].isOpen ? (
+                          <ChevronUp className="h-5 w-5 text-slate-500" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-slate-500" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    {sections[1].isOpen && (
+                      <div className="p-4 border-t border-slate-200 space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="licensingBody" className="block text-sm font-medium text-navy-800 mb-1">
+                              Licensing Body
+                            </label>
+                            <select
+                              id="licensingBody"
+                              name="licensingBody"
+                              value={formData.licensingBody}
+                              onChange={handleChange}
+                              className="input-field"
+                            >
+                              <option value="">Select licensing body</option>
+                              {licensingBodies.map(option => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label htmlFor="registrationNumber" className="block text-sm font-medium text-navy-800 mb-1">
+                              Registration Number
+                            </label>
+                            <Input
+                              type="text"
+                              id="registrationNumber"
+                              name="registrationNumber"
+                              value={formData.registrationNumber}
+                              onChange={handleChange}
+                              placeholder="Your registration number"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="yearsOfExperience" className="block text-sm font-medium text-navy-800 mb-1">
+                              Years of Experience
+                            </label>
+                            <select
+                              id="yearsOfExperience"
+                              name="yearsOfExperience"
+                              value={formData.yearsOfExperience}
+                              onChange={handleChange}
+                              className="input-field"
+                            >
+                              <option value="">Select years of experience</option>
+                              {experienceOptions.map(option => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label htmlFor="hasViolations" className="block text-sm font-medium text-navy-800 mb-1">
+                              Has Violations
+                            </label>
+                            <Checkbox
+                              id="hasViolations"
+                              name="hasViolations"
+                              checked={formData.hasViolations}
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Expertise Section */}
+                  <div className="rounded-lg border border-slate-200 overflow-hidden">
+                    <div 
+                      className={`flex justify-between items-center p-4 cursor-pointer ${sections[2].isCompleted ? 'bg-green-50' : 'bg-slate-50'}`}
+                      onClick={() => toggleSection('expertise')}
+                    >
+                      <div className="flex items-center">
+                        <div className={`mr-3 ${sections[2].isCompleted ? 'text-green-600' : 'text-slate-700'}`}>
+                          {sections[2].icon
+
