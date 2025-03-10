@@ -25,6 +25,10 @@ const MatchCard: React.FC<MatchCardProps> = ({
     setShowAvailability(!showAvailability);
   };
 
+  if (!userType) {
+    return null; // Don't render anything if userType is null
+  }
+
   return (
     <div>
       {userType === 'consumer' ? (

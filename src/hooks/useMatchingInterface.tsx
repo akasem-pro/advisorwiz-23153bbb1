@@ -37,6 +37,10 @@ export const useMatchingInterface = () => {
         if (advisorProfile?.matches) {
           setMatches(advisorProfile.matches);
         }
+      } else {
+        // For firm_admin or null userType, initialize with empty arrays
+        setFilteredItems([]);
+        setMatches([]);
       }
     });
   }, [userType, consumerProfile, advisorProfile]);
