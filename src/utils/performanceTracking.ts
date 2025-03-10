@@ -7,14 +7,16 @@
 export const trackWebVitals = () => {
   if (typeof window !== 'undefined') {
     // Check if the browser supports the Web Vitals API
-    if ('web-vitals' in window) {
-      import('web-vitals').then(({ getCLS, getFID, getLCP, getFCP, getTTFB }) => {
-        getCLS(sendToAnalytics);
-        getFID(sendToAnalytics);
-        getLCP(sendToAnalytics);
-        getFCP(sendToAnalytics);
-        getTTFB(sendToAnalytics);
+    try {
+      import('web-vitals').then((webVitals) => {
+        webVitals.onCLS(sendToAnalytics);
+        webVitals.onFID(sendToAnalytics);
+        webVitals.onLCP(sendToAnalytics);
+        webVitals.onFCP(sendToAnalytics);
+        webVitals.onTTFB(sendToAnalytics);
       });
+    } catch (error) {
+      console.error('Failed to load web-vitals:', error);
     }
   }
 };
