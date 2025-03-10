@@ -4,7 +4,7 @@ import { Appointment, AppointmentStatus, useUser } from '../../context/UserConte
 import { toast } from '@/hooks/use-toast';
 import AppointmentCategoryManager from './AppointmentCategoryManager';
 import AppointmentFilters from './AppointmentFilters';
-import AppointmentItem from './AppointmentItem';
+import AppointmentItem from './appointment-item';
 import AppointmentDetails from './AppointmentDetails';
 import EmptyAppointments from './EmptyAppointments';
 import { useAppointmentFilters } from '../../hooks/useAppointmentFilters';
