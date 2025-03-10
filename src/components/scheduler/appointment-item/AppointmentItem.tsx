@@ -2,7 +2,6 @@
 import React from 'react';
 import { Appointment } from '../../../context/UserContext';
 import { formatAppointmentDate, formatAppointmentTime } from './FormatUtils';
-import { getStatusColor } from './StatusUtils';
 import AppointmentTitle from './AppointmentTitle';
 import AppointmentDate from './AppointmentDate';
 import AppointmentTime from './AppointmentTime';
@@ -30,12 +29,8 @@ const AppointmentItem: React.FC<AppointmentItemProps> = ({
 
   // Get the title of the appointment based on who's viewing it
   const getTitle = () => {
-    if (showAdvisorName && appointment.advisorName) {
-      return `Meeting with ${appointment.advisorName}`;
-    }
-    if (showConsumerName && appointment.consumerName) {
-      return `Meeting with ${appointment.consumerName}`;
-    }
+    // Since advisorName and consumerName don't exist in the Appointment type,
+    // we'll just use the title directly
     return appointment.title || 'Appointment';
   };
 
@@ -54,9 +49,9 @@ const AppointmentItem: React.FC<AppointmentItemProps> = ({
             <span>•</span>
             <AppointmentTime startTime={appointment.startTime} endTime={appointment.endTime} />
           </div>
-          {appointment.category && (
+          {appointment.categoryId && (
             <div className="mt-2">
-              <AppointmentCategory category={appointment.category} />
+              <AppointmentCategory category={appointment.categoryId} />
             </div>
           )}
         </div>

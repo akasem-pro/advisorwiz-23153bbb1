@@ -1,8 +1,7 @@
 
 import { AppointmentStatus } from '../../../context/UserContext';
-import { cn } from '@/lib/utils';
 
-export const getStatusClass = (status: AppointmentStatus): string => {
+export const getStatusColor = (status: AppointmentStatus): string => {
   switch (status) {
     case 'confirmed':
       return 'text-green-700 bg-green-100';
