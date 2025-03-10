@@ -1,184 +1,106 @@
 
-import { ConsumerProfile, AdvisorProfile, ServiceCategory } from '../context/UserContext';
-import { ExtendedAdvisorProfileForm } from '../types/advisorTypes';
+import { AdvisorProfile, ConsumerProfile, ServiceCategory } from '../context/UserContext';
+import { ExtendedAdvisorProfileForm, MatchScoreRange, getMatchCategory } from '../types/advisorTypes';
 
-type MatchResult = {
-  advisorId: string;
-  consumerId: string;
-  score: number;
-  matchFactors: {
-    servicesMatch: number;
-    languageMatch: number;
-    timelineMatch: number;
-    investmentMatch: number;
-    experienceMatch: number;
-  };
+// Helper function that takes either AdvisorProfile or ExtendedAdvisorProfileForm
+type AdvisorProfileTypes = AdvisorProfile | ExtendedAdvisorProfileForm;
+
+// Function to calculate match score between advisor and consumer
+export const calculateMatchScore = (advisor: AdvisorProfileTypes, consumer: ConsumerProfile): number => {
+  if (!advisor || !consumer) return 0;
+
+  let score = 0;
+  let maxScore = 0;
+
+  // Match service needs - heavily weighted
+  if (advisor.expertise && consumer.serviceNeeds) {
+    const matchingServices = advisor.expertise.filter(service => 
+      consumer.serviceNeeds?.includes(service as ServiceCategory)
+    );
+    
+    maxScore += 40;
+    if (matchingServices.length > 0) {
+      // Score based on percentage of consumer needs met
+      score += (matchingServices.length / consumer.serviceNeeds.length) * 40;
+    }
+  }
+
+  // Match language preferences - medium weight
+  if (advisor.languages && consumer.languages) {
+    const matchingLanguages = advisor.languages.filter(lang => 
+      consumer.languages?.includes(lang)
+    );
+    
+    maxScore += 20;
+    if (matchingLanguages.length > 0) {
+      score += (matchingLanguages.length / consumer.languages.length) * 20;
+    }
+  }
+
+  // Match investment expectations with advisor minimum - medium weight
+  if (consumer.investmentAmount && 'minimumInvestment' in advisor && advisor.minimumInvestment !== null) {
+    maxScore += 20;
+    if (consumer.investmentAmount >= advisor.minimumInvestment) {
+      score += 20;
+    }
+  }
+
+  // Consider experience level - low weight
+  if ('yearsOfExperience' in advisor && consumer.advisorPreferences?.experienceLevel) {
+    maxScore += 10;
+    
+    // Simple mapping of experience levels to scores
+    if (consumer.advisorPreferences.experienceLevel === 'experienced' && 
+        (advisor.yearsOfExperience === '5_to_10' || advisor.yearsOfExperience === '10_plus')) {
+      score += 10;
+    } else if (consumer.advisorPreferences.experienceLevel === 'mid_level' && 
+               advisor.yearsOfExperience === '1_to_5') {
+      score += 10;
+    } else if (consumer.advisorPreferences.experienceLevel === 'any') {
+      score += 7; // Partial credit for any experience level
+    }
+  }
+
+  // If maxScore is 0 (no matching criteria), return 0
+  if (maxScore === 0) return 0;
+
+  // Normalize score to percentage (0-100)
+  const normalizedScore = (score / maxScore) * 100;
+  return Math.round(normalizedScore);
 };
 
-export function calculateMatchScore(
-  advisor: AdvisorProfile | ExtendedAdvisorProfileForm,
-  consumer: ConsumerProfile
-): MatchResult {
-  let score = 0;
-  let maxPossibleScore = 100;
-  
-  // Initialize all match factors to 0
-  const matchFactors = {
-    servicesMatch: 0,
-    languageMatch: 0,
-    timelineMatch: 0,
-    investmentMatch: 0,
-    experienceMatch: 0
+// Function to categorize matches into different buckets
+export const categorizeMatches = (advisors: AdvisorProfileTypes[], consumer: ConsumerProfile) => {
+  const matches: Record<string, { advisor: AdvisorProfileTypes; score: number }[]> = {
+    excellent: [],
+    good: [],
+    average: [],
+    poor: []
   };
+
+  advisors.forEach(advisor => {
+    const score = calculateMatchScore(advisor, consumer);
+    const category = getMatchCategory(score);
+    matches[category.category].push({ advisor, score });
+  });
+
+  // Sort each category by score (highest first)
+  Object.keys(matches).forEach(key => {
+    matches[key] = matches[key].sort((a, b) => b.score - a.score);
+  });
+
+  return matches;
+};
+
+// Generate compatibility scores for an advisor with multiple consumers
+export const generateCompatibilityScores = (advisor: AdvisorProfileTypes, consumers: ConsumerProfile[]) => {
+  const scores: Record<string, number> = {};
   
-  // Weight for each factor
-  const weights = {
-    services: 35,
-    language: 20,
-    timeline: 15,
-    investment: 20,
-    experience: 10
-  };
-  
-  // 1. Services match (35% of score)
-  // For each service that the consumer needs and the advisor offers, add points
-  if (consumer.preferredLanguage && advisor.expertise) {
-    const consumerNeeds = getConsumerNeeds(consumer);
-    const matchedServices = advisor.expertise.filter(service => 
-      consumerNeeds.includes(service)
-    );
-    
-    const serviceMatchPercentage = matchedServices.length / consumerNeeds.length;
-    matchFactors.servicesMatch = serviceMatchPercentage * weights.services;
-    score += matchFactors.servicesMatch;
-  }
-  
-  // 2. Language match (20% of score)
-  if (consumer.preferredLanguage && advisor.languages) {
-    const languageMatch = consumer.preferredLanguage.some(lang => 
-      advisor.languages.includes(lang)
-    );
-    
-    if (languageMatch) {
-      matchFactors.languageMatch = weights.language;
-      score += weights.language;
+  consumers.forEach(consumer => {
+    if (consumer.id) {
+      scores[consumer.id] = calculateMatchScore(advisor, consumer);
     }
-  }
+  });
   
-  // 3. Experience match (10% of score)
-  if ('yearsOfExperience' in advisor) { 
-    const experienceLevel = getExperienceLevel(advisor.yearsOfExperience);
-    matchFactors.experienceMatch = experienceLevel * weights.experience;
-    score += matchFactors.experienceMatch;
-  }
-  
-  // 4. Investment match (20% of score)
-  if ('minimumInvestment' in advisor && advisor.minimumInvestment !== null && consumer.investableAssets) {
-    if (consumer.investableAssets >= advisor.minimumInvestment) {
-      matchFactors.investmentMatch = weights.investment;
-      score += weights.investment;
-    } else {
-      // Partial match if close to minimum
-      const ratio = consumer.investableAssets / advisor.minimumInvestment;
-      if (ratio > 0.7) {
-        matchFactors.investmentMatch = weights.investment * 0.7;
-        score += matchFactors.investmentMatch;
-      }
-    }
-  } else {
-    // No minimum investment requirement, give full score
-    matchFactors.investmentMatch = weights.investment;
-    score += weights.investment;
-  }
-  
-  // 5. Timeline match (15% of score)
-  if (consumer.startTimeline) {
-    // Advisors who are ready for any timeline get full score
-    matchFactors.timelineMatch = weights.timeline;
-    score += weights.timeline;
-    
-    // Could be expanded to match specific timeline preferences
-  }
-  
-  // Ensure score is between 0-100
-  score = Math.min(100, Math.max(0, score));
-  
-  return {
-    advisorId: advisor.id,
-    consumerId: consumer.id,
-    score,
-    matchFactors
-  };
-}
-
-// Helper function to determine what services a consumer might need based on their profile
-function getConsumerNeeds(consumer: ConsumerProfile): ServiceCategory[] {
-  const needs: ServiceCategory[] = [];
-  
-  // Logic to determine needs based on consumer profile
-  if (consumer.age > 50) {
-    needs.push('retirement');
-    needs.push('estate');
-  }
-  
-  if (consumer.investableAssets > 500000) {
-    needs.push('investment');
-    needs.push('tax');
-  }
-  
-  if (consumer.investableAssets > 1000000) {
-    needs.push('philanthropic');
-  }
-  
-  // Default to at least need investment help
-  if (needs.length === 0) {
-    needs.push('investment');
-  }
-  
-  return needs;
-}
-
-// Helper function to convert experience string to numeric score between 0-1
-function getExperienceLevel(experience: string): number {
-  switch (experience) {
-    case 'less_than_1':
-      return 0.25;
-    case '1_to_5':
-      return 0.5;
-    case '5_to_10':
-      return 0.75;
-    case '10_plus':
-      return 1;
-    default:
-      return 0.5; // Default to middle experience
-  }
-}
-
-// Function to find the best matches for a consumer from a list of advisors
-export function findBestMatches(
-  consumer: ConsumerProfile,
-  advisors: (AdvisorProfile | ExtendedAdvisorProfileForm)[],
-  limit: number = 5
-): MatchResult[] {
-  const matches = advisors.map(advisor => calculateMatchScore(advisor, consumer));
-  
-  // Sort by score descending
-  return matches
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit);
-}
-
-// Function to update compatibility scores for an advisor
-export function updateAdvisorCompatibilityScores(
-  advisor: ExtendedAdvisorProfileForm,
-  consumers: ConsumerProfile[]
-): Record<string, number> {
-  const compatibilityScores: Record<string, number> = {};
-  
-  for (const consumer of consumers) {
-    const match = calculateMatchScore(advisor, consumer);
-    compatibilityScores[consumer.id] = match.score;
-  }
-  
-  return compatibilityScores;
-}
+  return scores;
+};

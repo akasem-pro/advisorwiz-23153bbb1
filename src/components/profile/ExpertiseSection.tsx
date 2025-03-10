@@ -64,7 +64,7 @@ export const ExpertiseSection: React.FC<ExpertiseSectionProps> = ({
                         <Info className="h-3.5 w-3.5 text-slate-400 cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent side="top">
-                        {category.description}
+                        <p>{category.description}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
