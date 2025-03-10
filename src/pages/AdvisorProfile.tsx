@@ -1209,8 +1209,8 @@ const AdvisorProfile: React.FC = () => {
                               Profile Picture
                             </label>
                             <ProfilePictureUpload
-                              currentUrl={formData.profilePicture}
-                              onUpload={handlePictureChange}
+                              currentPicture={formData.profilePicture}
+                              onPictureChange={handlePictureChange}
                             />
                           </div>
                           <div>

@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/layout/Header';

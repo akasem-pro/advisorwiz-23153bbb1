@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import { Calendar, Clock, PlusCircle, Check, X, User, Phone, Video, Book, Calendar as CalendarIcon } from 'lucide-react';
 import { useUser, Appointment, AppointmentStatus, AppointmentCategory } from '../context/UserContext';
