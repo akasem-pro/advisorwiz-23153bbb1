@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -19,9 +18,7 @@ export const useMatchingInterface = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Helper function to import mock data
   const importMockData = useCallback(() => {
-    // Import from data/mockUsers to get advisors and consumers
     import('../data/mockUsers').then(module => {
       if (userType === 'consumer') {
         setAdvisors(module.mockAdvisors);
@@ -38,14 +35,12 @@ export const useMatchingInterface = () => {
           setMatches(advisorProfile.matches);
         }
       } else {
-        // For firm_admin or null userType, initialize with empty arrays
         setFilteredItems([]);
         setMatches([]);
       }
     });
   }, [userType, consumerProfile, advisorProfile]);
 
-  // Check if viewing matches
   useEffect(() => {
     if (location.pathname.includes('/matches')) {
       setViewingMatches(true);
@@ -55,7 +50,6 @@ export const useMatchingInterface = () => {
     }
   }, [location]);
 
-  // Load initial data
   useEffect(() => {
     importMockData();
   }, [importMockData]);
@@ -162,13 +156,11 @@ export const useMatchingInterface = () => {
       return;
     }
     
-    // Check if chat is enabled for the other profile
     if (!otherProfile.chatEnabled) {
       toast.error("Chat is not available for this user");
       return;
     }
     
-    // Find existing chat or create a new one
     let existingChat = chats.find(chat => 
       chat.participants.includes(currentUserId) && 
       chat.participants.includes(profileId)
@@ -182,11 +174,11 @@ export const useMatchingInterface = () => {
         lastUpdated: new Date().toISOString()
       };
       
-      setChats(prevChats => [...prevChats, newChat]);
+      const updatedChats = [...chats, newChat];
+      setChats(updatedChats);
       existingChat = newChat;
     }
     
-    // Navigate to the chat page with the chat ID
     navigate(`/chat/${existingChat.id}`);
   };
 
