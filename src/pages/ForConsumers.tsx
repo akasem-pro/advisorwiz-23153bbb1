@@ -5,17 +5,24 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Shield, Compass } from 'lucide-react';
+import SEO from '../components/seo/SEO';
 
 const ForConsumers: React.FC = () => {
   const navigate = useNavigate();
   
   return (
     <AnimatedRoute animation="fade">
+      <SEO 
+        title="Find Your Perfect Financial Advisor"
+        description="Connect with qualified financial advisors that match your specific needs and goals. AdvisorWiz makes finding the right financial advisor simple and free."
+        keywords="find financial advisor, advisor matching, financial planning help, investment advisor search"
+        canonicalUrl="https://advisorwiz.com/for-consumers"
+      />
       <div className="min-h-screen flex flex-col">
         <Header />
         
         <main className="flex-grow pt-20">
-          <section className="py-16 md:py-24 bg-gradient-to-b from-white to-slate-50">
+          <section className="py-16 md:py-24 bg-gradient-to-b from-white to-slate-50" aria-labelledby="consumer-heading">
             <div className="container mx-auto px-4">
               <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="order-2 md:order-1 rounded-xl overflow-hidden shadow-xl">
@@ -23,11 +30,14 @@ const ForConsumers: React.FC = () => {
                     src="https://images.unsplash.com/photo-1434626881859-194d67b2b86f" 
                     alt="Person planning financial future with investment growth charts" 
                     className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-500"
+                    width="600"
+                    height="400"
+                    loading="eager"
                   />
                 </div>
                 
                 <div className="order-1 md:order-2 max-w-xl">
-                  <h1 className="text-4xl md:text-5xl font-serif font-bold text-navy-900 mb-6">
+                  <h1 id="consumer-heading" className="text-4xl md:text-5xl font-serif font-bold text-navy-900 mb-6">
                     Find Your Perfect Financial Advisor
                   </h1>
                   <p className="text-xl text-slate-600 mb-10">
@@ -39,16 +49,16 @@ const ForConsumers: React.FC = () => {
                     className="btn-primary inline-flex items-center text-lg"
                   >
                     Get Started
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
                   </button>
                 </div>
               </div>
             </div>
           </section>
 
-          <section className="py-16 bg-navy-50">
+          <section className="py-16 bg-navy-50" aria-labelledby="journey-heading">
             <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-serif font-bold text-center text-navy-900 mb-12">Your Financial Journey Made Simple</h2>
+              <h2 id="journey-heading" className="text-3xl font-serif font-bold text-center text-navy-900 mb-12">Your Financial Journey Made Simple</h2>
               
               <div className="grid md:grid-cols-3 gap-8">
                 <div className="bg-white rounded-xl p-6 shadow-sm">

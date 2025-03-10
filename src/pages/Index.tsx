@@ -1,19 +1,27 @@
+
 import React from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import { Link } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { ArrowRight, CheckCircle, ShieldCheck, Clock, Users, BarChart, Building } from 'lucide-react';
+import SEO from '../components/seo/SEO';
 
 const Index: React.FC = () => {
   return (
     <AnimatedRoute animation="fade">
+      <SEO 
+        title="Match with the Perfect Financial Advisor"
+        description="AdvisorWiz connects you with experienced financial advisors who match your specific needs and preferences. Find your perfect financial match today."
+        keywords="financial advisor, advisor matching, financial planning, investment advisor, retirement planning"
+        canonicalUrl="https://advisorwiz.com/"
+      />
       <div className="min-h-screen flex flex-col">
         <Header />
         
         <main className="flex-grow pt-20">
           {/* Hero Section */}
-          <section className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+          <section className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden" aria-labelledby="hero-heading">
             <div className="absolute inset-0 bg-gradient-to-br from-navy-50 to-teal-50 z-0"></div>
             <div className="container mx-auto relative z-10">
               <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -21,7 +29,7 @@ const Index: React.FC = () => {
                   <span className="inline-block px-4 py-2 bg-teal-100 text-teal-700 rounded-full text-sm font-medium animate-pulse-scale">
                     The Smart Way to Find Your Financial Advisor
                   </span>
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-navy-900 leading-tight">
+                  <h1 id="hero-heading" className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-navy-900 leading-tight">
                     Match with the Perfect Financial Advisor
                   </h1>
                   <p className="text-lg md:text-xl text-slate-700 max-w-xl">
@@ -30,7 +38,7 @@ const Index: React.FC = () => {
                   <div className="flex space-x-4">
                     <Link to="/onboarding" className="btn-primary inline-flex items-center">
                       Get Started
-                      <ArrowRight className="ml-2 w-5 h-5" />
+                      <ArrowRight className="ml-2 w-5 h-5" aria-hidden="true" />
                     </Link>
                     <a href="#how-it-works" className="btn-outline inline-flex items-center">
                       Learn More
@@ -42,11 +50,14 @@ const Index: React.FC = () => {
                     src="https://images.unsplash.com/photo-1460925895917-afdab827c52f" 
                     alt="Financial growth chart with upward trend" 
                     className="rounded-2xl shadow-2xl transform rotate-3 animate-slide-up"
+                    width="600"
+                    height="400"
+                    loading="eager"
                   />
                   <div className="absolute top-1/2 -left-8 transform -translate-y-1/2 bg-white shadow-lg rounded-xl p-4 -rotate-6 animate-pulse-scale">
                     <div className="flex items-center space-x-2">
                       <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
-                        <CheckCircle className="w-5 h-5 text-teal-600" />
+                        <CheckCircle className="w-5 h-5 text-teal-600" aria-hidden="true" />
                       </div>
                       <span className="font-medium text-navy-800">Perfect Match!</span>
                     </div>
@@ -57,11 +68,11 @@ const Index: React.FC = () => {
           </section>
 
           {/* How It Works Section */}
-          <section id="how-it-works" className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white">
+          <section id="how-it-works" className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white" aria-labelledby="how-it-works-heading">
             <div className="container mx-auto">
               <div className="text-center max-w-3xl mx-auto mb-16">
                 <span className="text-teal-600 font-medium">How It Works</span>
-                <h2 className="mt-2 text-3xl md:text-4xl font-serif font-bold text-navy-900">
+                <h2 id="how-it-works-heading" className="mt-2 text-3xl md:text-4xl font-serif font-bold text-navy-900">
                   Find Your Financial Advisor in 3 Simple Steps
                 </h2>
                 <p className="mt-4 text-lg text-slate-600">
@@ -104,11 +115,11 @@ const Index: React.FC = () => {
           </section>
 
           {/* Benefits Section with Images */}
-          <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-navy-50">
+          <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-navy-50" aria-labelledby="benefits-heading">
             <div className="container mx-auto">
               <div className="text-center max-w-3xl mx-auto mb-16">
                 <span className="text-teal-600 font-medium">Benefits</span>
-                <h2 className="mt-2 text-3xl md:text-4xl font-serif font-bold text-navy-900">
+                <h2 id="benefits-heading" className="mt-2 text-3xl md:text-4xl font-serif font-bold text-navy-900">
                   Why Choose AdvisorWiz
                 </h2>
                 <p className="mt-4 text-lg text-slate-600">
@@ -211,10 +222,10 @@ const Index: React.FC = () => {
           </section>
 
           {/* Pricing CTA Section */}
-          <section className="py-12 bg-slate-50">
+          <section className="py-12 bg-slate-50" aria-labelledby="pricing-heading">
             <div className="container mx-auto px-4">
               <div className="text-center max-w-3xl mx-auto">
-                <h2 className="text-3xl font-serif font-bold text-navy-900 mb-4">
+                <h2 id="pricing-heading" className="text-3xl font-serif font-bold text-navy-900 mb-4">
                   Simple, Transparent Pricing
                 </h2>
                 <p className="text-lg text-slate-600 mb-6">
@@ -225,16 +236,16 @@ const Index: React.FC = () => {
                   className="inline-flex items-center bg-teal-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-teal-700 transition-colors"
                 >
                   View Pricing Plans
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <ArrowRight className="ml-2 w-5 h-5" aria-hidden="true" />
                 </Link>
               </div>
             </div>
           </section>
 
           {/* CTA Section */}
-          <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-navy-800 to-navy-900 text-white">
+          <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-navy-800 to-navy-900 text-white" aria-labelledby="cta-heading">
             <div className="container mx-auto text-center max-w-3xl">
-              <h2 className="text-3xl md:text-4xl font-serif font-bold text-white">
+              <h2 id="cta-heading" className="text-3xl md:text-4xl font-serif font-bold text-white">
                 Ready to Find Your Financial Advisor?
               </h2>
               <p className="mt-4 text-lg text-slate-300 mb-8">
@@ -246,7 +257,7 @@ const Index: React.FC = () => {
                   className="btn-accent inline-flex items-center justify-center"
                 >
                   Get Started Now
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  <ArrowRight className="ml-2 w-5 h-5" aria-hidden="true" />
                 </Link>
                 <Link 
                   to="/pricing"

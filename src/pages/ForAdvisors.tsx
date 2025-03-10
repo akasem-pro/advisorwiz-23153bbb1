@@ -5,21 +5,28 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Shield, BarChart3, Users } from 'lucide-react';
+import SEO from '../components/seo/SEO';
 
 const ForAdvisors: React.FC = () => {
   const navigate = useNavigate();
   
   return (
     <AnimatedRoute animation="fade">
+      <SEO 
+        title="Grow Your Advisory Practice"
+        description="Connect with qualified clients and streamline your financial advisory practice with our advanced advisor-client matching platform."
+        keywords="financial advisor platform, advisor growth, client acquisition, financial practice management"
+        canonicalUrl="https://advisorwiz.com/for-advisors"
+      />
       <div className="min-h-screen flex flex-col">
         <Header />
         
         <main className="flex-grow pt-20">
-          <section className="py-16 md:py-24 bg-gradient-to-b from-white to-slate-50">
+          <section className="py-16 md:py-24 bg-gradient-to-b from-white to-slate-50" aria-labelledby="advisor-heading">
             <div className="container mx-auto px-4">
               <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="max-w-xl">
-                  <h1 className="text-4xl md:text-5xl font-serif font-bold text-navy-900 mb-6">
+                  <h1 id="advisor-heading" className="text-4xl md:text-5xl font-serif font-bold text-navy-900 mb-6">
                     Grow Your Advisory Practice
                   </h1>
                   <p className="text-xl text-slate-600 mb-10">
@@ -31,7 +38,7 @@ const ForAdvisors: React.FC = () => {
                     className="btn-primary inline-flex items-center text-lg"
                   >
                     Get Started
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
                   </button>
                 </div>
                 
@@ -40,15 +47,18 @@ const ForAdvisors: React.FC = () => {
                     src="https://images.unsplash.com/photo-1604594849809-dfedbc827105" 
                     alt="Investment growth chart with financial planning" 
                     className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-500"
+                    width="600"
+                    height="400"
+                    loading="eager"
                   />
                 </div>
               </div>
             </div>
           </section>
 
-          <section className="py-16 bg-navy-50">
+          <section className="py-16 bg-navy-50" aria-labelledby="why-join-heading">
             <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-serif font-bold text-center text-navy-900 mb-12">Why Join AdvisorWiz?</h2>
+              <h2 id="why-join-heading" className="text-3xl font-serif font-bold text-center text-navy-900 mb-12">Why Join AdvisorWiz?</h2>
               
               <div className="grid md:grid-cols-3 gap-8">
                 <div className="bg-white rounded-xl p-6 shadow-sm">

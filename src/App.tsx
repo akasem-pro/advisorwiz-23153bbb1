@@ -4,6 +4,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/toaster';
+import { Helmet } from 'react-helmet';
+import StructuredData from './components/seo/StructuredData';
+import { generateOrganizationSchema } from './utils/jsonLdData';
 
 // Pages
 import Index from './pages/Index';
@@ -31,6 +34,14 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
+        <Helmet>
+          <html lang="en" />
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="theme-color" content="#1E3A8A" />
+          <link rel="icon" href="/favicon.ico" />
+        </Helmet>
+        <StructuredData data={generateOrganizationSchema()} />
         <Router>
           <Routes>
             <Route path="/" element={<Index />} />
