@@ -55,7 +55,7 @@ const Header: React.FC = () => {
             alt="AdvisorWiz Logo" 
             className="h-10 w-auto" 
             loading="eager" 
-            fetchpriority="high"
+            fetchPriority="high"
           />
           <span className="text-navy-900 font-serif text-xl font-bold">AdvisorWiz</span>
         </Link>
