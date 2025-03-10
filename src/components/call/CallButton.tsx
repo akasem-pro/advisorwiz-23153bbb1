@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Phone, Video } from "lucide-react";
 import { CallType } from '../../types/callTypes';
 
 interface CallButtonProps {
@@ -10,6 +9,7 @@ interface CallButtonProps {
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
+  children?: React.ReactNode;
 }
 
 const CallButton: React.FC<CallButtonProps> = ({ 
@@ -17,7 +17,8 @@ const CallButton: React.FC<CallButtonProps> = ({
   type, 
   variant = "outline", 
   size = "icon",
-  className = ""
+  className = "",
+  children
 }) => {
   return (
     <Button
@@ -26,9 +27,10 @@ const CallButton: React.FC<CallButtonProps> = ({
       onClick={() => onCall(type)}
       className={className}
     >
-      {type === 'audio' ? <Phone className="h-4 w-4" /> : <Video className="h-4 w-4" />}
+      {children}
     </Button>
   );
 };
 
 export default CallButton;
+
