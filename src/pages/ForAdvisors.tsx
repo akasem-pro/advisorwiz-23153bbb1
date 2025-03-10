@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AnimatedRoute } from '../components/ui/AnimatedRoute';
+import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
@@ -37,8 +37,8 @@ const ForAdvisors: React.FC = () => {
                 
                 <div className="rounded-xl overflow-hidden shadow-xl">
                   <img 
-                    src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a" 
-                    alt="Financial advisor analyzing investment charts" 
+                    src="https://images.unsplash.com/photo-1604594849809-dfedbc827105" 
+                    alt="Investment growth chart with financial planning" 
                     className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-500"
                   />
                 </div>

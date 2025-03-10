@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AnimatedRoute } from '../components/ui/AnimatedRoute';
+import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
@@ -20,8 +20,8 @@ const ForConsumers: React.FC = () => {
               <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="order-2 md:order-1 rounded-xl overflow-hidden shadow-xl">
                   <img 
-                    src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e" 
-                    alt="Person planning financial future with charts" 
+                    src="https://images.unsplash.com/photo-1434626881859-194d67b2b86f" 
+                    alt="Person planning financial future with investment growth charts" 
                     className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-500"
                   />
                 </div>
