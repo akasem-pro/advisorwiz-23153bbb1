@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { AdvisorProfile, ConsumerProfile } from '../types/userTypes';
+import { AdvisorProfile, ConsumerProfile } from '../../types/userTypes';
 
 export type SortOption = 'name' | 'default' | 'expertise' | 'assets';
 export type SortDirection = 'asc' | 'desc';

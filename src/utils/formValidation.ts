@@ -1,3 +1,5 @@
+// This file is now deprecated as its functionality has been moved to advisorFormValidation.ts
+// If this file is still needed elsewhere, we can keep it, otherwise it can be deleted.
 
 import { ExtendedAdvisorProfileForm } from '../types/advisorTypes';
 
@@ -24,4 +26,3 @@ export const isComplianceComplete = (formData: ExtendedAdvisorProfileForm): bool
 export const isConsentComplete = (formData: ExtendedAdvisorProfileForm): boolean => {
   return !!(formData.consentToTerms && formData.consentToContact);
 };
-

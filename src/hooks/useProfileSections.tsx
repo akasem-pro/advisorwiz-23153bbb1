@@ -11,6 +11,17 @@ import {
   Scroll,
   CheckCircle
 } from 'lucide-react';
+import { 
+  isBasicInfoComplete,
+  isProfessionalInfoComplete,
+  isExpertiseComplete,
+  isFeeStructureComplete,
+  isMarketingComplete,
+  isComplianceComplete,
+  isSubscriptionComplete,
+  isConsentComplete,
+  calculateProfileCompletion
+} from '../utils/advisorFormValidation';
 
 export const useProfileSections = (formData: ExtendedAdvisorProfileForm) => {
   const [sections, setSections] = useState<Section[]>([
@@ -76,58 +87,31 @@ export const useProfileSections = (formData: ExtendedAdvisorProfileForm) => {
 
   // Calculate progress based on filled fields
   useEffect(() => {
-    let completedSections = 0;
+    // Update section completion status
+    setSections(prev => prev.map(section => {
+      if (section.id === 'basic-info') {
+        return { ...section, isCompleted: isBasicInfoComplete(formData) };
+      } else if (section.id === 'professional-credentials') {
+        return { ...section, isCompleted: isProfessionalInfoComplete(formData) };
+      } else if (section.id === 'expertise') {
+        return { ...section, isCompleted: isExpertiseComplete(formData) };
+      } else if (section.id === 'fee-client') {
+        return { ...section, isCompleted: isFeeStructureComplete(formData) };
+      } else if (section.id === 'marketing') {
+        return { ...section, isCompleted: isMarketingComplete(formData) };
+      } else if (section.id === 'verification') {
+        return { ...section, isCompleted: isComplianceComplete(formData) };
+      } else if (section.id === 'subscription') {
+        return { ...section, isCompleted: isSubscriptionComplete(formData) };
+      } else if (section.id === 'consent') {
+        return { ...section, isCompleted: isConsentComplete(formData) };
+      }
+      return section;
+    }));
     
-    // Basic Info section
-    if (formData.name && formData.email && formData.phone && formData.province) {
-      completedSections++;
-      setSections(prev => prev.map(s => s.id === 'basic-info' ? {...s, isCompleted: true} : s));
-    }
-    
-    // Professional Credentials section
-    if (formData.licensingBody && formData.registrationNumber && formData.yearsOfExperience) {
-      completedSections++;
-      setSections(prev => prev.map(s => s.id === 'professional-credentials' ? {...s, isCompleted: true} : s));
-    }
-    
-    // Expertise section
-    if (formData.expertise && formData.expertise.length > 0) {
-      completedSections++;
-      setSections(prev => prev.map(s => s.id === 'expertise' ? {...s, isCompleted: true} : s));
-    }
-    
-    // Fee Structure section
-    if (formData.feeStructure) {
-      completedSections++;
-      setSections(prev => prev.map(s => s.id === 'fee-client' ? {...s, isCompleted: true} : s));
-    }
-    
-    // Marketing section
-    if (formData.profilePicture && formData.bio) {
-      completedSections++;
-      setSections(prev => prev.map(s => s.id === 'marketing' ? {...s, isCompleted: true} : s));
-    }
-    
-    // Compliance section
-    if (formData.consentToBackgroundCheck) {
-      completedSections++;
-      setSections(prev => prev.map(s => s.id === 'verification' ? {...s, isCompleted: true} : s));
-    }
-    
-    // Subscription section
-    if (formData.subscriptionPlan) {
-      completedSections++;
-      setSections(prev => prev.map(s => s.id === 'subscription' ? {...s, isCompleted: true} : s));
-    }
-    
-    // Consent section
-    if (formData.consentToTerms && formData.consentToContact) {
-      completedSections++;
-      setSections(prev => prev.map(s => s.id === 'consent' ? {...s, isCompleted: true} : s));
-    }
-    
-    setProgress((completedSections / sections.length) * 100);
-  }, [formData, sections.length]);
+    // Calculate overall progress
+    setProgress(calculateProfileCompletion(formData));
+  }, [formData]);
 
   const toggleSection = (sectionId: string) => {
     setSections(prev => 
