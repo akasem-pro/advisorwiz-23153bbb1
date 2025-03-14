@@ -8,6 +8,9 @@ import ConsumerPlan from '../components/pricing/ConsumerPlan';
 import AdvisorPlans from '../components/pricing/AdvisorPlans';
 import EnterprisePlans from '../components/pricing/EnterprisePlans';
 import PricingFAQs from '../components/pricing/PricingFAQs';
+import PricingTrustSignals from '../components/pricing/PricingTrustSignals';
+import PricingValueProposition from '../components/pricing/PricingValueProposition';
+import PricingCTA from '../components/pricing/PricingCTA';
 
 const Pricing: React.FC = () => {
   const [userType, setUserType] = useState<'consumer' | 'advisor' | 'enterprise'>('consumer');
@@ -23,9 +26,19 @@ const Pricing: React.FC = () => {
             <div className="container mx-auto px-4">
               <PricingHeader userType={userType} setUserType={setUserType} />
               
+              {/* Show value proposition based on selected user type */}
+              <PricingValueProposition userType={userType} />
+              
+              {/* Display the appropriate pricing plans */}
               {userType === 'consumer' && <ConsumerPlan />}
               {userType === 'advisor' && <AdvisorPlans />}
               {userType === 'enterprise' && <EnterprisePlans />}
+              
+              {/* Trust signals section */}
+              <PricingTrustSignals />
+              
+              {/* Call-to-action */}
+              <PricingCTA userType={userType} />
             </div>
           </section>
           

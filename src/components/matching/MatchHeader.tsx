@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
+import MatchingExplanation from './MatchingExplanation';
 
 interface MatchHeaderProps {
   userType: 'consumer' | 'advisor' | null;
@@ -16,7 +17,7 @@ const MatchHeader: React.FC<MatchHeaderProps> = ({
   matchesCount
 }) => {
   return (
-    <div className="text-center mb-10">
+    <div className="mb-10">
       {viewingMatches ? (
         <div>
           <div className="flex items-center justify-center mb-4">
@@ -28,23 +29,27 @@ const MatchHeader: React.FC<MatchHeaderProps> = ({
               Back to Matching
             </button>
           </div>
-          <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4">
+          <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4 text-center">
             Your Matches
           </h1>
-          <p className="text-slate-600 max-w-2xl mx-auto">
+          <p className="text-slate-600 max-w-2xl mx-auto text-center">
             Here are the {userType === 'consumer' ? 'advisors' : 'potential clients'} you've matched with.
+            Take your time to review their profiles and reach out when you're ready.
           </p>
         </div>
       ) : (
         <div>
-          <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4">
+          <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4 text-center">
             {userType === 'consumer' ? 'Find Your Advisor' : 'Find Potential Clients'}
           </h1>
-          <p className="text-slate-600 max-w-2xl mx-auto">
+          <p className="text-slate-600 max-w-2xl mx-auto mb-8 text-center">
             {userType === 'consumer' 
               ? "Swipe right on advisors you'd like to connect with. If they match with you too, you can start chatting." 
               : "Review potential clients who might benefit from your services."}
           </p>
+          
+          {/* Add the matching explanation component */}
+          <MatchingExplanation userType={userType} />
         </div>
       )}
 
