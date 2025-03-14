@@ -12,6 +12,7 @@ import {
   FinancialFirm
 } from '../types/userTypes';
 import { CallSession, CallStatus, CallType, CallMetrics } from '../types/callTypes';
+import { Lead, LeadStatus, LeadStats } from '../types/leadTypes';
 
 // Type for the user context
 export type UserContextType = {
@@ -54,6 +55,13 @@ export type UserContextType = {
   updateCallStatus: (callId: string, status: CallStatus) => void;
   activeCall: CallSession | null;
   callMetrics: CallMetrics[];
+  // New lead tracking functionality
+  leads: Lead[];
+  addLead: (consumerId: string, source?: string) => void;
+  updateLeadStatus: (leadId: string, status: LeadStatus, notes?: string) => void;
+  getLeadByConsumer: (consumerId: string) => Lead | null;
+  getLeadStats: () => LeadStats;
+  getAdvisorLeads: (advisorId: string) => Lead[];
 };
 
 // New type for match preferences
@@ -102,7 +110,22 @@ const UserContext = createContext<UserContextType>({
   initiateCall: () => null,
   updateCallStatus: () => {},
   activeCall: null,
-  callMetrics: []
+  callMetrics: [],
+  // New lead tracking functionality
+  leads: [],
+  addLead: () => {},
+  updateLeadStatus: () => {},
+  getLeadByConsumer: () => null,
+  getLeadStats: () => ({
+    totalLeads: 0,
+    activeLeads: 0,
+    convertedLeads: 0,
+    conversionRate: 0,
+    averageTimeToConversion: 0,
+    leadsByStatus: {} as Record<LeadStatus, number>,
+    leadsBySource: {} as Record<any, number>
+  }),
+  getAdvisorLeads: () => []
 });
 
 export default UserContext;

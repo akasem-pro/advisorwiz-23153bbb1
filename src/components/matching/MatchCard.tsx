@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
-import { AdvisorProfile, ConsumerProfile } from '../../context/UserContext';
+import { AdvisorProfile, ConsumerProfile, useUser } from '../../context/UserContext';
 import AdvisorCard from '../advisor/AdvisorCard';
 import ConsumerCard from '../consumer/ConsumerCard';
 import AvailabilityViewer from '../advisor/AvailabilityViewer';
-import { Calendar } from 'lucide-react';
+import { Calendar, CheckCircle } from 'lucide-react';
 
 interface MatchCardProps {
   item: AdvisorProfile | ConsumerProfile;
@@ -20,9 +20,39 @@ const MatchCard: React.FC<MatchCardProps> = ({
   onSwipeLeft 
 }) => {
   const [showAvailability, setShowAvailability] = useState(false);
+  const { getLeadByConsumer, updateLeadStatus, addLead, advisorProfile } = useUser();
 
   const toggleAvailability = () => {
     setShowAvailability(!showAvailability);
+  };
+
+  const handleSwipeRight = () => {
+    // If advisor, create or update lead when matching with a consumer
+    if (userType === 'advisor' && advisorProfile) {
+      const consumer = item as ConsumerProfile;
+      
+      // Check if lead already exists
+      const existingLead = getLeadByConsumer(consumer.id, advisorProfile.id);
+      
+      if (existingLead) {
+        // Update existing lead
+        if (existingLead.status === 'matched') {
+          updateLeadStatus(existingLead.id, 'contacted', 'Advisor expressed interest in match');
+        }
+      } else {
+        // Create new lead
+        const matchScore = Math.round(Math.random() * 30) + 60; // Just for demo, should use real score
+        addLead(
+          advisorProfile.id, 
+          consumer.id, 
+          consumer.name, 
+          matchScore, 
+          'platform_match'
+        );
+      }
+    }
+    
+    onSwipeRight(item);
   };
 
   if (!userType) {
@@ -40,7 +70,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
       ) : (
         <ConsumerCard 
           consumer={item as ConsumerProfile}
-          onSwipeRight={onSwipeRight}
+          onSwipeRight={handleSwipeRight}
           onSwipeLeft={onSwipeLeft}
         />
       )}

@@ -9,6 +9,7 @@ import {
   FinancialFirm
 } from '../types/userTypes';
 import { CallSession } from '../types/callTypes';
+import { Lead } from '../types/leadTypes';
 import { MatchPreferences } from '../context/UserContextDefinition';
 
 /**
@@ -23,6 +24,7 @@ export const useUserState = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [firms, setFirms] = useState<FinancialFirm[]>([]);
   const [callSessions, setCallSessions] = useState<CallSession[]>([]);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [matchPreferences, setMatchPreferences] = useState<MatchPreferences>({
     prioritizeLanguage: true,
     prioritizeAvailability: true,
@@ -41,6 +43,7 @@ export const useUserState = () => {
     appointments, setAppointments,
     firms, setFirms,
     callSessions, setCallSessions,
+    leads, setLeads,
     matchPreferences, setMatchPreferences
   };
 };

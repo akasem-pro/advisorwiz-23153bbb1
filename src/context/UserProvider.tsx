@@ -9,6 +9,7 @@ import { useMatchingAlgorithm } from '../hooks/useMatchingAlgorithm';
 import { useUserStatus } from '../hooks/useUserStatus';
 import { useFilterOperations } from '../hooks/useFilterOperations';
 import { useCallManager } from '../hooks/useCallManager';
+import { useLeadTracking } from '../hooks/useLeadTracking';
 import { CallMetrics } from '../types/callTypes';
 import CallModal from '../components/call/CallModal';
 
@@ -52,6 +53,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   // Filtering operations
   const { getFilteredAdvisors, getFilteredConsumers } = useFilterOperations();
+
+  // Lead tracking operations
+  const { 
+    leads, 
+    addLead, 
+    updateLeadStatus, 
+    getLeadByConsumer,
+    getAdvisorLeads,
+    getLeadStats 
+  } = useLeadTracking();
 
   // Call operations
   const handleMetricsUpdate = (metrics: CallMetrics[]) => {
@@ -135,7 +146,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     initiateCall,
     updateCallStatus,
     activeCall,
-    callMetrics
+    callMetrics,
+    // Lead tracking functionality
+    leads,
+    addLead,
+    updateLeadStatus,
+    getLeadByConsumer,
+    getLeadStats,
+    getAdvisorLeads
   };
 
   return (

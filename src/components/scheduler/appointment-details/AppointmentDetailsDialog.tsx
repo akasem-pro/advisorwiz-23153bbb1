@@ -27,7 +27,29 @@ const AppointmentDetailsDialog: React.FC<AppointmentDetailsDialogProps> = ({
   onOpenChange,
   onUpdateStatus
 }) => {
-  const { userType, initiateCall } = useUser();
+  const { userType, initiateCall, getLeadByConsumer, updateLeadStatus } = useUser();
+
+  const handleStatusUpdate = (id: string, status: AppointmentStatus) => {
+    if (onUpdateStatus) {
+      onUpdateStatus(id, status);
+      
+      // If this is an advisor updating appointment status, also update lead status
+      if (userType === 'advisor') {
+        const lead = getLeadByConsumer(appointment.consumerId, appointment.advisorId);
+        
+        if (lead) {
+          if (status === 'confirmed' && lead.status === 'matched') {
+            updateLeadStatus(lead.id, 'appointment_scheduled', 'Appointment confirmed');
+          } else if (status === 'completed') {
+            updateLeadStatus(lead.id, 'appointment_completed', 'Appointment completed');
+          } else if (status === 'cancelled' && 
+                    (lead.status === 'appointment_scheduled' || lead.status === 'contacted')) {
+            updateLeadStatus(lead.id, 'contacted', 'Appointment cancelled');
+          }
+        }
+      }
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -65,7 +87,7 @@ const AppointmentDetailsDialog: React.FC<AppointmentDetailsDialogProps> = ({
               {appointment.status === 'pending' && (
                 <Button 
                   variant="default" 
-                  onClick={() => onUpdateStatus(appointment.id, 'confirmed')}
+                  onClick={() => handleStatusUpdate(appointment.id, 'confirmed')}
                 >
                   Confirm
                 </Button>
@@ -74,7 +96,7 @@ const AppointmentDetailsDialog: React.FC<AppointmentDetailsDialogProps> = ({
               {appointment.status === 'confirmed' && (
                 <Button 
                   variant="default" 
-                  onClick={() => onUpdateStatus(appointment.id, 'completed')}
+                  onClick={() => handleStatusUpdate(appointment.id, 'completed')}
                 >
                   Mark Completed
                 </Button>
@@ -82,7 +104,7 @@ const AppointmentDetailsDialog: React.FC<AppointmentDetailsDialogProps> = ({
               
               <Button 
                 variant="destructive" 
-                onClick={() => onUpdateStatus(appointment.id, 'cancelled')}
+                onClick={() => handleStatusUpdate(appointment.id, 'cancelled')}
               >
                 Cancel
               </Button>
