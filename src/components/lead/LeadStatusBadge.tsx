@@ -48,7 +48,7 @@ const LeadStatusBadge: React.FC<LeadStatusBadgeProps> = ({ status, className }) 
       case 'lost':
         return 'Lost';
       default:
-        return status.replace('_', ' ');
+        return status.split('_').join(' ');
     }
   };
 

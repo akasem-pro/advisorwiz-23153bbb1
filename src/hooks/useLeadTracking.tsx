@@ -13,7 +13,7 @@ export const useLeadTracking = () => {
     consumerName: string, 
     matchScore: number,
     source: LeadSource = 'platform_match'
-  ) => {
+  ): string => {
     // Check if lead already exists for this consumer and advisor
     const existingLead = leads.find(
       lead => lead.consumerId === consumerId && lead.advisorId === advisorId
@@ -91,12 +91,8 @@ export const useLeadTracking = () => {
     return leads.filter(lead => lead.advisorId === advisorId);
   };
 
-  const getLeadStats = (advisorId?: string): LeadStats => {
-    const filteredLeads = advisorId 
-      ? leads.filter(lead => lead.advisorId === advisorId) 
-      : leads;
-    
-    if (filteredLeads.length === 0) {
+  const getLeadStats = (): LeadStats => {
+    if (leads.length === 0) {
       return {
         totalLeads: 0,
         activeLeads: 0,
@@ -108,8 +104,8 @@ export const useLeadTracking = () => {
       };
     }
     
-    const convertedLeads = filteredLeads.filter(lead => lead.status === 'converted');
-    const activeLeads = filteredLeads.filter(
+    const convertedLeads = leads.filter(lead => lead.status === 'converted');
+    const activeLeads = leads.filter(
       lead => lead.status !== 'converted' && lead.status !== 'lost'
     );
     
@@ -127,23 +123,23 @@ export const useLeadTracking = () => {
       : 0;
     
     // Count leads by status
-    const leadsByStatus = filteredLeads.reduce((acc, lead) => {
+    const leadsByStatus = leads.reduce((acc, lead) => {
       acc[lead.status] = (acc[lead.status] || 0) + 1;
       return acc;
     }, {} as Record<LeadStatus, number>);
     
     // Count leads by source
-    const leadsBySource = filteredLeads.reduce((acc, lead) => {
+    const leadsBySource = leads.reduce((acc, lead) => {
       acc[lead.source] = (acc[lead.source] || 0) + 1;
       return acc;
     }, {} as Record<LeadSource, number>);
     
     return {
-      totalLeads: filteredLeads.length,
+      totalLeads: leads.length,
       activeLeads: activeLeads.length,
       convertedLeads: convertedLeads.length,
-      conversionRate: filteredLeads.length > 0 
-        ? (convertedLeads.length / filteredLeads.length) * 100 
+      conversionRate: leads.length > 0 
+        ? (convertedLeads.length / leads.length) * 100 
         : 0,
       averageTimeToConversion,
       leadsByStatus,

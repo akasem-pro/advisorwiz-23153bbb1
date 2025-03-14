@@ -35,7 +35,7 @@ const AppointmentDetailsDialog: React.FC<AppointmentDetailsDialogProps> = ({
       
       // If this is an advisor updating appointment status, also update lead status
       if (userType === 'advisor') {
-        const lead = getLeadByConsumer(appointment.consumerId, appointment.advisorId);
+        const lead = getLeadByConsumer(appointment.consumerId);
         
         if (lead) {
           if (status === 'confirmed' && lead.status === 'matched') {

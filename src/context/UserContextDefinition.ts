@@ -12,7 +12,7 @@ import {
   FinancialFirm
 } from '../types/userTypes';
 import { CallSession, CallStatus, CallType, CallMetrics } from '../types/callTypes';
-import { Lead, LeadStatus, LeadStats } from '../types/leadTypes';
+import { Lead, LeadStatus, LeadStats, LeadSource } from '../types/leadTypes';
 
 // Type for the user context
 export type UserContextType = {
@@ -57,9 +57,9 @@ export type UserContextType = {
   callMetrics: CallMetrics[];
   // New lead tracking functionality
   leads: Lead[];
-  addLead: (consumerId: string, source?: string) => void;
+  addLead: (advisorId: string, consumerId: string, consumerName: string, matchScore: number, source?: LeadSource) => string;
   updateLeadStatus: (leadId: string, status: LeadStatus, notes?: string) => void;
-  getLeadByConsumer: (consumerId: string) => Lead | null;
+  getLeadByConsumer: (consumerId: string, advisorId?: string) => Lead | null;
   getLeadStats: () => LeadStats;
   getAdvisorLeads: (advisorId: string) => Lead[];
 };
@@ -113,7 +113,7 @@ const UserContext = createContext<UserContextType>({
   callMetrics: [],
   // New lead tracking functionality
   leads: [],
-  addLead: () => {},
+  addLead: () => "",
   updateLeadStatus: () => {},
   getLeadByConsumer: () => null,
   getLeadStats: () => ({
@@ -123,7 +123,7 @@ const UserContext = createContext<UserContextType>({
     conversionRate: 0,
     averageTimeToConversion: 0,
     leadsByStatus: {} as Record<LeadStatus, number>,
-    leadsBySource: {} as Record<any, number>
+    leadsBySource: {} as Record<LeadSource, number>
   }),
   getAdvisorLeads: () => []
 });

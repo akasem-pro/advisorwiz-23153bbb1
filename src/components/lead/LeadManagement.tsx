@@ -39,7 +39,7 @@ const LeadManagement: React.FC<LeadManagementProps> = ({ className }) => {
   }
   
   const advisorLeads = getAdvisorLeads(advisorProfile.id);
-  const leadStats = getLeadStats(advisorProfile.id);
+  const leadStats = getLeadStats();
   
   // Filter leads based on active tab
   const filteredLeads = activeTab === 'all' 
@@ -127,7 +127,7 @@ const LeadRow: React.FC<LeadRowProps> = ({ lead, onStatusChange }) => {
     <TableRow>
       <TableCell className="font-medium">{lead.consumerName}</TableCell>
       <TableCell>
-        <Badge variant={lead.matchScore > 70 ? "success" : "secondary"}>
+        <Badge variant={lead.matchScore > 70 ? "secondary" : "outline"}>
           {lead.matchScore}%
         </Badge>
       </TableCell>
