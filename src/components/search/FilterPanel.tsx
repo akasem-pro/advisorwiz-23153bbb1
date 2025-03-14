@@ -1,11 +1,10 @@
 
 import React from 'react';
-import { X } from 'lucide-react';
+import { X, Languages, Calendar } from 'lucide-react';
 import { Button } from '../ui/button';
 import FilterGroup from './FilterGroup';
 import { ServiceCategoryOptions, LanguageOptions, StartTimelineOptions } from './SearchFilterOptions';
 import { ServiceCategory } from '../../types/userTypes';
-import { Languages, Calendar } from 'lucide-react';
 
 interface FilterPanelProps {
   userType: 'consumer' | 'advisor' | null;
