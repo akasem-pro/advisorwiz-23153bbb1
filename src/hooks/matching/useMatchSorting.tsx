@@ -35,7 +35,6 @@ export const useMatchSorting = ({ userType }: UseMatchSortingProps): UseMatchSor
     }
   };
 
-  // Function to apply sorting
   const applySorting = (itemsToSort: (AdvisorProfile | ConsumerProfile)[]) => {
     if (sortOption === 'default') {
       return [...itemsToSort];
@@ -48,7 +47,6 @@ export const useMatchSorting = ({ userType }: UseMatchSortingProps): UseMatchSor
         comparison = a.name.localeCompare(b.name);
       } 
       else if (sortOption === 'expertise' && userType === 'consumer') {
-        // Sort by number of expertise areas
         const aExpertise = (a as AdvisorProfile).expertise?.length || 0;
         const bExpertise = (b as AdvisorProfile).expertise?.length || 0;
         comparison = aExpertise - bExpertise;
@@ -65,7 +63,6 @@ export const useMatchSorting = ({ userType }: UseMatchSortingProps): UseMatchSor
         }
       }
       
-      // Apply sort direction
       return sortDirection === 'asc' ? comparison : -comparison;
     });
   };
