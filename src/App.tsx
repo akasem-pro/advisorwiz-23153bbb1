@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import IndexPage from './pages/Index';
 import Pricing from './pages/Pricing';
