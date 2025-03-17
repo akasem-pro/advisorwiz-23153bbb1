@@ -59,6 +59,11 @@ const MatchCard: React.FC<MatchCardProps> = ({
     return null; // Don't render anything if userType is null
   }
 
+  // Type guard to determine if item is an AdvisorProfile
+  const isAdvisor = (profile: AdvisorProfile | ConsumerProfile): profile is AdvisorProfile => {
+    return 'expertise' in profile;
+  };
+
   return (
     <div>
       {userType === 'consumer' ? (
@@ -75,7 +80,7 @@ const MatchCard: React.FC<MatchCardProps> = ({
         />
       )}
       
-      {userType === 'consumer' && (item as AdvisorProfile).availability && (
+      {userType === 'consumer' && isAdvisor(item) && item.availability && (
         <div className="mt-4">
           <button
             onClick={toggleAvailability}
@@ -88,9 +93,9 @@ const MatchCard: React.FC<MatchCardProps> = ({
           {showAvailability && (
             <div className="mt-4 glass-card rounded-2xl p-6">
               <AvailabilityViewer 
-                availability={(item as AdvisorProfile).availability || []}
-                advisorName={(item as AdvisorProfile).name}
-                advisorId={(item as AdvisorProfile).id}
+                availability={isAdvisor(item) ? item.availability || [] : []}
+                advisorName={isAdvisor(item) ? item.name : ''}
+                advisorId={isAdvisor(item) ? item.id : ''}
               />
             </div>
           )}

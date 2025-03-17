@@ -3,7 +3,7 @@ import UserContext from './UserContextDefinition';
 import { UserProvider } from './UserProvider';
 import { useContext } from 'react';
 
-// Re-export all the types
+// Re-export all the types from userTypes
 export * from '../types/userTypes';
 export * from './UserContextDefinition';
 

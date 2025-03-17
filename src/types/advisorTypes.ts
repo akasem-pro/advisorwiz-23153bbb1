@@ -1,5 +1,5 @@
 
-import { AdvisorProfile, ServiceCategory, TimeSlot, AppointmentCategory } from '../context/UserContext';
+import { AdvisorProfile, ServiceCategory, TimeSlot, AppointmentCategory } from '../types/userTypes';
 
 export interface ExtendedAdvisorProfileForm extends Partial<AdvisorProfile> {
   // Core profile info

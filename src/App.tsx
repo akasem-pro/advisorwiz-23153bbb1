@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
-import Index from './pages';
+import IndexPage from './pages/index';
 import Pricing from './pages/Pricing';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
@@ -36,7 +37,7 @@ function App() {
     <div className="App">
       <UserProvider>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<IndexPage />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />

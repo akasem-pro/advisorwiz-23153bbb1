@@ -1,11 +1,12 @@
 
-import { ConsumerProfile, AdvisorProfile } from '../types/userTypes';
+import { ConsumerProfile, AdvisorProfile, TimeSlot } from '../types/userTypes';
 
 // Mock consumer data for filtering
 export const mockConsumers: ConsumerProfile[] = [
   {
     id: 'consumer-1',
     name: 'Alex Johnson',
+    email: 'alex@example.com',
     age: 35,
     status: 'employed',
     investableAssets: 250000,
@@ -24,6 +25,7 @@ export const mockConsumers: ConsumerProfile[] = [
   {
     id: 'consumer-2',
     name: 'Taylor Smith',
+    email: 'taylor@example.com',
     age: 42,
     status: 'self-employed',
     investableAssets: 500000,
@@ -42,6 +44,7 @@ export const mockConsumers: ConsumerProfile[] = [
   {
     id: 'consumer-3',
     name: 'Jordan Lee',
+    email: 'jordan@example.com',
     age: 29,
     status: 'employed',
     investableAssets: 150000,
@@ -60,6 +63,7 @@ export const mockConsumers: ConsumerProfile[] = [
   {
     id: 'consumer-4',
     name: 'Morgan Chen',
+    email: 'morgan@example.com',
     age: 55,
     status: 'retired',
     investableAssets: 1200000,
@@ -77,11 +81,34 @@ export const mockConsumers: ConsumerProfile[] = [
   }
 ];
 
+// Create a sample TimeSlot array
+const defaultTimeSlots: TimeSlot[] = [
+  {
+    day: 'monday',
+    startTime: '09:00',
+    endTime: '17:00',
+    isAvailable: true
+  },
+  {
+    day: 'wednesday',
+    startTime: '09:00',
+    endTime: '17:00',
+    isAvailable: true
+  },
+  {
+    day: 'friday',
+    startTime: '09:00',
+    endTime: '17:00',
+    isAvailable: true
+  }
+];
+
 // Mock advisor data for filtering
 export const mockAdvisors: AdvisorProfile[] = [
   {
     id: 'advisor-1',
     name: 'Alice Brown',
+    email: 'alice@example.com',
     organization: 'ABC Financial',
     isAccredited: true,
     website: 'https://www.abcfinancial.com',
@@ -97,7 +124,7 @@ export const mockAdvisors: AdvisorProfile[] = [
     matches: [],
     chats: [],
     profilePicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b82a7e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
-    availability: [],
+    availability: defaultTimeSlots,
     chatEnabled: true,
     appointmentCategories: [],
     appointments: [],
@@ -108,6 +135,7 @@ export const mockAdvisors: AdvisorProfile[] = [
   {
     id: 'advisor-2',
     name: 'Bob Miller',
+    email: 'bob@example.com',
     organization: 'XYZ Investments',
     isAccredited: false,
     website: 'https://www.xyzinvestments.com',
@@ -123,7 +151,7 @@ export const mockAdvisors: AdvisorProfile[] = [
     matches: [],
     chats: [],
     profilePicture: 'https://images.unsplash.com/photo-1570295999919-56bcae5b0189?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80',
-    availability: [],
+    availability: defaultTimeSlots,
     chatEnabled: true,
     appointmentCategories: [],
     appointments: [],
@@ -134,6 +162,7 @@ export const mockAdvisors: AdvisorProfile[] = [
   {
     id: 'advisor-3',
     name: 'Charlie Davis',
+    email: 'charlie@example.com',
     organization: '123 Wealth Mgmt',
     isAccredited: true,
     website: 'https://www.123wealth.com',
@@ -149,7 +178,7 @@ export const mockAdvisors: AdvisorProfile[] = [
     matches: [],
     chats: [],
     profilePicture: 'https://images.unsplash.com/photo-1580489944761-15a19d674c80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80',
-    availability: [],
+    availability: defaultTimeSlots,
     chatEnabled: true,
     appointmentCategories: [],
     appointments: [],
@@ -160,6 +189,7 @@ export const mockAdvisors: AdvisorProfile[] = [
   {
     id: 'advisor-4',
     name: 'Diana Wilson',
+    email: 'diana@example.com',
     organization: 'LMN Financial',
     isAccredited: false,
     website: 'https://www.lmnfinancial.com',
@@ -175,7 +205,7 @@ export const mockAdvisors: AdvisorProfile[] = [
     matches: [],
     chats: [],
     profilePicture: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80',
-    availability: [],
+    availability: defaultTimeSlots,
     chatEnabled: true,
     appointmentCategories: [],
     appointments: [],
