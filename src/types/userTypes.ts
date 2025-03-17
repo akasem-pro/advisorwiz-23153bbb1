@@ -40,6 +40,7 @@ export interface ConsumerProfile {
   investmentExperience?: string;
   investmentGoals?: string[];
   budget?: string;
+  languages?: string[]; // Added languages property
 }
 
 export interface AdvisorProfile {
