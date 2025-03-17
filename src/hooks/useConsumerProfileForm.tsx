@@ -1,176 +1,146 @@
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useUser, ConsumerProfile, ServiceCategory } from '../context/UserContext';
-import { toast } from "@/hooks/use-toast";
+import { useUser } from '../context/UserContext';
+import { useToast } from '../components/ui/use-toast';
 
-// Define the form values type
 export interface ProfileFormValues {
   name: string;
   email: string;
-  age: string;
-  employmentStatus: string;
-  investableAssets: string;
+  phone: string;
+  profileImage: string;
+  bio: string;
+  location: string;
+  timezone: string;
+  languages: string[];
+  investmentExperience: string;
+  investmentGoals: string[];
   riskTolerance: string;
   preferredCommunication: string[];
-  preferredLanguage: string[];
+  budget: string;
   startTimeline: string;
-  serviceNeeds: string[];
-  profilePicture: string;
-  onlineStatus: string;
-  phone: string;
+  [key: string]: any;
 }
 
-export const useConsumerProfileForm = () => {
-  const { consumerProfile, setConsumerProfile, updateOnlineStatus } = useUser();
-  const navigate = useNavigate();
-  
-  // Initialize form data from consumer profile
-  const [formData, setFormData] = useState<ProfileFormValues>({
+const useConsumerProfileForm = () => {
+  const { consumerProfile, setConsumerProfile } = useUser();
+  const { toast } = useToast();
+
+  const initialFormValues: ProfileFormValues = {
     name: consumerProfile?.name || '',
     email: consumerProfile?.email || '',
-    age: consumerProfile?.age?.toString() || '',
-    employmentStatus: consumerProfile?.status || '',
-    investableAssets: consumerProfile?.investableAssets?.toString() || '',
-    riskTolerance: consumerProfile?.riskTolerance || '',
-    preferredCommunication: consumerProfile?.preferredCommunication || [],
-    preferredLanguage: consumerProfile?.preferredLanguage || [],
-    startTimeline: consumerProfile?.startTimeline || '',
-    serviceNeeds: consumerProfile?.serviceNeeds || [],
-    profilePicture: consumerProfile?.profilePicture || '',
-    onlineStatus: consumerProfile?.onlineStatus || 'online',
     phone: consumerProfile?.phone || '',
-  });
-  
-  const [selectedCommunication, setSelectedCommunication] = useState<string[]>(
-    consumerProfile?.preferredCommunication || []
-  );
-  
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(
-    consumerProfile?.preferredLanguage || []
-  );
-  
-  const [selectedServices, setSelectedServices] = useState<ServiceCategory[]>(
-    consumerProfile?.serviceNeeds || []
-  );
-  
-  const [profileImage, setProfileImage] = useState<string | null>(
-    consumerProfile?.profilePicture || null
-  );
-  
-  const [onlineStatus, setOnlineStatus] = useState<'online' | 'offline' | 'away'>(
-    (consumerProfile?.onlineStatus as 'online' | 'offline' | 'away') || 'online'
-  );
+    profileImage: consumerProfile?.profileImage || '',
+    bio: consumerProfile?.bio || '',
+    location: consumerProfile?.location || '',
+    timezone: consumerProfile?.timezone || 'America/New_York',
+    languages: consumerProfile?.languages || ['English'],
+    investmentExperience: consumerProfile?.investmentExperience || 'beginner',
+    investmentGoals: consumerProfile?.investmentGoals || ['Retirement'],
+    riskTolerance: consumerProfile?.riskTolerance || 'moderate',
+    preferredCommunication: consumerProfile?.preferredCommunication || ['Email'],
+    budget: consumerProfile?.budget || '$1,000 - $10,000',
+    startTimeline: consumerProfile?.startTimeline || '1-3 months',
+  };
 
-  // Update form data when consumer profile changes
+  const [formData, setFormData] = useState<ProfileFormValues>(initialFormValues);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Update form when consumer profile changes
   useEffect(() => {
     if (consumerProfile) {
       setFormData({
         name: consumerProfile.name || '',
         email: consumerProfile.email || '',
-        age: consumerProfile.age?.toString() || '',
-        employmentStatus: consumerProfile.status || '',
-        investableAssets: consumerProfile.investableAssets?.toString() || '',
-        riskTolerance: consumerProfile.riskTolerance || '',
-        preferredCommunication: consumerProfile.preferredCommunication || [],
-        preferredLanguage: consumerProfile.preferredLanguage || [],
-        startTimeline: consumerProfile.startTimeline || '',
-        serviceNeeds: consumerProfile.serviceNeeds || [],
-        profilePicture: consumerProfile.profilePicture || '',
-        onlineStatus: consumerProfile.onlineStatus || 'online',
         phone: consumerProfile.phone || '',
+        profileImage: consumerProfile.profileImage || '',
+        bio: consumerProfile.bio || '',
+        location: consumerProfile.location || '',
+        timezone: consumerProfile.timezone || 'America/New_York',
+        languages: consumerProfile.languages || ['English'],
+        investmentExperience: consumerProfile.investmentExperience || 'beginner',
+        investmentGoals: consumerProfile.investmentGoals || ['Retirement'],
+        riskTolerance: consumerProfile.riskTolerance || 'moderate',
+        preferredCommunication: consumerProfile.preferredCommunication || ['Email'],
+        budget: consumerProfile.budget || '$1,000 - $10,000',
+        startTimeline: consumerProfile.startTimeline || '1-3 months',
       });
-      setSelectedCommunication(consumerProfile.preferredCommunication || []);
-      setSelectedLanguages(consumerProfile.preferredLanguage || []);
-      setSelectedServices(consumerProfile.serviceNeeds || []);
-      setProfileImage(consumerProfile.profilePicture || null);
-      setOnlineStatus((consumerProfile.onlineStatus as 'online' | 'offline' | 'away') || 'online');
     }
   }, [consumerProfile]);
 
-  // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  // Handle checkbox changes
-  const handleCheckboxChange = (option: string, isChecked: boolean, fieldName: 'preferredCommunication' | 'preferredLanguage' | 'serviceNeeds') => {
-    let updatedValues: string[] | ServiceCategory[];
-
-    if (isChecked) {
-      updatedValues = [...(formData[fieldName] || []), option];
-    } else {
-      updatedValues = (formData[fieldName] || []).filter(item => item !== option);
-    }
-
-    setFormData(prev => ({ ...prev, [fieldName]: updatedValues }));
-
-    if (fieldName === 'preferredCommunication') {
-      setSelectedCommunication(updatedValues as string[]);
-    } else if (fieldName === 'preferredLanguage') {
-      setSelectedLanguages(updatedValues as string[]);
-    } else if (fieldName === 'serviceNeeds') {
-      setSelectedServices(updatedValues as ServiceCategory[]);
-    }
-  };
-
-  // Handle image upload
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Handle online status change
-  const handleOnlineStatusChange = (status: 'online' | 'offline' | 'away') => {
-    setOnlineStatus(status);
-    updateOnlineStatus(status);
-  };
-
-  // Save profile changes
-  const saveProfile = () => {
-    const updatedProfile: ConsumerProfile = {
-      ...consumerProfile,
-      name: formData.name,
-      email: formData.email,
-      age: parseInt(formData.age || '0'),
-      status: formData.employmentStatus,
-      investableAssets: parseInt(formData.investableAssets.replace(/,/g, '') || '0'),
-      riskTolerance: formData.riskTolerance as 'low' | 'medium' | 'high',
-      preferredCommunication: selectedCommunication,
-      preferredLanguage: selectedLanguages,
-      startTimeline: formData.startTimeline,
-      serviceNeeds: selectedServices,
-      profilePicture: profileImage || '',
-      onlineStatus: onlineStatus,
-      phone: formData.phone || '',
-    };
-
-    setConsumerProfile(updatedProfile);
-    toast({
-      title: "Profile Updated",
-      description: "Your profile has been successfully updated.",
+    setFormData({
+      ...formData,
+      [name]: value,
     });
-    navigate('/');
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, checked } = e.target;
+    
+    if (checked) {
+      // If field doesn't exist yet or is not an array, initialize it
+      const currentValue = Array.isArray(formData[name]) ? formData[name] : [];
+      setFormData({
+        ...formData,
+        [name]: [...currentValue, value],
+      });
+    } else {
+      // Remove the value from the array
+      setFormData({
+        ...formData,
+        [name]: formData[name].filter((item: string) => item !== value),
+      });
+    }
+  };
+
+  const handleMultiSelectChange = (name: string, value: string[]) => {
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const saveProfile = async () => {
+    setIsSubmitting(true);
+    
+    try {
+      // In a real app, you would send this to the server
+      // For now, we'll just update the local state
+      setConsumerProfile({
+        ...consumerProfile,
+        ...formData,
+        id: consumerProfile?.id || `consumer-${Date.now()}`,
+        updatedAt: new Date().toISOString(),
+      });
+      
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully.",
+        variant: "success",
+      });
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      toast({
+        title: "Error",
+        description: "There was an error updating your profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return {
     formData,
-    selectedCommunication,
-    selectedLanguages,
-    selectedServices,
-    profileImage,
-    onlineStatus,
+    setFormData,
+    isSubmitting,
     handleInputChange,
     handleCheckboxChange,
-    handleImageUpload,
-    handleOnlineStatusChange,
-    saveProfile
+    handleMultiSelectChange,
+    saveProfile,
   };
 };
+
+export { useConsumerProfileForm };
+export type { ProfileFormValues };

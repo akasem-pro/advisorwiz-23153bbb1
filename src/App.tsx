@@ -17,6 +17,7 @@ import MobileLayout from './components/layout/MobileLayout';
 import LeadManagementPage from './pages/LeadManagementPage';
 import FirmProfile from './pages/FirmProfile';
 import Dashboard from './pages/Dashboard';
+import Onboarding from './pages/Onboarding';
 
 function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -52,6 +53,7 @@ function App() {
           <Route path="/lead-management" element={<LeadManagementPage />} />
           <Route path="/firm-profile/:id?" element={<FirmProfile />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/onboarding" element={<Onboarding />} />
         </Routes>
       </UserProvider>
     </div>
