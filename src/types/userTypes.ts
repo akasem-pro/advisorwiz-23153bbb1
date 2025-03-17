@@ -1,4 +1,3 @@
-
 export interface ConsumerProfile {
   id: string;
   name: string;
@@ -34,8 +33,13 @@ export interface ConsumerProfile {
   lastOnline?: string;
   showOnlineStatus?: boolean;
   profilePicture?: string;
-  phone?: string; // Added for ConsumerProfile.tsx
-  languages?: string[]; // Added for matching algorithm
+  phone?: string;
+  bio?: string;
+  location?: string;
+  timezone?: string;
+  investmentExperience?: string;
+  investmentGoals?: string[];
+  budget?: string;
 }
 
 export interface AdvisorProfile {

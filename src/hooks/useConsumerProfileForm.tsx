@@ -141,12 +141,20 @@ const useConsumerProfileForm = () => {
     });
   };
 
-  const handleImageUpload = (imageUrl: string) => {
-    setProfileImage(imageUrl);
-    setFormData(prev => ({
-      ...prev,
-      profileImage: imageUrl
-    }));
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const imageUrl = reader.result as string;
+        setProfileImage(imageUrl);
+        setFormData(prev => ({
+          ...prev,
+          profileImage: imageUrl
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleOnlineStatusChange = (status: 'online' | 'offline' | 'away') => {
@@ -157,12 +165,29 @@ const useConsumerProfileForm = () => {
     setIsSubmitting(true);
     
     try {
+      // Convert riskTolerance to proper type
+      const riskToleranceValue = formData.riskTolerance as 'low' | 'medium' | 'high';
+      
       // In a real app, you would send this to the server
       // For now, we'll just update the local state
       setConsumerProfile({
         ...consumerProfile,
-        ...formData,
-        onlineStatus,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        profileImage: formData.profileImage,
+        bio: formData.bio,
+        location: formData.location,
+        timezone: formData.timezone,
+        languages: formData.languages,
+        investmentExperience: formData.investmentExperience,
+        investmentGoals: formData.investmentGoals,
+        riskTolerance: riskToleranceValue,
+        preferredCommunication: selectedCommunication,
+        budget: formData.budget,
+        startTimeline: formData.startTimeline,
+        age: formData.age,
+        onlineStatus: onlineStatus,
         serviceNeeds: selectedServices,
         id: consumerProfile?.id || `consumer-${Date.now()}`,
       });
