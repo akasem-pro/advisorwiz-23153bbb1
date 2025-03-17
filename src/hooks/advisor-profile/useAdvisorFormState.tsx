@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { ExtendedAdvisorProfileForm } from '../../types/advisorTypes';
-import { AdvisorProfile, TimeSlot, AppointmentCategory } from '../../types/userTypes';
+import { AdvisorProfile } from '../../context/UserContext';
 import { DEFAULT_CATEGORIES } from '../../data/advisorProfileData';
 
 export const useAdvisorFormState = (advisorProfile?: AdvisorProfile | null) => {
@@ -42,9 +42,9 @@ export const useAdvisorFormState = (advisorProfile?: AdvisorProfile | null) => {
     matches: advisorProfile?.matches || [],
     compatibilityScores: {},  // Initialize with empty object
     chats: advisorProfile?.chats || [],
-    availability: advisorProfile?.availability || [] as TimeSlot[], // Ensure it's a TimeSlot array
+    availability: advisorProfile?.availability || [],
     chatEnabled: advisorProfile?.chatEnabled !== undefined ? advisorProfile.chatEnabled : true,
-    appointmentCategories: advisorProfile?.appointmentCategories || DEFAULT_CATEGORIES as AppointmentCategory[],
+    appointmentCategories: advisorProfile?.appointmentCategories || DEFAULT_CATEGORIES,
     appointments: advisorProfile?.appointments || [],
     onlineStatus: advisorProfile?.onlineStatus || 'online',
     lastOnline: advisorProfile?.lastOnline || new Date().toISOString(),

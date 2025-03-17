@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -48,15 +49,20 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, onBack }) => {
     );
   }
   
+  // Find the other participant ID
   const otherParticipantId = chat.participants.find(id => id !== currentUserId) || '';
+  
+  // Find the other participant name from messages
   const otherParticipantName = chat.messages.find(m => 
     m.senderId === otherParticipantId
   )?.senderName || "Chat Participant";
   
+  // Mark messages as read when chat window opens
   useEffect(() => {
     markChatAsRead(chatId, currentUserId);
   }, [chatId, currentUserId, markChatAsRead]);
   
+  // Scroll to bottom when messages change
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chat.messages]);
@@ -72,19 +78,20 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, onBack }) => {
       recipientId: otherParticipantId,
       content: message,
       timestamp: new Date().toISOString(),
-      status: 'sent',
       read: false
     });
     
     setMessage('');
   };
 
+  // Handle initiating calls
   const handleCall = (callType: CallType) => {
     if (initiateCall) {
       initiateCall(otherParticipantId, callType);
     }
   };
   
+  // Group messages by date
   const messagesByDate: { [date: string]: ChatMessage[] } = {};
   
   chat.messages.forEach(msg => {
@@ -97,6 +104,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, onBack }) => {
   
   return (
     <div className="flex flex-col h-full">
+      {/* Chat header */}
       <div className="flex items-center p-4 border-b bg-white sticky top-0 z-10">
         <button 
           onClick={onBack || (() => navigate('/chat'))}
@@ -135,6 +143,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, onBack }) => {
         </div>
       </div>
       
+      {/* Chat messages */}
       <div className="flex-1 overflow-y-auto p-4 bg-slate-50">
         {Object.keys(messagesByDate).map(date => (
           <div key={date}>
@@ -156,6 +165,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, onBack }) => {
         <div ref={endOfMessagesRef} />
       </div>
       
+      {/* Message input */}
       <form onSubmit={handleSendMessage} className="p-3 bg-white border-t flex items-end">
         <input
           type="text"

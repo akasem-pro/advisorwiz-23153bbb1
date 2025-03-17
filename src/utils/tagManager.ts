@@ -1,123 +1,111 @@
 
-/**
- * Tag Manager Utilities
- * 
- * This file contains utilities for initializing and interacting with 
- * Google Tag Manager and other analytics platforms.
- */
-
-// Initialize the data layer if it doesn't exist
-declare global {
-  interface Window {
-    dataLayer: any[];
-  }
+// Type definition for window with dataLayer
+interface WindowWithDataLayer extends Window {
+  dataLayer: any[];
+  gtag?: (...args: any[]) => void;
 }
+
+// Access window with dataLayer type
+declare const window: WindowWithDataLayer;
 
 /**
  * Initialize Google Tag Manager
  */
-export const initializeTagManager = (): void => {
-  window.dataLayer = window.dataLayer || [];
-  
-  // Log for debugging
-  console.info('[GTM] Tag Manager initialized');
+export const initializeTagManager = () => {
+  if (typeof window !== 'undefined') {
+    window.dataLayer = window.dataLayer || [];
+  }
 };
 
 /**
- * Track page view in GTM
- * @param pageTitle Title of the page
- * @param pagePath Optional path override
+ * Track a custom event in Google Tag Manager
+ * @param eventName The name of the event to track
+ * @param eventParams Additional parameters for the event
  */
-export const trackPageView = (pageTitle: string, pagePath?: string): void => {
-  if (!window.dataLayer) {
-    initializeTagManager();
+export const trackEvent = (eventName: string, eventParams?: Record<string, any>) => {
+  if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: eventName,
+      ...(eventParams || {})
+    });
+    
+    // Also track with gtag if available (for GA4 compatibility)
+    if (window.gtag) {
+      window.gtag('event', eventName, eventParams || {});
+    }
+    
+    console.log(`[GTM] Tracked event: ${eventName}`, eventParams);
   }
+};
+
+/**
+ * Track page view in Google Tag Manager
+ * @param pageTitle Page title
+ * @param pagePath Page path (defaults to current path)
+ */
+export const trackPageView = (pageTitle: string, pagePath?: string) => {
+  const path = pagePath || (typeof window !== 'undefined' ? window.location.pathname : '');
   
-  const pageViewData = {
-    event: 'page_view',
+  trackEvent('page_view', {
     page_title: pageTitle,
-    page_location: window.location.href,
-    page_path: pagePath || window.location.pathname
-  };
-  
-  window.dataLayer.push(pageViewData);
-  
-  // Log for debugging
-  console.info('[GTM] Tracked event: page_view', pageViewData);
+    page_location: typeof window !== 'undefined' ? window.location.href : '',
+    page_path: path
+  });
 };
 
 /**
- * Track custom event in GTM
- * @param eventName Name of the event
- * @param eventParams Additional parameters for the event
+ * Track user interaction events
+ * @param action Action performed (e.g., 'click', 'submit')
+ * @param category Category of the action (e.g., 'button', 'form')
+ * @param label Label for the action (e.g., 'submit_form', 'contact_button')
+ * @param additionalParams Additional parameters to track
  */
-export const trackEvent = (eventName: string, eventParams: Record<string, any> = {}): void => {
-  if (!window.dataLayer) {
-    initializeTagManager();
-  }
-  
-  const eventData = {
-    event: eventName,
-    ...eventParams
-  };
-  
-  window.dataLayer.push(eventData);
-  
-  // Log for debugging
-  console.info(`[GTM] Tracked event: ${eventName}`, eventParams);
+export const trackUserInteraction = (
+  action: string,
+  category: string,
+  label: string,
+  additionalParams?: Record<string, any>
+) => {
+  trackEvent('user_interaction', {
+    action,
+    category,
+    label,
+    ...additionalParams
+  });
 };
 
 /**
- * Track appointment-related events in GTM
- * @param eventAction Action type for the appointment
- * @param appointmentId Appointment identifier
- * @param eventParams Additional parameters for the event
+ * Track appointment-related events
+ * @param action Action related to appointment (e.g., 'scheduled', 'cancelled')
+ * @param appointmentId Unique identifier of the appointment
+ * @param additionalParams Additional parameters to track
  */
 export const trackAppointmentEvent = (
-  eventAction: 'scheduled' | 'confirmed' | 'cancelled' | 'completed',
+  action: 'scheduled' | 'confirmed' | 'cancelled' | 'completed' | 'rescheduled' | 'reminder_sent',
   appointmentId: string,
-  eventParams: Record<string, any> = {}
-): void => {
-  trackEvent(`appointment_${eventAction}`, {
+  additionalParams?: Record<string, any>
+) => {
+  trackEvent('appointment_event', {
+    appointment_action: action,
     appointment_id: appointmentId,
-    ...eventParams
+    ...additionalParams
   });
 };
 
 /**
- * Track lead-related events in GTM
- * @param eventAction Action type for the lead 
- * @param leadId Lead identifier
- * @param eventParams Additional parameters for the event
+ * Track lead-related events
+ * @param action Action related to lead (e.g., 'created', 'converted')
+ * @param leadId Unique identifier of the lead
+ * @param additionalParams Additional parameters to track
  */
 export const trackLeadEvent = (
-  eventAction: 'created' | 'updated' | 'converted' | 'lost',
+  action: 'created' | 'updated' | 'converted' | 'lost' | 'contacted' | 'generated' | 'status_change',
   leadId: string,
-  eventParams: Record<string, any> = {}
-): void => {
-  trackEvent(`lead_${eventAction}`, {
+  additionalParams?: Record<string, any>
+) => {
+  trackEvent('lead_event', {
+    lead_action: action,
     lead_id: leadId,
-    ...eventParams
+    ...additionalParams
   });
-};
-
-/**
- * Set user properties in GTM
- * @param userId User identifier
- * @param userProperties Additional properties for the user
- */
-export const setUserProperties = (userId: string, userProperties: Record<string, any> = {}): void => {
-  if (!window.dataLayer) {
-    initializeTagManager();
-  }
-  
-  const userData = {
-    user_id: userId,
-    user_properties: userProperties
-  };
-  
-  window.dataLayer.push(userData);
-  
-  // Log for debugging
-  console.info('[GTM] Set user properties', userData);
 };

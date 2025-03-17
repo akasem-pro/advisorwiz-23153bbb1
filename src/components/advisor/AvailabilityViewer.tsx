@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight, MessageCircle } from 'lucide-react';
@@ -39,6 +40,7 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
     return `${adjustedHour}:${minutes} ${period}`;
   };
 
+  // Group availability by day
   const availabilityByDay = availability.reduce((acc, slot) => {
     if (!acc[slot.day]) {
       acc[slot.day] = [];
@@ -47,6 +49,7 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
     return acc;
   }, {} as Record<string, TimeSlot[]>);
 
+  // Get the current week's dates
   const startOfCurrentWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
   const weekDays = Array.from({ length: 7 }).map((_, index) => {
     const date = addDays(startOfCurrentWeek, index);
@@ -67,8 +70,10 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
       return;
     }
 
+    // Parse the selected time slot
     const [startTimeStr, endTimeStr] = selectedSlot.split(' - ');
     
+    // Convert from AM/PM format to 24-hour format
     const convertTo24Hour = (timeStr: string) => {
       const [timePart, period] = timeStr.split(' ');
       let [hours, minutes] = timePart.split(':').map(Number);
@@ -85,21 +90,21 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
     const startTime = convertTo24Hour(startTimeStr);
     const endTime = convertTo24Hour(endTimeStr);
     
+    // Create a new appointment
     const newAppointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'> = {
       advisorId: advisorId,
       consumerId: consumerProfile.id,
-      categoryId: 'cat-free_consultation',
+      categoryId: 'cat-free_consultation', // Default to free consultation
       title: `Consultation with ${advisorName}`,
       date: selectedDate.toISOString(),
       startTime,
       endTime,
-      status: 'scheduled',
+      status: 'pending',
       notes: '',
-      location: 'video',
-      type: 'consultation',
-      description: ''
+      location: 'video'
     };
     
+    // Add the appointment to the user's appointments
     addAppointment(newAppointment);
     
     toast({
@@ -107,6 +112,7 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
       description: `Your booking request with ${advisorName} has been sent for ${format(selectedDate, 'EEEE, MMMM d')} at ${selectedSlot}.`,
     });
 
+    // Navigate to the schedule page
     navigate('/schedule');
   };
 
@@ -120,27 +126,29 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
       return;
     }
 
+    // Check if chat already exists
     const existingChat = chats.find(chat => 
       chat.participants.includes(consumerProfile.id) && 
       chat.participants.includes(advisorId)
     );
 
     if (existingChat) {
+      // If chat exists, navigate to it
       navigate(`/chat/${existingChat.id}`);
       return;
     }
 
+    // Create a new chat
     const newChat: Chat = {
       id: `chat-${Date.now()}`,
       participants: [consumerProfile.id, advisorId],
       messages: [],
-      lastMessageAt: new Date().toISOString(),
-      unreadCount: {},
       lastUpdated: new Date().toISOString()
     };
 
     setChats([...chats, newChat]);
     
+    // Navigate to the new chat
     navigate(`/chat/${newChat.id}`);
   };
 

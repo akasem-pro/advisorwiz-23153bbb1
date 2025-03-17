@@ -1,8 +1,7 @@
 
-import { TimeSlot, AppointmentCategory, ServiceCategory, AdvisorProfile } from '../types/userTypes';
+import { AdvisorProfile, ServiceCategory, TimeSlot, AppointmentCategory } from '../context/UserContext';
 
-// Update the ExtendedAdvisorProfileForm interface
-export interface ExtendedAdvisorProfileForm {
+export interface ExtendedAdvisorProfileForm extends Partial<AdvisorProfile> {
   // Core profile info
   id: string;
   name: string;
@@ -53,7 +52,7 @@ export interface ExtendedAdvisorProfileForm {
   matches: string[];
   compatibilityScores: Record<string, number>; // Store scores for potential matches
   chats: string[];
-  availability: TimeSlot[]; // Updated to use TimeSlot[] type
+  availability: TimeSlot[];
   chatEnabled: boolean;
   appointmentCategories: AppointmentCategory[];
   appointments: string[];

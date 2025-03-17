@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Lead, LeadStatus, LeadSource, LeadStats } from '../types/leadTypes';
 import { differenceInDays } from 'date-fns';
-import { trackEvent, trackLeadEvent } from '../utils/tagManager';
+import { trackLeadEvent } from '../utils/tagManager';
 
 export const useLeadTracking = () => {
   const [leads, setLeads] = useState<Lead[]>([]);

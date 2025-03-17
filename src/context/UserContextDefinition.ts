@@ -9,9 +9,7 @@ import {
   Appointment,
   AppointmentStatus,
   ServiceCategory,
-  FinancialFirm,
-  TimeSlot,
-  AppointmentCategory
+  FinancialFirm
 } from '../types/userTypes';
 import { CallSession, CallStatus, CallType, CallMetrics } from '../types/callTypes';
 import { Lead, LeadStatus, LeadStats, LeadSource } from '../types/leadTypes';
@@ -39,7 +37,7 @@ export type UserContextType = {
     services?: ServiceCategory[];
   }) => AdvisorProfile[];
   getFilteredConsumers: (filters: {
-    startTimeline?: string[];
+    startTimeline?: ConsumerProfile['startTimeline'][];
     preferredLanguage?: string[];
   }) => ConsumerProfile[];
   updateOnlineStatus: (status: 'online' | 'offline' | 'away') => void;
@@ -51,13 +49,13 @@ export type UserContextType = {
   updateMatchPreferences: (preferences: MatchPreferences) => void;
   getTopMatches: (limit?: number) => (AdvisorProfile | ConsumerProfile)[];
   getRecommendedMatches: () => (AdvisorProfile | ConsumerProfile)[];
-  // Call functionality
+  // New call functionality
   callSessions: CallSession[];
   initiateCall: (recipientId: string, type: CallType) => CallSession | null;
   updateCallStatus: (callId: string, status: CallStatus) => void;
   activeCall: CallSession | null;
   callMetrics: CallMetrics[];
-  // Lead tracking functionality
+  // New lead tracking functionality
   leads: Lead[];
   addLead: (advisorId: string, consumerId: string, consumerName: string, matchScore: number, source?: LeadSource) => string;
   updateLeadStatus: (leadId: string, status: LeadStatus, notes?: string) => void;
@@ -107,13 +105,13 @@ const UserContext = createContext<UserContextType>({
   updateMatchPreferences: () => {},
   getTopMatches: () => [],
   getRecommendedMatches: () => [],
-  // Call functionality
+  // New call functionality
   callSessions: [],
   initiateCall: () => null,
   updateCallStatus: () => {},
   activeCall: null,
   callMetrics: [],
-  // Lead tracking functionality
+  // New lead tracking functionality
   leads: [],
   addLead: () => "",
   updateLeadStatus: () => {},

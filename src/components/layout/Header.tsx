@@ -1,138 +1,86 @@
-
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { LogOut, User, MessageCircle, Calendar } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
-import { Button } from '../ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
-import { initializeTagManager, trackEvent } from '../../utils/tagManager';
+import Logo from './Logo';
+import NavigationMenu from './NavigationMenu';
+import MobileMenu from './MobileMenu';
 
 const Header: React.FC = () => {
-  const { 
-    userType, 
-    isAuthenticated, 
-    setIsAuthenticated, 
-    consumerProfile, 
-    advisorProfile,
-    setConsumerProfile,
-    setAdvisorProfile
-  } = useUser();
-  const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, setIsAuthenticated, setUserType, setConsumerProfile, setAdvisorProfile, userType } = useUser();
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setUserType(null);
     setConsumerProfile(null);
     setAdvisorProfile(null);
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userType');
-    
-    trackEvent('logout', {
-      user_type: userType,
-      timestamp: new Date().toISOString()
-    });
-    
-    navigate('/');
   };
-  
-  const profile = consumerProfile || advisorProfile;
-  
-  // Get profile image and email safely
-  const profileImage = profile?.profileImage || '';
-  const profileEmail = profile?.email || '';
-  const profileName = profile?.name || '';
+
+  // Updated nav links with cleaner labels
+  const navLinks = isAuthenticated
+    ? userType === 'firm_admin'
+      ? [{ name: 'Manage Firm', path: '/firm-profile' }]
+      : [{ name: 'Matches', path: '/matches' }]
+    : [
+        { name: 'Home', path: '/' },
+        { name: 'Advisors', path: '/for-advisors' },
+        { name: 'Consumers', path: '/for-consumers' },
+        { name: 'Firms', path: '/for-firms' },
+        { name: 'Pricing', path: '/pricing' },
+        { name: 'Contact', path: '/contact' },
+      ];
+
+  // Keep existing authNavLinks code...
+  const authNavLinks = [
+    { name: 'Matches', path: '/matches', icon: <User className="w-5 h-5" /> },
+    { name: 'Chat', path: '/chat', icon: <MessageCircle className="w-5 h-5" /> },
+    { name: 'Schedule', path: '/schedule', icon: <Calendar className="w-5 h-5" /> },
+    { 
+      name: 'Profile', 
+      path: userType === 'consumer' ? '/consumer-profile' : userType === 'advisor' ? '/advisor-profile' : '/firm-profile', 
+      icon: <User className="w-5 h-5" />
+    },
+  ];
 
   return (
-    <header className="bg-background border-b sticky top-0 z-50">
-      <div className="container flex items-center justify-between h-16">
-        <Link to="/" className="text-2xl font-bold text-navy-900 font-serif">
-          AdvisorWiz
-        </Link>
-        
-        <nav>
-          <ul className="flex items-center space-x-4">
-            <li className="mx-1">
-              <Link 
-                to="/" 
-                className="text-navy-900 font-medium hover:text-primary py-2 px-3 rounded-md transition-colors"
-              >
-                Home
-              </Link>
-            </li>
-            <li className="mx-1">
-              <Link 
-                to="/pricing" 
-                className="text-navy-900 font-medium hover:text-primary py-2 px-3 rounded-md transition-colors"
-              >
-                Pricing
-              </Link>
-            </li>
-            <li className="mx-1">
-              <Link 
-                to="/contact" 
-                className="text-navy-900 font-medium hover:text-primary py-2 px-3 rounded-md transition-colors"
-              >
-                Contact
-              </Link>
-            </li>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm h-16">
+      <div className="container mx-auto h-full px-4 flex justify-between items-center">
+        <Logo />
 
-            {isAuthenticated ? (
-              <li>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={profileImage} alt={profileName} />
-                        <AvatarFallback>{profileName?.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <DropdownMenuLabel className="font-normal">
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{profileName}</p>
-                        <p className="text-xs leading-none text-muted-foreground">
-                          {profileEmail}
-                        </p>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate('/profile')}>
-                      Profile
-                    </DropdownMenuItem>
-                    {userType === 'advisor' && (
-                      <DropdownMenuItem onClick={() => navigate('/appointments')}>
-                        Appointments
-                      </DropdownMenuItem>
-                    )}
-                    {userType === 'advisor' && (
-                      <DropdownMenuItem onClick={() => navigate('/leads')}>
-                        Leads
-                      </DropdownMenuItem>
-                    )}
-                    {userType === 'firm_admin' && (
-                      <DropdownMenuItem onClick={() => navigate('/firm-profile')}>
-                        Firm Profile
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout}>
-                      Log out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </li>
-            ) : (
-              <>
-                <li className="mx-1">
-                  <Button onClick={() => navigate('/login')} variant="outline">Log In</Button>
-                </li>
-                <li className="mx-1">
-                  <Button onClick={() => navigate('/register')}>Register</Button>
-                </li>
-              </>
-            )}
-          </ul>
-        </nav>
+        {/* Navigation for non-authenticated users */}
+        {!isAuthenticated && (
+          <div className="hidden md:flex items-center space-x-8">
+            <NavigationMenu links={navLinks} showGetStarted={true} />
+          </div>
+        )}
+
+        {/* Navigation for authenticated users */}
+        {isAuthenticated && (
+          <div className="hidden md:flex items-center space-x-8">
+            <NavigationMenu links={authNavLinks} />
+            <button 
+              onClick={handleLogout}
+              className="flex items-center space-x-2 font-medium text-navy-700 hover:text-teal-600 transition-colors"
+            >
+              <LogOut className="w-5 h-5" />
+              <span>Logout</span>
+            </button>
+          </div>
+        )}
+
+        {/* Mobile menu */}
+        <MobileMenu 
+          isMenuOpen={isMenuOpen}
+          toggleMenu={toggleMenu}
+          links={isAuthenticated ? authNavLinks : navLinks}
+          isAuthenticated={isAuthenticated}
+          showGetStarted={!isAuthenticated}
+          onLogout={isAuthenticated ? handleLogout : undefined}
+        />
       </div>
     </header>
   );

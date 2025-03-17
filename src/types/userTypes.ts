@@ -1,229 +1,142 @@
-export interface ConsumerProfile {
-  id: string;
-  name: string;
-  email: string;
-  profileImage?: string;
-  financialGoals?: string[];
-  riskTolerance?: 'low' | 'medium' | 'high';
-  investmentAmount?: number;
-  timeHorizon?: string;
-  preferences?: {
-    communicationPreference?: 'email' | 'phone' | 'video';
-    advisorSpecialties?: string[];
-    location?: string;
-  };
-  // Added properties
-  age?: number;
-  status?: string;
-  investableAssets?: number;
-  preferredCommunication?: string[];
-  preferredLanguage?: string[];
-  startTimeline?: string;
-  serviceNeeds?: ServiceCategory[];
-  advisorPreferences?: {
-    specializations?: string[];
-    experienceLevel?: number;
-    communicationStyle?: string;
-  };
-  matches?: string[];
-  chats?: string[];
-  chatEnabled?: boolean;
-  appointments?: string[];
-  onlineStatus?: 'online' | 'offline' | 'away';
-  lastOnline?: string;
-  showOnlineStatus?: boolean;
-  profilePicture?: string;
-  phone?: string;
-  bio?: string;
-  location?: string;
-  timezone?: string;
-  investmentExperience?: string;
-  investmentGoals?: string[];
-  budget?: string;
-  languages?: string[]; // Added languages property
-}
 
-export interface AdvisorProfile {
+// Types for user profiles and related data
+
+// Time slot type for weekly availability
+export type TimeSlot = {
+  day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+  startTime: string; // Format: "HH:MM" in 24-hour format
+  endTime: string; // Format: "HH:MM" in 24-hour format
+  isAvailable: boolean;
+};
+
+// Appointment category type
+export type AppointmentCategory = {
+  id: string;
+  name: 'free_consultation' | 'discovery_call' | 'investment_call' | 'tax_planning' | 'business_entrepreneurship';
+  label: string;
+  description: string;
+  duration: number; // in minutes
+  enabled: boolean;
+};
+
+// Service categories for advisors
+export type ServiceCategory = 
+  'retirement' | 
+  'investment' | 
+  'tax' | 
+  'estate' | 
+  'business' | 
+  'insurance' | 
+  'philanthropic' | 
+  'education';
+
+// Types for the consumer and advisor profiles
+export type ConsumerProfile = {
   id: string;
   name: string;
-  email: string;
-  profileImage?: string;
-  firm?: string;
-  firmId?: string;
-  title?: string;
-  bio?: string;
-  experience?: number;
-  specialties?: string[];
-  certifications?: string[];
-  location?: string;
-  // Removed duplicate availability
-  feeStructure?: {
-    type: 'hourly' | 'flat-fee' | 'percentage' | 'commission';
-    details: string;
+  age: number;
+  status: string;
+  investableAssets: number;
+  riskTolerance: 'low' | 'medium' | 'high';
+  preferredCommunication: string[];
+  preferredLanguage: string[];
+  serviceNeeds?: ServiceCategory[];
+  investmentAmount?: number;
+  advisorPreferences?: {
+    experience?: string;
+    feeStructure?: string;
+    minimumInvestment?: number;
   };
-  clientMinimum?: number;
-  reviews?: {
-    rating: number;
-    comment: string;
-    author: string;
-    date: string;
-  }[];
-  // Added properties
-  organization?: string;
-  isAccredited?: boolean;
-  website?: string;
-  testimonials?: { client: string; text: string }[];
   languages?: string[];
-  pricing?: {
+  matches: string[];
+  chats: string[];
+  profilePicture?: string; // URL to profile picture
+  chatEnabled: boolean; // New field for chat settings
+  appointments: string[];
+  startTimeline: 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' | null; // When they want to start
+  onlineStatus: 'online' | 'offline' | 'away'; // New field for online status
+  lastOnline: string; // ISO string for last online time
+  showOnlineStatus: boolean; // Toggle to show/hide online status
+};
+
+export type AdvisorProfile = {
+  id: string;
+  name: string;
+  organization: string;
+  isAccredited: boolean;
+  website: string;
+  testimonials: { client: string; text: string }[];
+  languages: string[];
+  pricing: {
     hourlyRate?: number;
     portfolioFee?: number;
   };
-  assetsUnderManagement?: number;
-  expertise?: ServiceCategory[];
-  profilePicture?: string;
-  matches?: string[];
-  compatibilityScores?: Record<string, number>;
-  chats?: string[];
-  availability: TimeSlot[]; // Changed type from { days: string[], hours: string } to TimeSlot[]
-  chatEnabled?: boolean;
-  appointmentCategories?: AppointmentCategory[];
-  appointments?: string[];
-  onlineStatus?: 'online' | 'offline' | 'away';
-  lastOnline?: string;
-  showOnlineStatus?: boolean;
-}
+  assetsUnderManagement: number;
+  expertise: ServiceCategory[]; // Now explicitly typed
+  matches: string[];
+  compatibilityScores?: Record<string, number>; // Add this optional property
+  chats: string[];
+  profilePicture?: string; // URL to profile picture
+  availability?: TimeSlot[]; // Weekly availability slots
+  chatEnabled: boolean; // New field for chat settings
+  appointmentCategories: AppointmentCategory[]; // Available appointment types
+  appointments: string[]; // IDs of appointments
+  onlineStatus: 'online' | 'offline' | 'away'; // New field for online status
+  lastOnline: string; // ISO string for last online time
+  showOnlineStatus: boolean; // Toggle to show/hide online status
+};
 
-export interface FirmProfile {
+// New type for financial firm
+export type FinancialFirm = {
   id: string;
   name: string;
+  description: string;
+  website: string;
   logo?: string;
-  description?: string;
-  founded?: number;
-  size?: 'small' | 'medium' | 'large';
-  location?: string;
-  website?: string;
-  specialties?: string[];
-  advisors?: string[]; // Array of advisor IDs
-  adminId?: string; // ID of the firm administrator
-}
+  adminId: string; // ID of the user who administers this firm
+  advisorIds: string[]; // IDs of advisors in this firm
+  createdAt: string;
+};
 
-export type UserType = 'consumer' | 'advisor' | 'firm_admin' | null;
+// Appointment status type
+export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
 
-export interface AppointmentType {
+// Appointment type
+export type Appointment = {
   id: string;
   advisorId: string;
   consumerId: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  status: 'scheduled' | 'completed' | 'cancelled' | 'no-show';
+  categoryId: string;
   title: string;
-  description?: string;
-  meetingLink?: string;
-  location?: string;
-  type: 'consultation' | 'follow-up' | 'review';
-  createdAt: string;
-  updatedAt: string;
-}
+  date: string; // ISO string format
+  startTime: string; // Format: "HH:MM" in 24-hour format
+  endTime: string; // Format: "HH:MM" in 24-hour format
+  status: AppointmentStatus;
+  notes?: string;
+  location?: string; // Could be 'video', 'phone', physical address, etc.
+  createdAt: string; // ISO string format
+  updatedAt: string; // ISO string format
+};
 
-// Additional types needed for components
-export interface TimeSlot {
-  day: string;
-  startTime: string;
-  endTime: string;
-  isAvailable: boolean;
-}
-
-export interface Chat {
-  id: string;
-  participants: string[];
-  messages: ChatMessage[];
-  lastMessageAt: string; 
-  unreadCount: Record<string, number>;
-  lastUpdated: string; // Added for compatibility
-}
-
-export interface ChatMessage {
+// Message type for the chat
+export type ChatMessage = {
   id: string;
   senderId: string;
+  senderName: string;
+  recipientId: string;
   content: string;
-  timestamp: string;
-  status: 'sent' | 'delivered' | 'read';
-  attachments?: string[];
-  senderName?: string; // Added for compatibility
-  recipientId?: string; // Added for compatibility
-  read?: boolean; // Added for compatibility
-  readTimestamp?: string; // Added for compatibility
-}
+  timestamp: string; // ISO string format
+  read: boolean;
+  readTimestamp?: string; // ISO string format
+};
 
-export type AppointmentStatus = 'scheduled' | 'completed' | 'cancelled' | 'no-show' | 'pending' | 'confirmed';
-
-export interface Appointment {
+// Chat type
+export type Chat = {
   id: string;
-  advisorId: string;
-  consumerId: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  status: AppointmentStatus;
-  title: string;
-  description?: string;
-  meetingLink?: string;
-  location?: string;
-  type: 'consultation' | 'follow-up' | 'review';
-  createdAt: string;
-  updatedAt: string;
-  categoryId?: string; // Added for appointment functionality
-  notes?: string; // Added for compatibility
-}
+  participants: string[]; // Array of participant IDs
+  messages: ChatMessage[];
+  lastUpdated: string; // ISO string format
+};
 
-export type ServiceCategory = 
-  | 'retirement'
-  | 'investment'
-  | 'tax'
-  | 'estate'
-  | 'insurance'
-  | 'business'
-  | 'education'
-  | 'philanthropic';
-
-export interface AppointmentCategory {
-  id: string;
-  name: string;
-  duration: number; // Duration in minutes
-  description: string;
-  price?: number;
-  isActive: boolean;
-  color?: string;
-  label?: string; // Added for compatibility
-  enabled?: boolean; // Added for compatibility
-}
-
-export interface FinancialFirm {
-  id: string;
-  name: string;
-  logo?: string;
-  website?: string;
-  description?: string;
-  address?: {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-  };
-  founded?: number;
-  size?: 'small' | 'medium' | 'large';
-  aum?: number; // Assets Under Management
-  specialties?: string[];
-  adminId: string; // ID of the firm admin
-  advisorIds: string[]; // IDs of advisors in the firm
-  status: 'active' | 'pending' | 'suspended';
-  subscription?: {
-    plan: string;
-    startDate: string;
-    endDate: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
+// User type
+export type UserType = 'consumer' | 'advisor' | 'firm_admin' | null;
