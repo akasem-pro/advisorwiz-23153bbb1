@@ -43,7 +43,6 @@ import {
 } from "@/components/ui/accordion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-// Create a constant for default profile image instead of importing from @/constants
 const DEFAULT_PROFILE_IMAGE = '/placeholder.svg';
 
 const communicationOptions = [
@@ -111,7 +110,7 @@ const profileFormSchema = z.object({
   profilePicture: z.string().optional(),
   onlineStatus: z.string().optional(),
   phone: z.string().optional(),
-})
+});
 
 interface ProfileFormValues extends z.infer<typeof profileFormSchema> {}
 
@@ -136,7 +135,9 @@ const ConsumerProfilePage: React.FC = () => {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(consumerProfile?.preferredLanguage || []);
   const [selectedServices, setSelectedServices] = useState<ServiceCategory[]>(consumerProfile?.serviceNeeds || []);
   const [profileImage, setProfileImage] = useState<string | null>(consumerProfile?.profilePicture || null);
-  const [onlineStatus, setOnlineStatus] = useState<string>(consumerProfile?.onlineStatus || 'online');
+  const [onlineStatus, setOnlineStatus] = useState<'online' | 'offline' | 'away'>(
+    (consumerProfile?.onlineStatus as 'online' | 'offline' | 'away') || 'online'
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -181,7 +182,7 @@ const ConsumerProfilePage: React.FC = () => {
       onlineStatus: consumerProfile?.onlineStatus || 'online',
       phone: consumerProfile?.phone || '',
     },
-  })
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -219,13 +220,12 @@ const ConsumerProfilePage: React.FC = () => {
     }
   };
 
-  const handleOnlineStatusChange = (status: string) => {
+  const handleOnlineStatusChange = (status: 'online' | 'offline' | 'away') => {
     setOnlineStatus(status);
-    updateOnlineStatus(status as 'online' | 'offline' | 'away');
+    updateOnlineStatus(status);
   };
 
   const saveProfile = () => {
-    // Create a copy of the current profile with updated fields
     const updatedProfile: ConsumerProfile = {
       ...consumerProfile,
       name: formData.name,
@@ -243,16 +243,11 @@ const ConsumerProfilePage: React.FC = () => {
       phone: formData.phone || '',
     };
 
-    // Update the consumer profile in the UserContext
     setConsumerProfile(updatedProfile);
-
-    // Show a toast notification
     toast({
       title: "Profile Updated",
       description: "Your profile has been successfully updated.",
     });
-
-    // Redirect to the index page
     navigate('/');
   };
 
@@ -265,7 +260,6 @@ const ConsumerProfilePage: React.FC = () => {
         </CardHeader>
         <CardContent className="grid gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Profile Picture Section */}
             <div>
               <Label htmlFor="profilePicture">Profile Picture</Label>
               <div className="flex items-center space-x-4 mt-2">
@@ -296,7 +290,6 @@ const ConsumerProfilePage: React.FC = () => {
               </div>
             </div>
 
-            {/* Online Status Section */}
             <div>
               <Label>Online Status</Label>
               <div className="flex items-center space-x-4 mt-2">
@@ -323,7 +316,6 @@ const ConsumerProfilePage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Name */}
             <div>
               <Label htmlFor="name">Name</Label>
               <Input
@@ -335,7 +327,6 @@ const ConsumerProfilePage: React.FC = () => {
               />
             </div>
 
-            {/* Email */}
             <div>
               <Label htmlFor="email">Email</Label>
               <Input
@@ -349,7 +340,6 @@ const ConsumerProfilePage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Age */}
             <div>
               <Label htmlFor="age">Age</Label>
               <Input
@@ -361,7 +351,6 @@ const ConsumerProfilePage: React.FC = () => {
               />
             </div>
 
-            {/* Phone */}
             <div>
               <Label htmlFor="phone">Phone</Label>
               <Input
@@ -375,7 +364,6 @@ const ConsumerProfilePage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Employment Status */}
             <div>
               <Label htmlFor="employmentStatus">Employment Status</Label>
               <Select value={formData.employmentStatus} onValueChange={(value) => {
@@ -394,7 +382,6 @@ const ConsumerProfilePage: React.FC = () => {
               </Select>
             </div>
 
-            {/* Investable Assets */}
             <div>
               <Label htmlFor="investableAssets">Investable Assets</Label>
               <Input
@@ -408,7 +395,6 @@ const ConsumerProfilePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Risk Tolerance */}
           <div>
             <Label htmlFor="riskTolerance">Risk Tolerance</Label>
             <Select value={formData.riskTolerance} onValueChange={(value) => {
@@ -427,7 +413,6 @@ const ConsumerProfilePage: React.FC = () => {
             </Select>
           </div>
 
-          {/* Preferred Communication */}
           <div>
             <Label>Preferred Communication</Label>
             <div className="flex flex-wrap gap-2 mt-2">
@@ -444,7 +429,6 @@ const ConsumerProfilePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Preferred Language */}
           <div>
             <Label>Preferred Language</Label>
             <div className="flex flex-wrap gap-2 mt-2">
@@ -461,7 +445,6 @@ const ConsumerProfilePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Start Timeline */}
           <div>
             <Label htmlFor="startTimeline">Start Timeline</Label>
             <Select value={formData.startTimeline} onValueChange={(value) => {
@@ -480,7 +463,6 @@ const ConsumerProfilePage: React.FC = () => {
             </Select>
           </div>
 
-          {/* Service Needs */}
           <div>
             <Label>Service Needs</Label>
             <div className="flex flex-wrap gap-2 mt-2">
@@ -506,3 +488,4 @@ const ConsumerProfilePage: React.FC = () => {
 };
 
 export default ConsumerProfilePage;
+

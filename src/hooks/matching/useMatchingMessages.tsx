@@ -53,7 +53,7 @@ export const useMatchingMessages = () => {
           messages: [],
           lastMessageAt: new Date().toISOString(),
           lastUpdated: new Date().toISOString(),
-          unreadCount: {} // Add the required property
+          unreadCount: {}
         };
         
         // Initialize unreadCount for both participants
