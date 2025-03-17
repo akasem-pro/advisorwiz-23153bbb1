@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Lead, LeadStatus, LeadSource, LeadStats } from '../types/leadTypes';
 import { differenceInDays } from 'date-fns';
+import { trackLeadEvent } from '../utils/tagManager';
 
 export const useLeadTracking = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -46,6 +47,15 @@ export const useLeadTracking = () => {
     };
     
     setLeads(prevLeads => [...prevLeads, newLead]);
+    
+    // Track lead generation event
+    trackLeadEvent('generated', newLead.id, {
+      advisor_id: advisorId,
+      consumer_id: consumerId,
+      source: source,
+      match_score: matchScore
+    });
+    
     return newLead.id;
   };
 
@@ -54,6 +64,7 @@ export const useLeadTracking = () => {
       return prevLeads.map(lead => {
         if (lead.id === leadId) {
           const now = new Date().toISOString();
+          const previousStatus = lead.status;
           const updatedLead = {
             ...lead,
             status,
@@ -69,6 +80,21 @@ export const useLeadTracking = () => {
               }
             ]
           };
+          
+          // Track lead status change event
+          trackLeadEvent('status_change', leadId, {
+            previous_status: previousStatus,
+            new_status: status,
+            notes: notes
+          });
+          
+          // Track conversion specifically if the status is 'converted'
+          if (status === 'converted') {
+            trackLeadEvent('converted', leadId, {
+              conversion_time_days: differenceInDays(new Date(now), new Date(lead.createdAt))
+            });
+          }
+          
           return updatedLead;
         }
         return lead;

@@ -13,6 +13,7 @@ import { Appointment, AppointmentStatus, useUser } from '../../../context/UserCo
 import AppointmentStatusBadge from './AppointmentStatusBadge';
 import AppointmentCommunicationButtons from './AppointmentCommunicationButtons';
 import AppointmentInfoDisplay from './AppointmentInfoDisplay';
+import { trackAppointmentEvent } from '../../../utils/tagManager';
 
 interface AppointmentDetailsDialogProps {
   appointment: Appointment;
@@ -32,6 +33,12 @@ const AppointmentDetailsDialog: React.FC<AppointmentDetailsDialogProps> = ({
   const handleStatusUpdate = (id: string, status: AppointmentStatus) => {
     if (onUpdateStatus) {
       onUpdateStatus(id, status);
+      
+      // Track appointment status change event
+      trackAppointmentEvent('status_change', id, { 
+        new_status: status,
+        previous_status: appointment.status
+      });
       
       // If this is an advisor updating appointment status, also update lead status
       if (userType === 'advisor') {
