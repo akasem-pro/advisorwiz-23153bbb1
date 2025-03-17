@@ -74,17 +74,6 @@ const Header: React.FC = () => {
                 Contact
               </Link>
             </li>
-            
-            {isAuthenticated && (
-              <li className="mx-1">
-                <Link 
-                  to="/dashboard" 
-                  className="text-navy-900 font-medium hover:text-primary py-2 px-3 rounded-md transition-colors"
-                >
-                  Dashboard
-                </Link>
-              </li>
-            )}
 
             {isAuthenticated ? (
               <li>
