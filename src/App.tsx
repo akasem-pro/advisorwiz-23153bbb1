@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
-import IndexPage from './pages/index';
+import IndexPage from './pages/Index';
 import Pricing from './pages/Pricing';
 import Contact from './pages/Contact';
 import Login from './pages/Login';

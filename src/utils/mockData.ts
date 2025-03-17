@@ -1,5 +1,5 @@
 
-import { Chat, ChatMessage } from '../context/UserContext';
+import { Chat, ChatMessage } from '../types/userTypes';
 
 // Mock chat data
 export const generateMockChats = (
@@ -20,6 +20,7 @@ export const generateMockChats = (
       timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
       read: true,
       readTimestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(), // 2 hours after
+      status: 'read'
     },
     {
       id: 'msg-2',
@@ -30,6 +31,7 @@ export const generateMockChats = (
       timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), // 6 days ago
       read: true,
       readTimestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000 + 1 * 60 * 60 * 1000).toISOString(), // 1 hour after
+      status: 'read'
     },
     {
       id: 'msg-3',
@@ -40,6 +42,7 @@ export const generateMockChats = (
       timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
       read: true,
       readTimestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000).toISOString(), // 3 hours after
+      status: 'read'
     },
     {
       id: 'msg-4',
@@ -50,6 +53,7 @@ export const generateMockChats = (
       timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days ago
       read: true,
       readTimestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000).toISOString(), // 4 hours after
+      status: 'read'
     },
     {
       id: 'msg-5',
@@ -60,6 +64,7 @@ export const generateMockChats = (
       timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
       read: true,
       readTimestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(), // 2 hours after
+      status: 'read'
     },
     {
       id: 'msg-6',
@@ -70,6 +75,7 @@ export const generateMockChats = (
       timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
       read: true,
       readTimestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 1 * 60 * 60 * 1000).toISOString(), // 1 hour after
+      status: 'read'
     },
     {
       id: 'msg-7',
@@ -78,7 +84,8 @@ export const generateMockChats = (
       recipientId: consumerId,
       content: "That sounds like a reasonable plan. I think we should schedule a meeting to discuss your retirement strategy in more detail. Would you be available for a video call next week?",
       timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-      read: false
+      read: false,
+      status: 'delivered'
     },
   ];
   
@@ -87,6 +94,8 @@ export const generateMockChats = (
       id: chatId,
       participants: [consumerId, advisorId],
       messages,
+      lastMessageAt: messages[messages.length - 1].timestamp,
+      unreadCount: { [consumerId]: 1 },
       lastUpdated: messages[messages.length - 1].timestamp
     }
   ];

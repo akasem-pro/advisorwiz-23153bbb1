@@ -13,7 +13,7 @@ export interface ConsumerProfile {
     advisorSpecialties?: string[];
     location?: string;
   };
-  // Added missing properties
+  // Added properties
   age?: number;
   status?: string;
   investableAssets?: number;
@@ -34,6 +34,8 @@ export interface ConsumerProfile {
   lastOnline?: string;
   showOnlineStatus?: boolean;
   profilePicture?: string;
+  phone?: string; // Added for ConsumerProfile.tsx
+  languages?: string[]; // Added for matching algorithm
 }
 
 export interface AdvisorProfile {
@@ -49,10 +51,7 @@ export interface AdvisorProfile {
   specialties?: string[];
   certifications?: string[];
   location?: string;
-  availability?: {
-    days: string[];
-    hours: string;
-  };
+  // Removed duplicate availability
   feeStructure?: {
     type: 'hourly' | 'flat-fee' | 'percentage' | 'commission';
     details: string;
@@ -64,7 +63,7 @@ export interface AdvisorProfile {
     author: string;
     date: string;
   }[];
-  // Added missing properties
+  // Added properties
   organization?: string;
   isAccredited?: boolean;
   website?: string;
@@ -80,7 +79,7 @@ export interface AdvisorProfile {
   matches?: string[];
   compatibilityScores?: Record<string, number>;
   chats?: string[];
-  availability?: TimeSlot[];
+  availability: TimeSlot[]; // Changed type from { days: string[], hours: string } to TimeSlot[]
   chatEnabled?: boolean;
   appointmentCategories?: AppointmentCategory[];
   appointments?: string[];
@@ -134,8 +133,9 @@ export interface Chat {
   id: string;
   participants: string[];
   messages: ChatMessage[];
-  lastMessageAt: string;
+  lastMessageAt: string; 
   unreadCount: Record<string, number>;
+  lastUpdated: string; // Added for compatibility
 }
 
 export interface ChatMessage {
@@ -145,9 +145,13 @@ export interface ChatMessage {
   timestamp: string;
   status: 'sent' | 'delivered' | 'read';
   attachments?: string[];
+  senderName?: string; // Added for compatibility
+  recipientId?: string; // Added for compatibility
+  read?: boolean; // Added for compatibility
+  readTimestamp?: string; // Added for compatibility
 }
 
-export type AppointmentStatus = 'scheduled' | 'completed' | 'cancelled' | 'no-show';
+export type AppointmentStatus = 'scheduled' | 'completed' | 'cancelled' | 'no-show' | 'pending' | 'confirmed';
 
 export interface Appointment {
   id: string;
@@ -164,6 +168,8 @@ export interface Appointment {
   type: 'consultation' | 'follow-up' | 'review';
   createdAt: string;
   updatedAt: string;
+  categoryId?: string; // Added for appointment functionality
+  notes?: string; // Added for compatibility
 }
 
 export type ServiceCategory = 
@@ -184,6 +190,8 @@ export interface AppointmentCategory {
   price?: number;
   isActive: boolean;
   color?: string;
+  label?: string; // Added for compatibility
+  enabled?: boolean; // Added for compatibility
 }
 
 export interface FinancialFirm {

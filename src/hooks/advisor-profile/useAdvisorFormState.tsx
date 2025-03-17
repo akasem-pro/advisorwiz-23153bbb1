@@ -42,7 +42,7 @@ export const useAdvisorFormState = (advisorProfile?: AdvisorProfile | null) => {
     matches: advisorProfile?.matches || [],
     compatibilityScores: {},  // Initialize with empty object
     chats: advisorProfile?.chats || [],
-    availability: advisorProfile?.availability || [] as TimeSlot[],
+    availability: advisorProfile?.availability || [] as TimeSlot[], // Ensure it's a TimeSlot array
     chatEnabled: advisorProfile?.chatEnabled !== undefined ? advisorProfile.chatEnabled : true,
     appointmentCategories: advisorProfile?.appointmentCategories || DEFAULT_CATEGORIES as AppointmentCategory[],
     appointments: advisorProfile?.appointments || [],

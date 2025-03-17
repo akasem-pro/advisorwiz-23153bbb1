@@ -1,5 +1,5 @@
 
-import { AppointmentCategory } from '../context/UserContext';
+import { AppointmentCategory } from '../types/userTypes';
 
 // Default appointment categories
 export const DEFAULT_CATEGORIES: AppointmentCategory[] = [
@@ -9,6 +9,7 @@ export const DEFAULT_CATEGORIES: AppointmentCategory[] = [
     label: 'Free Consultation',
     description: 'A short introductory call to discuss your financial needs.',
     duration: 30,
+    isActive: true,
     enabled: true
   },
   {
@@ -17,6 +18,7 @@ export const DEFAULT_CATEGORIES: AppointmentCategory[] = [
     label: 'Discovery Call',
     description: 'An in-depth discussion to understand your financial situation.',
     duration: 60,
+    isActive: true,
     enabled: true
   },
   {
@@ -25,6 +27,7 @@ export const DEFAULT_CATEGORIES: AppointmentCategory[] = [
     label: 'Investment Strategy',
     description: 'Review and discuss your investment portfolio and strategies.',
     duration: 60,
+    isActive: true,
     enabled: true
   },
   {
@@ -33,6 +36,7 @@ export const DEFAULT_CATEGORIES: AppointmentCategory[] = [
     label: 'Tax Planning',
     description: 'Consultation for tax optimization strategies.',
     duration: 60,
+    isActive: true,
     enabled: true
   },
   {
@@ -41,6 +45,7 @@ export const DEFAULT_CATEGORIES: AppointmentCategory[] = [
     label: 'Business & Entrepreneurship',
     description: 'Financial advice for business owners and entrepreneurs.',
     duration: 90,
+    isActive: true,
     enabled: true
   }
 ];
