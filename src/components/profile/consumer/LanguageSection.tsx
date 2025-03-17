@@ -6,7 +6,7 @@ import { languageOptions } from '@/constants/profileOptions';
 
 interface LanguageSectionProps {
   selectedLanguages: string[];
-  handleCheckboxChange: (option: string, isChecked: boolean, fieldName: 'preferredCommunication' | 'preferredLanguage' | 'serviceNeeds') => void;
+  handleCheckboxChange: (option: string, isChecked: boolean) => void;
 }
 
 const LanguageSection: React.FC<LanguageSectionProps> = ({
@@ -22,7 +22,7 @@ const LanguageSection: React.FC<LanguageSectionProps> = ({
             <Checkbox
               id={`language-${option.value}`}
               checked={selectedLanguages.includes(option.value)}
-              onCheckedChange={(checked) => handleCheckboxChange(option.value, !!checked, 'preferredLanguage')}
+              onCheckedChange={(checked) => handleCheckboxChange(option.value, !!checked)}
             />
             <Label htmlFor={`language-${option.value}`}>{option.label}</Label>
           </div>

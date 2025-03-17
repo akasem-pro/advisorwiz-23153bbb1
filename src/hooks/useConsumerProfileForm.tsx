@@ -2,22 +2,24 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '../context/UserContext';
 import { useToast } from '../components/ui/use-toast';
+import { ServiceCategory } from '../types/userTypes';
 
 export interface ProfileFormValues {
   name: string;
   email: string;
   phone: string;
-  profileImage: string;
-  bio: string;
-  location: string;
-  timezone: string;
-  languages: string[];
-  investmentExperience: string;
-  investmentGoals: string[];
-  riskTolerance: string;
-  preferredCommunication: string[];
-  budget: string;
-  startTimeline: string;
+  profileImage?: string;
+  bio?: string;
+  location?: string;
+  timezone?: string;
+  languages?: string[];
+  investmentExperience?: string;
+  investmentGoals?: string[];
+  riskTolerance?: string;
+  preferredCommunication?: string[];
+  budget?: string;
+  startTimeline?: string;
+  age?: number;
   [key: string]: any;
 }
 
@@ -40,10 +42,24 @@ const useConsumerProfileForm = () => {
     preferredCommunication: consumerProfile?.preferredCommunication || ['Email'],
     budget: consumerProfile?.budget || '$1,000 - $10,000',
     startTimeline: consumerProfile?.startTimeline || '1-3 months',
+    age: consumerProfile?.age || 30,
   };
 
   const [formData, setFormData] = useState<ProfileFormValues>(initialFormValues);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [profileImage, setProfileImage] = useState<string>(initialFormValues.profileImage || '');
+  const [onlineStatus, setOnlineStatus] = useState<'online' | 'offline' | 'away'>(
+    consumerProfile?.onlineStatus || 'online'
+  );
+  const [selectedCommunication, setSelectedCommunication] = useState<string[]>(
+    initialFormValues.preferredCommunication || []
+  );
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(
+    initialFormValues.languages || []
+  );
+  const [selectedServices, setSelectedServices] = useState<ServiceCategory[]>(
+    consumerProfile?.serviceNeeds || []
+  );
 
   // Update form when consumer profile changes
   useEffect(() => {
@@ -63,7 +79,14 @@ const useConsumerProfileForm = () => {
         preferredCommunication: consumerProfile.preferredCommunication || ['Email'],
         budget: consumerProfile.budget || '$1,000 - $10,000',
         startTimeline: consumerProfile.startTimeline || '1-3 months',
+        age: consumerProfile.age || 30,
       });
+      
+      setProfileImage(consumerProfile.profileImage || '');
+      setOnlineStatus(consumerProfile.onlineStatus || 'online');
+      setSelectedCommunication(consumerProfile.preferredCommunication || []);
+      setSelectedLanguages(consumerProfile.languages || []);
+      setSelectedServices(consumerProfile.serviceNeeds || []);
     }
   }, [consumerProfile]);
 
@@ -75,22 +98,39 @@ const useConsumerProfileForm = () => {
     });
   };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, checked } = e.target;
+  const handleCheckboxChange = (option: string, isChecked: boolean, fieldName: 'preferredCommunication' | 'preferredLanguage' | 'serviceNeeds') => {
+    let currentValues: string[] = [];
+    let setter: React.Dispatch<React.SetStateAction<any>> = () => {};
     
-    if (checked) {
-      // If field doesn't exist yet or is not an array, initialize it
-      const currentValue = Array.isArray(formData[name]) ? formData[name] : [];
-      setFormData({
-        ...formData,
-        [name]: [...currentValue, value],
-      });
+    if (fieldName === 'preferredCommunication') {
+      currentValues = [...selectedCommunication];
+      setter = setSelectedCommunication;
+    } else if (fieldName === 'preferredLanguage') {
+      currentValues = [...selectedLanguages];
+      setter = setSelectedLanguages;
+    } else if (fieldName === 'serviceNeeds') {
+      currentValues = [...selectedServices] as string[];
+      setter = setSelectedServices;
+    }
+    
+    if (isChecked) {
+      if (!currentValues.includes(option)) {
+        const newValues = [...currentValues, option];
+        setter(newValues);
+        
+        setFormData(prev => ({
+          ...prev,
+          [fieldName === 'preferredLanguage' ? 'languages' : fieldName]: newValues
+        }));
+      }
     } else {
-      // Remove the value from the array
-      setFormData({
-        ...formData,
-        [name]: formData[name].filter((item: string) => item !== value),
-      });
+      const newValues = currentValues.filter(item => item !== option);
+      setter(newValues);
+      
+      setFormData(prev => ({
+        ...prev,
+        [fieldName === 'preferredLanguage' ? 'languages' : fieldName]: newValues
+      }));
     }
   };
 
@@ -99,6 +139,18 @@ const useConsumerProfileForm = () => {
       ...formData,
       [name]: value,
     });
+  };
+
+  const handleImageUpload = (imageUrl: string) => {
+    setProfileImage(imageUrl);
+    setFormData(prev => ({
+      ...prev,
+      profileImage: imageUrl
+    }));
+  };
+
+  const handleOnlineStatusChange = (status: 'online' | 'offline' | 'away') => {
+    setOnlineStatus(status);
   };
 
   const saveProfile = async () => {
@@ -110,14 +162,15 @@ const useConsumerProfileForm = () => {
       setConsumerProfile({
         ...consumerProfile,
         ...formData,
+        onlineStatus,
+        serviceNeeds: selectedServices,
         id: consumerProfile?.id || `consumer-${Date.now()}`,
-        updatedAt: new Date().toISOString(),
       });
       
       toast({
         title: "Profile Updated",
         description: "Your profile has been updated successfully.",
-        variant: "success",
+        variant: "default",
       });
     } catch (error) {
       console.error("Error saving profile:", error);
@@ -139,8 +192,14 @@ const useConsumerProfileForm = () => {
     handleCheckboxChange,
     handleMultiSelectChange,
     saveProfile,
+    profileImage,
+    onlineStatus,
+    selectedCommunication,
+    selectedLanguages,
+    selectedServices,
+    handleImageUpload,
+    handleOnlineStatusChange
   };
 };
 
 export { useConsumerProfileForm };
-export type { ProfileFormValues };

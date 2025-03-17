@@ -13,7 +13,7 @@ import { Appointment, AppointmentStatus, useUser } from '../../../context/UserCo
 import AppointmentStatusBadge from './AppointmentStatusBadge';
 import AppointmentCommunicationButtons from './AppointmentCommunicationButtons';
 import AppointmentInfoDisplay from './AppointmentInfoDisplay';
-import { trackAppointmentEvent } from '../../../utils/tagManager';
+import { trackEvent } from '../../../utils/tagManager';
 
 interface AppointmentDetailsDialogProps {
   appointment: Appointment;
@@ -37,8 +37,9 @@ const AppointmentDetailsDialog: React.FC<AppointmentDetailsDialogProps> = ({
       // Map the status_change to appropriate appointment event type
       const eventAction = status as 'scheduled' | 'confirmed' | 'cancelled' | 'completed';
       
-      // Track appointment status change event
-      trackAppointmentEvent(eventAction, id, { 
+      // Track appointment status change event using the generic trackEvent function
+      trackEvent(`appointment_${eventAction}`, { 
+        appointment_id: id,
         previous_status: appointment.status
       });
       

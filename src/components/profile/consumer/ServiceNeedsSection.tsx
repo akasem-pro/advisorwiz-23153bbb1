@@ -7,7 +7,7 @@ import { ServiceCategory } from '../../../context/UserContext';
 
 interface ServiceNeedsSectionProps {
   selectedServices: ServiceCategory[];
-  handleCheckboxChange: (option: string, isChecked: boolean, fieldName: 'preferredCommunication' | 'preferredLanguage' | 'serviceNeeds') => void;
+  handleCheckboxChange: (option: string, isChecked: boolean) => void;
 }
 
 const ServiceNeedsSection: React.FC<ServiceNeedsSectionProps> = ({
@@ -23,7 +23,7 @@ const ServiceNeedsSection: React.FC<ServiceNeedsSectionProps> = ({
             <Checkbox
               id={`service-${option.value}`}
               checked={selectedServices.some(service => service === option.value)}
-              onCheckedChange={(checked) => handleCheckboxChange(option.value, !!checked, 'serviceNeeds')}
+              onCheckedChange={(checked) => handleCheckboxChange(option.value, !!checked)}
             />
             <Label htmlFor={`service-${option.value}`}>{option.label}</Label>
           </div>

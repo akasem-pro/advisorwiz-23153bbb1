@@ -6,7 +6,7 @@ import { communicationOptions } from '@/constants/profileOptions';
 
 interface CommunicationSectionProps {
   selectedCommunication: string[];
-  handleCheckboxChange: (option: string, isChecked: boolean, fieldName: 'preferredCommunication' | 'preferredLanguage' | 'serviceNeeds') => void;
+  handleCheckboxChange: (option: string, isChecked: boolean) => void;
 }
 
 const CommunicationSection: React.FC<CommunicationSectionProps> = ({
@@ -22,7 +22,7 @@ const CommunicationSection: React.FC<CommunicationSectionProps> = ({
             <Checkbox
               id={`communication-${option.value}`}
               checked={selectedCommunication.includes(option.value)}
-              onCheckedChange={(checked) => handleCheckboxChange(option.value, !!checked, 'preferredCommunication')}
+              onCheckedChange={(checked) => handleCheckboxChange(option.value, !!checked)}
             />
             <Label htmlFor={`communication-${option.value}`}>{option.label}</Label>
           </div>

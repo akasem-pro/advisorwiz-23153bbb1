@@ -68,6 +68,40 @@ export const trackEvent = (eventName: string, eventParams: Record<string, any> =
 };
 
 /**
+ * Track appointment-related events in GTM
+ * @param eventAction Action type for the appointment
+ * @param appointmentId Appointment identifier
+ * @param eventParams Additional parameters for the event
+ */
+export const trackAppointmentEvent = (
+  eventAction: 'scheduled' | 'confirmed' | 'cancelled' | 'completed',
+  appointmentId: string,
+  eventParams: Record<string, any> = {}
+): void => {
+  trackEvent(`appointment_${eventAction}`, {
+    appointment_id: appointmentId,
+    ...eventParams
+  });
+};
+
+/**
+ * Track lead-related events in GTM
+ * @param eventAction Action type for the lead 
+ * @param leadId Lead identifier
+ * @param eventParams Additional parameters for the event
+ */
+export const trackLeadEvent = (
+  eventAction: 'created' | 'updated' | 'converted' | 'lost',
+  leadId: string,
+  eventParams: Record<string, any> = {}
+): void => {
+  trackEvent(`lead_${eventAction}`, {
+    lead_id: leadId,
+    ...eventParams
+  });
+};
+
+/**
  * Set user properties in GTM
  * @param userId User identifier
  * @param userProperties Additional properties for the user

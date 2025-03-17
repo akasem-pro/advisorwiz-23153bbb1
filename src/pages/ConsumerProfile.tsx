@@ -18,16 +18,17 @@ import { useConsumerProfileForm } from '@/hooks/useConsumerProfileForm';
 const ConsumerProfilePage: React.FC = () => {
   const {
     formData,
+    isSubmitting,
+    handleInputChange,
+    handleCheckboxChange,
+    saveProfile,
+    profileImage,
+    onlineStatus,
     selectedCommunication,
     selectedLanguages,
     selectedServices,
-    profileImage,
-    onlineStatus,
-    handleInputChange,
-    handleCheckboxChange,
     handleImageUpload,
-    handleOnlineStatusChange,
-    saveProfile
+    handleOnlineStatusChange
   } = useConsumerProfileForm();
 
   return (
@@ -69,12 +70,12 @@ const ConsumerProfilePage: React.FC = () => {
 
           <CommunicationSection 
             selectedCommunication={selectedCommunication}
-            handleCheckboxChange={handleCheckboxChange} 
+            handleCheckboxChange={(option, isChecked) => handleCheckboxChange(option, isChecked, 'preferredCommunication')} 
           />
 
           <LanguageSection 
             selectedLanguages={selectedLanguages}
-            handleCheckboxChange={handleCheckboxChange} 
+            handleCheckboxChange={(option, isChecked) => handleCheckboxChange(option, isChecked, 'preferredLanguage')} 
           />
 
           <TimelineSection 
@@ -83,11 +84,11 @@ const ConsumerProfilePage: React.FC = () => {
 
           <ServiceNeedsSection 
             selectedServices={selectedServices}
-            handleCheckboxChange={handleCheckboxChange} 
+            handleCheckboxChange={(option, isChecked) => handleCheckboxChange(option, isChecked, 'serviceNeeds')} 
           />
         </div>
 
-        <ProfileActions saveProfile={saveProfile} />
+        <ProfileActions saveProfile={saveProfile} isSubmitting={isSubmitting} />
       </Card>
     </div>
   );
