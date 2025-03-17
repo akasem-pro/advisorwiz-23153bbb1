@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/toaster';
@@ -12,6 +12,7 @@ import {
   generateWebsiteSchema
 } from './utils/schemas';
 import { trackWebVitals, setupLazyLoading, optimizeCriticalRendering } from './utils/performanceTracking';
+import { initializeTagManager, trackPageView } from './utils/tagManager';
 
 // Pages
 import Index from './pages/Index';
@@ -30,6 +31,7 @@ import Pricing from './pages/Pricing';
 import ContactUs from './pages/ContactUs';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
+import LeadManagementPage from './pages/LeadManagementPage';
 
 import './App.css';
 
@@ -76,9 +78,27 @@ const globalStructuredData = [
   generateWebsiteSchema()
 ];
 
-function App() {
-  // Track web vitals metrics on mount
+// PageTracker component to track page views
+const PageTracker = () => {
+  const location = useLocation();
+  
   useEffect(() => {
+    // Get the page title from the document or use a default
+    const pageTitle = document.title || 'AdvisorWiz';
+    
+    // Track page view on route change
+    trackPageView(pageTitle, location.pathname);
+  }, [location]);
+  
+  return null;
+};
+
+function App() {
+  // Initialize Tag Manager and track web vitals on mount
+  useEffect(() => {
+    // Initialize Google Tag Manager
+    initializeTagManager();
+    
     // Track performance metrics
     trackWebVitals();
     
@@ -119,6 +139,8 @@ function App() {
         />
         <StructuredData data={globalStructuredData} />
         <Router>
+          {/* PageTracker component to track route changes */}
+          <PageTracker />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/onboarding" element={<Onboarding />} />
@@ -130,6 +152,7 @@ function App() {
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/firm-profile" element={<FirmProfile />} />
             <Route path="/firm/:id" element={<FirmProfile />} />
+            <Route path="/leads" element={<LeadManagementPage />} />
             <Route path="/for-firms" element={<ForFirms />} />
             <Route path="/for-advisors" element={<ForAdvisors />} />
             <Route path="/for-consumers" element={<ForConsumers />} />

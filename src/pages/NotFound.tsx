@@ -1,14 +1,25 @@
+
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { trackPageView, trackEvent } from "../utils/tagManager";
 
 const NotFound = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // Log the 404 error
     console.error(
       "404 Error: User attempted to access non-existent route:",
       location.pathname
     );
+    
+    // Track the 404 error in GTM
+    trackPageView("404 - Page Not Found", location.pathname);
+    trackEvent("error", {
+      error_type: "404",
+      page_path: location.pathname,
+      error_message: "Page not found"
+    });
   }, [location.pathname]);
 
   return (
