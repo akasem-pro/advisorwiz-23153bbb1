@@ -99,7 +99,7 @@ export const trackAppointmentEvent = (
  * @param additionalParams Additional parameters to track
  */
 export const trackLeadEvent = (
-  action: 'created' | 'updated' | 'converted' | 'lost' | 'contacted',
+  action: 'created' | 'updated' | 'converted' | 'lost' | 'contacted' | 'generated' | 'status_change',
   leadId: string,
   additionalParams?: Record<string, any>
 ) => {

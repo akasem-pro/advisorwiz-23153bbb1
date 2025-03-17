@@ -48,8 +48,8 @@ export const useLeadTracking = () => {
     
     setLeads(prevLeads => [...prevLeads, newLead]);
     
-    // Track lead generation event
-    trackLeadEvent('generated', newLead.id, {
+    // Track lead generation event with 'created' action to match the allowed types
+    trackLeadEvent('created', newLead.id, {
       advisor_id: advisorId,
       consumer_id: consumerId,
       source: source,
@@ -81,8 +81,8 @@ export const useLeadTracking = () => {
             ]
           };
           
-          // Track lead status change event
-          trackLeadEvent('status_change', leadId, {
+          // Track lead status change event with 'updated' action
+          trackLeadEvent('updated', leadId, {
             previous_status: previousStatus,
             new_status: status,
             notes: notes
