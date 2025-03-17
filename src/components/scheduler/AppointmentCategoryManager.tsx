@@ -30,6 +30,7 @@ const DEFAULT_CATEGORIES: Omit<AppointmentCategory, 'id'>[] = [
     label: 'Free Consultation',
     description: 'A short introductory call to discuss your financial needs.',
     duration: 30,
+    isActive: true, // Added isActive property
     enabled: true
   },
   {
@@ -37,6 +38,7 @@ const DEFAULT_CATEGORIES: Omit<AppointmentCategory, 'id'>[] = [
     label: 'Discovery Call',
     description: 'An in-depth discussion to understand your financial situation.',
     duration: 60,
+    isActive: true, // Added isActive property
     enabled: true
   },
   {
@@ -44,6 +46,7 @@ const DEFAULT_CATEGORIES: Omit<AppointmentCategory, 'id'>[] = [
     label: 'Investment Strategy',
     description: 'Review and discuss your investment portfolio and strategies.',
     duration: 60,
+    isActive: true, // Added isActive property
     enabled: true
   },
   {
@@ -51,6 +54,7 @@ const DEFAULT_CATEGORIES: Omit<AppointmentCategory, 'id'>[] = [
     label: 'Tax Planning',
     description: 'Consultation for tax optimization strategies.',
     duration: 60,
+    isActive: true, // Added isActive property
     enabled: true
   },
   {
@@ -58,6 +62,7 @@ const DEFAULT_CATEGORIES: Omit<AppointmentCategory, 'id'>[] = [
     label: 'Business & Entrepreneurship',
     description: 'Financial advice for business owners and entrepreneurs.',
     duration: 90,
+    isActive: true, // Added isActive property
     enabled: true
   }
 ];

@@ -51,8 +51,14 @@ export const useMatchingMessages = () => {
           id: `chat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           participants: [currentUserId, profileId],
           messages: [],
-          lastUpdated: new Date().toISOString()
+          lastMessageAt: new Date().toISOString(),
+          lastUpdated: new Date().toISOString(),
+          unreadCount: {} // Add the required property
         };
+        
+        // Initialize unreadCount for both participants
+        newChat.unreadCount[currentUserId] = 0;
+        newChat.unreadCount[profileId] = 0;
         
         const updatedChats = [...chats, newChat];
         setChats(updatedChats);

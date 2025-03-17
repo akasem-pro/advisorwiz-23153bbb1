@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -17,7 +16,6 @@ import {
   subscriptionPlans
 } from '../data/advisorProfileData';
 
-// Import refactored components
 import { ProfileHeader } from '../components/profile/ProfileHeader';
 import { ProfileSectionManager } from '../components/profile/ProfileSectionManager';
 import { ProfileFormActions } from '../components/profile/ProfileFormActions';
@@ -29,7 +27,6 @@ const AdvisorProfile: React.FC = () => {
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
 
-  // Use our custom hooks
   const {
     formData,
     isEmailVerified,
@@ -52,6 +49,7 @@ const AdvisorProfile: React.FC = () => {
     const updatedProfile: AdvisorProfileType = {
       id: formData.id || 'advisor-' + Date.now(),
       name: formData.name || '',
+      email: formData.email || '',
       organization: formData.organization || '',
       isAccredited: formData.isAccredited || false,
       website: formData.websiteUrl || '',
@@ -65,7 +63,6 @@ const AdvisorProfile: React.FC = () => {
       expertise: formData.expertise || [],
       profilePicture: formData.profilePicture || '',
       matches: formData.matches || [],
-      // Don't include compatibilityScores in the AdvisorProfileType
       chats: formData.chats || [],
       availability: formData.availability || [],
       chatEnabled: formData.chatEnabled || false,
@@ -100,7 +97,6 @@ const AdvisorProfile: React.FC = () => {
                 <ProfileHeader progress={progress} />
 
                 <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
-                  {/* Profile Sections */}
                   <ProfileSectionManager 
                     sections={sections}
                     formData={formData}
@@ -116,7 +112,6 @@ const AdvisorProfile: React.FC = () => {
                     handlePictureChange={handlePictureChange}
                     handleSubscriptionSelect={handleSubscriptionSelect}
                     
-                    // Data arrays
                     provincesOptions={provincesOptions}
                     licensingBodies={licensingBodies}
                     experienceOptions={experienceOptions}
@@ -128,7 +123,6 @@ const AdvisorProfile: React.FC = () => {
                     subscriptionPlans={subscriptionPlans}
                   />
 
-                  {/* Form Actions */}
                   <ProfileFormActions 
                     handleSubmit={handleSubmit}
                     handleContinue={handleContinue}
