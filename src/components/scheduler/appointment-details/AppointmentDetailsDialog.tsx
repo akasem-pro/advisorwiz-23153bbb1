@@ -34,9 +34,11 @@ const AppointmentDetailsDialog: React.FC<AppointmentDetailsDialogProps> = ({
     if (onUpdateStatus) {
       onUpdateStatus(id, status);
       
+      // Map the status_change to appropriate appointment event type
+      const eventAction = status as 'scheduled' | 'confirmed' | 'cancelled' | 'completed';
+      
       // Track appointment status change event
-      trackAppointmentEvent('status_change', id, { 
-        new_status: status,
+      trackAppointmentEvent(eventAction, id, { 
         previous_status: appointment.status
       });
       
