@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
@@ -34,6 +35,11 @@ const Header: React.FC = () => {
   };
   
   const profile = consumerProfile || advisorProfile;
+  
+  // Get profile image and email safely
+  const profileImage = profile?.profileImage || '';
+  const profileEmail = profile?.email || '';
+  const profileName = profile?.name || '';
 
   return (
     <header className="bg-background border-b sticky top-0 z-50">
@@ -62,10 +68,10 @@ const Header: React.FC = () => {
             </li>
             <li className="mx-1">
               <Link 
-                to="/about" 
+                to="/contact" 
                 className="text-navy-900 font-medium hover:text-primary py-2 px-3 rounded-md transition-colors"
               >
-                About
+                Contact
               </Link>
             </li>
             
@@ -86,17 +92,17 @@ const Header: React.FC = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={profile?.imageUrl} alt={profile?.name} />
-                        <AvatarFallback>{profile?.name?.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={profileImage} alt={profileName} />
+                        <AvatarFallback>{profileName?.charAt(0)}</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{profile?.name}</p>
+                        <p className="text-sm font-medium leading-none">{profileName}</p>
                         <p className="text-xs leading-none text-muted-foreground">
-                          {profile?.email}
+                          {profileEmail}
                         </p>
                       </div>
                     </DropdownMenuLabel>
