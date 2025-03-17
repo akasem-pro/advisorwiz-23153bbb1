@@ -1,13 +1,13 @@
 
 import React, { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import IndexPage from './pages/Index';
 import Pricing from './pages/Pricing';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
-import ConsumerProfilePage from './pages/ConsumerProfilePage';
+import ConsumerProfile from './pages/ConsumerProfile';
 import AdvisorProfilePage from './pages/AdvisorProfilePage';
 import AdvisorList from './pages/AdvisorList';
 import ChatPage from './pages/ChatPage';
@@ -42,7 +42,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/profile/consumer" element={<ConsumerProfilePage />} />
+          <Route path="/profile/consumer" element={<ConsumerProfile />} />
           <Route path="/profile/advisor" element={<AdvisorProfilePage />} />
           <Route path="/advisors" element={<AdvisorList />} />
           <Route path="/chat" element={<ChatPage />} />

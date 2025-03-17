@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser, ConsumerProfile, ServiceCategory } from '../context/UserContext';
@@ -43,6 +44,7 @@ import {
 } from "@/components/ui/accordion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
+// Local constant since @/constants is not available
 const DEFAULT_PROFILE_IMAGE = '/placeholder.svg';
 
 const communicationOptions = [
