@@ -135,7 +135,9 @@ const ConsumerProfilePage: React.FC = () => {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(consumerProfile?.preferredLanguage || []);
   const [selectedServices, setSelectedServices] = useState<ServiceCategory[]>(consumerProfile?.serviceNeeds || []);
   const [profileImage, setProfileImage] = useState<string | null>(consumerProfile?.profilePicture || null);
-  const [onlineStatus, setOnlineStatus] = useState<string>(consumerProfile?.onlineStatus || 'online');
+  const [onlineStatus, setOnlineStatus] = useState<'online' | 'offline' | 'away'>(
+    (consumerProfile?.onlineStatus as 'online' | 'offline' | 'away') || 'online'
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -159,7 +161,7 @@ const ConsumerProfilePage: React.FC = () => {
       setSelectedLanguages(consumerProfile.preferredLanguage || []);
       setSelectedServices(consumerProfile.serviceNeeds || []);
       setProfileImage(consumerProfile.profilePicture || null);
-      setOnlineStatus(consumerProfile.onlineStatus || 'online');
+      setOnlineStatus((consumerProfile.onlineStatus as 'online' | 'offline' | 'away') || 'online');
     }
   }, [consumerProfile]);
 
@@ -218,9 +220,9 @@ const ConsumerProfilePage: React.FC = () => {
     }
   };
 
-  const handleOnlineStatusChange = (status: string) => {
+  const handleOnlineStatusChange = (status: 'online' | 'offline' | 'away') => {
     setOnlineStatus(status);
-    updateOnlineStatus(status as 'online' | 'offline' | 'away');
+    updateOnlineStatus(status);
   };
 
   const saveProfile = () => {
