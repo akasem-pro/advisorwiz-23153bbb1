@@ -13,10 +13,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === 'development' &&
-    componentTagger({
-      enableSelect: true,
-      enableConsoleLogging: true
-    }),
+    componentTagger(), // Removed the configuration object that was causing the type error
   ].filter(Boolean),
   resolve: {
     alias: {
