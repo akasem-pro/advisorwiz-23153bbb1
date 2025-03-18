@@ -29,7 +29,8 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ links, showGetStarted =
           <Link
             to={link.path}
             className={`py-2 px-1 font-medium text-lg md:text-base flex items-center ${
-              location.pathname === link.path
+              location.pathname === link.path || 
+              (link.path !== '/' && location.pathname.startsWith(link.path))
                 ? 'text-teal-600'
                 : 'text-navy-700 hover:text-teal-600'
             } transition-colors`}
