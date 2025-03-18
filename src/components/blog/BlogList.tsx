@@ -39,7 +39,7 @@ export const BlogList: React.FC = () => {
       <div className="flex flex-wrap gap-2 justify-center">
         <Badge 
           variant={!selectedCategory ? "default" : "outline"} 
-          className="cursor-pointer px-4 py-2 text-sm"
+          className="cursor-pointer px-4 py-2 text-sm bg-teal-600 hover:bg-teal-700"
           onClick={() => setSelectedCategory(null)}
         >
           All
@@ -49,7 +49,9 @@ export const BlogList: React.FC = () => {
           <Badge 
             key={category} 
             variant={selectedCategory === category ? "default" : "outline"} 
-            className="cursor-pointer px-4 py-2 text-sm"
+            className={`cursor-pointer px-4 py-2 text-sm ${
+              selectedCategory === category ? 'bg-teal-600 hover:bg-teal-700' : 'text-navy-700 hover:bg-navy-50'
+            }`}
             onClick={() => setSelectedCategory(category)}
           >
             {category}
@@ -82,7 +84,10 @@ export const BlogList: React.FC = () => {
           <PaginationContent>
             {currentPage > 1 && (
               <PaginationItem>
-                <PaginationPrevious onClick={() => setCurrentPage(currentPage - 1)} />
+                <PaginationPrevious 
+                  onClick={() => setCurrentPage(currentPage - 1)} 
+                  className="text-teal-600 hover:text-teal-700"
+                />
               </PaginationItem>
             )}
             
@@ -91,6 +96,7 @@ export const BlogList: React.FC = () => {
                 <PaginationLink 
                   isActive={currentPage === i + 1}
                   onClick={() => setCurrentPage(i + 1)}
+                  className={currentPage === i + 1 ? "bg-teal-600" : "text-navy-600"}
                 >
                   {i + 1}
                 </PaginationLink>
@@ -99,7 +105,10 @@ export const BlogList: React.FC = () => {
             
             {currentPage < totalPages && (
               <PaginationItem>
-                <PaginationNext onClick={() => setCurrentPage(currentPage + 1)} />
+                <PaginationNext 
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  className="text-teal-600 hover:text-teal-700"
+                />
               </PaginationItem>
             )}
           </PaginationContent>

@@ -70,7 +70,7 @@ export const BlogPost: React.FC<BlogPostProps> = ({ slug }) => {
           Back to all articles
         </Link>
         
-        <article className="bg-white rounded-xl overflow-hidden shadow-sm">
+        <article className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200">
           {/* Featured image */}
           <div className="w-full aspect-video relative">
             <img 
@@ -79,7 +79,7 @@ export const BlogPost: React.FC<BlogPostProps> = ({ slug }) => {
               className="w-full h-full object-cover"
             />
             {post.category && (
-              <Badge className="absolute top-4 left-4">
+              <Badge className="absolute top-4 left-4 bg-teal-600">
                 {post.category}
               </Badge>
             )}
@@ -122,11 +122,11 @@ export const BlogPost: React.FC<BlogPostProps> = ({ slug }) => {
             
             {/* Tags */}
             {post.tags && post.tags.length > 0 && (
-              <div className="mt-8 pt-6 border-t">
+              <div className="mt-8 pt-6 border-t border-slate-200">
                 <h3 className="text-sm font-medium text-slate-500 mb-3">Tags:</h3>
                 <div className="flex flex-wrap gap-2">
                   {post.tags.map(tag => (
-                    <Badge key={tag} variant="outline">
+                    <Badge key={tag} variant="outline" className="text-navy-700 border-navy-200 hover:bg-navy-50">
                       {tag}
                     </Badge>
                   ))}

@@ -12,7 +12,7 @@ interface BlogPostCardProps {
 
 export const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
   return (
-    <Card className="overflow-hidden h-full flex flex-col hover:shadow-md transition-shadow">
+    <Card className="overflow-hidden h-full flex flex-col hover:shadow-md transition-shadow border border-slate-200">
       <Link to={`/blog/${post.slug}`} className="relative">
         <div className="aspect-video overflow-hidden">
           <img 
@@ -23,14 +23,14 @@ export const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
           />
         </div>
         {post.category && (
-          <Badge className="absolute top-4 left-4">
+          <Badge className="absolute top-4 left-4 bg-teal-600 hover:bg-teal-700">
             {post.category}
           </Badge>
         )}
       </Link>
       <CardContent className="pt-6 flex-grow">
         <Link to={`/blog/${post.slug}`}>
-          <h3 className="text-xl font-serif font-semibold line-clamp-2 hover:text-teal-600 transition-colors">
+          <h3 className="text-xl font-serif font-semibold line-clamp-2 hover:text-teal-600 transition-colors text-navy-900">
             {post.title}
           </h3>
         </Link>
