@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import NavigationMenu from './NavigationMenu';
@@ -42,6 +43,7 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
     { name: 'Advisors', path: '/for-advisors' },
     { name: 'Firms', path: '/for-firms' },
     { name: 'Consumers', path: '/for-consumers' },
+    { name: 'Resources', path: '/resources' },
     { name: 'Pricing', path: '/pricing' },
     { name: 'Contact', path: '/contact' },
   ];

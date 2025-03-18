@@ -14,6 +14,7 @@ const Sitemap: React.FC = () => {
         { name: 'Advisors', path: '/for-advisors' },
         { name: 'Firms', path: '/for-firms' },
         { name: 'Consumers', path: '/for-consumers' },
+        { name: 'Resources', path: '/resources' },
         { name: 'Pricing', path: '/pricing' },
         { name: 'Contact Us', path: '/contact' },
       ]
@@ -42,6 +43,7 @@ const Sitemap: React.FC = () => {
       links: [
         { name: 'Blog', path: '/blog' },
         { name: 'Careers', path: '/careers' },
+        { name: 'Resources', path: '/resources' },
         { name: 'About Us', path: '/for-consumers' },
       ]
     },

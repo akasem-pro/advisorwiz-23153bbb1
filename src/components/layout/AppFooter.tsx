@@ -42,6 +42,7 @@ const AppFooter: React.FC = () => {
             <ul className="space-y-2">
               <li><Link to="/for-consumers" className="text-slate-600 text-sm hover:text-teal-600">Find an Advisor</Link></li>
               <li><Link to="/matches" className="text-slate-600 text-sm hover:text-teal-600">Browse Matches</Link></li>
+              <li><Link to="/resources" className="text-slate-600 text-sm hover:text-teal-600">Resources</Link></li>
               <li><Link to="/pricing" className="text-slate-600 text-sm hover:text-teal-600">Pricing</Link></li>
               <li><Link to="/blog" className="text-slate-600 text-sm hover:text-teal-600">Blog</Link></li>
               <li><Link to="/careers" className="text-slate-600 text-sm hover:text-teal-600">Careers</Link></li>
