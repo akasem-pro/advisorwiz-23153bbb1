@@ -12,9 +12,9 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ included, text }) => (
     {included ? (
       <Check className="h-5 w-5 flex-shrink-0 text-teal-500" />
     ) : (
-      <X className="h-5 w-5 flex-shrink-0 text-slate-300" />
+      <X className="h-5 w-5 flex-shrink-0 text-slate-300 dark:text-slate-500" />
     )}
-    <span className={included ? "text-slate-700" : "text-slate-400"}>{text}</span>
+    <span className={included ? "text-slate-700 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"}>{text}</span>
   </div>
 );
 

@@ -22,7 +22,7 @@ const Pricing: React.FC = () => {
         
         <main className="flex-grow pt-20">
           {/* Pricing Section */}
-          <section className="py-16 md:py-24 bg-gradient-to-b from-white to-slate-50">
+          <section className="py-16 md:py-24 bg-gradient-to-b from-white to-slate-50 dark:from-navy-900 dark:to-navy-950">
             <div className="container mx-auto px-4">
               <PricingHeader userType={userType} setUserType={setUserType} />
               
@@ -43,9 +43,9 @@ const Pricing: React.FC = () => {
           </section>
           
           {/* FAQ Section */}
-          <section className="py-16 bg-white">
+          <section className="py-16 bg-white dark:bg-navy-900">
             <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-serif font-bold text-center text-navy-900 mb-12">
+              <h2 className="text-3xl font-serif font-bold text-center text-navy-900 dark:text-slate-100 mb-12">
                 Frequently Asked Questions
               </h2>
               

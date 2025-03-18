@@ -1,90 +1,48 @@
 
 import React from 'react';
-import FAQAccordion, { FAQItem } from '../shared/FAQAccordion';
-import { useUser } from '../../context/UserContext';
-
-// Separate FAQ data by user type
-const consumerFaqs: FAQItem[] = [
-  {
-    question: "Is AdvisorWiz really free for consumers?",
-    answer: "Yes, AdvisorWiz is completely free for consumers. We earn revenue from advisors and firms who subscribe to our platform, so we never charge consumers for our matching service."
-  },
-  {
-    question: "How does AdvisorWiz find the right advisor for me?",
-    answer: "We use a sophisticated matching algorithm that considers your financial goals, investment preferences, communication style, and other factors to connect you with advisors who are best equipped to help you achieve your objectives."
-  },
-  {
-    question: "Are the financial advisors on AdvisorWiz vetted?",
-    answer: "Yes, all advisors on our platform undergo a verification process. We confirm their professional credentials, regulatory standing, and other qualifications before they can be matched with clients."
-  },
-  {
-    question: "How quickly can I expect to be matched with an advisor?",
-    answer: "Most users receive their first match recommendations within 24 hours of completing their profile. The more complete your profile is, the better matches we can provide."
-  }
-];
-
-const advisorFaqs: FAQItem[] = [
-  {
-    question: "How does AdvisorWiz generate leads?",
-    answer: "We attract consumers looking for financial guidance through content marketing, SEO, partnerships, and referrals. When consumers create profiles, our matching algorithm connects them with advisors based on their needs and your expertise."
-  },
-  {
-    question: "What's the typical ROI for advisors on the platform?",
-    answer: "Most advisors report a positive ROI within 3 months. The average advisor converts 2-3 clients from our platform per month, with an average lifetime value that far exceeds the subscription cost."
-  },
-  {
-    question: "Can I change plans later?",
-    answer: "Yes, you can upgrade or downgrade your plan at any time. Changes will be applied at the start of your next billing cycle."
-  },
-  {
-    question: "Is there a trial period?",
-    answer: "We offer a 14-day free trial for all advisor plans. No credit card required until you're ready to continue."
-  }
-];
-
-const enterpriseFaqs: FAQItem[] = [
-  {
-    question: "How does the enterprise plan differ from individual advisor plans?",
-    answer: "Enterprise plans are designed for firms with multiple advisors and include features for team management, firm branding, centralized billing, custom reporting, and more extensive client matching capabilities."
-  },
-  {
-    question: "Can we add or remove advisors from our enterprise account?",
-    answer: "Yes, enterprise accounts have flexible advisor seats. You can add new advisors as your firm grows, and you'll be billed accordingly based on your plan tier."
-  },
-  {
-    question: "Do you offer custom branding or white labeling?",
-    answer: "Yes, our enterprise plans include custom branding options. The top-tier Enterprise plan includes full white labeling capabilities for seamless integration with your firm's brand identity."
-  },
-  {
-    question: "Do you offer discounts for non-profits?",
-    answer: "Yes, we offer special pricing for non-profit organizations. Please contact our sales team for more information."
-  }
-];
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
 const PricingFAQs: React.FC = () => {
-  const { userType } = useUser();
-  
-  const getFaqsByUserType = (): FAQItem[] => {
-    switch (userType) {
-      case 'consumer':
-        return consumerFaqs;
-      case 'advisor':
-        return advisorFaqs;
-      case 'firm_admin':
-        return enterpriseFaqs;
-      default:
-        // If no user type or on pricing page before login
-        return [...consumerFaqs.slice(0, 2), ...advisorFaqs.slice(0, 2), ...enterpriseFaqs.slice(0, 2)];
+  const faqs = [
+    {
+      question: 'How much does it cost for consumers to use AdvisorWiz?',
+      answer: 'AdvisorWiz is completely free for consumers. We do not charge any fees for matching you with financial advisors, scheduling appointments, or using our platform. Our revenue comes from the advisors and firms who pay for premium placement and access to our tools.'
+    },
+    {
+      question: 'Are there any hidden fees for advisors?',
+      answer: 'No, there are no hidden fees. The pricing displayed is all-inclusive for the features listed in each plan. You can cancel your subscription at any time. We believe in complete transparency with our pricing structure.'
+    },
+    {
+      question: 'Can I change my plan later?',
+      answer: 'Yes! You can upgrade or downgrade your plan at any time. When upgrading, you'll get immediate access to the new features and we'll prorate the billing. When downgrading, your new rate will take effect at the next billing cycle.'
+    },
+    {
+      question: 'Do you offer discounts for multiple advisors in the same firm?',
+      answer: 'Yes, our Enterprise plans are specifically designed for firms with multiple advisors. These plans offer volume discounts and additional features to help manage team collaboration. Contact our sales team for custom pricing based on your firm's specific needs.'
+    },
+    {
+      question: 'Is there a free trial for advisor plans?',
+      answer: 'Yes, we offer a 14-day free trial for all advisor plans. You can test out the features and see if AdvisorWiz is the right fit for your practice before committing to a subscription.'
+    },
+    {
+      question: 'How do I cancel my subscription?',
+      answer: 'You can cancel your subscription at any time from your account settings. If you cancel, you'll continue to have access to your paid features until the end of your billing period. We don't offer refunds for partial months.'
     }
-  };
+  ];
 
   return (
-    <FAQAccordion 
-      faqs={getFaqsByUserType()} 
-      defaultValue="item-0"
-      type="single"
-      collapsible={true}
-    />
+    <Accordion type="single" collapsible className="w-full bg-white dark:bg-navy-800 rounded-lg overflow-hidden border border-slate-200 dark:border-navy-700">
+      {faqs.map((faq, index) => (
+        <AccordionItem key={index} value={`item-${index}`} className="border-b border-slate-200 dark:border-navy-700 last:border-0">
+          <AccordionTrigger className="px-6 py-4 hover:bg-slate-50 dark:hover:bg-navy-700 text-left font-medium text-navy-900 dark:text-white">
+            {faq.question}
+          </AccordionTrigger>
+          <AccordionContent className="px-6 pb-4 pt-0 text-slate-600 dark:text-slate-300">
+            {faq.answer}
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
   );
 };
 

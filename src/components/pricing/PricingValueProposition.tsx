@@ -6,58 +6,28 @@ interface PricingValuePropositionProps {
 }
 
 const PricingValueProposition: React.FC<PricingValuePropositionProps> = ({ userType }) => {
-  const getValueProps = () => {
-    switch (userType) {
-      case 'consumer':
-        return {
-          title: "Always Free for Consumers",
-          description: "We connect you with qualified financial advisors at no cost. Our mission is to help everyone find the right financial guidance.",
-          bulletPoints: [
-            "No hidden fees or charges ever",
-            "Access to vetted financial professionals",
-            "Personalized matching based on your needs",
-            "Secure communication platform"
-          ]
-        };
-      case 'advisor':
-        return {
-          title: "Grow Your Practice",
-          description: "Connect with pre-qualified prospects who match your expertise and ideal client profile.",
-          bulletPoints: [
-            "Higher conversion rates with matched prospects",
-            "Average 15+ qualified leads per month",
-            "92% of advisors report positive ROI within 3 months",
-            "Detailed analytics on client engagement"
-          ]
-        };
-      case 'enterprise':
-        return {
-          title: "Scale Your Firm",
-          description: "Enterprise solutions for financial firms looking to manage multiple advisors and expand their client base.",
-          bulletPoints: [
-            "Centralized management dashboard",
-            "Custom branding and white label options",
-            "Team performance analytics",
-            "Volume discounts for growing teams"
-          ]
-        };
-    }
-  };
-
-  const valueProps = getValueProps();
-
   return (
-    <div className={`bg-${userType === 'consumer' ? 'teal' : userType === 'advisor' ? 'navy' : 'purple'}-50 rounded-xl p-6 mb-8`}>
-      <h3 className="text-xl font-bold mb-2">{valueProps.title}</h3>
-      <p className="text-slate-600 mb-4">{valueProps.description}</p>
-      <ul className="space-y-2">
-        {valueProps.bulletPoints.map((point, index) => (
-          <li key={index} className="flex items-start">
-            <span className={`text-${userType === 'consumer' ? 'teal' : userType === 'advisor' ? 'navy' : 'purple'}-500 font-bold mr-2`}>✓</span>
-            <span>{point}</span>
-          </li>
-        ))}
-      </ul>
+    <div className="max-w-3xl mx-auto mb-16 text-center">
+      {userType === 'consumer' && (
+        <p className="text-lg text-slate-600 dark:text-slate-300">
+          AdvisorWiz is completely <b>free</b> for consumers. We believe everyone deserves access to quality 
+          financial guidance without barriers. Find your perfect advisor match today.
+        </p>
+      )}
+      
+      {userType === 'advisor' && (
+        <p className="text-lg text-slate-600 dark:text-slate-300">
+          Build your practice with our suite of advisor tools. Get matched with qualified leads, 
+          streamline your workflow, and grow your business.
+        </p>
+      )}
+      
+      {userType === 'enterprise' && (
+        <p className="text-lg text-slate-600 dark:text-slate-300">
+          Enterprise solutions designed for advisory firms of all sizes. Manage multiple advisors, 
+          access advanced analytics, and leverage our platform to scale your business.
+        </p>
+      )}
     </div>
   );
 };

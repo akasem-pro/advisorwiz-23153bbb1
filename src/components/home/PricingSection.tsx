@@ -69,13 +69,13 @@ const pricingTiers: PricingTier[] = [
 
 const PricingSection: React.FC = () => {
   return (
-    <section className="py-16 bg-white" aria-labelledby="pricing-heading">
+    <section className="py-16 bg-white dark:bg-navy-900" aria-labelledby="pricing-heading">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 id="pricing-heading" className="text-3xl font-serif font-bold text-navy-900 mb-4">
+          <h2 id="pricing-heading" className="text-3xl font-serif font-bold text-navy-900 dark:text-white mb-4">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
             Choose the plan that's right for your needs. Free for consumers, flexible options for advisors and firms.
           </p>
         </div>
@@ -87,8 +87,8 @@ const PricingSection: React.FC = () => {
               className={`rounded-xl overflow-hidden border ${
                 tier.popular 
                   ? 'border-teal-500 shadow-lg relative' 
-                  : 'border-slate-200 shadow-sm'
-              }`}
+                  : 'border-slate-200 dark:border-navy-700 shadow-sm'
+              } bg-white dark:bg-navy-800`}
             >
               {tier.popular && (
                 <div className="bg-teal-500 text-white text-xs font-bold px-4 py-1 absolute top-0 right-0 rounded-bl-lg">
@@ -96,21 +96,21 @@ const PricingSection: React.FC = () => {
                 </div>
               )}
               <div className="p-6 md:p-8">
-                <h3 className="text-xl font-bold text-navy-900 mb-2">{tier.name}</h3>
+                <h3 className="text-xl font-bold text-navy-900 dark:text-white mb-2">{tier.name}</h3>
                 <div className="flex items-baseline mb-4">
-                  <span className="text-3xl font-bold text-navy-900">{tier.price}</span>
+                  <span className="text-3xl font-bold text-navy-900 dark:text-white">{tier.price}</span>
                   {tier.price !== 'Free' && tier.price !== 'Custom' && (
-                    <span className="text-slate-600 ml-1">/month</span>
+                    <span className="text-slate-600 dark:text-slate-400 ml-1">/month</span>
                   )}
                 </div>
-                <p className="text-slate-600 mb-6">{tier.description}</p>
-                <p className="text-sm text-slate-500 italic mb-6">For {tier.audience}</p>
+                <p className="text-slate-600 dark:text-slate-300 mb-6">{tier.description}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 italic mb-6">For {tier.audience}</p>
                 
                 <ul className="space-y-3 mb-8">
                   {tier.features.map((feature, index) => (
                     <li key={index} className="flex items-start">
                       <Check className="w-5 h-5 text-teal-500 mt-0.5 mr-3 flex-shrink-0" aria-hidden="true" />
-                      <span className="text-slate-700">{feature}</span>
+                      <span className="text-slate-700 dark:text-slate-300">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -120,7 +120,7 @@ const PricingSection: React.FC = () => {
                   className={`w-full justify-center ${
                     tier.popular 
                       ? 'bg-teal-600 hover:bg-teal-700 text-white' 
-                      : 'bg-navy-700 hover:bg-navy-800'
+                      : 'bg-navy-700 hover:bg-navy-800 dark:bg-navy-600 dark:hover:bg-navy-700'
                   }`}
                 >
                   <Link to={tier.id === 'firms' ? '/contact' : '/onboarding'}>

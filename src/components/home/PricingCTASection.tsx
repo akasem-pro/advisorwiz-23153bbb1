@@ -6,7 +6,7 @@ import { Button } from '../ui/button';
 
 const PricingCTASection: React.FC = () => {
   return (
-    <section className="py-12 bg-slate-50 dark:bg-navy-950" aria-labelledby="pricing-cta-heading">
+    <section className="py-12 bg-slate-50 dark:bg-navy-900" aria-labelledby="pricing-cta-heading">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto">
           <h2 id="pricing-cta-heading" className="text-3xl font-serif font-bold text-navy-900 dark:text-white mb-4">

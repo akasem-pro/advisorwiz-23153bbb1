@@ -34,7 +34,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
   const [billingPeriod, setBillingPeriod] = React.useState<'monthly' | 'annually'>('annually');
 
   return (
-    <div className={`relative rounded-xl p-6 ${recommended ? 'border-2 border-teal-500' : 'border border-slate-200'} bg-white shadow-sm transition-all hover:shadow-md`}>
+    <div className={`relative rounded-xl p-6 ${recommended ? 'border-2 border-teal-500' : 'border border-slate-200 dark:border-navy-600'} bg-white dark:bg-navy-800 shadow-sm transition-all hover:shadow-md`}>
       {recommended && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-teal-500 text-white text-sm font-medium rounded-full flex items-center gap-1">
           <Star className="h-4 w-4" />
@@ -42,15 +42,15 @@ const PlanCard: React.FC<PlanCardProps> = ({
         </div>
       )}
       
-      <h3 className={`text-xl font-bold mt-${recommended ? '4' : '0'}`}>{name}</h3>
-      <p className="text-slate-500 mt-2 h-12">{description}</p>
+      <h3 className={`text-xl font-bold mt-${recommended ? '4' : '0'} dark:text-white`}>{name}</h3>
+      <p className="text-slate-500 dark:text-slate-300 mt-2 h-12">{description}</p>
       
       <div className="flex gap-2 mt-4 mb-4">
         <Button
           variant={billingPeriod === 'monthly' ? 'default' : 'outline'}
           size="sm"
           onClick={() => setBillingPeriod('monthly')}
-          className={billingPeriod === 'monthly' ? 'bg-navy-800 hover:bg-navy-900' : ''}
+          className={billingPeriod === 'monthly' ? 'bg-navy-800 hover:bg-navy-900 dark:bg-navy-600 dark:hover:bg-navy-700' : 'dark:text-slate-200 dark:border-slate-600'}
         >
           Monthly
         </Button>
@@ -58,7 +58,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
           variant={billingPeriod === 'annually' ? 'default' : 'outline'}
           size="sm"
           onClick={() => setBillingPeriod('annually')}
-          className={billingPeriod === 'annually' ? 'bg-navy-800 hover:bg-navy-900' : ''}
+          className={billingPeriod === 'annually' ? 'bg-navy-800 hover:bg-navy-900 dark:bg-navy-600 dark:hover:bg-navy-700' : 'dark:text-slate-200 dark:border-slate-600'}
         >
           Annually
         </Button>
@@ -72,14 +72,14 @@ const PlanCard: React.FC<PlanCardProps> = ({
       
       {advisorCount && (
         <div className="mb-4 mt-2">
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+          <Badge variant="outline" className="bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700">
             {advisorCount}
           </Badge>
         </div>
       )}
       
-      <div className="border-t border-slate-200 my-6 pt-6">
-        <p className="font-medium mb-4">Key Features</p>
+      <div className="border-t border-slate-200 dark:border-navy-600 my-6 pt-6">
+        <p className="font-medium mb-4 dark:text-white">Key Features</p>
         <div className="space-y-2">
           {features.map((feature, index) => (
             <FeatureItem key={index} included={true} text={feature} />
@@ -88,7 +88,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </div>
       
       <Button 
-        className={`w-full ${recommended ? 'bg-teal-600 hover:bg-teal-700' : 'bg-navy-800 hover:bg-navy-900'}`}
+        className={`w-full ${recommended ? 'bg-teal-600 hover:bg-teal-700' : 'bg-navy-800 hover:bg-navy-900 dark:bg-navy-600 dark:hover:bg-navy-700'}`}
         onClick={() => navigate('/onboarding')}
       >
         {ctaText} <ArrowRight className="ml-2 h-4 w-4" />
