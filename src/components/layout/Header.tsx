@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import NavigationMenu from './NavigationMenu';
-import Logo from './Logo'; // Fixed import path from '../ui/Logo' to './Logo'
+import Logo from './Logo';
 import { trackEvent } from '../../utils/tagManager';
 
 interface HeaderProps {
@@ -40,11 +40,11 @@ const Header: React.FC<HeaderProps> = ({ transparent = false }) => {
   
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'For Advisors', path: '/for-advisors' },
-    { name: 'For Firms', path: '/for-firms' },
-    { name: 'For Consumers', path: '/for-consumers' },
+    { name: 'Advisors', path: '/for-advisors' },
+    { name: 'Firms', path: '/for-firms' },
+    { name: 'Consumers', path: '/for-consumers' },
     { name: 'Pricing', path: '/pricing' },
-    { name: 'Blog', path: '/blog' }, // Added Blog link
+    { name: 'Blog', path: '/blog' },
     { name: 'Contact', path: '/contact' },
   ];
   
