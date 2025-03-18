@@ -108,6 +108,7 @@
   
   p {
     margin-bottom: 1rem;
+    @apply text-slate-700 dark:text-slate-300;
   }
   
   input, textarea, select, button {
@@ -165,7 +166,7 @@
   }
   
   .section-description {
-    @apply text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto;
+    @apply text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto;
   }
   
   /* Mobile-specific components */

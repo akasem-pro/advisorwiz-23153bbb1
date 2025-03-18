@@ -7,7 +7,7 @@ const CTASection: React.FC = () => {
   const navigate = useNavigate();
   
   return (
-    <section className="py-12 bg-navy-800 text-white">
+    <section className="py-12 bg-navy-800 dark:bg-[#1A1F2C] text-white">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-serif font-bold mb-6 text-white">
           Ready to Transform Your Advisory Firm?
@@ -25,7 +25,7 @@ const CTASection: React.FC = () => {
           </button>
           <Link 
             to="/for-advisors" 
-            className="btn-outline-white inline-flex items-center"
+            className="btn-outline-white inline-flex items-center border border-white text-white hover:bg-white/10 py-3 px-6 rounded-lg transition-all"
           >
             For Individual Advisors
           </Link>

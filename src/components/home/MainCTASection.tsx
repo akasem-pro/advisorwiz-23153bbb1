@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react';
 
 const MainCTASection: React.FC = () => {
   return (
-    <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-navy-800 to-navy-900 text-white" aria-labelledby="cta-heading">
+    <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-navy-800 to-navy-900 dark:from-[#1A1F2C] dark:to-[#17213c] text-white" aria-labelledby="cta-heading">
       <div className="container mx-auto text-center max-w-3xl">
         <h2 id="cta-heading" className="text-3xl md:text-4xl font-serif font-bold text-white">
           Ready to Find Your Financial Advisor?
