@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import Logo from './Logo';
 import NavigationMenu from './NavigationMenu';
 import MobileMenu from './MobileMenu';
-import { Menu, X } from 'lucide-react';
 import { useIsMobile } from '../../hooks/use-mobile';
 import { useUser } from '../../context/UserContext';
 
