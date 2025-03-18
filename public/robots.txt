@@ -49,7 +49,7 @@ Crawl-delay: 1
 # Archive.org Bot
 User-agent: ia_archiver
 Allow: /
-Crawl-delay: 2
+Crawl-delay: 1
 
 # Sitemap Location
 Sitemap: https://advisorwiz.com/sitemap.xml
