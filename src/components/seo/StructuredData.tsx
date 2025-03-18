@@ -6,6 +6,10 @@ interface StructuredDataProps {
   data: Record<string, any> | Array<Record<string, any>>;
 }
 
+/**
+ * Component for adding structured data (schema.org) to the page
+ * Optimized for latest Google structured data guidelines
+ */
 const StructuredData: React.FC<StructuredDataProps> = ({ data }) => {
   // Handle both single schema object and array of schema objects
   const formatData = (dataObj: Record<string, any> | Array<Record<string, any>>) => {
@@ -19,9 +23,7 @@ const StructuredData: React.FC<StructuredDataProps> = ({ data }) => {
         return item;
       });
       
-      // For multiple schemas, we now have two options:
-      // 1. Return an array of JSON-LD script tags (older approach)
-      // 2. Use a single JSON-LD script with an array (newer approach, preferred by Google)
+      // For multiple schemas, we use a single JSON-LD script with an array (preferred by Google)
       return JSON.stringify(processedData);
     } else {
       // Process single object
