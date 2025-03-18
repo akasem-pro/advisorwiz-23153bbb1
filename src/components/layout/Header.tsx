@@ -24,19 +24,43 @@ const Header = () => {
     return '/sign-in';
   };
   
-  // Define navigation links for mobile menu
+  // Define navigation links with improved user journey focus
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'Consumer', path: '/for-consumers' },
-    { name: 'Advisors', path: '/for-advisors' },
-    { name: 'Firms', path: '/for-firms' },
+    { 
+      name: 'Consumer', 
+      path: '/for-consumers',
+      subLinks: [
+        { name: 'How It Works', path: '/for-consumers#how-it-works' },
+        { name: 'Find an Advisor', path: '/matches' },
+        { name: 'Success Stories', path: '/for-consumers#testimonials' },
+      ]
+    },
+    { 
+      name: 'Advisors', 
+      path: '/for-advisors',
+      subLinks: [
+        { name: 'Benefits', path: '/for-advisors#benefits' },
+        { name: 'Join as Advisor', path: '/advisor-profile' },
+        { name: 'Success Stories', path: '/for-advisors#testimonials' },
+      ]
+    },
+    { 
+      name: 'Firms', 
+      path: '/for-firms',
+      subLinks: [
+        { name: 'Enterprise Solutions', path: '/for-firms#solutions' },
+        { name: 'Register Your Firm', path: '/firm-profile' },
+        { name: 'Case Studies', path: '/for-firms#case-studies' },
+      ]
+    },
     { name: 'Pricing', path: '/pricing' },
+    { name: 'Resources', path: '/resources' },
     { name: 'Contact', path: '/contact' }
   ];
 
   return (
     <header className="fixed w-full bg-white shadow-sm z-50">
-      
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between py-3">
           <div className="flex items-center">
