@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import NavigationMenu from './NavigationMenu';
-import Logo from '../ui/Logo';
+import Logo from './Logo'; // Fixed import path from '../ui/Logo' to './Logo'
 import { trackEvent } from '../../utils/tagManager';
 
 interface HeaderProps {
