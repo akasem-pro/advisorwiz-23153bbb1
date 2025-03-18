@@ -1,4 +1,3 @@
-
 import React, { ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -20,7 +19,7 @@ import { useUser } from '../../context/UserContext';
 import { Button } from '../ui/button';
 import AnimatedRoute from '../ui/AnimatedRoute';
 import Logo from '../layout/Logo';
-import { useMobile } from '../../hooks/use-mobile';
+import { useIsMobile } from '../../hooks/use-mobile';
 import MobileNavbar from '../layout/MobileNavbar';
 
 interface DashboardLayoutProps {
@@ -37,7 +36,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { userType, isAuthenticated, setIsAuthenticated, setUserType } = useUser();
   const navigate = useNavigate();
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   if (!isAuthenticated) {
     navigate('/sign-in');
@@ -50,7 +49,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     navigate('/');
   };
 
-  // Define navigation items based on user type
   const getNavigationItems = () => {
     const commonItems = [
       { label: 'Dashboard', icon: Home, link: getDashboardLink() },
@@ -93,7 +91,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   const navigationItems = getNavigationItems();
 
-  // If on mobile, use a simplified layout with the mobile navbar
   if (isMobile) {
     return (
       <AnimatedRoute animation="fade">
@@ -136,14 +133,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <AnimatedRoute animation="fade">
       <div className="min-h-screen bg-slate-50 flex">
-        {/* Sidebar */}
         <aside 
           className={`bg-navy-900 text-white h-screen fixed transition-all duration-300 ease-in-out z-30 ${
             sidebarCollapsed ? 'w-20' : 'w-64'
           }`}
         >
           <div className="p-4 flex items-center justify-between border-b border-navy-800">
-            {!sidebarCollapsed && <Logo isWhite />}
+            {!sidebarCollapsed && <Logo />}
             <Button 
               variant="ghost" 
               size="icon" 
@@ -189,13 +185,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </div>
         </aside>
 
-        {/* Main content */}
         <div 
           className={`transition-all duration-300 ease-in-out ${
             sidebarCollapsed ? 'ml-20' : 'ml-64'
           } flex-1`}
         >
-          {/* Top navigation */}
           <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 sticky top-0 z-20">
             <div>
               <h1 className="text-lg font-medium text-navy-900">{title}</h1>
@@ -247,7 +241,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
           </header>
           
-          {/* Main content */}
           <main className="p-6">
             {children}
           </main>

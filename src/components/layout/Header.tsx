@@ -1,15 +1,16 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
 import NavigationMenu from './NavigationMenu';
 import MobileMenu from './MobileMenu';
 import { Menu, X } from 'lucide-react';
-import { useMobile } from '../../hooks/use-mobile';
+import { useIsMobile } from '../../hooks/use-mobile';
 import { useUser } from '../../context/UserContext';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -24,6 +25,14 @@ const Header = () => {
     return '/sign-in';
   };
   
+  // Define navigation links for mobile menu
+  const navLinks = [
+    { name: 'Home', path: '/' },
+    { name: 'For Advisors', path: '/for-advisors' },
+    { name: 'For Firms', path: '/for-firms' },
+    { name: 'Pricing', path: '/pricing' },
+    { name: 'Contact', path: '/contact' }
+  ];
 
   return (
     <header className="fixed w-full bg-white shadow-sm z-50">
@@ -32,11 +41,11 @@ const Header = () => {
         <div className="flex items-center justify-between py-3">
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <Logo className="h-8 md:h-10" />
+              <Logo />
             </Link>
             
             {!isMobile && (
-              <NavigationMenu className="ml-8" />
+              <NavigationMenu links={navLinks} />
             )}
           </div>
           
@@ -66,19 +75,18 @@ const Header = () => {
             )}
             
             {isMobile && (
-              <button
-                onClick={toggleMobileMenu}
-                className="p-2 text-navy-800 focus:outline-none"
-              >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
+              <MobileMenu
+                isMenuOpen={mobileMenuOpen}
+                toggleMenu={toggleMobileMenu}
+                links={navLinks}
+                isAuthenticated={isAuthenticated}
+                showGetStarted={!isAuthenticated}
+                onLogout={() => {}}
+              />
             )}
           </div>
         </div>
       </div>
-      
-      {/* Mobile menu */}
-      {isMobile && mobileMenuOpen && <MobileMenu />}
     </header>
   );
 };
