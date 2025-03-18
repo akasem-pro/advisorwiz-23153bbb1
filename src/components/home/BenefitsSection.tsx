@@ -56,7 +56,7 @@ const BenefitsSection: React.FC = () => {
           <h2 id="benefits-heading" className="mt-2 text-3xl md:text-4xl font-serif font-bold text-navy-900 dark:text-white">
             Why Choose AdvisorWiz
           </h2>
-          <p className="mt-4 text-lg text-slate-600 dark:text-slate-300">
+          <p className="mt-4 text-lg text-slate-700 dark:text-slate-300">
             Our platform provides unique advantages for consumers, financial advisors, and firms.
           </p>
         </div>

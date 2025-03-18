@@ -29,8 +29,10 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     // Update the HTML class when theme changes
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
     }
     
     // Save to localStorage

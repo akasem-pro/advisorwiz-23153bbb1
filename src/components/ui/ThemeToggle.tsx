@@ -20,13 +20,13 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({
   if (variant === 'switch') {
     return (
       <div className={`flex items-center gap-2 ${className}`}>
-        <Sun className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+        <Sun className="h-4 w-4 text-navy-500 dark:text-slate-300" />
         <Switch 
           checked={theme === 'dark'}
           onCheckedChange={toggleTheme}
           aria-label="Toggle theme"
         />
-        <Moon className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+        <Moon className="h-4 w-4 text-navy-500 dark:text-slate-300" />
       </div>
     );
   }
@@ -47,7 +47,7 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({
             <span className="sr-only">Toggle theme</span>
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent className="bg-white dark:bg-navy-800 text-navy-900 dark:text-white">
           <p>{theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}</p>
         </TooltipContent>
       </Tooltip>
