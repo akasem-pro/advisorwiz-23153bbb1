@@ -23,19 +23,19 @@ const HeroSection: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
               <Link to="/for-consumers" className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow flex flex-col items-center text-center">
                 <User className="w-10 h-10 text-teal-600 mb-2" />
-                <h3 className="font-medium text-navy-800">For Consumers</h3>
+                <h3 className="font-medium text-navy-800">Consumers</h3>
                 <p className="text-sm text-slate-600 mt-1">Find your perfect financial match</p>
               </Link>
               
               <Link to="/for-advisors" className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow flex flex-col items-center text-center">
                 <Briefcase className="w-10 h-10 text-teal-600 mb-2" />
-                <h3 className="font-medium text-navy-800">For Advisors</h3>
+                <h3 className="font-medium text-navy-800">Advisors</h3>
                 <p className="text-sm text-slate-600 mt-1">Grow your client base</p>
               </Link>
               
               <Link to="/for-firms" className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow flex flex-col items-center text-center">
                 <Users className="w-10 h-10 text-teal-600 mb-2" />
-                <h3 className="font-medium text-navy-800">For Firms</h3>
+                <h3 className="font-medium text-navy-800">Firms</h3>
                 <p className="text-sm text-slate-600 mt-1">Scale your practice</p>
               </Link>
             </div>
