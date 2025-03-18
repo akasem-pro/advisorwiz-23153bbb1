@@ -23,7 +23,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ links, showGetStarted =
   const location = useLocation();
 
   return (
-    <nav className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-6 md:items-center">
+    <nav className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:ml-8 md:space-x-6 md:items-center">
       {links.map((link) => (
         <div key={link.path} className="relative group">
           <Link

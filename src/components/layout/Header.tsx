@@ -27,8 +27,9 @@ const Header = () => {
   // Define navigation links for mobile menu
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'For Advisors', path: '/for-advisors' },
-    { name: 'For Firms', path: '/for-firms' },
+    { name: 'Consumer', path: '/for-consumers' },
+    { name: 'Advisors', path: '/for-advisors' },
+    { name: 'Firms', path: '/for-firms' },
     { name: 'Pricing', path: '/pricing' },
     { name: 'Contact', path: '/contact' }
   ];
@@ -44,7 +45,9 @@ const Header = () => {
             </Link>
             
             {!isMobile && (
-              <NavigationMenu links={navLinks} />
+              <NavigationMenu 
+                links={navLinks}
+              />
             )}
           </div>
           
