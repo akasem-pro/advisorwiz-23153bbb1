@@ -5,7 +5,7 @@ import { Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from 'luc
 
 const AppFooter: React.FC = () => {
   return (
-    <footer className="bg-navy-900 text-white pt-16 pb-8">
+    <footer className="bg-navy-900 dark:bg-navy-950 text-white pt-16 pb-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="space-y-4">

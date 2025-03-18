@@ -1,7 +1,7 @@
-
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/toaster';
 import { Helmet } from 'react-helmet';
@@ -128,68 +128,69 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
-        <Helmet>
-          <html lang="en" />
-          <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-          <meta name="theme-color" content="#1E3A8A" />
-          <link rel="icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
-          <link rel="apple-touch-icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
-          
-          {/* Global metadata */}
-          <meta name="application-name" content="AdvisorWiz" />
-          <meta name="apple-mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-          <meta name="format-detection" content="telephone=no" />
-          <meta name="mobile-web-app-capable" content="yes" />
-        </Helmet>
-        <Preload 
-          resources={criticalResources}
-          preconnect={preconnectDomains}
-          dnsPrefetch={dnsPrefetchDomains}
-        />
-        <StructuredData data={globalStructuredData} />
-        <Router>
-          {/* PageTracker component to track route changes */}
-          <PageTracker />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/advisor-profile" element={<AdvisorProfile />} />
-            <Route path="/consumer-profile" element={<ConsumerProfile />} />
-            <Route path="/matches" element={<MatchingInterface />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/chat/:id" element={<Chat />} />
-            <Route path="/schedule" element={<Schedule />} />
-            <Route path="/firm-profile" element={<FirmProfile />} />
-            <Route path="/firm/:id" element={<FirmProfile />} />
-            <Route path="/leads" element={<LeadManagementPage />} />
-            <Route path="/for-firms" element={<ForFirms />} />
-            <Route path="/for-advisors" element={<ForAdvisors />} />
-            <Route path="/for-consumers" element={<ForConsumers />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/contact" element={<ContactUs />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<Blog />} />
-            <Route path="/careers" element={<Careers />} />
-            <Route path="/sitemap" element={<Sitemap />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/disclaimer" element={<Privacy />} /> {/* Redirecting disclaimer to privacy for now */}
-            <Route path="/cookies" element={<Privacy />} /> {/* Redirecting cookies to privacy for now */}
+        <ThemeProvider>
+          <Helmet>
+            <html lang="en" />
+            <meta charSet="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+            <meta name="theme-color" content="#1E3A8A" />
+            <link rel="icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
+            <link rel="apple-touch-icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
             
-            {/* New routes for Sign-In and Dashboards */}
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/consumer-dashboard" element={<ConsumerDashboard />} />
-            <Route path="/advisor-dashboard" element={<AdvisorDashboard />} />
-            <Route path="/firm-dashboard" element={<FirmDashboard />} />
-            <Route path="/settings" element={<Settings />} />
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
-        <Toaster />
+            {/* Global metadata */}
+            <meta name="application-name" content="AdvisorWiz" />
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+            <meta name="format-detection" content="telephone=no" />
+            <meta name="mobile-web-app-capable" content="yes" />
+          </Helmet>
+          <Preload 
+            resources={criticalResources}
+            preconnect={preconnectDomains}
+            dnsPrefetch={dnsPrefetchDomains}
+          />
+          <StructuredData data={globalStructuredData} />
+          <Router>
+            {/* PageTracker component to track route changes */}
+            <PageTracker />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/advisor-profile" element={<AdvisorProfile />} />
+              <Route path="/consumer-profile" element={<ConsumerProfile />} />
+              <Route path="/matches" element={<MatchingInterface />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/chat/:id" element={<Chat />} />
+              <Route path="/schedule" element={<Schedule />} />
+              <Route path="/firm-profile" element={<FirmProfile />} />
+              <Route path="/firm/:id" element={<FirmProfile />} />
+              <Route path="/leads" element={<LeadManagementPage />} />
+              <Route path="/for-firms" element={<ForFirms />} />
+              <Route path="/for-advisors" element={<ForAdvisors />} />
+              <Route path="/for-consumers" element={<ForConsumers />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/contact" element={<ContactUs />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<Blog />} />
+              <Route path="/careers" element={<Careers />} />
+              <Route path="/sitemap" element={<Sitemap />} />
+              <Route path="/resources" element={<Resources />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/disclaimer" element={<Privacy />} /> {/* Redirecting disclaimer to privacy for now */}
+              <Route path="/cookies" element={<Privacy />} /> {/* Redirecting cookies to privacy for now */}
+              
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/consumer-dashboard" element={<ConsumerDashboard />} />
+              <Route path="/advisor-dashboard" element={<AdvisorDashboard />} />
+              <Route path="/firm-dashboard" element={<FirmDashboard />} />
+              <Route path="/settings" element={<Settings />} />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Router>
+          <Toaster />
+        </ThemeProvider>
       </UserProvider>
     </QueryClientProvider>
   );
