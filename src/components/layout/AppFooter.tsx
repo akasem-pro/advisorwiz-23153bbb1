@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
@@ -46,7 +47,7 @@ const AppFooter: React.FC = () => {
           </div>
           
           <div>
-            <h3 className="text-navy-900 font-serif font-semibold mb-4">For Advisors</h3>
+            <h3 className="text-navy-900 font-serif font-semibold mb-4">Advisors</h3>
             <ul className="space-y-2">
               <li><Link to="/for-advisors" className="text-slate-600 text-sm hover:text-teal-600">Join Network</Link></li>
               <li><Link to="/for-firms" className="text-slate-600 text-sm hover:text-teal-600">Firm Solutions</Link></li>

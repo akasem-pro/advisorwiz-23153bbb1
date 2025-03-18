@@ -46,12 +46,12 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/for-advisors" className="text-slate-300 hover:text-teal-400 transition-colors">
-                  For Advisors
+                  Advisors
                 </Link>
               </li>
               <li>
                 <Link to="/for-consumers" className="text-slate-300 hover:text-teal-400 transition-colors">
-                  For Consumers
+                  Consumers
                 </Link>
               </li>
               <li>
