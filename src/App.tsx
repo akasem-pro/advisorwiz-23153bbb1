@@ -33,6 +33,7 @@ import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import LeadManagementPage from './pages/LeadManagementPage';
 import Blog from './pages/Blog';
+import Careers from './pages/Careers';
 
 import './App.css';
 
@@ -161,6 +162,7 @@ function App() {
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<Blog />} />
+            <Route path="/careers" element={<Careers />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/disclaimer" element={<Privacy />} /> {/* Redirecting disclaimer to privacy for now */}
