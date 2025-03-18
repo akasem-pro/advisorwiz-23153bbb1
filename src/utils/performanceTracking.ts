@@ -1,6 +1,6 @@
 
 /**
- * Utility functions for tracking and improving web performance
+ * Advanced utility functions for tracking and improving web performance
  */
 
 // Track Core Web Vitals
@@ -32,6 +32,8 @@ const sendToAnalytics = (metric: { name: string; value: number; rating?: string;
       event_label: metric.name,
       value: Math.round(metric.value),
       non_interaction: true,
+      metric_id: metric.id,
+      metric_rating: metric.rating || 'unknown'
     });
   }
   
@@ -104,9 +106,46 @@ export const optimizeImagesForCWV = () => {
     document.querySelectorAll('img').forEach((img) => {
       if (!img.hasAttribute('loading') && !img.hasAttribute('fetchpriority')) {
         img.setAttribute('loading', 'lazy');
+        
+        // Add decoding async for better performance
+        if (!img.hasAttribute('decoding')) {
+          img.setAttribute('decoding', 'async');
+        }
       }
     });
   }
+  
+  // Add fetchpriority="high" to LCP image
+  const heroImages = document.querySelectorAll('.hero-image img, .primary-image img');
+  heroImages.forEach((img) => {
+    if (!img.hasAttribute('fetchpriority')) {
+      img.setAttribute('fetchpriority', 'high');
+      img.removeAttribute('loading'); // Don't lazy-load LCP images
+    }
+  });
+};
+
+// Implement resource hints
+export const implementResourceHints = () => {
+  const head = document.head;
+  
+  // Common domains to preconnect to
+  const preconnectDomains = [
+    'https://fonts.googleapis.com',
+    'https://fonts.gstatic.com',
+    'https://www.google-analytics.com'
+  ];
+  
+  // Add preconnect hints
+  preconnectDomains.forEach(domain => {
+    if (!document.querySelector(`link[rel="preconnect"][href="${domain}"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'preconnect';
+      link.href = domain;
+      link.crossOrigin = 'anonymous';
+      head.appendChild(link);
+    }
+  });
 };
 
 // Initialize performance optimizations
@@ -115,10 +154,17 @@ export const initPerformanceOptimizations = () => {
     // Track web vitals
     trackWebVitals();
     
-    // Setup lazy loading for images
+    // Setup optimizations when DOM is loaded
     window.addEventListener('DOMContentLoaded', () => {
       setupLazyLoading();
       optimizeCriticalRendering();
+      optimizeImagesForCWV();
+      implementResourceHints();
+    });
+    
+    // Add event listeners for client-side navigation
+    document.addEventListener('newpage', () => {
+      setupLazyLoading();
       optimizeImagesForCWV();
     });
   }

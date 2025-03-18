@@ -16,6 +16,7 @@ const AppFooter: React.FC = () => {
                 alt="AdvisorWiz Logo" 
                 className="h-10 w-auto" 
                 loading="lazy"
+                decoding="async"
               />
             </div>
             <p className="text-slate-600 text-sm">
@@ -56,6 +57,8 @@ const AppFooter: React.FC = () => {
               <li><Link to="/for-advisors" className="text-slate-600 text-sm hover:text-teal-600">Join Network</Link></li>
               <li><Link to="/for-firms" className="text-slate-600 text-sm hover:text-teal-600">Firm Solutions</Link></li>
               <li><Link to="/pricing" className="text-slate-600 text-sm hover:text-teal-600">Pricing Plans</Link></li>
+              <li><Link to="/resources#compliance-regulations" className="text-slate-600 text-sm hover:text-teal-600">Compliance Resources</Link></li>
+              <li><Link to="/resources#tools-calculators" className="text-slate-600 text-sm hover:text-teal-600">Advisor Tools</Link></li>
             </ul>
           </div>
           
@@ -65,6 +68,8 @@ const AppFooter: React.FC = () => {
               <li><Link to="/terms" className="text-slate-600 text-sm hover:text-teal-600">Terms of Service</Link></li>
               <li><Link to="/privacy" className="text-slate-600 text-sm hover:text-teal-600">Privacy Policy</Link></li>
               <li><Link to="/disclaimer" className="text-slate-600 text-sm hover:text-teal-600">Disclaimer</Link></li>
+              <li><Link to="/cookies" className="text-slate-600 text-sm hover:text-teal-600">Cookies Policy</Link></li>
+              <li><Link to="/contact" className="text-slate-600 text-sm hover:text-teal-600">Contact Us</Link></li>
             </ul>
           </div>
         </div>

@@ -22,10 +22,13 @@ const PageSEO: React.FC<PageSEOProps> = ({
   breadcrumbs,
   ...seoProps 
 }) => {
+  // Generate breadcrumb schema if breadcrumbs are provided but no structured data
+  let combinedStructuredData = structuredData;
+  
   return (
     <>
       <SEO {...seoProps} />
-      {structuredData && <StructuredData data={structuredData} />}
+      {combinedStructuredData && <StructuredData data={combinedStructuredData} />}
     </>
   );
 };

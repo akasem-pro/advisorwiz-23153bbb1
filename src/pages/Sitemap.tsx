@@ -4,8 +4,19 @@ import { Link } from 'react-router-dom';
 import AppLayout from '../components/layout/AppLayout';
 import PageSEO from '../components/seo/PageSEO';
 import { Button } from '../components/ui/button';
+import { generateBreadcrumbSchema } from '../utils/schemas';
 
 const Sitemap: React.FC = () => {
+  // Breadcrumbs for SEO
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://advisorwiz.com/' },
+    { name: 'Sitemap', url: 'https://advisorwiz.com/sitemap' }
+  ];
+
+  const structuredData = [
+    generateBreadcrumbSchema(breadcrumbs)
+  ];
+
   const siteCategories = [
     {
       title: 'Main Pages',
@@ -39,11 +50,19 @@ const Sitemap: React.FC = () => {
       ]
     },
     {
+      title: 'Resources',
+      links: [
+        { name: 'Financial Education', path: '/resources#financial-education' },
+        { name: 'Investment Insights', path: '/resources#investment-insights' },
+        { name: 'Tools & Calculators', path: '/resources#tools-calculators' },
+        { name: 'Compliance & Regulations', path: '/resources#compliance-regulations' },
+      ]
+    },
+    {
       title: 'Company',
       links: [
         { name: 'Blog', path: '/blog' },
         { name: 'Careers', path: '/careers' },
-        { name: 'Resources', path: '/resources' },
         { name: 'About Us', path: '/for-consumers' },
       ]
     },
@@ -61,12 +80,21 @@ const Sitemap: React.FC = () => {
   return (
     <AppLayout>
       <PageSEO
-        title="Sitemap"
-        description="Complete sitemap of AdvisorWiz - Find your way around our financial advisor matching platform."
+        title="Complete Website Sitemap | AdvisorWiz"
+        description="Navigate the AdvisorWiz financial advisor matching platform with our comprehensive sitemap. Find all sections and pages of our website organized for easy access."
+        keywords="sitemap, advisorwiz navigation, financial advisor website map, advisor matching platform site guide"
+        canonicalUrl="https://advisorwiz.com/sitemap"
+        structuredData={structuredData}
       />
       
       <div className="container mx-auto px-4 py-12">
-        <h1 className="text-3xl font-serif font-semibold text-navy-900 mb-8">Sitemap</h1>
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-serif font-semibold text-navy-900 mb-4">Sitemap</h1>
+          <p className="text-slate-600 mb-8">
+            Use this sitemap to navigate to any section of the AdvisorWiz platform. 
+            We've organized all our pages by category to help you find what you're looking for.
+          </p>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {siteCategories.map((category, index) => (

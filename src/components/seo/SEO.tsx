@@ -65,6 +65,7 @@ const SEO: React.FC<SEOProps> = ({
       {/* Article specific Open Graph tags */}
       {articlePublishedTime && <meta property="article:published_time" content={articlePublishedTime} />}
       {articleModifiedTime && <meta property="article:modified_time" content={articleModifiedTime} />}
+      {author && <meta property="article:author" content={author} />}
       
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -73,6 +74,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
       {twitterCreator && <meta name="twitter:creator" content={twitterCreator} />}
+      <meta name="twitter:site" content="@advisorwiz" />
       
       {/* Alternate language versions */}
       {alternateLanguages.map((lang) => (

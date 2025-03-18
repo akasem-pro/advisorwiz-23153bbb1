@@ -28,20 +28,22 @@ const Preload: React.FC<PreloadProps> = ({
       {/* Preload critical resources */}
       {resources.map((resource, index) => (
         <link 
-          key={`preload-${index}`} 
+          key={`preload-${index}-${resource.url}`} 
           rel="preload" 
           href={resource.url} 
           as={resource.as}
           type={resource.type}
           crossOrigin={resource.crossOrigin}
-          fetchPriority={resource.importance === 'high' ? 'high' : undefined}
+          // Note: React doesn't have a direct property for fetchpriority, 
+          // but we can use data attribute as a workaround that can be picked up by our performance utils
+          data-fetchpriority={resource.importance}
         />
       ))}
 
       {/* Preconnect to critical origins */}
       {preconnect.map((origin, index) => (
         <link 
-          key={`preconnect-${index}`} 
+          key={`preconnect-${index}-${origin}`} 
           rel="preconnect" 
           href={origin} 
           crossOrigin="anonymous" 
@@ -51,7 +53,7 @@ const Preload: React.FC<PreloadProps> = ({
       {/* Prefetch likely navigation */}
       {prefetch.map((url, index) => (
         <link 
-          key={`prefetch-${index}`} 
+          key={`prefetch-${index}-${url}`} 
           rel="prefetch" 
           href={url} 
           crossOrigin="anonymous"
@@ -61,7 +63,7 @@ const Preload: React.FC<PreloadProps> = ({
       {/* Prerender likely pages */}
       {prerender.map((url, index) => (
         <link 
-          key={`prerender-${index}`} 
+          key={`prerender-${index}-${url}`} 
           rel="prerender" 
           href={url} 
         />
@@ -70,7 +72,7 @@ const Preload: React.FC<PreloadProps> = ({
       {/* DNS prefetch */}
       {dnsPrefetch.map((domain, index) => (
         <link 
-          key={`dns-prefetch-${index}`} 
+          key={`dns-prefetch-${index}-${domain}`} 
           rel="dns-prefetch" 
           href={domain} 
         />

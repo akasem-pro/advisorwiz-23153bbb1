@@ -8,11 +8,15 @@ Allow: /$
 Allow: /for-advisors$
 Allow: /for-consumers$
 Allow: /for-firms$
+Allow: /resources$
 Allow: /pricing$
 Allow: /onboarding$
 Allow: /contact$
 
 # Secondary Pages
+Allow: /blog$
+Allow: /careers$
+Allow: /sitemap$
 Allow: /terms$
 Allow: /privacy$
 Allow: /disclaimer$
