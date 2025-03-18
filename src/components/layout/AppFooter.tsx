@@ -45,6 +45,7 @@ const AppFooter: React.FC = () => {
               <li><Link to="/pricing" className="text-slate-600 text-sm hover:text-teal-600">Pricing</Link></li>
               <li><Link to="/blog" className="text-slate-600 text-sm hover:text-teal-600">Blog</Link></li>
               <li><Link to="/careers" className="text-slate-600 text-sm hover:text-teal-600">Careers</Link></li>
+              <li><Link to="/sitemap" className="text-slate-600 text-sm hover:text-teal-600">Sitemap</Link></li>
             </ul>
           </div>
           
