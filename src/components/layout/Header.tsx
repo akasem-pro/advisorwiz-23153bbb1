@@ -11,6 +11,15 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   
+  // Navigation links configuration
+  const navigationLinks = [
+    { name: 'For Consumers', path: '/for-consumers' },
+    { name: 'For Advisors', path: '/for-advisors' },
+    { name: 'For Firms', path: '/for-firms' },
+    { name: 'Pricing', path: '/pricing' },
+    { name: 'Resources', path: '/resources' }
+  ];
+  
   // Close mobile menu when route changes
   useEffect(() => {
     setIsOpen(false);
@@ -41,7 +50,7 @@ const Header: React.FC = () => {
           </Link>
           
           <div className="hidden md:flex items-center space-x-1">
-            <NavigationMenu />
+            <NavigationMenu links={navigationLinks} />
             <ThemeToggle className="ml-2" />
             <Link 
               to="/sign-in" 
@@ -75,46 +84,16 @@ const Header: React.FC = () => {
           <div className="md:hidden mt-4 py-4 bg-white dark:bg-navy-900 rounded-lg shadow-lg">
             <nav>
               <ul className="space-y-2">
-                <li>
-                  <Link 
-                    to="/for-consumers" 
-                    className="block px-4 py-2 text-navy-700 dark:text-white hover:bg-slate-100 dark:hover:bg-navy-800 rounded-lg"
-                  >
-                    For Consumers
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/for-advisors" 
-                    className="block px-4 py-2 text-navy-700 dark:text-white hover:bg-slate-100 dark:hover:bg-navy-800 rounded-lg"
-                  >
-                    For Advisors
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/for-firms" 
-                    className="block px-4 py-2 text-navy-700 dark:text-white hover:bg-slate-100 dark:hover:bg-navy-800 rounded-lg"
-                  >
-                    For Firms
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/pricing" 
-                    className="block px-4 py-2 text-navy-700 dark:text-white hover:bg-slate-100 dark:hover:bg-navy-800 rounded-lg"
-                  >
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/resources" 
-                    className="block px-4 py-2 text-navy-700 dark:text-white hover:bg-slate-100 dark:hover:bg-navy-800 rounded-lg"
-                  >
-                    Resources
-                  </Link>
-                </li>
+                {navigationLinks.map((link) => (
+                  <li key={link.path}>
+                    <Link 
+                      to={link.path} 
+                      className="block px-4 py-2 text-navy-700 dark:text-white hover:bg-slate-100 dark:hover:bg-navy-800 rounded-lg"
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
                 <li>
                   <Link 
                     to="/sign-in" 
