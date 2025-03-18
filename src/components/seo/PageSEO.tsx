@@ -22,8 +22,29 @@ const PageSEO: React.FC<PageSEOProps> = ({
   breadcrumbs,
   ...seoProps 
 }) => {
-  // Generate breadcrumb schema if breadcrumbs are provided but no structured data
+  // Generate breadcrumb schema if breadcrumbs are provided
   let combinedStructuredData = structuredData;
+  
+  if (breadcrumbs && breadcrumbs.length > 0) {
+    const breadcrumbList = {
+      '@type': 'BreadcrumbList',
+      'itemListElement': breadcrumbs.map((item, index) => ({
+        '@type': 'ListItem',
+        'position': index + 1,
+        'name': item.name,
+        'item': `${seoProps.canonicalUrl || 'https://advisorwiz.com'}${item.url}`
+      }))
+    };
+    
+    // Combine with existing structured data if present
+    if (structuredData) {
+      combinedStructuredData = Array.isArray(structuredData) 
+        ? [...structuredData, breadcrumbList] 
+        : [structuredData, breadcrumbList];
+    } else {
+      combinedStructuredData = breadcrumbList;
+    }
+  }
   
   return (
     <>

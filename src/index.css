@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 @tailwind base;
@@ -51,15 +52,41 @@
     @apply bg-background text-foreground font-sans antialiased;
     overscroll-behavior-y: none;
     -webkit-overflow-scrolling: touch;
+    font-size: 16px;
+    line-height: 1.6;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif text-navy-900;
+    @apply font-serif text-navy-900 tracking-tight;
+    line-height: 1.3;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    margin-bottom: 1rem;
   }
   
   input, textarea, select, button {
     @apply font-sans;
     font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  a {
+    @apply text-navy-700 hover:text-navy-900 transition-colors;
   }
 }
 
@@ -86,6 +113,35 @@
   
   .btn-outline {
     @apply border border-navy-600 text-navy-600 hover:bg-navy-50 font-medium py-3 px-6 rounded-lg transition-all duration-200 active:scale-95 active:translate-y-0.5;
+  }
+  
+  /* Card styles refined for mature professionals */
+  .professional-card {
+    @apply bg-white rounded-lg p-6 shadow-md border border-slate-200 transition-all duration-300 hover:shadow-lg;
+  }
+  
+  .resource-card {
+    @apply bg-white rounded-lg overflow-hidden shadow-md border border-slate-200 transition-all duration-300 hover:shadow-lg hover:border-teal-200;
+  }
+  
+  .resource-card-image {
+    @apply w-full h-48 object-cover;
+  }
+  
+  .resource-card-content {
+    @apply p-5;
+  }
+  
+  .section-header {
+    @apply text-center mb-12;
+  }
+  
+  .section-title {
+    @apply text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4;
+  }
+  
+  .section-description {
+    @apply text-lg text-slate-600 max-w-3xl mx-auto;
   }
   
   /* Mobile-specific components */
@@ -151,6 +207,16 @@
   
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+  
+  /* Reading-focused utilities */
+  .readable-content {
+    @apply max-w-3xl mx-auto leading-relaxed;
+    font-size: 1.125rem;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
   }
 }
 
