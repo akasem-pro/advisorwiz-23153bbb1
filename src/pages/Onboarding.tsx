@@ -6,6 +6,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { ArrowRight, ArrowLeft, User, Briefcase, Building } from 'lucide-react';
 import { useUser } from '../context/UserContext';
+import PageSEO from '../components/seo/PageSEO';
 
 const Onboarding: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -36,9 +37,19 @@ const Onboarding: React.FC = () => {
     }
   };
 
+  const handleSignIn = () => {
+    navigate('/sign-in');
+  };
+
   return (
     <AnimatedRoute animation="fade">
       <div className="min-h-screen flex flex-col">
+        <PageSEO 
+          title="Get Started with AdvisorWiz | Find Your Financial Advisor Match"
+          description="Create your account and get matched with financial advisors that meet your specific needs. Sign up as a consumer, advisor, or financial firm."
+          canonicalUrl="https://advisorwiz.com/onboarding"
+        />
+        
         <Header />
         
         <main className="flex-grow pt-20">
@@ -151,7 +162,9 @@ const Onboarding: React.FC = () => {
                       <p className="text-slate-600 max-w-2xl mx-auto">
                         {selectedUserType === 'consumer'
                           ? 'Set up your account to start finding the perfect financial advisor.'
-                          : 'Set up your advisor account to connect with potential clients.'}
+                          : selectedUserType === 'advisor'
+                            ? 'Set up your advisor account to connect with potential clients.'
+                            : 'Set up your firm account to manage your advisor team and client relationships.'}
                       </p>
                     </div>
 
@@ -198,7 +211,7 @@ const Onboarding: React.FC = () => {
                               className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-slate-300 rounded"
                             />
                             <label htmlFor="terms" className="ml-2 block text-sm text-slate-600">
-                              I agree to the <a href="#" className="text-teal-600 hover:underline">Terms of Service</a> and <a href="#" className="text-teal-600 hover:underline">Privacy Policy</a>
+                              I agree to the <a href="/terms" className="text-teal-600 hover:underline">Terms of Service</a> and <a href="/privacy" className="text-teal-600 hover:underline">Privacy Policy</a>
                             </label>
                           </div>
                         </div>
@@ -217,7 +230,14 @@ const Onboarding: React.FC = () => {
                       Back
                     </button>
                   ) : (
-                    <div></div>
+                    <div>
+                      <button 
+                        onClick={handleSignIn}
+                        className="text-navy-700 hover:text-navy-900 transition-colors"
+                      >
+                        Already have an account? Sign in
+                      </button>
+                    </div>
                   )}
 
                   <button

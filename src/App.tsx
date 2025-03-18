@@ -37,6 +37,13 @@ import Careers from './pages/Careers';
 import Sitemap from './pages/Sitemap';
 import Resources from './pages/Resources';
 
+// New pages for Sign-In and Dashboards
+import SignIn from './pages/SignIn';
+import ConsumerDashboard from './pages/ConsumerDashboard';
+import AdvisorDashboard from './pages/AdvisorDashboard';
+import FirmDashboard from './pages/FirmDashboard';
+import Settings from './pages/Settings';
+
 import './App.css';
 
 // Configure React Query for performance
@@ -171,6 +178,14 @@ function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/disclaimer" element={<Privacy />} /> {/* Redirecting disclaimer to privacy for now */}
             <Route path="/cookies" element={<Privacy />} /> {/* Redirecting cookies to privacy for now */}
+            
+            {/* New routes for Sign-In and Dashboards */}
+            <Route path="/sign-in" element={<SignIn />} />
+            <Route path="/consumer-dashboard" element={<ConsumerDashboard />} />
+            <Route path="/advisor-dashboard" element={<AdvisorDashboard />} />
+            <Route path="/firm-dashboard" element={<FirmDashboard />} />
+            <Route path="/settings" element={<Settings />} />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
