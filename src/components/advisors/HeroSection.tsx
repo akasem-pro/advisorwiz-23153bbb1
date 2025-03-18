@@ -30,7 +30,7 @@ const HeroSection: React.FC = () => {
           
           <div className="rounded-xl overflow-hidden shadow-xl">
             <img 
-              src="https://images.unsplash.com/photo-1604594849809-dfedbc827105" 
+              src="https://images.unsplash.com/photo-1573164574511-73c773193279" 
               alt="Financial advisor discussing investment strategy with clients" 
               className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-500"
               width="600"

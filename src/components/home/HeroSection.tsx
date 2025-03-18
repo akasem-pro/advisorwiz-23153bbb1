@@ -66,8 +66,8 @@ const HeroSection: React.FC = () => {
           </div>
           <div className="relative">
             <img 
-              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f" 
-              alt="Financial growth chart with upward trend" 
+              src="https://images.unsplash.com/photo-1551836022-d5d88e9218df" 
+              alt="Financial advisor working with client" 
               className="rounded-2xl shadow-2xl transform rotate-3 animate-slide-up"
               width="600"
               height="400"
