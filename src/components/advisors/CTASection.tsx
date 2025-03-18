@@ -7,7 +7,7 @@ const CTASection: React.FC = () => {
   const navigate = useNavigate();
   
   return (
-    <section className="py-12 bg-navy-800 text-white" aria-labelledby="cta-heading">
+    <section className="py-12 bg-navy-800 dark:bg-navy-950 text-white" aria-labelledby="cta-heading">
       <div className="container mx-auto px-4 text-center">
         <h2 id="cta-heading" className="text-3xl font-serif font-bold mb-4 text-white">
           Ready to Grow Your Advisory Practice?
