@@ -6,8 +6,8 @@ const BenefitsSection: React.FC = () => {
   const benefitCategories = [
     {
       title: "For Consumers",
-      image: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e",
-      alt: "Person planning for retirement with financial documents",
+      image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f",
+      alt: "Person reviewing financial documents with an advisor",
       iconColor: "text-teal-500",
       benefits: [
         "Personalized matching based on your financial goals and preferences",
@@ -20,8 +20,8 @@ const BenefitsSection: React.FC = () => {
     },
     {
       title: "For Advisors",
-      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d",
-      alt: "Financial advisor working with investment data",
+      image: "https://images.unsplash.com/photo-1591696205602-2f950c417cb9",
+      alt: "Financial advisor meeting with clients in office",
       iconColor: "text-navy-500",
       benefits: [
         "Connect with pre-qualified potential clients",
@@ -34,8 +34,8 @@ const BenefitsSection: React.FC = () => {
     },
     {
       title: "For Financial Firms",
-      image: "https://images.unsplash.com/photo-1560472355-536de3962603",
-      alt: "Financial firm office with growth charts and investments",
+      image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf",
+      alt: "Group of financial professionals in a business meeting",
       iconColor: "text-purple-500",
       benefits: [
         "Manage multiple advisor profiles under one organization",
