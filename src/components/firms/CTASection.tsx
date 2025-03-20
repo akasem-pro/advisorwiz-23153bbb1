@@ -1,34 +1,34 @@
 
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
 const CTASection: React.FC = () => {
   const navigate = useNavigate();
   
   return (
-    <section className="py-12 bg-navy-800 dark:bg-[#1A1F2C] text-white">
+    <section className="py-12 bg-navy-800 dark:bg-navy-950 text-white">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-serif font-bold mb-6 text-white">
-          Ready to Transform Your Advisory Firm?
+        <h2 className="text-3xl font-serif font-bold mb-4 text-white">
+          Ready to Elevate Your Advisory Firm?
         </h2>
         <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
-          Join leading financial advisory firms already using AdvisorWiz to streamline operations and grow their business.
+          Join AdvisorWiz today and transform how you manage your firm, advisors, and client relationships.
         </p>
-        <div className="space-x-4">
+        <div className="flex flex-wrap justify-center gap-4">
           <button 
             onClick={() => navigate('/onboarding')}
-            className="btn-accent inline-flex items-center"
+            className="btn-accent inline-flex items-center text-lg"
           >
-            Get Started
+            Create Your Firm Account
             <ArrowRight className="ml-2 h-5 w-5" />
           </button>
-          <Link 
-            to="/for-advisors" 
-            className="btn-outline-white inline-flex items-center border border-white text-white hover:bg-white/10 py-3 px-6 rounded-lg transition-all"
+          <button 
+            onClick={() => navigate('/pricing')}
+            className="btn-outline border-white text-white hover:bg-navy-700 dark:hover:bg-navy-900 inline-flex items-center text-lg"
           >
-            For Individual Advisors
-          </Link>
+            View Enterprise Pricing
+          </button>
         </div>
       </div>
     </section>

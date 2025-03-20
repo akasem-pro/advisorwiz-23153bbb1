@@ -1,7 +1,5 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 import FAQAccordion, { FAQItem } from '../shared/FAQAccordion';
 
 interface FAQSectionProps {
@@ -10,20 +8,18 @@ interface FAQSectionProps {
 
 const FAQSection: React.FC<FAQSectionProps> = ({ faqs }) => {
   return (
-    <section className="py-16 bg-white dark:bg-navy-900" id="firm-faqs">
-      <div className="container mx-auto px-4 max-w-3xl">
-        <h2 className="text-3xl font-serif font-bold text-navy-900 dark:text-white mb-8 text-center">
+    <section className="py-16 bg-slate-50 dark:bg-navy-800" aria-labelledby="faq-heading">
+      <div className="container mx-auto px-4">
+        <h2 id="faq-heading" className="text-3xl font-serif font-bold text-center text-navy-900 dark:text-white mb-12">
           Frequently Asked Questions
         </h2>
         
-        <FAQAccordion faqs={faqs} defaultValue="item-0" />
-        
-        <div className="mt-8 text-center">
-          <p className="text-slate-600 dark:text-slate-300 mb-4">Have more questions about how AdvisorWiz can help your firm?</p>
-          <Link to="/contact" className="text-teal-600 dark:text-teal-400 hover:underline inline-flex items-center">
-            Contact our enterprise team
-            <ArrowRight className="ml-1 h-4 w-4" />
-          </Link>
+        <div className="max-w-3xl mx-auto">
+          <FAQAccordion 
+            faqs={faqs} 
+            defaultValue="item-0"
+            className="bg-white dark:bg-navy-700 shadow-sm"
+          />
         </div>
       </div>
     </section>
