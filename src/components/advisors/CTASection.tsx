@@ -17,7 +17,7 @@ const CTASection: React.FC = () => {
         </p>
         <button 
           onClick={() => navigate('/onboarding')}
-          className="btn-accent inline-flex items-center text-lg"
+          className="btn-accent inline-flex items-center text-lg dark:bg-teal-600 dark:hover:bg-teal-700 dark:text-white"
           aria-label="Begin advisor registration"
         >
           Get Started Today

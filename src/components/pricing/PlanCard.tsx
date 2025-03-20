@@ -88,7 +88,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </div>
       
       <Button 
-        className={`w-full ${recommended ? 'bg-teal-600 hover:bg-teal-700' : 'bg-navy-800 hover:bg-navy-900 dark:bg-navy-600 dark:hover:bg-navy-700'}`}
+        className={`w-full ${recommended ? 'bg-teal-600 hover:bg-teal-700' : 'bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700 text-white'}`}
         onClick={() => navigate('/onboarding')}
       >
         {ctaText} <ArrowRight className="ml-2 h-4 w-4" />

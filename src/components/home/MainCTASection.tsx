@@ -16,7 +16,7 @@ const MainCTASection: React.FC = () => {
         <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
           <Link 
             to="/onboarding"
-            className="btn-accent inline-flex items-center justify-center"
+            className="btn-accent inline-flex items-center justify-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:text-white"
           >
             Get Started Now
             <ArrowRight className="ml-2 w-5 h-5" aria-hidden="true" />

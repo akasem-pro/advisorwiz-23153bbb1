@@ -48,7 +48,7 @@ const ConsumerPlan: React.FC = () => {
           
           <Button 
             onClick={() => navigate('/onboarding')}
-            className="w-full bg-teal-600 hover:bg-teal-700"
+            className="w-full bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700 text-white"
           >
             Get Started <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

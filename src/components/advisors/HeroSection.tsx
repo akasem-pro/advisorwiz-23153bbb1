@@ -20,7 +20,7 @@ const HeroSection: React.FC = () => {
             
             <button 
               onClick={() => navigate('/onboarding')}
-              className="btn-primary inline-flex items-center text-lg"
+              className="btn-primary inline-flex items-center text-lg dark:bg-teal-600 dark:hover:bg-teal-700"
               aria-label="Start advisor registration process"
             >
               Get Started

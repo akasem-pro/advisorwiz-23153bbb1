@@ -18,14 +18,14 @@ const CTASection: React.FC = () => {
         <div className="flex flex-wrap justify-center gap-4">
           <button 
             onClick={() => navigate('/onboarding')}
-            className="btn-accent inline-flex items-center text-lg"
+            className="btn-accent inline-flex items-center text-lg dark:bg-teal-600 dark:hover:bg-teal-700 dark:text-white"
           >
             Create Your Firm Account
             <ArrowRight className="ml-2 h-5 w-5" />
           </button>
           <button 
             onClick={() => navigate('/pricing')}
-            className="btn-outline border-white text-white hover:bg-navy-700 dark:hover:bg-navy-900 inline-flex items-center text-lg"
+            className="btn-outline border-white text-white hover:bg-navy-700 dark:hover:bg-navy-800 inline-flex items-center text-lg"
           >
             View Enterprise Pricing
           </button>
