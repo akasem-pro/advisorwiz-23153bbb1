@@ -55,12 +55,12 @@ const FAQAccordion: React.FC<FAQAccordionProps> = ({
         <AccordionItem 
           key={index} 
           value={`item-${index}`}
-          className="border border-slate-200 rounded-lg mb-4 overflow-hidden"
+          className="border border-slate-200 dark:border-navy-700 rounded-lg mb-4 overflow-hidden"
         >
-          <AccordionTrigger className="px-6 py-4 text-left bg-white hover:bg-slate-50 transition-colors text-navy-900 font-medium">
+          <AccordionTrigger className="px-6 py-4 text-left bg-white dark:bg-navy-800 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors text-navy-900 dark:text-white font-medium">
             {faq.question}
           </AccordionTrigger>
-          <AccordionContent className="px-6 py-4 bg-white text-slate-700">
+          <AccordionContent className="px-6 py-4 bg-white dark:bg-navy-800 text-slate-700 dark:text-slate-300">
             <p>{faq.answer}</p>
             
             {faq.relatedLinks && faq.relatedLinks.length > 0 && (
@@ -69,7 +69,7 @@ const FAQAccordion: React.FC<FAQAccordionProps> = ({
                   <div key={linkIndex} className="text-sm">
                     <Link 
                       to={link.url} 
-                      className="text-teal-600 hover:underline inline-flex items-center"
+                      className="text-teal-600 dark:text-teal-400 hover:underline inline-flex items-center"
                     >
                       {link.text}
                       <ArrowRight className="ml-1 h-3 w-3" />

@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
 import { generateFAQSchema } from '../../utils/schemas';
 import StructuredData from '../seo/StructuredData';
 import { Link } from 'react-router-dom';
@@ -58,17 +57,17 @@ const faqs: FAQItem[] = [
 
 const FAQSection: React.FC = () => {
   return (
-    <section id="faq" className="py-16 bg-slate-50" aria-labelledby="faq-heading">
+    <section id="faq" className="py-16 bg-slate-50 dark:bg-navy-900" aria-labelledby="faq-heading">
       <StructuredData data={generateFAQSchema(faqs.map(faq => ({
         question: faq.question,
         answer: faq.answer
       })))} />
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 id="faq-heading" className="text-3xl font-serif font-bold text-navy-900 mb-4">
+          <h2 id="faq-heading" className="text-3xl font-serif font-bold text-navy-900 dark:text-white mb-4">
             Frequently Asked Questions
           </h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
             Get answers to common questions about how AdvisorWiz works for both consumers and financial advisors.
           </p>
         </div>
@@ -79,10 +78,10 @@ const FAQSection: React.FC = () => {
           </div>
           
           <div className="mt-10 text-center">
-            <p className="text-slate-600 mb-4">Have more questions? We're here to help.</p>
+            <p className="text-slate-600 dark:text-slate-300 mb-4">Have more questions? We're here to help.</p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/contact" className="btn-outline">Contact Us</Link>
-              <Link to="/for-consumers" className="text-teal-600 hover:underline">
+              <Link to="/contact" className="btn-outline dark:border-slate-600 dark:text-slate-300 dark:hover:bg-navy-800">Contact Us</Link>
+              <Link to="/for-consumers" className="text-teal-600 dark:text-teal-400 hover:underline">
                 Learn more about AdvisorWiz
               </Link>
             </div>
