@@ -12,7 +12,7 @@ const PriceDisplay: React.FC<PriceDisplayProps> = ({ price, period, discount }) 
     <div className="text-center py-2">
       <div className="flex items-center justify-center">
         <span className="text-2xl font-bold text-navy-900 dark:text-white">${price}</span>
-        <span className="text-slate-600 dark:text-slate-200 ml-1">/{period === 'monthly' ? 'mo' : 'yr'}</span>
+        <span className="text-slate-600 dark:text-slate-300 ml-1">/{period === 'monthly' ? 'mo' : 'yr'}</span>
       </div>
       
       {discount && (
