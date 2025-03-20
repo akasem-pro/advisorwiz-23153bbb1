@@ -60,7 +60,7 @@ const Header: React.FC = () => {
             </Link>
             <Link 
               to="/onboarding" 
-              className="ml-2 bg-navy-600 dark:bg-navy-700 hover:bg-navy-700 dark:hover:bg-navy-600 text-white px-4 py-2 rounded-lg transition-colors"
+              className="ml-2 bg-navy-600 dark:bg-teal-600 hover:bg-navy-700 dark:hover:bg-teal-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
               Get Started
             </Link>
@@ -105,7 +105,7 @@ const Header: React.FC = () => {
                 <li>
                   <Link 
                     to="/onboarding" 
-                    className="block px-4 py-2 bg-navy-600 dark:bg-navy-700 text-white hover:bg-navy-700 dark:hover:bg-navy-600 rounded-lg"
+                    className="block px-4 py-2 bg-navy-600 dark:bg-teal-600 text-white hover:bg-navy-700 dark:hover:bg-teal-700 rounded-lg"
                   >
                     Get Started
                   </Link>

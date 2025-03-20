@@ -16,7 +16,7 @@ export const ProfileFormActions: React.FC<ProfileFormActionsProps> = ({
       <button
         type="submit"
         onClick={handleSubmit}
-        className="btn-primary flex items-center justify-center dark:bg-teal-600 dark:hover:bg-teal-700"
+        className="btn-primary flex items-center justify-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:text-white"
       >
         <Save className="h-5 w-5 mr-2" />
         Save Profile
@@ -24,7 +24,7 @@ export const ProfileFormActions: React.FC<ProfileFormActionsProps> = ({
       <button
         type="button"
         onClick={handleContinue}
-        className="btn-secondary flex items-center justify-center dark:bg-teal-600 dark:hover:bg-teal-700"
+        className="btn-secondary flex items-center justify-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:text-white"
       >
         Continue
         <ArrowRight className="h-5 w-5 ml-2" />

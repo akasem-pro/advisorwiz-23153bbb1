@@ -19,7 +19,7 @@ const HeroSection: React.FC = () => {
           
           <button 
             onClick={() => navigate('/onboarding')}
-            className="btn-primary inline-flex items-center text-lg dark:bg-teal-600 dark:hover:bg-teal-700"
+            className="btn-primary inline-flex items-center text-lg dark:bg-teal-600 dark:hover:bg-teal-700 dark:text-white"
           >
             Get Started
             <ArrowRight className="ml-2 h-5 w-5" />
