@@ -97,6 +97,51 @@ const PageTracker = () => {
   return null;
 };
 
+function AppWithAuth() {
+  return (
+    <AuthProvider>
+      <PageTracker />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/sign-in" element={<SignIn />} />
+        
+        <Route path="/advisor-profile" element={<AuthGuard><AdvisorProfile /></AuthGuard>} />
+        <Route path="/consumer-profile" element={<AuthGuard><ConsumerProfile /></AuthGuard>} />
+        <Route path="/matches" element={<AuthGuard><MatchingInterface /></AuthGuard>} />
+        <Route path="/chat" element={<AuthGuard><Chat /></AuthGuard>} />
+        <Route path="/chat/:id" element={<AuthGuard><Chat /></AuthGuard>} />
+        <Route path="/schedule" element={<AuthGuard><Schedule /></AuthGuard>} />
+        <Route path="/firm-profile" element={<AuthGuard><FirmProfile /></AuthGuard>} />
+        <Route path="/firm/:id" element={<AuthGuard><FirmProfile /></AuthGuard>} />
+        <Route path="/leads" element={<AuthGuard><LeadManagementPage /></AuthGuard>} />
+        <Route path="/consumer-dashboard" element={<AuthGuard><ConsumerDashboard /></AuthGuard>} />
+        <Route path="/advisor-dashboard" element={<AuthGuard><AdvisorDashboard /></AuthGuard>} />
+        <Route path="/firm-dashboard" element={<AuthGuard><FirmDashboard /></AuthGuard>} />
+        <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+        
+        <Route path="/for-firms" element={<ForFirms />} />
+        <Route path="/for-advisors" element={<ForAdvisors />} />
+        <Route path="/for-consumers" element={<ForConsumers />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<Blog />} />
+        <Route path="/careers" element={<Careers />} />
+        <Route path="/sitemap" element={<Sitemap />} />
+        <Route path="/resources" element={<Resources />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/disclaimer" element={<Privacy />} />
+        <Route path="/cookies" element={<Privacy />} />
+        
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Toaster />
+    </AuthProvider>
+  );
+}
+
 function App() {
   useEffect(() => {
     initializeTagManager();
@@ -115,68 +160,29 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <UserProvider>
         <ThemeProvider>
-          <AuthProvider>
-            <Helmet>
-              <html lang="en" />
-              <meta charSet="utf-8" />
-              <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-              <meta name="theme-color" content="#1E3A8A" />
-              <link rel="icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
-              <link rel="apple-touch-icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
-              
-              <meta name="application-name" content="AdvisorWiz" />
-              <meta name="apple-mobile-web-app-capable" content="yes" />
-              <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-              <meta name="format-detection" content="telephone=no" />
-              <meta name="mobile-web-app-capable" content="yes" />
-            </Helmet>
-            <Preload 
-              resources={criticalResources}
-              preconnect={preconnectDomains}
-              dnsPrefetch={dnsPrefetchDomains}
-            />
-            <StructuredData data={globalStructuredData} />
-            <Router>
-              <PageTracker />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/sign-in" element={<SignIn />} />
-                
-                <Route path="/advisor-profile" element={<AuthGuard><AdvisorProfile /></AuthGuard>} />
-                <Route path="/consumer-profile" element={<AuthGuard><ConsumerProfile /></AuthGuard>} />
-                <Route path="/matches" element={<AuthGuard><MatchingInterface /></AuthGuard>} />
-                <Route path="/chat" element={<AuthGuard><Chat /></AuthGuard>} />
-                <Route path="/chat/:id" element={<AuthGuard><Chat /></AuthGuard>} />
-                <Route path="/schedule" element={<AuthGuard><Schedule /></AuthGuard>} />
-                <Route path="/firm-profile" element={<AuthGuard><FirmProfile /></AuthGuard>} />
-                <Route path="/firm/:id" element={<AuthGuard><FirmProfile /></AuthGuard>} />
-                <Route path="/leads" element={<AuthGuard><LeadManagementPage /></AuthGuard>} />
-                <Route path="/consumer-dashboard" element={<AuthGuard><ConsumerDashboard /></AuthGuard>} />
-                <Route path="/advisor-dashboard" element={<AuthGuard><AdvisorDashboard /></AuthGuard>} />
-                <Route path="/firm-dashboard" element={<AuthGuard><FirmDashboard /></AuthGuard>} />
-                <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
-                
-                <Route path="/for-firms" element={<ForFirms />} />
-                <Route path="/for-advisors" element={<ForAdvisors />} />
-                <Route path="/for-consumers" element={<ForConsumers />} />
-                <Route path="/pricing" element={<Pricing />} />
-                <Route path="/contact" element={<ContactUs />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/blog/:slug" element={<Blog />} />
-                <Route path="/careers" element={<Careers />} />
-                <Route path="/sitemap" element={<Sitemap />} />
-                <Route path="/resources" element={<Resources />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/disclaimer" element={<Privacy />} />
-                <Route path="/cookies" element={<Privacy />} />
-                
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Router>
-            <Toaster />
-          </AuthProvider>
+          <Helmet>
+            <html lang="en" />
+            <meta charSet="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+            <meta name="theme-color" content="#1E3A8A" />
+            <link rel="icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
+            <link rel="apple-touch-icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
+            
+            <meta name="application-name" content="AdvisorWiz" />
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+            <meta name="format-detection" content="telephone=no" />
+            <meta name="mobile-web-app-capable" content="yes" />
+          </Helmet>
+          <Preload 
+            resources={criticalResources}
+            preconnect={preconnectDomains}
+            dnsPrefetch={dnsPrefetchDomains}
+          />
+          <StructuredData data={globalStructuredData} />
+          <Router>
+            <AppWithAuth />
+          </Router>
         </ThemeProvider>
       </UserProvider>
     </QueryClientProvider>
