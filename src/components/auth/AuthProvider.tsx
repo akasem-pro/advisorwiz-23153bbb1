@@ -10,6 +10,7 @@ type AuthContextType = {
   session: Session | null;
   user: User | null;
   signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   loading: boolean;
 };
@@ -18,6 +19,7 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
   signIn: async () => {},
+  signUp: async () => {},
   signOut: async () => {},
   loading: true
 });
@@ -33,6 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const { setUserType, setIsAuthenticated, setConsumerProfile, setAdvisorProfile } = useUser();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Set up auth state change listener FIRST
@@ -100,6 +103,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (error) throw error;
       
       toast.success("Successfully signed in!");
+      navigate('/');
       
       if (data.user) {
         await fetchUserProfile(data.user.id);
@@ -111,10 +115,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const signUp = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password
+      });
+      
+      if (error) throw error;
+      
+      toast.success("Registration successful! Please check your email to verify your account.");
+      
+      if (data.user) {
+        // Wait for verification before redirecting in a real app
+        // For development without email verification, user would be logged in automatically
+      }
+    } catch (error: any) {
+      console.error("Error signing up:", error.message);
+      toast.error(error.message || "Failed to sign up");
+      throw error;
+    }
+  };
+
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
       toast.success("Successfully signed out");
+      navigate('/sign-in');
     } catch (error: any) {
       console.error("Error signing out:", error.message);
       toast.error(error.message || "Failed to sign out");
@@ -122,7 +149,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, signIn, signOut, loading }}>
+    <AuthContext.Provider value={{ session, user, signIn, signUp, signOut, loading }}>
       {children}
     </AuthContext.Provider>
   );
