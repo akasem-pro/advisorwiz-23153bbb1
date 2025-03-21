@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
@@ -15,6 +16,34 @@ import { trackWebVitals, setupLazyLoading, optimizeCriticalRendering } from './u
 import { initializeTagManager, trackPageView } from './utils/tagManager';
 import { AuthProvider } from './components/auth/AuthProvider';
 import AuthGuard from './components/auth/AuthGuard';
+
+// Import all page components
+import Index from './pages/Index';
+import Onboarding from './pages/Onboarding';
+import SignIn from './pages/SignIn';
+import AdvisorProfile from './pages/AdvisorProfile';
+import ConsumerProfile from './pages/ConsumerProfile';
+import MatchingInterface from './pages/MatchingInterface';
+import Chat from './pages/Chat';
+import Schedule from './pages/Schedule';
+import FirmProfile from './pages/FirmProfile';
+import LeadManagementPage from './pages/LeadManagementPage';
+import ConsumerDashboard from './pages/ConsumerDashboard';
+import AdvisorDashboard from './pages/AdvisorDashboard';
+import FirmDashboard from './pages/FirmDashboard';
+import Settings from './pages/Settings';
+import ForFirms from './pages/ForFirms';
+import ForAdvisors from './pages/ForAdvisors';
+import ForConsumers from './pages/ForConsumers';
+import Pricing from './pages/Pricing';
+import ContactUs from './pages/ContactUs';
+import Blog from './pages/Blog';
+import Careers from './pages/Careers';
+import Sitemap from './pages/Sitemap';
+import Resources from './pages/Resources';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import NotFound from './pages/NotFound';
 
 import './App.css';
 

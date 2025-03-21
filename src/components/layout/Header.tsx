@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sun, Moon, Menu, X, User, LogOut } from 'lucide-react';
@@ -17,6 +18,35 @@ import {
 } from '../ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { toast } from 'sonner';
+
+// Define the navigation links
+const navigationLinks = [
+  {
+    name: 'For Firms',
+    path: '/for-firms',
+    description: 'Solutions for financial advisory firms',
+  },
+  {
+    name: 'For Advisors',
+    path: '/for-advisors',
+    description: 'Connect with potential clients',
+  },
+  {
+    name: 'For Consumers',
+    path: '/for-consumers',
+    description: 'Find the right financial advisor',
+  },
+  {
+    name: 'Pricing',
+    path: '/pricing',
+    description: 'Subscription plans and pricing options',
+  },
+  {
+    name: 'Contact',
+    path: '/contact',
+    description: 'Get in touch with our team',
+  },
+];
 
 interface HeaderProps {
   // Add any props here if needed
@@ -94,7 +124,7 @@ const Header: React.FC = () => {
           <Link to="/" className="mr-6">
             <Logo />
           </Link>
-          <NavigationMenu />
+          <NavigationMenu links={navigationLinks} />
         </div>
         
         <div className="flex items-center">
