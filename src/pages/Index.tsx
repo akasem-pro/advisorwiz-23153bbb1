@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
