@@ -32,7 +32,7 @@ const SignIn: React.FC = () => {
       <PageSEO
         title="Sign In | AdvisorWiz"
         description="Sign in to your AdvisorWiz account to manage your profile, connect with financial advisors, or manage your client relationships."
-        noindex={true}
+        noIndex={true}
       />
       
       <div className="min-h-screen flex flex-col">

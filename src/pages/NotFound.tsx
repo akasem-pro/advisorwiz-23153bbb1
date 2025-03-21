@@ -13,7 +13,7 @@ const NotFound: React.FC = () => {
       <PageSEO
         title="Page Not Found | AdvisorWiz"
         description="The page you're looking for doesn't exist or has been moved."
-        noindex={true}
+        noIndex={true}
       />
       
       <div className="min-h-screen flex flex-col">
