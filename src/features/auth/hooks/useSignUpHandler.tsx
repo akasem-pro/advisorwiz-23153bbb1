@@ -34,9 +34,14 @@ export const useSignUpHandler = () => {
     setIsLoading(true);
     
     try {
-      // Check network connection first
-      const isOnline = await validateNetworkConnection(setFormError);
+      // Check network connection first with a timeout
+      const isOnline = await Promise.race([
+        validateNetworkConnection(setFormError),
+        new Promise<boolean>(resolve => setTimeout(() => resolve(false), 5000))
+      ]);
+      
       if (!isOnline) {
+        setFormError('Unable to connect to authentication service. Please check your connection and try again.');
         return;
       }
       

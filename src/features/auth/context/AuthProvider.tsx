@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (retryAttempts > 0) {
         checkNetworkStatus();
       }
-    }, retryAttempts > 0 ? 10000 : 60000); // Check every 10s when retry attempts exist
+    }, retryAttempts > 0 ? 5000 : 30000); // Check every 5s when retry attempts exist
     
     return () => clearInterval(checkInterval);
   }, [checkNetworkStatus, retryAttempts]);

@@ -1,6 +1,7 @@
 
 import { useAuth } from '../context/AuthProvider';
 import { useAuthCore } from './useAuthCore';
+import { toast } from 'sonner';
 
 /**
  * Hook for handling sign in submissions
@@ -31,9 +32,14 @@ export const useSignInHandler = () => {
     setIsLoading(true);
     
     try {
-      // Check network connection first
-      const isOnline = await validateNetworkConnection(setFormError);
+      // Check network connection first with a timeout
+      const isOnline = await Promise.race([
+        validateNetworkConnection(setFormError),
+        new Promise<boolean>(resolve => setTimeout(() => resolve(false), 5000))
+      ]);
+      
       if (!isOnline) {
+        setFormError('Unable to connect to authentication service. Please check your connection and try again.');
         return;
       }
       
@@ -45,12 +51,7 @@ export const useSignInHandler = () => {
         setFormError('Authentication failed. Please check your credentials and try again.');
       }
     } catch (error: any) {
-      if (error.message?.includes('Invalid login credentials') || 
-          error.message?.includes('Invalid email or password')) {
-        setFormError('Invalid email or password. Please try again.');
-      } else {
-        handleAuthError(error, setFormError, true);
-      }
+      handleAuthError(error, setFormError, true);
     } finally {
       setIsLoading(false);
     }

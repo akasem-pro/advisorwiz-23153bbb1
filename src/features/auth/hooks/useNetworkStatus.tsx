@@ -9,8 +9,7 @@ export const useNetworkStatus = () => {
   const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>(
     navigator.onLine ? 'checking' : 'offline'
   );
-  const [lastChecked, setLastChecked] = useState<Date>(new Date());
-
+  
   // Async function to check network status
   const checkNetworkStatus = useCallback(async (): Promise<boolean> => {
     try {
@@ -19,20 +18,17 @@ export const useNetworkStatus = () => {
       // First check browser's online status
       if (!navigator.onLine) {
         setNetworkStatus('offline');
-        setLastChecked(new Date());
         return false;
       }
       
       // Then do a real connection test to Supabase
       const isConnected = await checkSupabaseConnection();
       setNetworkStatus(isConnected ? 'online' : 'offline');
-      setLastChecked(new Date());
       return isConnected;
     } catch (error) {
       console.error("Network status check failed:", error);
       const browserOnline = navigator.onLine;
       setNetworkStatus(browserOnline ? 'online' : 'offline');
-      setLastChecked(new Date());
       return browserOnline;
     }
   }, []);
@@ -49,7 +45,6 @@ export const useNetworkStatus = () => {
     const handleOffline = () => {
       console.log("Browser reports offline status");
       setNetworkStatus('offline');
-      setLastChecked(new Date());
     };
     
     // Set up event listeners
@@ -58,19 +53,21 @@ export const useNetworkStatus = () => {
     
     // Periodic checks - reduced frequency to avoid excessive requests
     const intervalId = setInterval(() => {
-      checkNetworkStatus();
-    }, 30000); // Check every 30 seconds regardless of current status
+      // Only do periodic checks if we're in a problematic state
+      if (networkStatus !== 'online') {
+        checkNetworkStatus();
+      }
+    }, 10000); // Check every 10 seconds when in problem state
     
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       clearInterval(intervalId);
     };
-  }, [checkNetworkStatus]);
+  }, [checkNetworkStatus, networkStatus]);
 
   return { 
     networkStatus,
-    lastChecked,
     checkNetworkStatus
   };
 };

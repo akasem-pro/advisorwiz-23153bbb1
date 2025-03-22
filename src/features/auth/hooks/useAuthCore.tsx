@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthProvider';
 import { toast } from 'sonner';
 
@@ -47,20 +47,43 @@ export const useAuthCore = () => {
     setFormError: (error: string) => void,
     isSignIn: boolean = true
   ) => {
-    console.error(`Failed to ${isSignIn ? 'sign in' : 'sign up'}:`, error);
+    const errorMessage = error.message || `An error occurred during ${isSignIn ? 'sign in' : 'sign up'}`;
+    console.error(`Failed to ${isSignIn ? 'sign in' : 'sign up'}:`, errorMessage);
     
-    if (error.message?.includes('timeout') || error.message?.includes('timed out')) {
+    // Handle network and timeout errors
+    if (error.message?.includes('timeout') || 
+        error.message?.includes('timed out') || 
+        error.message?.includes('fetch failed') ||
+        error.message?.includes('Failed to fetch')) {
       setFormError('Authentication request timed out. Please try again.');
       incrementRetry();
-    } else if (!navigator.onLine || 
-              error.message?.includes('network') || 
-              error.message?.includes('connection') || 
-              error.message?.includes('Unable to connect') ||
-              error.message?.includes('Failed to fetch')) {
+      return;
+    }
+    
+    // Handle offline errors
+    if (!navigator.onLine || 
+        error.message?.includes('network') || 
+        error.message?.includes('connection') || 
+        error.message?.includes('Unable to connect')) {
       setFormError('Unable to connect to authentication service. Please check your connection and try again.');
       incrementRetry();
+      return;
+    }
+    
+    // Handle specific auth errors
+    if (isSignIn) {
+      if (error.message?.includes('Invalid login credentials') || 
+          error.message?.includes('Invalid email or password')) {
+        setFormError('Invalid email or password. Please try again.');
+      } else {
+        setFormError(errorMessage);
+      }
     } else {
-      setFormError(error.message || `An error occurred during ${isSignIn ? 'sign in' : 'registration'}`);
+      if (error.message?.includes('email already registered')) {
+        setFormError('This email is already registered. Please sign in instead.');
+      } else {
+        setFormError(errorMessage);
+      }
     }
   };
   

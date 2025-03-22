@@ -25,8 +25,12 @@ export const useRetryHandler = () => {
     // Show loading state
     toast.loading('Checking connection...');
     
-    // Check network status
-    const isOnline = await checkNetworkStatus();
+    // Check network status with a timeout
+    const isOnline = await Promise.race([
+      checkNetworkStatus(),
+      new Promise<boolean>(resolve => setTimeout(() => resolve(false), 5000))
+    ]);
+    
     console.log("Retry network check result:", isOnline ? "online" : "offline");
     
     // Dismiss loading toast

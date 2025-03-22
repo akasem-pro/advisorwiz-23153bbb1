@@ -23,10 +23,22 @@ export const useAuthOperations = (
       setLoading(true);
       
       console.log("Starting sign in process with email:", email);
-      const { data, error } = await supabase.auth.signInWithPassword({
+      
+      // Added timeout to the sign-in process
+      const signInPromise = supabase.auth.signInWithPassword({
         email,
         password
       });
+      
+      // Race the sign-in against a timeout
+      const result = await Promise.race([
+        signInPromise,
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Authentication request timed out')), 10000)
+        )
+      ]) as Awaited<typeof signInPromise>;
+      
+      const { data, error } = result;
       
       if (error) throw error;
       
@@ -42,7 +54,9 @@ export const useAuthOperations = (
       } else if (error.message?.includes('User not found')) {
         throw new Error('No account found with this email. Please check your email or sign up.');
       } else if (!navigator.onLine || error.message?.includes('network') || 
-                error.message?.includes('connection')) {
+                error.message?.includes('connection') || 
+                error.message?.includes('timed out') ||
+                error.message?.includes('Failed to fetch')) {
         throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
       } else {
         throw error;
@@ -62,13 +76,25 @@ export const useAuthOperations = (
       setLoading(true);
       
       console.log("Starting sign up process with email:", email);
-      const { data, error } = await supabase.auth.signUp({
+      
+      // Added timeout to the sign-up process
+      const signUpPromise = supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       });
+      
+      // Race the sign-up against a timeout
+      const result = await Promise.race([
+        signUpPromise,
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Registration request timed out')), 10000)
+        )
+      ]) as Awaited<typeof signUpPromise>;
+      
+      const { data, error } = result;
       
       if (error) throw error;
       
@@ -81,7 +107,9 @@ export const useAuthOperations = (
       if (error.message?.includes('email already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
       } else if (!navigator.onLine || error.message?.includes('network') || 
-                error.message?.includes('connection')) {
+                error.message?.includes('connection') ||
+                error.message?.includes('timed out') ||
+                error.message?.includes('Failed to fetch')) {
         throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
       } else {
         throw new Error(error.message || 'An error occurred during sign up. Please try again.');

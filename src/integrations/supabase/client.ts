@@ -18,7 +18,13 @@ export const supabase = createClient<Database>(
     },
     global: {
       headers: {
-        'x-application-name': 'advisorwiz'
+        'x-application-name': 'advisorwiz',
+        'Cache-Control': 'no-cache'
+      }
+    },
+    realtime: {
+      params: {
+        eventsPerSecond: 10
       }
     }
   }
@@ -32,8 +38,8 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
       return false;
     }
     
-    // Use supabase client directly instead of a separate fetch that can fail
-    const { error } = await supabase.from('profiles').select('count', { count: 'exact', head: true }).limit(1);
+    // Try to make a lightweight health check
+    const { error } = await supabase.from('profiles').select('count', { count: 'exact', head: true }).limit(1).abortSignal(AbortSignal.timeout(3000));
     
     // If we got a response (even with no data), the connection is working
     return !error;
