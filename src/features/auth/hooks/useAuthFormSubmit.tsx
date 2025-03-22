@@ -1,34 +1,34 @@
 
-import { supabase } from '../../../integrations/supabase/client';
+import { useState } from 'react';
+import { useSignInHandler } from './useSignInHandler';
+import { useSignUpHandler } from './useSignUpHandler';
+import { useRetryHandler } from './useRetryHandler';
+import { useAuth } from '../context/AuthProvider';
 
-export const useSignUpHandler = () => {
-  const handleSignUp = async (e, email, password, validate, setFormError, setIsLoading, setActiveTab, setSignInEmail, clearForm) => {
-    e.preventDefault();
-    const isValid = validate();
-    if (!isValid) return;
-
-    setIsLoading(true);
-    setFormError(null);
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: "https://preview--advisorwiz.lovable.app"
-      }
-    });
-
-    if (error) {
-      setFormError(error.message);
-    } else {
-      // Optionally show a "Check your inbox" message
-      setActiveTab('signIn');
-      setSignInEmail(email);
-      clearForm();
-    }
-
-    setIsLoading(false);
+/**
+ * Combined hook for handling authentication form submissions
+ */
+export const useAuthFormSubmit = () => {
+  // Get the necessary auth context
+  const { loading: authLoading, networkStatus } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Import the individual handlers
+  const { handleSignIn } = useSignInHandler();
+  const { handleSignUp } = useSignUpHandler();
+  const { handleRetry } = useRetryHandler();
+  
+  // Combined loading state
+  const isLoading = authLoading || isSubmitting;
+  
+  return {
+    authLoading,
+    networkStatus,
+    isSubmitting,
+    setIsSubmitting,
+    isLoading,
+    handleSignIn,
+    handleSignUp,
+    handleRetry
   };
-
-  return { handleSignUp };
 };

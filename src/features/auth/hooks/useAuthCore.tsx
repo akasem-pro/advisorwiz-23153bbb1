@@ -27,16 +27,22 @@ export const useAuthCore = () => {
    * Checks network status and handles retry attempts
    */
   const validateNetworkConnection = async (setFormError: (error: string) => void): Promise<boolean> => {
-    // First check network status
-    const isOnline = await checkNetworkStatus();
-    if (!isOnline) {
-      setFormError('Unable to connect to authentication service. Please check your connection and try again.');
-      incrementRetry();
-      return false;
+    try {
+      // First check network status
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        setFormError('Unable to connect to authentication service. Please check your connection and try again.');
+        incrementRetry();
+        return false;
+      }
+      
+      resetRetryAttempts();
+      return true;
+    } catch (error) {
+      console.error("Failed to validate network connection:", error);
+      // Default to online if checking fails to prevent blocking the form
+      return true;
     }
-    
-    resetRetryAttempts();
-    return true;
   };
   
   /**

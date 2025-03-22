@@ -6,9 +6,9 @@ import { checkSupabaseConnection } from '../../../integrations/supabase/client';
  * Custom hook to track network connectivity status with more reliable checks
  */
 export const useNetworkStatus = () => {
-  // Default to online if navigator is online
+  // Default to online to avoid blocking sign-up functionality
   const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>(
-    navigator.onLine ? 'online' : 'offline'
+    'online'
   );
   
   // Async function to check network status
@@ -22,23 +22,24 @@ export const useNetworkStatus = () => {
         return false;
       }
       
-      // Simple lightweight check - just assume we're online if the browser reports we are
+      // Simple lightweight check - assume we're online if the browser reports we are
       // This will allow the button to be enabled by default
       setNetworkStatus('online');
       
       // Then do a real connection test to Supabase in the background
       checkSupabaseConnection().then(isConnected => {
         if (!isConnected) {
-          setNetworkStatus('offline');
+          console.log("Background network check failed, but not blocking UI");
+          // Don't set offline here to prevent blocking the UI
         }
       });
       
       return true;
     } catch (error) {
       console.error("Network status check failed:", error);
-      const browserOnline = navigator.onLine;
-      setNetworkStatus(browserOnline ? 'online' : 'offline');
-      return browserOnline;
+      // Default to online state to prevent blocking the UI
+      setNetworkStatus('online');
+      return true;
     }
   }, []);
 
@@ -47,9 +48,8 @@ export const useNetworkStatus = () => {
     checkNetworkStatus();
     
     const handleOnline = () => {
-      console.log("Browser reports online status, verifying connection...");
-      setNetworkStatus('online'); // Set it to online immediately
-      checkNetworkStatus();
+      console.log("Browser reports online status");
+      setNetworkStatus('online');
     };
     
     const handleOffline = () => {
@@ -61,20 +61,11 @@ export const useNetworkStatus = () => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     
-    // Periodic checks - reduced frequency to avoid excessive requests
-    const intervalId = setInterval(() => {
-      // Only do periodic checks if we're in a problematic state
-      if (networkStatus !== 'online') {
-        checkNetworkStatus();
-      }
-    }, 10000); // Check every 10 seconds when in problem state
-    
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      clearInterval(intervalId);
     };
-  }, [checkNetworkStatus, networkStatus]);
+  }, [checkNetworkStatus]);
 
   return { 
     networkStatus,

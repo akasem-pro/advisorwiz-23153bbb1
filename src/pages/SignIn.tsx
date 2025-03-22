@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -45,7 +44,6 @@ const SignIn: React.FC = () => {
   } = useSignInForm();
   
   const {
-    authLoading,
     networkStatus,
     handleSignIn,
     handleSignUp,
@@ -95,9 +93,9 @@ const SignIn: React.FC = () => {
     );
   };
   
-  // Only disable buttons when actually loading or checking network
-  const isSignInDisabled = isLoading || authLoading;
-  const isSignUpDisabled = isLoading || authLoading;
+  // Only disable buttons when actually loading
+  const isSignInDisabled = isLoading;
+  const isSignUpDisabled = isLoading;
   
   return (
     <AnimatedRoute animation="fade">
