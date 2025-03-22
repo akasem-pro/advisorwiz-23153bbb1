@@ -1,4 +1,3 @@
-
 import React, { ReactNode, useEffect } from 'react';
 import UserContext, { MatchPreferences } from './UserContextDefinition';
 import { useUserState } from '../hooks/useUserState';
@@ -139,6 +138,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     getFirmByAdmin,
     calculateCompatibilityScore: matching.calculateCompatibilityScore,
     updateMatchPreferences,
+    matchPreferences,
     getTopMatches: matching.getTopMatches,
     getRecommendedMatches: matching.getRecommendedMatches,
     // Call functionality
