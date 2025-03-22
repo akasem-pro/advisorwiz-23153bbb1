@@ -19,13 +19,13 @@ export const useNetworkStatus = () => {
     setNetworkStatus('checking');
     
     try {
-      // Try to fetch a small resource from the same domain to check connectivity
+      // Try to fetch the favicon from root path to check connectivity
       // This avoids CORS issues that can occur with third-party domains
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000);
       
-      // Use a relative URL from the same domain instead of an external one
-      const response = await fetch('/favicon.ico', { 
+      // Use a cached asset that's guaranteed to exist in the public folder
+      const response = await fetch('/favicon.ico?nocache=' + new Date().getTime(), { 
         method: 'HEAD',
         cache: 'no-store',
         signal: controller.signal
@@ -57,8 +57,7 @@ export const useNetworkStatus = () => {
     
     const handleOnline = () => {
       console.log("Browser reports online status");
-      setNetworkStatus('online');
-      setLastChecked(new Date());
+      checkNetworkStatus(); // Verify with an actual request
     };
     
     const handleOffline = () => {

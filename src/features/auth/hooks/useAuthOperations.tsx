@@ -1,6 +1,6 @@
 
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../../integrations/supabase/client';
+import { supabase, checkSupabaseConnection } from '../../../integrations/supabase/client';
 import { toast } from 'sonner';
 
 /**
@@ -57,6 +57,12 @@ export const useAuthOperations = (
       
       console.log("Starting sign in process with email:", email);
       
+      // First verify Supabase connection
+      const canConnect = await checkSupabaseConnection();
+      if (!canConnect) {
+        throw new Error('Cannot connect to the authentication service. Please try again later.');
+      }
+      
       // Directly use the Supabase client for authentication
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -65,14 +71,22 @@ export const useAuthOperations = (
       
       if (error) throw error;
       
-      console.log("Sign in successful, user data:", data.user?.id);
+      console.log("Sign in successful, user data:", data?.user?.id);
+      
+      if (!data?.user) {
+        throw new Error('Authentication failed. Please try again.');
+      }
       
       toast.success("Successfully signed in!");
-      navigate('/');
       
+      // Fetch user profile data after successful login
       if (data.user) {
         await fetchUserProfile(data.user.id);
       }
+      
+      // Navigate after successful sign-in
+      navigate('/');
+      
     } catch (error: any) {
       console.error("Error signing in:", error.message, error);
       
@@ -98,6 +112,12 @@ export const useAuthOperations = (
       }
       
       console.log("Starting sign up process with email:", email);
+      
+      // Verify Supabase connection first
+      const canConnect = await checkSupabaseConnection();
+      if (!canConnect) {
+        throw new Error('Cannot connect to the authentication service. Please try again later.');
+      }
       
       // Directly use the Supabase client for sign up
       const { data, error } = await supabase.auth.signUp({

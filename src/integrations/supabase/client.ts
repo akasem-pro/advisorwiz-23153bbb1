@@ -6,9 +6,7 @@ import type { Database } from './types';
 export const SUPABASE_URL = "https://gkymvotqrdecjjymmmef.supabase.co";
 export const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdreW12b3RxcmRlY2pqeW1tbWVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NzA5NTIsImV4cCI6MjA1NzA0Njk1Mn0.j7Os6vxWOT35pC3rLiDuMuDty7VJTWvw7khbZpPLijY";
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
-
+// Create the Supabase client with improved configuration
 export const supabase = createClient<Database>(
   SUPABASE_URL, 
   SUPABASE_PUBLISHABLE_KEY,
@@ -20,7 +18,17 @@ export const supabase = createClient<Database>(
       storage: localStorage
     },
     global: {
-      fetch: (url, options) => fetch(url, options),
+      fetch: (url, options) => {
+        const fullUrl = new URL(url.toString());
+        // Add cache-busting for auth operations to avoid caching issues
+        if (fullUrl.pathname.includes('auth')) {
+          fullUrl.searchParams.set('_', Date.now().toString());
+        }
+        return fetch(fullUrl.toString(), {
+          ...options,
+          credentials: 'same-origin'
+        });
+      },
       headers: {
         'X-App-Version': '1.0.0',
       }

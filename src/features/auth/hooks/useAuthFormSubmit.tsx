@@ -12,6 +12,7 @@ export const useAuthFormSubmit = () => {
     signUp, 
     loading: authLoading, 
     networkStatus, 
+    checkNetworkStatus,
     retryAttempts,
     incrementRetry,
     resetRetryAttempts
@@ -39,8 +40,9 @@ export const useAuthFormSubmit = () => {
     if (!validateForm()) return;
     setFormError('');
     
-    // Skip additional network check - we'll rely on the browser's navigator.onLine
-    if (!navigator.onLine) {
+    // Check network status
+    const isOnline = await checkNetworkStatus();
+    if (!isOnline) {
       setFormError('You are currently offline. Please check your internet connection and try again.');
       return;
     }
@@ -82,8 +84,9 @@ export const useAuthFormSubmit = () => {
     if (!validateForm()) return;
     setFormError('');
     
-    // Skip additional network check - we'll rely on the browser's navigator.onLine
-    if (!navigator.onLine) {
+    // Check network status
+    const isOnline = await checkNetworkStatus();
+    if (!isOnline) {
       setFormError('You are currently offline. Please check your internet connection and try again.');
       return;
     }
@@ -99,6 +102,8 @@ export const useAuthFormSubmit = () => {
       setActiveTab('signin');
       resetFields();
       
+      // Switch to sign in tab
+      setSignInEmail(email);
       toast.success("Registration successful! Please check your email to verify your account.");
     } catch (error: any) {
       console.error('Failed to sign up:', error);
@@ -131,17 +136,21 @@ export const useAuthFormSubmit = () => {
     setFormError: (error: string) => void
   ) => {
     setFormError('');
-    incrementRetry();
     
-    if (!navigator.onLine) {
+    // Check network status first
+    const isOnline = await checkNetworkStatus();
+    if (!isOnline) {
       setFormError('Still offline. Please check your internet connection and try again.');
       return;
     }
     
+    // Create a synthetic event to pass to the form handlers
+    const syntheticEvent = new CustomEvent('retry') as unknown as React.FormEvent<HTMLFormElement>;
+    
     if (activeTab === 'signin' && signInEmail && signInPassword) {
-      handleSignInSubmit(new CustomEvent('retry') as unknown as React.FormEvent<HTMLFormElement>);
+      handleSignInSubmit(syntheticEvent);
     } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
-      handleSignUpSubmit(new CustomEvent('retry') as unknown as React.FormEvent<HTMLFormElement>);
+      handleSignUpSubmit(syntheticEvent);
     }
   };
   
