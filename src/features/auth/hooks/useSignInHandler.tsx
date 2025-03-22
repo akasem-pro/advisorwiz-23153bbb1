@@ -10,7 +10,7 @@ export const useSignInHandler = () => {
   const { signIn } = useAuth();
   const { 
     validateNetworkConnection, 
-    handleAuthError
+    handleAuthError 
   } = useAuthCore();
   
   const handleSignIn = async (
@@ -21,31 +21,26 @@ export const useSignInHandler = () => {
     setFormError: (error: string) => void,
     setIsLoading: (loading: boolean) => void
   ) => {
-    if (e) {
-      e.preventDefault();
-    }
-    
+    e?.preventDefault();
+
     if (!validateForm()) return;
-    
-    // Clear previous errors
+
     setFormError('');
     setIsLoading(true);
-    
+
     try {
-      // Check network connection first
       const isOnline = await validateNetworkConnection(setFormError);
-      
+
       if (!isOnline) {
         setFormError('Unable to connect to authentication service. Please check your connection and try again.');
-        setIsLoading(false);
         return;
       }
-      
+
       console.log("Attempting sign in with:", { email });
+
       const success = await signIn(email, password);
-      
+
       if (!success) {
-        // Handle unsuccessful sign-in
         setFormError('Authentication failed. Please check your credentials and try again.');
       }
     } catch (error: any) {
@@ -54,6 +49,6 @@ export const useSignInHandler = () => {
       setIsLoading(false);
     }
   };
-  
+
   return { handleSignIn };
 };
