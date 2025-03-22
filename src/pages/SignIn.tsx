@@ -13,10 +13,10 @@ import PageSEO from '../components/seo/PageSEO';
 import { useAuth } from '../components/auth/AuthProvider';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '../components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, WifiOff } from 'lucide-react';
 
 const SignIn: React.FC = () => {
-  const { signIn, signUp, loading: authLoading } = useAuth();
+  const { signIn, signUp, loading: authLoading, networkStatus } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [signInEmail, setSignInEmail] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
@@ -27,28 +27,15 @@ const SignIn: React.FC = () => {
   const [formError, setFormError] = useState('');
   const navigate = useNavigate();
   
-  // Check if online on mount and when online status changes
+  // Update form error based on network status
   useEffect(() => {
-    const checkOnlineStatus = () => {
-      if (!navigator.onLine) {
-        setFormError('You appear to be offline. Please check your internet connection.');
-      } else {
-        setFormError('');
-      }
-    };
-    
-    // Check on mount
-    checkOnlineStatus();
-    
-    // Add event listeners
-    window.addEventListener('online', checkOnlineStatus);
-    window.addEventListener('offline', checkOnlineStatus);
-    
-    return () => {
-      window.removeEventListener('online', checkOnlineStatus);
-      window.removeEventListener('offline', checkOnlineStatus);
-    };
-  }, []);
+    if (networkStatus === 'offline') {
+      setFormError('You appear to be offline. Please check your internet connection.');
+    } else if (formError === 'You appear to be offline. Please check your internet connection.') {
+      // Clear the error only if it was the offline error
+      setFormError('');
+    }
+  }, [networkStatus, formError]);
   
   // Validation state
   const [errors, setErrors] = useState({
@@ -94,7 +81,7 @@ const SignIn: React.FC = () => {
     
     if (hasErrors) return;
     
-    if (!navigator.onLine) {
+    if (networkStatus === 'offline') {
       setFormError('Network error. Please check your connection and try again.');
       return;
     }
@@ -151,14 +138,16 @@ const SignIn: React.FC = () => {
     
     if (hasErrors) return;
     
-    if (!navigator.onLine) {
+    if (networkStatus === 'offline') {
       setFormError('Network error. Please check your connection and try again.');
       return;
     }
     
     setIsLoading(true);
+    setFormError(''); // Clear any previous errors
     
     try {
+      console.log('Attempting signup with:', { email: signUpEmail, passwordLength: signUpPassword.length });
       await signUp(signUpEmail, signUpPassword);
       
       // After successful signup, switch to signin tab
@@ -198,6 +187,10 @@ const SignIn: React.FC = () => {
     setFormError('');
   };
   
+  // Determine if buttons should be disabled
+  const isSignInDisabled = isLoading || authLoading || networkStatus === 'offline';
+  const isSignUpDisabled = isLoading || authLoading || networkStatus === 'offline';
+  
   return (
     <AnimatedRoute animation="fade">
       <PageSEO
@@ -226,9 +219,20 @@ const SignIn: React.FC = () => {
               
               {formError && (
                 <div className="px-4 pt-4">
-                  <Alert variant="destructive" className="border-red-500 text-red-500">
+                  <Alert variant="destructive" className="border-red-500 bg-red-50 text-red-600">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>{formError}</AlertDescription>
+                  </Alert>
+                </div>
+              )}
+              
+              {networkStatus === 'offline' && (
+                <div className="px-4 pt-4">
+                  <Alert className="border-amber-500 bg-amber-50 text-amber-700">
+                    <WifiOff className="h-4 w-4" />
+                    <AlertDescription>
+                      You are currently offline. Please check your internet connection to sign in or sign up.
+                    </AlertDescription>
                   </Alert>
                 </div>
               )}
@@ -272,7 +276,11 @@ const SignIn: React.FC = () => {
                         <p className="text-sm text-red-500">{errors.signInPassword}</p>
                       )}
                     </div>
-                    <Button type="submit" className="w-full" disabled={isLoading || !navigator.onLine}>
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      disabled={isSignInDisabled}
+                    >
                       {isLoading ? "Signing in..." : "Sign In"}
                     </Button>
                   </form>
@@ -328,7 +336,11 @@ const SignIn: React.FC = () => {
                         <p className="text-sm text-red-500">{errors.confirmPassword}</p>
                       )}
                     </div>
-                    <Button type="submit" className="w-full" disabled={isLoading || !navigator.onLine}>
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      disabled={isSignUpDisabled}
+                    >
                       {isLoading ? "Creating Account..." : "Sign Up"}
                     </Button>
                   </form>

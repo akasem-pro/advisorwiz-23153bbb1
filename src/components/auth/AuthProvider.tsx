@@ -13,6 +13,7 @@ type AuthContextType = {
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   loading: boolean;
+  networkStatus: 'online' | 'offline' | 'checking';
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -21,7 +22,8 @@ const AuthContext = createContext<AuthContextType>({
   signIn: async () => {},
   signUp: async () => {},
   signOut: async () => {},
-  loading: true
+  loading: true,
+  networkStatus: 'checking'
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -34,8 +36,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>('checking');
   const { setUserType, setIsAuthenticated, setConsumerProfile, setAdvisorProfile } = useUser();
   const navigate = useNavigate();
+
+  // Network status check
+  useEffect(() => {
+    const handleOnline = () => setNetworkStatus('online');
+    const handleOffline = () => setNetworkStatus('offline');
+    
+    // Check initial status
+    setNetworkStatus(navigator.onLine ? 'online' : 'offline');
+    
+    // Set up listeners for network status changes
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     // Set up auth state change listener FIRST
@@ -98,22 +119,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const checkNetworkConnectivity = () => {
-    if (!navigator.onLine) {
-      throw new Error('Network error. Please check your connection and try again.');
+  // Ping Supabase to verify connectivity
+  const checkSupabaseConnection = async (): Promise<boolean> => {
+    try {
+      // Simple test query to verify connection
+      await supabase.from('profiles').select('count').limit(1);
+      return true;
+    } catch (error) {
+      console.error("Supabase connection check failed:", error);
+      return false;
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
-      checkNetworkConnectivity();
       
-      // Add error handling for network issues
+      // Check if we're online
+      if (networkStatus === 'offline') {
+        throw new Error('You are currently offline. Please check your internet connection and try again.');
+      }
+      
+      // Test Supabase connection
+      const isConnected = await checkSupabaseConnection();
+      if (!isConnected) {
+        throw new Error('Unable to connect to the authentication service. Please try again later.');
+      }
+      
+      // Attempt sign in with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
+      
+      clearTimeout(timeoutId);
       
       if (error) throw error;
       
@@ -125,6 +167,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error: any) {
       console.error("Error signing in:", error.message);
+      
+      if (error.name === 'AbortError') {
+        throw new Error('The request took too long to complete. Please try again.');
+      }
       
       // Add more user-friendly error messages
       if (error.message?.includes('Failed to fetch') || navigator.onLine === false) {
@@ -142,13 +188,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signUp = async (email: string, password: string) => {
     try {
       setLoading(true);
-      checkNetworkConnectivity();
       
-      // Attempt the signup with a 10s timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      // Check if we're online
+      if (networkStatus === 'offline') {
+        throw new Error('You are currently offline. Please check your internet connection and try again.');
+      }
       
-      const { data, error } = await supabase.auth.signUp({
+      // Test Supabase connection
+      const isConnected = await checkSupabaseConnection();
+      if (!isConnected) {
+        throw new Error('Unable to connect to the authentication service. Please try again later.');
+      }
+      
+      console.log("Starting sign up process");
+      
+      // Attempt signup with timeout protection
+      const signupPromise = supabase.auth.signUp({
         email,
         password,
         options: {
@@ -156,7 +211,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       });
       
-      clearTimeout(timeoutId);
+      // Create a timeout promise
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('The request timed out. Please try again later.')), 15000);
+      });
+      
+      // Race the sign up request against the timeout
+      const result = await Promise.race([signupPromise, timeoutPromise]) as { data: any, error: any } | Error;
+      
+      // Handle timeout case
+      if (result instanceof Error) {
+        throw result;
+      }
+      
+      const { data, error } = result;
       
       if (error) throw error;
       
@@ -174,12 +242,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error("Error signing up:", error);
       
       // More user-friendly error messages
-      if (error.message?.includes('Failed to fetch') || navigator.onLine === false || error.code === 20) {
+      if (error.message?.includes('timed out')) {
+        throw new Error('The request took too long to complete. Please try again later.');
+      } else if (error.message?.includes('Failed to fetch') || navigator.onLine === false || error.code === 20) {
         throw new Error('Network error. Please check your connection and try again.');
       } else if (error.message?.includes('already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
       } else {
-        throw error;
+        throw new Error(error.message || 'An error occurred during sign up. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -201,7 +271,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, signIn, signUp, signOut, loading }}>
+    <AuthContext.Provider value={{ 
+      session, 
+      user, 
+      signIn, 
+      signUp, 
+      signOut, 
+      loading,
+      networkStatus 
+    }}>
       {children}
     </AuthContext.Provider>
   );
