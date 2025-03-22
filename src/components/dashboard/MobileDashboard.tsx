@@ -32,7 +32,7 @@ const MobileDashboard: React.FC<MobileDashboardProps> = ({
   return (
     <AnimatedRoute animation="fade">
       <div className="min-h-screen bg-slate-50 dark:bg-navy-900 flex flex-col">
-        <header className="bg-white dark:bg-navy-800 border-b border-slate-200 dark:border-navy-700 px-4 py-3 flex items-center justify-between">
+        <header className="bg-white dark:bg-navy-800 border-b border-slate-200 dark:border-navy-700 px-4 py-3 flex items-center justify-between fixed top-0 left-0 right-0 z-10">
           <Logo />
           <div className="flex items-center space-x-4">
             <button className="relative">
@@ -48,10 +48,10 @@ const MobileDashboard: React.FC<MobileDashboardProps> = ({
           </div>
         </header>
         
-        <main className="flex-grow p-4 mb-16">
+        <main className="flex-grow p-4 mb-16 mt-14">
           <div className="mb-4">
-            <h1 className="text-2xl font-serif font-bold text-navy-900 dark:text-slate-100">{title}</h1>
-            {subtitle && <p className="text-slate-600 dark:text-slate-400 mt-1">{subtitle}</p>}
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-navy-900 dark:text-slate-100">{title}</h1>
+            {subtitle && <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1">{subtitle}</p>}
           </div>
           {children}
         </main>

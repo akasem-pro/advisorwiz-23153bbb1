@@ -60,16 +60,16 @@ const AuthFormContainer: React.FC<AuthFormContainerProps> = ({
   signUpProps
 }) => {
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle className="text-2xl">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader className="px-4 sm:px-6 pt-6 pb-2">
+        <CardTitle className="text-xl sm:text-2xl text-center">{title}</CardTitle>
+        <CardDescription className="text-center text-sm sm:text-base">{description}</CardDescription>
       </CardHeader>
       
       <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="signin">Sign In</TabsTrigger>
-          <TabsTrigger value="signup">Sign Up</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 mb-2">
+          <TabsTrigger value="signin" className="text-sm sm:text-base py-2">Sign In</TabsTrigger>
+          <TabsTrigger value="signup" className="text-sm sm:text-base py-2">Sign Up</TabsTrigger>
         </TabsList>
         
         <AuthErrorAlert 
@@ -78,7 +78,7 @@ const AuthFormContainer: React.FC<AuthFormContainerProps> = ({
           onRetry={onRetry}
         />
         
-        <TabsContent value="signin">
+        <TabsContent value="signin" className="mt-0">
           <SignInForm
             onSubmit={onSignIn}
             email={signInProps.email}
@@ -94,7 +94,7 @@ const AuthFormContainer: React.FC<AuthFormContainerProps> = ({
           />
         </TabsContent>
         
-        <TabsContent value="signup">
+        <TabsContent value="signup" className="mt-0">
           <SignUpForm
             onSubmit={onSignUp}
             email={signUpProps.email}
@@ -114,8 +114,8 @@ const AuthFormContainer: React.FC<AuthFormContainerProps> = ({
         </TabsContent>
       </Tabs>
       
-      <CardFooter className="flex flex-col space-y-4 pt-2">
-        <div className="text-center text-sm">
+      <CardFooter className="flex flex-col space-y-3 pt-0 px-4 sm:px-6 pb-4">
+        <div className="text-center text-xs sm:text-sm">
           By continuing, you agree to our{' '}
           <Link to="/terms" className="text-teal-600 hover:text-teal-500 font-medium">
             Terms of Service

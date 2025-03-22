@@ -35,10 +35,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
   isDisabled
 }) => {
   return (
-    <CardContent className="pt-4">
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="registerEmail">Email</Label>
+    <CardContent className="pt-2 px-4 sm:px-6">
+      <form onSubmit={onSubmit} className="space-y-3">
+        <div className="space-y-1">
+          <Label htmlFor="registerEmail" className="text-sm">Email</Label>
           <Input 
             id="registerEmail" 
             name="registerEmail" 
@@ -47,14 +47,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             value={email} 
             onChange={(e) => setEmail(e.target.value)} 
             disabled={isLoading}
-            className={errors.signUpEmail ? "border-red-500" : ""}
+            className={`h-11 ${errors.signUpEmail ? "border-red-500" : ""}`}
           />
           {errors.signUpEmail && (
-            <p className="text-sm text-red-500">{errors.signUpEmail}</p>
+            <p className="text-xs sm:text-sm text-red-500">{errors.signUpEmail}</p>
           )}
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="registerPassword">Password</Label>
+        <div className="space-y-1">
+          <Label htmlFor="registerPassword" className="text-sm">Password</Label>
           <Input 
             id="registerPassword" 
             name="registerPassword" 
@@ -62,14 +62,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             value={password} 
             onChange={(e) => setPassword(e.target.value)} 
             disabled={isLoading}
-            className={errors.signUpPassword ? "border-red-500" : ""}
+            className={`h-11 ${errors.signUpPassword ? "border-red-500" : ""}`}
           />
           {errors.signUpPassword && (
-            <p className="text-sm text-red-500">{errors.signUpPassword}</p>
+            <p className="text-xs sm:text-sm text-red-500">{errors.signUpPassword}</p>
           )}
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
+        <div className="space-y-1">
+          <Label htmlFor="confirmPassword" className="text-sm">Confirm Password</Label>
           <Input 
             id="confirmPassword" 
             name="confirmPassword" 
@@ -77,15 +77,15 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             value={confirmPassword} 
             onChange={(e) => setConfirmPassword(e.target.value)} 
             disabled={isLoading}
-            className={errors.confirmPassword ? "border-red-500" : ""}
+            className={`h-11 ${errors.confirmPassword ? "border-red-500" : ""}`}
           />
           {errors.confirmPassword && (
-            <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+            <p className="text-xs sm:text-sm text-red-500">{errors.confirmPassword}</p>
           )}
         </div>
         <Button 
           type="submit" 
-          className="w-full" 
+          className="w-full h-11 text-base" 
           disabled={isDisabled}
         >
           {isLoading ? "Creating Account..." : "Sign Up"}
