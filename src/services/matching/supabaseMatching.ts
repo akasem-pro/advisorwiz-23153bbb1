@@ -1,4 +1,3 @@
-
 import { supabase } from '../../integrations/supabase/client';
 import { AdvisorProfile, ConsumerProfile, ServiceCategory } from '../../types/userTypes';
 import { trackPerformance } from '../../utils/matchingPerformance';
@@ -321,6 +320,16 @@ const getConsumerProfile = async (consumerId: string): Promise<ConsumerProfile |
       return null;
     }
     
+    // Define valid timeline types
+    type StartTimeline = "immediately" | "next_3_months" | "next_6_months" | "not_sure";
+    
+    // Convert string timeline to valid enum or use "not_sure" as default
+    const validTimelineValues: StartTimeline[] = ["immediately", "next_3_months", "next_6_months", "not_sure"];
+    const startTimeline = consumerData.start_timeline && 
+      validTimelineValues.includes(consumerData.start_timeline as StartTimeline) 
+        ? (consumerData.start_timeline as StartTimeline) 
+        : "not_sure";
+    
     return {
       id: profileData.id,
       name: `${profileData.first_name} ${profileData.last_name}`,
@@ -337,7 +346,7 @@ const getConsumerProfile = async (consumerId: string): Promise<ConsumerProfile |
       profilePicture: profileData.avatar_url,
       chatEnabled: profileData.chat_enabled,
       appointments: [],
-      startTimeline: consumerData.start_timeline || null,
+      startTimeline: startTimeline,
       onlineStatus: profileData.online_status || 'offline',
       lastOnline: profileData.last_online || new Date().toISOString(),
       showOnlineStatus: profileData.show_online_status

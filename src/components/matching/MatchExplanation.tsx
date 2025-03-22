@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/
 import MatchFeedback from './MatchFeedback';
 import { storeMatchFeedback } from '../../services/matching/supabaseMatching';
 import { useUser } from '../../context/UserContext';
+import { supabase } from '../../integrations/supabase/client';
 
 interface MatchExplanationProps {
   score: number;
