@@ -16,21 +16,23 @@ import { toast } from 'sonner';
 const SignIn: React.FC = () => {
   const { signIn, signUp } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
+  const [signUpEmail, setSignUpEmail] = useState('');
+  const [signUpPassword, setSignUpPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
   
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     
-    const form = e.currentTarget;
-    const email = (form.elements.namedItem('email') as HTMLInputElement).value;
-    const password = (form.elements.namedItem('password') as HTMLInputElement).value;
-    
     try {
-      await signIn(email, password);
-      navigate('/');
-    } catch (error) {
+      await signIn(signInEmail, signInPassword);
+      // Navigation will be handled in AuthProvider after successful login
+    } catch (error: any) {
       console.error('Failed to sign in:', error);
+      toast.error(error.message || 'Failed to sign in');
     } finally {
       setIsLoading(false);
     }
@@ -38,24 +40,32 @@ const SignIn: React.FC = () => {
   
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
     
-    const form = e.currentTarget;
-    const email = (form.elements.namedItem('registerEmail') as HTMLInputElement).value;
-    const password = (form.elements.namedItem('registerPassword') as HTMLInputElement).value;
-    const confirmPassword = (form.elements.namedItem('confirmPassword') as HTMLInputElement).value;
-    
-    if (password !== confirmPassword) {
-      toast.error("Passwords don't match");
-      setIsLoading(false);
+    if (!signUpEmail || !signUpPassword) {
+      toast.error('Please fill in all required fields');
       return;
     }
     
+    if (signUpPassword !== confirmPassword) {
+      toast.error("Passwords don't match");
+      return;
+    }
+    
+    setIsLoading(true);
+    
     try {
-      await signUp(email, password);
+      await signUp(signUpEmail, signUpPassword);
+      toast.success("Registration successful! Please check your email to verify your account.");
       // Don't navigate immediately after signup as user may need to verify email
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to sign up:', error);
+      
+      // More user-friendly error message
+      if (error.message?.includes('Failed to fetch')) {
+        toast.error('Network error. Please check your connection and try again.');
+      } else {
+        toast.error(error.message || 'Failed to sign up');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -92,7 +102,15 @@ const SignIn: React.FC = () => {
                   <form onSubmit={handleSignIn} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" name="email" type="email" placeholder="name@example.com" required />
+                      <Input 
+                        id="email" 
+                        name="email" 
+                        type="email" 
+                        placeholder="name@example.com" 
+                        value={signInEmail} 
+                        onChange={(e) => setSignInEmail(e.target.value)} 
+                        required 
+                      />
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
@@ -101,7 +119,14 @@ const SignIn: React.FC = () => {
                           Forgot password?
                         </Link>
                       </div>
-                      <Input id="password" name="password" type="password" required />
+                      <Input 
+                        id="password" 
+                        name="password" 
+                        type="password" 
+                        value={signInPassword} 
+                        onChange={(e) => setSignInPassword(e.target.value)} 
+                        required 
+                      />
                     </div>
                     <Button type="submit" className="w-full" disabled={isLoading}>
                       {isLoading ? "Signing in..." : "Sign In"}
@@ -115,15 +140,37 @@ const SignIn: React.FC = () => {
                   <form onSubmit={handleSignUp} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="registerEmail">Email</Label>
-                      <Input id="registerEmail" name="registerEmail" type="email" placeholder="name@example.com" required />
+                      <Input 
+                        id="registerEmail" 
+                        name="registerEmail" 
+                        type="email" 
+                        placeholder="name@example.com" 
+                        value={signUpEmail} 
+                        onChange={(e) => setSignUpEmail(e.target.value)} 
+                        required 
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="registerPassword">Password</Label>
-                      <Input id="registerPassword" name="registerPassword" type="password" required />
+                      <Input 
+                        id="registerPassword" 
+                        name="registerPassword" 
+                        type="password" 
+                        value={signUpPassword} 
+                        onChange={(e) => setSignUpPassword(e.target.value)} 
+                        required 
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="confirmPassword">Confirm Password</Label>
-                      <Input id="confirmPassword" name="confirmPassword" type="password" required />
+                      <Input 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        type="password" 
+                        value={confirmPassword} 
+                        onChange={(e) => setConfirmPassword(e.target.value)} 
+                        required 
+                      />
                     </div>
                     <Button type="submit" className="w-full" disabled={isLoading}>
                       {isLoading ? "Creating Account..." : "Sign Up"}

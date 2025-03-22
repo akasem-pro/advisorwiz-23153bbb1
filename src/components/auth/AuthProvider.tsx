@@ -110,13 +110,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error: any) {
       console.error("Error signing in:", error.message);
-      toast.error(error.message || "Failed to sign in");
-      throw error;
+      
+      // Add more user-friendly error messages
+      if (error.message?.includes('Failed to fetch')) {
+        throw new Error('Network error. Please check your connection and try again.');
+      } else if (error.message?.includes('Invalid login credentials')) {
+        throw new Error('Invalid email or password. Please try again.');
+      } else {
+        throw error;
+      }
     }
   };
 
   const signUp = async (email: string, password: string) => {
     try {
+      // Add error handling for network issues
       const { data, error } = await supabase.auth.signUp({
         email,
         password
@@ -124,16 +132,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (error) throw error;
       
-      toast.success("Registration successful! Please check your email to verify your account.");
-      
       if (data.user) {
-        // Wait for verification before redirecting in a real app
-        // For development without email verification, user would be logged in automatically
+        if (data.user.identities && data.user.identities.length === 0) {
+          throw new Error('This email is already registered. Please sign in instead.');
+        }
+        
+        toast.success("Registration successful! Please check your email to verify your account.");
       }
     } catch (error: any) {
-      console.error("Error signing up:", error.message);
-      toast.error(error.message || "Failed to sign up");
-      throw error;
+      console.error("Error signing up:", error);
+      
+      // More user-friendly error messages
+      if (error.message?.includes('Failed to fetch')) {
+        throw new Error('Network error. Please check your connection and try again.');
+      } else {
+        throw error;
+      }
     }
   };
 
