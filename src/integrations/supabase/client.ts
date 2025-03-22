@@ -88,4 +88,3 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     return true;
   }
 };
-
