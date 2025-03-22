@@ -20,7 +20,7 @@ export const supabase = createClient<Database>(
       storage: localStorage
     },
     global: {
-      fetch: (...args) => fetch(...args),
+      fetch: (url, options) => fetch(url, options),
       headers: {
         'X-App-Version': '1.0.0',
       }
