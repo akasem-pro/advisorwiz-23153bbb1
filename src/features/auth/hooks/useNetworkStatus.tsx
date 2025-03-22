@@ -10,12 +10,12 @@ export const useNetworkStatus = () => {
   );
   const [lastChecked, setLastChecked] = useState<Date>(new Date());
 
-  const checkNetworkStatus = useCallback(() => {
-    // Simply use the browser's navigator.onLine
+  const checkNetworkStatus = useCallback((): Promise<boolean> => {
+    // Simply use the browser's navigator.onLine and return as a Promise
     const isOnline = navigator.onLine;
     setNetworkStatus(isOnline ? 'online' : 'offline');
     setLastChecked(new Date());
-    return isOnline;
+    return Promise.resolve(isOnline);
   }, []);
 
   useEffect(() => {

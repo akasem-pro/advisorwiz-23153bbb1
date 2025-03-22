@@ -20,6 +20,6 @@ export const supabase = createClient<Database>(
 );
 
 // Simple function to check if we're online according to the browser
-export const checkSupabaseConnection = () => {
+export const checkSupabaseConnection = (): Promise<boolean> => {
   return Promise.resolve(navigator.onLine);
 };
