@@ -20,22 +20,6 @@ export const supabase = createClient<Database>(
     global: {
       headers: {
         'x-application-name': 'advisorwiz'
-      },
-      // Adding fetch retries for better reliability
-      fetch: (url, options) => {
-        const fetchWithRetry = async (attempt = 1) => {
-          try {
-            return await fetch(url, { ...options, cache: 'no-store' });
-          } catch (error) {
-            if (attempt <= 3) {
-              // Wait before retrying (exponential backoff)
-              await new Promise(r => setTimeout(r, 1000 * attempt));
-              return fetchWithRetry(attempt + 1);
-            }
-            throw error;
-          }
-        };
-        return fetchWithRetry();
       }
     }
   }
@@ -46,26 +30,22 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
     // First check browser's online status
     if (!navigator.onLine) {
-      return false;
+      return Promise.resolve(false);
     }
     
-    // Try to ping Supabase
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-    
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/?apikey=${SUPABASE_PUBLISHABLE_KEY}`, {
+    // Try a simple ping to Supabase
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
       method: 'HEAD',
-      signal: controller.signal,
       headers: {
         'apikey': SUPABASE_PUBLISHABLE_KEY,
-        'cache-control': 'no-store'
+        'Content-Type': 'application/json'
       }
     });
     
-    clearTimeout(timeoutId);
     return response.ok;
   } catch (error) {
     console.error("Supabase connection check failed:", error);
-    return false;
+    // Fallback to browser's online status if request fails
+    return Promise.resolve(navigator.onLine);
   }
 };

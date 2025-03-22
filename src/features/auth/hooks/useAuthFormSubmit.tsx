@@ -44,18 +44,6 @@ export const useAuthFormSubmit = () => {
     setIsLoading(true);
     resetRetryAttempts();
     
-    // First check network connectivity
-    if (networkStatus === 'offline') {
-      // Verify network status before showing error
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
-        setFormError('Network error. Please check your connection and try again.');
-        setIsLoading(false);
-        incrementRetry();
-        return;
-      }
-    }
-    
     try {
       console.log("Attempting sign in with:", { email });
       await signIn(email, password);
@@ -92,18 +80,6 @@ export const useAuthFormSubmit = () => {
     setFormError('');
     setIsLoading(true);
     resetRetryAttempts();
-    
-    // First check network connectivity
-    if (networkStatus === 'offline') {
-      // Verify network status before showing error
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
-        setFormError('Network error. Please check your connection and try again.');
-        setIsLoading(false);
-        incrementRetry();
-        return;
-      }
-    }
     
     try {
       console.log('Attempting signup with:', { email });
@@ -146,7 +122,12 @@ export const useAuthFormSubmit = () => {
     setFormError: (error: string) => void
   ) => {
     // First check network status before attempting retry
-    await checkNetworkStatus();
+    const isOnline = await checkNetworkStatus();
+    
+    if (!isOnline) {
+      setFormError('You are still offline. Please check your connection and try again.');
+      return;
+    }
     
     setFormError('');
     

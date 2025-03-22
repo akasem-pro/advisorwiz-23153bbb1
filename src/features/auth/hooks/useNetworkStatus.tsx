@@ -16,23 +16,26 @@ export const useNetworkStatus = () => {
     try {
       setNetworkStatus('checking');
       
-      // Basic check using navigator.onLine
+      // First quick check using navigator.onLine
       if (!navigator.onLine) {
         setNetworkStatus('offline');
         setLastChecked(new Date());
-        return false;
+        return Promise.resolve(false);
       }
       
-      // Attempt a lightweight fetch to verify actual connectivity
-      // Using a reliable endpoint to check connectivity
+      // For more reliability, try a simple head request to the supabase domain
+      // This doesn't require auth and just checks if the domain is reachable
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       
-      const response = await fetch('https://www.google.com/generate_204', {
+      const response = await fetch('https://gkymvotqrdecjjymmmef.supabase.co/rest/v1/', {
         method: 'HEAD',
-        mode: 'no-cors', // This works for cross-origin requests
+        mode: 'cors',
         cache: 'no-store',
-        signal: controller.signal
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       
       clearTimeout(timeoutId);
@@ -43,9 +46,13 @@ export const useNetworkStatus = () => {
       return true;
     } catch (error) {
       console.log("Network check failed:", error);
-      setNetworkStatus('offline');
+      
+      // If navigator says we're online but the request failed, we might have limited connectivity
+      // In this case, we'll trust navigator.onLine as a fallback
+      const isOnline = navigator.onLine;
+      setNetworkStatus(isOnline ? 'online' : 'offline');
       setLastChecked(new Date());
-      return false;
+      return isOnline;
     }
   }, []);
 
@@ -55,7 +62,6 @@ export const useNetworkStatus = () => {
     
     const handleOnline = () => {
       console.log("Browser reports online status");
-      // Don't immediately trust the browser - verify with a real request
       checkNetworkStatus();
     };
     

@@ -1,6 +1,6 @@
 
 import { useNavigate } from 'react-router-dom';
-import { supabase, checkSupabaseConnection } from '../../../integrations/supabase/client';
+import { supabase } from '../../../integrations/supabase/client';
 import { toast } from 'sonner';
 
 /**
@@ -33,9 +33,8 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // First check network connectivity
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
+      // Trust browser's online status
+      if (!navigator.onLine) {
         throw new Error('Network error. Please check your connection and try again.');
       }
       
@@ -70,13 +69,7 @@ export const useAuthOperations = (
       if (error.message?.includes('Invalid login credentials')) {
         throw new Error('Invalid email or password. Please try again.');
       } else if (error.message?.includes('network') || error.message?.includes('fetch') || !navigator.onLine) {
-        // Check connection again to be sure
-        const isOnline = await checkSupabaseConnection();
-        if (!isOnline) {
-          throw new Error('Network error. Please check your connection and try again.');
-        } else {
-          throw new Error('Connection issue with the authentication service. Please try again.');
-        }
+        throw new Error('Network error. Please check your connection and try again.');
       } else {
         throw error;
       }
@@ -89,9 +82,8 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // First check network connectivity
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
+      // Trust browser's online status
+      if (!navigator.onLine) {
         throw new Error('Network error. Please check your connection and try again.');
       }
       
@@ -126,13 +118,7 @@ export const useAuthOperations = (
       if (error.message?.includes('email already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
       } else if (error.message?.includes('network') || error.message?.includes('fetch') || !navigator.onLine) {
-        // Check connection again to be sure
-        const isOnline = await checkSupabaseConnection();
-        if (!isOnline) {
-          throw new Error('Network error. Please check your connection and try again.');
-        } else {
-          throw new Error('Connection issue with the authentication service. Please try again.');
-        }
+        throw new Error('Network error. Please check your connection and try again.');
       } else {
         throw new Error(error.message || 'An error occurred during sign up. Please try again.');
       }
