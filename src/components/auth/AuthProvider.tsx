@@ -58,18 +58,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
-      setIsAuthenticated(!!currentSession);
-      setLoading(false);
-      
-      // Fetch user profile to determine user type if logged in
-      if (currentSession?.user) {
-        fetchUserProfile(currentSession.user.id);
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+        setIsAuthenticated(!!currentSession);
+        setLoading(false);
+        
+        // Fetch user profile to determine user type if logged in
+        if (currentSession?.user) {
+          fetchUserProfile(currentSession.user.id);
+        }
+      } catch (error) {
+        console.error("Failed to get session:", error);
+        setLoading(false);
       }
-    });
+    };
 
+    initializeAuth();
     return () => subscription.unsubscribe();
   }, []);
 
@@ -85,17 +92,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Logic to set user type based on profile
         // For demo, this would typically be stored in the profile
         // Here we're just using a simple approach
-        
-        // In a real app, you might have a role or user_type field in the profile
       }
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }
   };
 
+  const checkNetworkConnectivity = () => {
+    if (!navigator.onLine) {
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+  };
+
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
+      checkNetworkConnectivity();
+      
+      // Add error handling for network issues
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -128,17 +142,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signUp = async (email: string, password: string) => {
     try {
       setLoading(true);
+      checkNetworkConnectivity();
       
-      // First check network connectivity
-      if (!navigator.onLine) {
-        throw new Error('Network error. Please check your connection and try again.');
-      }
+      // Attempt the signup with a 10s timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
       
-      // Add error handling for network issues
       const { data, error } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          emailRedirectTo: window.location.origin
+        }
       });
+      
+      clearTimeout(timeoutId);
       
       if (error) throw error;
       
@@ -156,8 +174,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error("Error signing up:", error);
       
       // More user-friendly error messages
-      if (error.message?.includes('Failed to fetch') || navigator.onLine === false) {
+      if (error.message?.includes('Failed to fetch') || navigator.onLine === false || error.code === 20) {
         throw new Error('Network error. Please check your connection and try again.');
+      } else if (error.message?.includes('already registered')) {
+        throw new Error('This email is already registered. Please sign in instead.');
       } else {
         throw error;
       }

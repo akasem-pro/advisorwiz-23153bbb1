@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -12,9 +12,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import PageSEO from '../components/seo/PageSEO';
 import { useAuth } from '../components/auth/AuthProvider';
 import { toast } from 'sonner';
+import { Alert, AlertDescription } from '../components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 const SignIn: React.FC = () => {
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, loading: authLoading } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [signInEmail, setSignInEmail] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
@@ -22,7 +24,31 @@ const SignIn: React.FC = () => {
   const [signUpPassword, setSignUpPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [activeTab, setActiveTab] = useState('signin');
+  const [formError, setFormError] = useState('');
   const navigate = useNavigate();
+  
+  // Check if online on mount and when online status changes
+  useEffect(() => {
+    const checkOnlineStatus = () => {
+      if (!navigator.onLine) {
+        setFormError('You appear to be offline. Please check your internet connection.');
+      } else {
+        setFormError('');
+      }
+    };
+    
+    // Check on mount
+    checkOnlineStatus();
+    
+    // Add event listeners
+    window.addEventListener('online', checkOnlineStatus);
+    window.addEventListener('offline', checkOnlineStatus);
+    
+    return () => {
+      window.removeEventListener('online', checkOnlineStatus);
+      window.removeEventListener('offline', checkOnlineStatus);
+    };
+  }, []);
   
   // Validation state
   const [errors, setErrors] = useState({
@@ -31,7 +57,6 @@ const SignIn: React.FC = () => {
     signUpEmail: '',
     signUpPassword: '',
     confirmPassword: '',
-    general: ''
   });
   
   const validateEmail = (email: string) => {
@@ -48,8 +73,8 @@ const SignIn: React.FC = () => {
       signUpEmail: '',
       signUpPassword: '',
       confirmPassword: '',
-      general: ''
     });
+    setFormError('');
     
     // Validate inputs
     let hasErrors = false;
@@ -69,20 +94,19 @@ const SignIn: React.FC = () => {
     
     if (hasErrors) return;
     
+    if (!navigator.onLine) {
+      setFormError('Network error. Please check your connection and try again.');
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
-      // Check network connectivity first
-      if (!navigator.onLine) {
-        throw new Error('Network error. Please check your connection and try again.');
-      }
-      
       await signIn(signInEmail, signInPassword);
       // Navigation will be handled in AuthProvider after successful login
     } catch (error: any) {
       console.error('Failed to sign in:', error);
-      toast.error(error.message || 'Failed to sign in');
-      setErrors(prev => ({ ...prev, general: error.message }));
+      setFormError(error.message || 'Failed to sign in');
     } finally {
       setIsLoading(false);
     }
@@ -98,8 +122,8 @@ const SignIn: React.FC = () => {
       signUpEmail: '',
       signUpPassword: '',
       confirmPassword: '',
-      general: ''
     });
+    setFormError('');
     
     // Validate inputs
     let hasErrors = false;
@@ -127,14 +151,14 @@ const SignIn: React.FC = () => {
     
     if (hasErrors) return;
     
+    if (!navigator.onLine) {
+      setFormError('Network error. Please check your connection and try again.');
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
-      // Check network connectivity first
-      if (!navigator.onLine) {
-        throw new Error('Network error. Please check your connection and try again.');
-      }
-      
       await signUp(signUpEmail, signUpPassword);
       
       // After successful signup, switch to signin tab
@@ -149,12 +173,12 @@ const SignIn: React.FC = () => {
       console.error('Failed to sign up:', error);
       
       if (error.message?.includes('already registered')) {
-        toast.error('This email is already registered. Please sign in instead.');
+        setFormError('This email is already registered. Please sign in instead.');
+        // Automatically switch to sign in tab and prefill email
         setActiveTab('signin');
         setSignInEmail(signUpEmail);
       } else {
-        toast.error(error.message || 'Failed to sign up');
-        setErrors(prev => ({ ...prev, general: error.message }));
+        setFormError(error.message || 'Failed to sign up');
       }
     } finally {
       setIsLoading(false);
@@ -170,8 +194,8 @@ const SignIn: React.FC = () => {
       signUpEmail: '',
       signUpPassword: '',
       confirmPassword: '',
-      general: ''
     });
+    setFormError('');
   };
   
   return (
@@ -200,9 +224,12 @@ const SignIn: React.FC = () => {
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
               
-              {errors.general && (
-                <div className="px-4 py-2 mt-4 text-sm text-red-600 bg-red-50 rounded-md">
-                  {errors.general}
+              {formError && (
+                <div className="px-4 pt-4">
+                  <Alert variant="destructive" className="border-red-500 text-red-500">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{formError}</AlertDescription>
+                  </Alert>
                 </div>
               )}
               
@@ -245,7 +272,7 @@ const SignIn: React.FC = () => {
                         <p className="text-sm text-red-500">{errors.signInPassword}</p>
                       )}
                     </div>
-                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Button type="submit" className="w-full" disabled={isLoading || !navigator.onLine}>
                       {isLoading ? "Signing in..." : "Sign In"}
                     </Button>
                   </form>
@@ -301,7 +328,7 @@ const SignIn: React.FC = () => {
                         <p className="text-sm text-red-500">{errors.confirmPassword}</p>
                       )}
                     </div>
-                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Button type="submit" className="w-full" disabled={isLoading || !navigator.onLine}>
                       {isLoading ? "Creating Account..." : "Sign Up"}
                     </Button>
                   </form>
