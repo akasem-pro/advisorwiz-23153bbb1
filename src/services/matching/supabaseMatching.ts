@@ -1,3 +1,4 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { AdvisorProfile, ConsumerProfile, ServiceCategory } from '../../types/userTypes';
 import { trackPerformance } from '../../utils/matchingPerformance';
@@ -241,13 +242,13 @@ export const calculateAndStoreCompatibilityScores = async (
 };
 
 /**
- * Get advisor profile from database
+ * Get advisor profile from database with enhanced fields
  */
 const getAdvisorProfile = async (advisorId: string): Promise<AdvisorProfile | null> => {
   try {
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, avatar_url, email, phone, online_status, last_online, show_online_status, chat_enabled')
+      .select('id, first_name, last_name, avatar_url, email, phone, online_status, last_online, show_online_status, chat_enabled, city, state, country')
       .eq('id', advisorId)
       .single();
     
@@ -257,13 +258,22 @@ const getAdvisorProfile = async (advisorId: string): Promise<AdvisorProfile | nu
     
     const { data: advisorData, error: advisorError } = await supabase
       .from('advisor_profiles')
-      .select('organization, is_accredited, website, languages, expertise, hourly_rate, portfolio_fee, assets_under_management')
+      .select('organization, is_accredited, website, languages, expertise, hourly_rate, portfolio_fee, assets_under_management, years_of_experience, average_rating, rating_count, biography, certifications')
       .eq('id', advisorId)
       .single();
     
     if (advisorError || !advisorData) {
       return null;
     }
+    
+    // Get specializations
+    const { data: specializationsData } = await supabase
+      .from('advisor_specializations')
+      .select('specialization_id, specializations(name)')
+      .eq('advisor_id', advisorId);
+    
+    const specializations = specializationsData ? 
+      specializationsData.map(s => s.specializations?.name || '') : [];
     
     return {
       id: profileData.id,
@@ -279,6 +289,17 @@ const getAdvisorProfile = async (advisorId: string): Promise<AdvisorProfile | nu
       },
       assetsUnderManagement: advisorData.assets_under_management || 0,
       expertise: advisorData.expertise || [],
+      specializations: specializations.filter(Boolean),
+      yearsOfExperience: advisorData.years_of_experience || 0,
+      averageRating: advisorData.average_rating || 0,
+      ratingCount: advisorData.rating_count || 0,
+      biography: advisorData.biography || '',
+      certifications: advisorData.certifications || [],
+      location: {
+        city: profileData.city || '',
+        state: profileData.state || '',
+        country: profileData.country || 'US'
+      },
       matches: [],
       chats: [],
       profilePicture: profileData.avatar_url,
@@ -296,13 +317,13 @@ const getAdvisorProfile = async (advisorId: string): Promise<AdvisorProfile | nu
 };
 
 /**
- * Get consumer profile from database
+ * Get consumer profile from database with enhanced fields
  */
 const getConsumerProfile = async (consumerId: string): Promise<ConsumerProfile | null> => {
   try {
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, avatar_url, email, phone, online_status, last_online, show_online_status, chat_enabled')
+      .select('id, first_name, last_name, avatar_url, email, phone, online_status, last_online, show_online_status, chat_enabled, city, state, country')
       .eq('id', consumerId)
       .single();
     
@@ -312,7 +333,7 @@ const getConsumerProfile = async (consumerId: string): Promise<ConsumerProfile |
     
     const { data: consumerData, error: consumerError } = await supabase
       .from('consumer_profiles')
-      .select('age, investable_assets, risk_tolerance, preferred_communication, preferred_language, service_needs, investment_amount, start_timeline')
+      .select('age, investable_assets, risk_tolerance, preferred_communication, preferred_language, service_needs, investment_amount, start_timeline, financial_goals, income_bracket, preferred_advisor_specialties')
       .eq('id', consumerId)
       .single();
     
@@ -341,6 +362,14 @@ const getConsumerProfile = async (consumerId: string): Promise<ConsumerProfile |
       preferredLanguage: consumerData.preferred_language || [],
       serviceNeeds: consumerData.service_needs || [],
       investmentAmount: consumerData.investment_amount,
+      financialGoals: consumerData.financial_goals || [],
+      incomeBracket: consumerData.income_bracket || '',
+      preferredAdvisorSpecialties: consumerData.preferred_advisor_specialties || [],
+      location: {
+        city: profileData.city || '',
+        state: profileData.state || '',
+        country: profileData.country || 'US'
+      },
       matches: [],
       chats: [],
       profilePicture: profileData.avatar_url,
@@ -354,5 +383,296 @@ const getConsumerProfile = async (consumerId: string): Promise<ConsumerProfile |
   } catch (err) {
     console.error('Exception getting consumer profile:', err);
     return null;
+  }
+};
+
+/**
+ * Get appointments for a user
+ */
+export const getUserAppointments = async (userId: string): Promise<any[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('appointments')
+      .select(`
+        *,
+        advisor:advisor_id(
+          profiles(first_name, last_name, avatar_url)
+        ),
+        consumer:consumer_id(
+          profiles(first_name, last_name, avatar_url)
+        )
+      `)
+      .or(`advisor_id.eq.${userId},consumer_id.eq.${userId}`)
+      .order('scheduled_start', { ascending: true });
+    
+    if (error) {
+      console.error('Error getting appointments:', error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (err) {
+    console.error('Exception getting appointments:', err);
+    return [];
+  }
+};
+
+/**
+ * Create a new appointment
+ */
+export const createAppointment = async (
+  advisorId: string,
+  consumerId: string,
+  title: string,
+  description: string,
+  startTime: string,
+  endTime: string
+): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from('appointments')
+      .insert({
+        advisor_id: advisorId,
+        consumer_id: consumerId,
+        title,
+        description,
+        scheduled_start: startTime,
+        scheduled_end: endTime,
+        status: 'pending'
+      });
+    
+    if (error) {
+      console.error('Error creating appointment:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (err) {
+    console.error('Exception creating appointment:', err);
+    return false;
+  }
+};
+
+/**
+ * Get chat messages between two users
+ */
+export const getChatMessages = async (userId1: string, userId2: string): Promise<any[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .or(`and(sender_id.eq.${userId1},recipient_id.eq.${userId2}),and(sender_id.eq.${userId2},recipient_id.eq.${userId1})`)
+      .order('created_at', { ascending: true });
+    
+    if (error) {
+      console.error('Error getting chat messages:', error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (err) {
+    console.error('Exception getting chat messages:', err);
+    return [];
+  }
+};
+
+/**
+ * Send a chat message
+ */
+export const sendChatMessage = async (
+  senderId: string,
+  recipientId: string,
+  content: string
+): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .insert({
+        sender_id: senderId,
+        recipient_id: recipientId,
+        content
+      });
+    
+    if (error) {
+      console.error('Error sending chat message:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (err) {
+    console.error('Exception sending chat message:', err);
+    return false;
+  }
+};
+
+/**
+ * Get reviews for an advisor
+ */
+export const getAdvisorReviews = async (advisorId: string): Promise<any[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select(`
+        *,
+        consumer:consumer_id(
+          profiles(first_name, last_name, avatar_url)
+        )
+      `)
+      .eq('advisor_id', advisorId)
+      .eq('is_public', true)
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error getting advisor reviews:', error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (err) {
+    console.error('Exception getting advisor reviews:', err);
+    return [];
+  }
+};
+
+/**
+ * Submit a review for an advisor
+ */
+export const submitAdvisorReview = async (
+  consumerId: string,
+  advisorId: string,
+  rating: number,
+  reviewText: string,
+  isPublic: boolean = true
+): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from('reviews')
+      .insert({
+        consumer_id: consumerId,
+        advisor_id: advisorId,
+        rating,
+        review_text: reviewText,
+        is_public: isPublic
+      });
+    
+    if (error) {
+      console.error('Error submitting advisor review:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (err) {
+    console.error('Exception submitting advisor review:', err);
+    return false;
+  }
+};
+
+/**
+ * Get user notifications
+ */
+export const getUserNotifications = async (userId: string): Promise<any[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error getting notifications:', error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (err) {
+    console.error('Exception getting notifications:', err);
+    return [];
+  }
+};
+
+/**
+ * Mark notification as read
+ */
+export const markNotificationAsRead = async (notificationId: string): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from('notifications')
+      .update({ read: true })
+      .eq('id', notificationId);
+    
+    if (error) {
+      console.error('Error marking notification as read:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (err) {
+    console.error('Exception marking notification as read:', err);
+    return false;
+  }
+};
+
+/**
+ * Get user match preferences
+ */
+export const getUserMatchPreferences = async (userId: string): Promise<MatchPreferences | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('user_preferences')
+      .select('matching_preferences')
+      .eq('user_id', userId)
+      .single();
+    
+    if (error || !data) {
+      // If no preferences found, create default preferences
+      const defaultPreferences: MatchPreferences = {
+        prioritizeLanguage: true,
+        prioritizeAvailability: true,
+        prioritizeExpertise: true,
+        prioritizeLocation: false,
+        minimumMatchScore: 40,
+        considerInteractionData: true
+      };
+      
+      await supabase.from('user_preferences').upsert({
+        user_id: userId,
+        matching_preferences: defaultPreferences
+      });
+      
+      return defaultPreferences;
+    }
+    
+    return data.matching_preferences as MatchPreferences;
+  } catch (err) {
+    console.error('Exception getting user match preferences:', err);
+    return null;
+  }
+};
+
+/**
+ * Update user match preferences
+ */
+export const updateUserMatchPreferences = async (
+  userId: string,
+  preferences: MatchPreferences
+): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from('user_preferences')
+      .upsert({
+        user_id: userId,
+        matching_preferences: preferences,
+        updated_at: new Date().toISOString()
+      });
+    
+    if (error) {
+      console.error('Error updating user match preferences:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (err) {
+    console.error('Exception updating user match preferences:', err);
+    return false;
   }
 };

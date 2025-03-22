@@ -12,6 +12,9 @@ export type Database = {
       advisor_profiles: {
         Row: {
           assets_under_management: number | null
+          average_rating: number | null
+          biography: string | null
+          certifications: string[] | null
           created_at: string | null
           expertise: Database["public"]["Enums"]["service_category"][] | null
           hourly_rate: number | null
@@ -21,6 +24,7 @@ export type Database = {
           licensing_body: string | null
           organization: string | null
           portfolio_fee: number | null
+          rating_count: number | null
           registration_number: string | null
           updated_at: string | null
           website: string | null
@@ -28,6 +32,9 @@ export type Database = {
         }
         Insert: {
           assets_under_management?: number | null
+          average_rating?: number | null
+          biography?: string | null
+          certifications?: string[] | null
           created_at?: string | null
           expertise?: Database["public"]["Enums"]["service_category"][] | null
           hourly_rate?: number | null
@@ -37,6 +44,7 @@ export type Database = {
           licensing_body?: string | null
           organization?: string | null
           portfolio_fee?: number | null
+          rating_count?: number | null
           registration_number?: string | null
           updated_at?: string | null
           website?: string | null
@@ -44,6 +52,9 @@ export type Database = {
         }
         Update: {
           assets_under_management?: number | null
+          average_rating?: number | null
+          biography?: string | null
+          certifications?: string[] | null
           created_at?: string | null
           expertise?: Database["public"]["Enums"]["service_category"][] | null
           hourly_rate?: number | null
@@ -53,6 +64,7 @@ export type Database = {
           licensing_body?: string | null
           organization?: string | null
           portfolio_fee?: number | null
+          rating_count?: number | null
           registration_number?: string | null
           updated_at?: string | null
           website?: string | null
@@ -63,6 +75,144 @@ export type Database = {
             foreignKeyName: "advisor_profiles_id_fkey"
             columns: ["id"]
             isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      advisor_specializations: {
+        Row: {
+          advisor_id: string
+          level: string | null
+          specialization_id: string
+        }
+        Insert: {
+          advisor_id: string
+          level?: string | null
+          specialization_id: string
+        }
+        Update: {
+          advisor_id?: string
+          level?: string | null
+          specialization_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "advisor_specializations_advisor_id_fkey"
+            columns: ["advisor_id"]
+            isOneToOne: false
+            referencedRelation: "advisor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "advisor_specializations_specialization_id_fkey"
+            columns: ["specialization_id"]
+            isOneToOne: false
+            referencedRelation: "specializations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      appointments: {
+        Row: {
+          advisor_id: string | null
+          consumer_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          meeting_link: string | null
+          notes: string | null
+          scheduled_end: string
+          scheduled_start: string
+          status: string
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          advisor_id?: string | null
+          consumer_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          meeting_link?: string | null
+          notes?: string | null
+          scheduled_end: string
+          scheduled_start: string
+          status?: string
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          advisor_id?: string | null
+          consumer_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          meeting_link?: string | null
+          notes?: string | null
+          scheduled_end?: string
+          scheduled_start?: string
+          status?: string
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_advisor_id_fkey"
+            columns: ["advisor_id"]
+            isOneToOne: false
+            referencedRelation: "advisor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_consumer_id_fkey"
+            columns: ["consumer_id"]
+            isOneToOne: false
+            referencedRelation: "consumer_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          read: boolean | null
+          read_at: string | null
+          recipient_id: string | null
+          sender_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          read?: boolean | null
+          read_at?: string | null
+          recipient_id?: string | null
+          sender_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          read?: boolean | null
+          read_at?: string | null
+          recipient_id?: string | null
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -117,9 +267,12 @@ export type Database = {
         Row: {
           age: number | null
           created_at: string | null
+          financial_goals: string[] | null
           id: string
+          income_bracket: string | null
           investable_assets: number | null
           investment_amount: number | null
+          preferred_advisor_specialties: string[] | null
           preferred_communication: string[] | null
           preferred_language: string[] | null
           risk_tolerance: Database["public"]["Enums"]["risk_tolerance"] | null
@@ -132,9 +285,12 @@ export type Database = {
         Insert: {
           age?: number | null
           created_at?: string | null
+          financial_goals?: string[] | null
           id: string
+          income_bracket?: string | null
           investable_assets?: number | null
           investment_amount?: number | null
+          preferred_advisor_specialties?: string[] | null
           preferred_communication?: string[] | null
           preferred_language?: string[] | null
           risk_tolerance?: Database["public"]["Enums"]["risk_tolerance"] | null
@@ -147,9 +303,12 @@ export type Database = {
         Update: {
           age?: number | null
           created_at?: string | null
+          financial_goals?: string[] | null
           id?: string
+          income_bracket?: string | null
           investable_assets?: number | null
           investment_amount?: number | null
+          preferred_advisor_specialties?: string[] | null
           preferred_communication?: string[] | null
           preferred_language?: string[] | null
           risk_tolerance?: Database["public"]["Enums"]["risk_tolerance"] | null
@@ -205,31 +364,52 @@ export type Database = {
       firms: {
         Row: {
           admin_id: string | null
+          assets_under_management: number | null
+          city: string | null
+          country: string | null
           created_at: string | null
           description: string | null
+          employee_count: number | null
           id: string
+          industry: string | null
           logo: string | null
           name: string
+          size: string | null
+          state: string | null
           updated_at: string | null
           website: string | null
         }
         Insert: {
           admin_id?: string | null
+          assets_under_management?: number | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           description?: string | null
+          employee_count?: number | null
           id?: string
+          industry?: string | null
           logo?: string | null
           name: string
+          size?: string | null
+          state?: string | null
           updated_at?: string | null
           website?: string | null
         }
         Update: {
           admin_id?: string | null
+          assets_under_management?: number | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           description?: string | null
+          employee_count?: number | null
           id?: string
+          industry?: string | null
           logo?: string | null
           name?: string
+          size?: string | null
+          state?: string | null
           updated_at?: string | null
           website?: string | null
         }
@@ -360,10 +540,53 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          action_link: string | null
+          created_at: string | null
+          id: string
+          message: string | null
+          read: boolean | null
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          action_link?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          read?: boolean | null
+          title: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          action_link?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          read?: boolean | null
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           chat_enabled: boolean | null
+          city: string | null
+          country: string | null
           created_at: string | null
           email: string | null
           first_name: string | null
@@ -373,12 +596,15 @@ export type Database = {
           online_status: Database["public"]["Enums"]["online_status"] | null
           phone: string | null
           show_online_status: boolean | null
+          state: string | null
           updated_at: string | null
           user_type: string | null
         }
         Insert: {
           avatar_url?: string | null
           chat_enabled?: boolean | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           email?: string | null
           first_name?: string | null
@@ -388,12 +614,15 @@ export type Database = {
           online_status?: Database["public"]["Enums"]["online_status"] | null
           phone?: string | null
           show_online_status?: boolean | null
+          state?: string | null
           updated_at?: string | null
           user_type?: string | null
         }
         Update: {
           avatar_url?: string | null
           chat_enabled?: boolean | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           email?: string | null
           first_name?: string | null
@@ -403,10 +632,137 @@ export type Database = {
           online_status?: Database["public"]["Enums"]["online_status"] | null
           phone?: string | null
           show_online_status?: boolean | null
+          state?: string | null
           updated_at?: string | null
           user_type?: string | null
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          advisor_id: string | null
+          consumer_id: string | null
+          created_at: string | null
+          id: string
+          is_public: boolean | null
+          rating: number
+          review_text: string | null
+        }
+        Insert: {
+          advisor_id?: string | null
+          consumer_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          rating: number
+          review_text?: string | null
+        }
+        Update: {
+          advisor_id?: string | null
+          consumer_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          rating?: number
+          review_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_advisor_id_fkey"
+            columns: ["advisor_id"]
+            isOneToOne: false
+            referencedRelation: "advisor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_consumer_id_fkey"
+            columns: ["consumer_id"]
+            isOneToOne: false
+            referencedRelation: "consumer_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      specializations: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          advisor_id: string | null
+          amount: number
+          consumer_id: string | null
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          external_reference: string | null
+          id: string
+          payment_method: string | null
+          status: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          advisor_id?: string | null
+          amount: number
+          consumer_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          external_reference?: string | null
+          id?: string
+          payment_method?: string | null
+          status?: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          advisor_id?: string | null
+          amount?: number
+          consumer_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          external_reference?: string | null
+          id?: string
+          payment_method?: string | null
+          status?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_advisor_id_fkey"
+            columns: ["advisor_id"]
+            isOneToOne: false
+            referencedRelation: "advisor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_consumer_id_fkey"
+            columns: ["consumer_id"]
+            isOneToOne: false
+            referencedRelation: "consumer_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_interactions: {
         Row: {
@@ -449,6 +805,38 @@ export type Database = {
             columns: ["consumer_id"]
             isOneToOne: false
             referencedRelation: "consumer_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_preferences: {
+        Row: {
+          matching_preferences: Json | null
+          notification_preferences: Json | null
+          ui_preferences: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          matching_preferences?: Json | null
+          notification_preferences?: Json | null
+          ui_preferences?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          matching_preferences?: Json | null
+          notification_preferences?: Json | null
+          ui_preferences?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

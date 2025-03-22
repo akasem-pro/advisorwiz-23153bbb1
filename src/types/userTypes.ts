@@ -30,6 +30,13 @@ export type ServiceCategory =
   'philanthropic' | 
   'education';
 
+// Location type for user profiles
+export type Location = {
+  city: string;
+  state: string;
+  country: string;
+};
+
 // Types for the consumer and advisor profiles
 export type ConsumerProfile = {
   id: string;
@@ -42,6 +49,10 @@ export type ConsumerProfile = {
   preferredLanguage: string[];
   serviceNeeds?: ServiceCategory[];
   investmentAmount?: number;
+  financialGoals?: string[];
+  incomeBracket?: string;
+  preferredAdvisorSpecialties?: string[];
+  location?: Location;
   advisorPreferences?: {
     experience?: string;
     feeStructure?: string;
@@ -73,6 +84,13 @@ export type AdvisorProfile = {
   };
   assetsUnderManagement: number;
   expertise: ServiceCategory[]; // Now explicitly typed
+  specializations?: string[]; // New field for specific areas of expertise
+  yearsOfExperience?: number; // New field
+  averageRating?: number; // New field
+  ratingCount?: number; // New field
+  biography?: string; // New field
+  certifications?: string[]; // New field
+  location?: Location; // New field
   matches: string[];
   compatibilityScores?: Record<string, number>; // Add this optional property
   chats: string[];
@@ -93,6 +111,11 @@ export type FinancialFirm = {
   description: string;
   website: string;
   logo?: string;
+  industry?: string; // New field
+  size?: string; // New field
+  assetsUnderManagement?: number; // New field
+  employeeCount?: number; // New field
+  location?: Location; // New field
   adminId: string; // ID of the user who administers this firm
   advisorIds: string[]; // IDs of advisors in this firm
   createdAt: string;
@@ -124,18 +147,33 @@ export type ChatMessage = {
   senderId: string;
   senderName: string;
   recipientId: string;
+  recipientName: string;
   content: string;
   timestamp: string; // ISO string format
   read: boolean;
-  readTimestamp?: string; // ISO string format
 };
 
-// Chat type
-export type Chat = {
+// Review type
+export type Review = {
   id: string;
-  participants: string[]; // Array of participant IDs
-  messages: ChatMessage[];
-  lastUpdated: string; // ISO string format
+  advisorId: string;
+  consumerId: string;
+  rating: number;
+  reviewText?: string;
+  timestamp: string; // ISO string format
+  isPublic: boolean;
+};
+
+// Notification type
+export type Notification = {
+  id: string;
+  userId: string;
+  type: 'match' | 'message' | 'appointment' | 'system';
+  title: string;
+  message?: string;
+  read: boolean;
+  actionLink?: string;
+  timestamp: string; // ISO string format
 };
 
 // User type
