@@ -20,7 +20,7 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Simplified connection check that doesn't make network requests
-export const checkSupabaseConnection = async () => {
-  return navigator.onLine;
+// Don't make network requests to check connection
+export const checkSupabaseConnection = () => {
+  return Promise.resolve(navigator.onLine);
 };

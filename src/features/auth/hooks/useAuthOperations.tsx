@@ -27,35 +27,16 @@ export const useAuthOperations = (
     }
   };
 
-  const isNetworkError = (error: any): boolean => {
-    // Check if browser says we're online
-    if (navigator.onLine) {
-      return false;
-    }
-    
-    // Standard checks for network-related errors
-    const errorMsg = error?.message?.toLowerCase() || '';
-    return !!(
-      errorMsg.includes('network') ||
-      errorMsg.includes('connection') ||
-      errorMsg.includes('failed to fetch') ||
-      errorMsg.includes('offline') ||
-      error?.name === 'AbortError' ||
-      error?.name === 'AuthRetryableFetchError' ||
-      errorMsg.includes('network error') ||
-      error?.code === 'NETWORK_ERROR' ||
-      error?.status === 0 ||
-      error?.__isAuthError === true
-    );
-  };
-
   const signIn = async (email: string, password: string) => {
     try {
+      if (!navigator.onLine) {
+        throw new Error('You appear to be offline. Please check your internet connection.');
+      }
+
       setLoading(true);
       
       console.log("Starting sign in process with email:", email);
       
-      // Add a brief timeout to ensure UI feedback
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -96,6 +77,10 @@ export const useAuthOperations = (
 
   const signUp = async (email: string, password: string) => {
     try {
+      if (!navigator.onLine) {
+        throw new Error('You appear to be offline. Please check your internet connection.');
+      }
+
       setLoading(true);
       
       console.log("Starting sign up process with email:", email);

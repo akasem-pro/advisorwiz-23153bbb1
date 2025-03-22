@@ -11,8 +11,8 @@ interface AuthErrorAlertProps {
 }
 
 const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, onRetry }) => {
-  // Check if the browser explicitly says we're offline
-  const browserReportsOffline = !navigator.onLine;
+  // Only use browser's native online status
+  const isOffline = !navigator.onLine;
   
   // Determine if the error is related to network connectivity
   const isNetworkError = 
@@ -20,9 +20,6 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
     error.toLowerCase().includes('connection') || 
     error.toLowerCase().includes('failed to fetch') ||
     error.toLowerCase().includes('offline');
-  
-  // Only show offline alert if the browser confirms we're offline
-  const showOfflineAlert = networkStatus === 'offline' && !error && browserReportsOffline;
   
   return (
     <>
@@ -34,10 +31,10 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
           >
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-2">
-                {isNetworkError && browserReportsOffline ? <WifiOff className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                {isNetworkError ? <WifiOff className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
                 <AlertDescription>
-                  {isNetworkError && !browserReportsOffline 
-                    ? "There was a problem connecting to the server. Please try again." 
+                  {isNetworkError 
+                    ? "Unable to connect to the server. Please check your internet connection and try again." 
                     : error}
                 </AlertDescription>
               </div>
@@ -58,7 +55,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
         </div>
       )}
       
-      {showOfflineAlert && (
+      {isOffline && !error && (
         <div className="px-4 pt-4">
           <Alert className="border-amber-500 bg-amber-50 text-amber-700">
             <div className="flex w-full items-center justify-between">
@@ -85,7 +82,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
         </div>
       )}
       
-      {networkStatus === 'checking' && !error && (
+      {networkStatus === 'checking' && !error && !isOffline && (
         <div className="px-4 pt-4">
           <Alert className="border-blue-500 bg-blue-50 text-blue-700">
             <div className="flex w-full items-center justify-between">

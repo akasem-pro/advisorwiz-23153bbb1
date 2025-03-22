@@ -33,12 +33,19 @@ export const useAuthFormSubmit = () => {
     setFormError: (error: string) => void,
     setIsLoading: (loading: boolean) => void
   ) => {
-    if (e.preventDefault) {
+    if (e) {
       e.preventDefault();
     }
     
     if (!validateForm()) return;
+    
     setFormError('');
+    
+    // Check if we're online
+    if (!navigator.onLine) {
+      setFormError('You appear to be offline. Please check your internet connection.');
+      return;
+    }
     
     setIsLoading(true);
     resetRetryAttempts();
@@ -70,12 +77,19 @@ export const useAuthFormSubmit = () => {
     setSignInEmail: (email: string) => void,
     resetFields: () => void
   ) => {
-    if (e.preventDefault) {
+    if (e) {
       e.preventDefault();
     }
     
     if (!validateForm()) return;
+    
     setFormError('');
+    
+    // Check if we're online
+    if (!navigator.onLine) {
+      setFormError('You appear to be offline. Please check your internet connection.');
+      return;
+    }
     
     setIsLoading(true);
     resetRetryAttempts();
@@ -122,8 +136,14 @@ export const useAuthFormSubmit = () => {
   ) => {
     setFormError('');
     
+    // Check if we're online now
+    if (!navigator.onLine) {
+      setFormError('You are still offline. Please check your internet connection and try again.');
+      return;
+    }
+    
     // Create a synthetic event to pass to the form handlers
-    const syntheticEvent = new CustomEvent('retry') as unknown as React.FormEvent<HTMLFormElement>;
+    const syntheticEvent = {} as React.FormEvent<HTMLFormElement>;
     
     if (activeTab === 'signin' && signInEmail && signInPassword) {
       await handleSignInSubmit(syntheticEvent);
