@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '../ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '../../../components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs';
 import AuthErrorAlert from './AuthErrorAlert';
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';

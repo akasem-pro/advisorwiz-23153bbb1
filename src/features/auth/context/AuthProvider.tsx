@@ -1,9 +1,9 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
-import { useAuthState } from '../../hooks/useAuthState';
-import { useNetworkStatus } from '../../hooks/useNetworkStatus';
-import { useAuthOperations } from '../../hooks/useAuthOperations';
+import { useAuthState } from '../hooks/useAuthState';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
+import { useAuthOperations } from '../hooks/useAuthOperations';
 import { toast } from 'sonner';
 
 type AuthContextType = {

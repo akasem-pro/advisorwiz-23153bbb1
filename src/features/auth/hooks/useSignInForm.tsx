@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '../components/auth/AuthProvider';
+import { useAuth } from '../context/AuthProvider';
 
 export type SignInFormErrors = {
   signInEmail: string;

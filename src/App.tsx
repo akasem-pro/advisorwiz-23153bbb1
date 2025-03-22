@@ -14,8 +14,8 @@ import {
 } from './utils/schemas';
 import { trackWebVitals, setupLazyLoading, optimizeCriticalRendering } from './utils/performanceTracking';
 import { initializeTagManager, trackPageView } from './utils/tagManager';
-import { AuthProvider } from './components/auth/AuthProvider';
-import AuthGuard from './components/auth/AuthGuard';
+import { AuthProvider } from './features/auth/context/AuthProvider';
+import AuthGuard from './features/auth/components/AuthGuard';
 
 // Import all page components
 import Index from './pages/Index';

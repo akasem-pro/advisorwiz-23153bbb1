@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Alert, AlertDescription } from '../ui/alert';
+import { Alert, AlertDescription } from '../../../components/ui/alert';
 import { AlertCircle, WifiOff, RefreshCw } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Button } from '../../../components/ui/button';
 
 interface AuthErrorAlertProps {
   error: string;

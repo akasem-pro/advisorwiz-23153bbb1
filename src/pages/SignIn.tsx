@@ -4,9 +4,9 @@ import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import PageSEO from '../components/seo/PageSEO';
-import { useSignInForm } from '../hooks/useSignInForm';
-import { useAuthFormSubmit } from '../hooks/useAuthFormSubmit';
-import AuthFormContainer from '../components/auth/AuthFormContainer';
+import { useSignInForm } from '../features/auth/hooks/useSignInForm';
+import { useAuthFormSubmit } from '../features/auth/hooks/useAuthFormSubmit';
+import AuthFormContainer from '../features/auth/components/AuthFormContainer';
 
 const SignIn: React.FC = () => {
   const {

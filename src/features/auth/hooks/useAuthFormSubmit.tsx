@@ -1,8 +1,7 @@
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '../components/auth/AuthProvider';
+import { useEffect } from 'react';
+import { useAuth } from '../context/AuthProvider';
 import { toast } from 'sonner';
-import { SignInFormErrors } from './useSignInForm';
 
 /**
  * Custom hook for handling auth form submissions and retries
