@@ -21,23 +21,25 @@ const PREFERENCE_WEIGHTS = {
 
 /**
  * Calculates a weighted compatibility score based on user preferences and historical interaction data
+ * @returns {Object} Contains both the score and explanation for the match
  */
 export const getWeightedCompatibilityScore = (
   advisorId: string,
   consumerId: string,
   preferences: MatchPreferences,
   callMetrics?: any[]
-): number => {
+): { score: number; matchExplanation: string[] } => {
   const advisor = mockAdvisors.find(a => a.id === advisorId);
   const consumer = mockConsumers.find(c => c.id === consumerId);
   
-  if (!advisor || !consumer) return 0;
+  if (!advisor || !consumer) return { score: 0, matchExplanation: ["No match data available"] };
   
   // Get base compatibility score
   let baseScore = calculateBaseCompatibility(advisor, consumer);
   
   // Apply preference weights
   let weightedScore = baseScore;
+  let matchExplanation: string[] = [];
   
   // 1. Language preference weighting
   if (preferences.prioritizeLanguage) {
@@ -48,6 +50,7 @@ export const getWeightedCompatibilityScore = (
     
     if (perfectLanguageMatch) {
       weightedScore += PREFERENCE_WEIGHTS.LANGUAGE;
+      matchExplanation.push(`Speaks all your preferred languages`);
     }
   }
   
@@ -61,6 +64,18 @@ export const getWeightedCompatibilityScore = (
       
       if (expertiseCoverage) {
         weightedScore += PREFERENCE_WEIGHTS.EXPERTISE;
+        matchExplanation.push(`Expert in all your financial service needs`);
+      } else {
+        // Check for partial coverage
+        const matchedServices = consumer.serviceNeeds.filter(service => 
+          advisor.expertise.includes(service)
+        );
+        
+        if (matchedServices.length > 0) {
+          const partialBonus = Math.floor(PREFERENCE_WEIGHTS.EXPERTISE * (matchedServices.length / consumer.serviceNeeds.length));
+          weightedScore += partialBonus;
+          matchExplanation.push(`Expertise in ${matchedServices.length} of your ${consumer.serviceNeeds.length} service needs`);
+        }
       }
     }
   }
@@ -72,6 +87,12 @@ export const getWeightedCompatibilityScore = (
     // Cap the bonus at PREFERENCE_WEIGHTS.AVAILABILITY points
     const availabilityBonus = Math.min(availableSlots, PREFERENCE_WEIGHTS.AVAILABILITY);
     weightedScore += availabilityBonus;
+    
+    if (availabilityBonus > 3) {
+      matchExplanation.push("Highly available for appointments");
+    } else if (availabilityBonus > 0) {
+      matchExplanation.push("Some availability for appointments");
+    }
   }
   
   // 4. Location preference weighting
@@ -101,11 +122,41 @@ export const getWeightedCompatibilityScore = (
         ? Math.min((metrics.callOutcomes.completed / metrics.totalCalls) * PREFERENCE_WEIGHTS.CALL_INTERACTION.COMPLETION_RATE, PREFERENCE_WEIGHTS.CALL_INTERACTION.COMPLETION_RATE)
         : 0;
         
-      weightedScore += callCountBonus + durationBonus + completionRateBonus;
+      const totalInteractionBonus = callCountBonus + durationBonus + completionRateBonus;
+      weightedScore += totalInteractionBonus;
+      
+      if (totalInteractionBonus > 15) {
+        matchExplanation.push("Excellent communication history with this advisor");
+      } else if (totalInteractionBonus > 5) {
+        matchExplanation.push("Good communication history with this advisor");
+      }
     }
   }
   
-  // 6. Filter out excluded categories
+  // 6. Risk tolerance alignment
+  if (consumer.riskTolerance && advisor.expertise) {
+    const riskToExpertiseMap: Record<string, string[]> = {
+      'low': ['insurance', 'estate', 'education'],
+      'medium': ['retirement', 'tax', 'philanthropic'],
+      'high': ['investment', 'business']
+    };
+    
+    const recommendedExpertise = riskToExpertiseMap[consumer.riskTolerance] || [];
+    const expertiseMatches = recommendedExpertise.filter(exp => 
+      advisor.expertise.includes(exp as any)
+    );
+    
+    if (expertiseMatches.length > 0) {
+      const riskBonus = Math.min(expertiseMatches.length * 3, 10);
+      weightedScore += riskBonus;
+      
+      if (riskBonus > 5) {
+        matchExplanation.push(`Well-aligned with your ${consumer.riskTolerance} risk tolerance`);
+      }
+    }
+  }
+  
+  // 7. Filter out excluded categories
   if (preferences.excludedCategories && preferences.excludedCategories.length > 0) {
     const hasExcludedCategory = advisor.expertise.some(exp => 
       preferences.excludedCategories?.includes(exp)
@@ -113,14 +164,30 @@ export const getWeightedCompatibilityScore = (
     
     if (hasExcludedCategory) {
       weightedScore -= PREFERENCE_WEIGHTS.EXCLUDED_PENALTY; // Significant penalty for having excluded expertise
+      matchExplanation.push("Contains some expertise areas you've excluded");
     }
   }
   
   // Apply minimum score threshold
   if (preferences.minimumMatchScore && weightedScore < preferences.minimumMatchScore) {
-    return 0; // Below threshold, not a match
+    return { score: 0, matchExplanation: ["Below your minimum match threshold"] }; // Below threshold, not a match
   }
   
   // Cap at 100
-  return Math.min(Math.max(weightedScore, 0), 100);
+  const finalScore = Math.min(Math.max(weightedScore, 0), 100);
+  
+  // For low scores with explanations, add a general explanation
+  if (finalScore < 40 && matchExplanation.length === 0) {
+    matchExplanation.push("Low overall compatibility with your profile");
+  }
+  
+  // Add base compatibility explanation if no specific matches found
+  if (matchExplanation.length === 0) {
+    matchExplanation.push("Basic compatibility with your financial needs");
+  }
+  
+  return { 
+    score: finalScore,
+    matchExplanation
+  };
 };

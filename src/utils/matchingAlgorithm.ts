@@ -11,17 +11,34 @@ export const calculateMatchScore = (advisor: AdvisorProfileTypes, consumer: Cons
   if (!advisor || !consumer) return 0;
   
   // Use the enhanced weighted scoring algorithm
-  return getWeightedCompatibilityScore(advisor.id, consumer.id, {
+  const result = getWeightedCompatibilityScore(advisor.id, consumer.id, {
     prioritizeLanguage: true,
     prioritizeExpertise: true,
     prioritizeAvailability: true,
     prioritizeLocation: true // Always enable location matching for now
   });
+  
+  return result.score;
+};
+
+// Function to get match explanations
+export const getMatchExplanations = (advisor: AdvisorProfileTypes, consumer: ConsumerProfile): string[] => {
+  if (!advisor || !consumer) return ["No match data available"];
+  
+  // Get explanations from the enhanced weighted scoring algorithm
+  const result = getWeightedCompatibilityScore(advisor.id, consumer.id, {
+    prioritizeLanguage: true,
+    prioritizeExpertise: true,
+    prioritizeAvailability: true,
+    prioritizeLocation: true
+  });
+  
+  return result.matchExplanation;
 };
 
 // Function to categorize matches into different buckets
 export const categorizeMatches = (advisors: AdvisorProfileTypes[], consumer: ConsumerProfile) => {
-  const matches: Record<string, { advisor: AdvisorProfileTypes; score: number }[]> = {
+  const matches: Record<string, { advisor: AdvisorProfileTypes; score: number; explanations: string[] }[]> = {
     excellent: [],
     good: [],
     average: [],
@@ -30,8 +47,9 @@ export const categorizeMatches = (advisors: AdvisorProfileTypes[], consumer: Con
 
   advisors.forEach(advisor => {
     const score = calculateMatchScore(advisor, consumer);
+    const explanations = getMatchExplanations(advisor, consumer);
     const category = getMatchCategory(score);
-    matches[category.category].push({ advisor, score });
+    matches[category.category].push({ advisor, score, explanations });
   });
 
   // Sort each category by score (highest first)
@@ -44,11 +62,21 @@ export const categorizeMatches = (advisors: AdvisorProfileTypes[], consumer: Con
 
 // Generate compatibility scores for an advisor with multiple consumers
 export const generateCompatibilityScores = (advisor: AdvisorProfileTypes, consumers: ConsumerProfile[]) => {
-  const scores: Record<string, number> = {};
+  const scores: Record<string, { score: number; explanations: string[] }> = {};
   
   consumers.forEach(consumer => {
     if (consumer.id) {
-      scores[consumer.id] = calculateMatchScore(advisor, consumer);
+      const result = getWeightedCompatibilityScore(advisor.id, consumer.id, {
+        prioritizeLanguage: true,
+        prioritizeExpertise: true,
+        prioritizeAvailability: true,
+        prioritizeLocation: true
+      });
+      
+      scores[consumer.id] = {
+        score: result.score,
+        explanations: result.matchExplanation
+      };
     }
   });
   

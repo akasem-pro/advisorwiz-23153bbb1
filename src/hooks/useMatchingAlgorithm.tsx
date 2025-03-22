@@ -22,7 +22,7 @@ export const useMatchingAlgorithm = (
 ) => {
   const calculateCompatibilityScore = (advisorId: string, consumerId: string) => {
     // Enhanced logic using matchPreferences to compute more accurate scores
-    let score = getWeightedCompatibilityScore(
+    const result = getWeightedCompatibilityScore(
       advisorId, 
       consumerId, 
       matchPreferences,
@@ -32,7 +32,18 @@ export const useMatchingAlgorithm = (
     // Apply additional business rules if needed
     // For example, boosting scores for premium users or other business logic
     
-    return Math.min(score, 100); // Cap at 100
+    return result.score;
+  };
+
+  const getMatchExplanations = (advisorId: string, consumerId: string): string[] => {
+    const result = getWeightedCompatibilityScore(
+      advisorId, 
+      consumerId, 
+      matchPreferences,
+      callMetrics
+    );
+    
+    return result.matchExplanation;
   };
 
   const updateMatchPreferences = (preferences: MatchPreferences) => {
@@ -79,6 +90,7 @@ export const useMatchingAlgorithm = (
 
   return {
     calculateCompatibilityScore,
+    getMatchExplanations,
     updateMatchPreferences,
     getTopMatches,
     getRecommendedMatches
