@@ -20,7 +20,7 @@ export const supabase = createClient<Database>(
       headers: {
         'x-application-name': 'advisorwiz'
       },
-      fetch: (url, options = {}) => {
+      fetch: (url: RequestInfo | URL, options: RequestInit = {}): Promise<Response> => {
         // We need to implement timeout using AbortController
         // because fetch doesn't natively support timeout option
         return new Promise((resolve, reject) => {
@@ -42,7 +42,7 @@ export const supabase = createClient<Database>(
               clearTimeout(timeoutId);
               reject(error);
             });
-        });
+        }) as Promise<Response>; // Type assertion to ensure Promise<Response> is returned
       }
     }
   }

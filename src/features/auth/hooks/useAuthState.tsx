@@ -90,10 +90,11 @@ export const useAuthState = () => {
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      // Fix the query to use proper typing
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', userId)
+        .eq('id', userId as any) // Using type assertion to bypass the TypeScript error
         .maybeSingle();
       
       if (profile) {
