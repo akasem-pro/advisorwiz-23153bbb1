@@ -56,23 +56,17 @@ export const useNetworkStatus = () => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     
-    // Periodic checks
+    // Periodic checks - reduced frequency to avoid excessive requests
     const intervalId = setInterval(() => {
-      if (networkStatus === 'offline') {
-        // Check more frequently when offline to detect recovery
-        checkNetworkStatus();
-      } else {
-        // Just verify connection occasionally when already online
-        checkNetworkStatus();
-      }
-    }, networkStatus === 'offline' ? 10000 : 60000);
+      checkNetworkStatus();
+    }, 30000); // Check every 30 seconds regardless of current status
     
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       clearInterval(intervalId);
     };
-  }, [checkNetworkStatus, networkStatus]);
+  }, [checkNetworkStatus]);
 
   return { 
     networkStatus,

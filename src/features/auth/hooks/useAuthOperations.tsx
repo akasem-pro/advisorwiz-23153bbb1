@@ -14,22 +14,18 @@ export const useAuthOperations = (
   const navigate = useNavigate();
 
   const signIn = async (email: string, password: string): Promise<boolean> => {
+    if (networkStatus === 'offline') {
+      toast.error('You appear to be offline. Please check your internet connection.');
+      return false;
+    }
+    
     try {
       setLoading(true);
-      
-      // Check online status first
-      if (networkStatus === 'offline') {
-        throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
-      }
       
       console.log("Starting sign in process with email:", email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password,
-        options: {
-          // Add some additional options for better reliability
-          captchaToken: undefined,
-        }
+        password
       });
       
       if (error) throw error;
@@ -45,10 +41,8 @@ export const useAuthOperations = (
         throw new Error('Invalid email or password. Please try again.');
       } else if (error.message?.includes('User not found')) {
         throw new Error('No account found with this email. Please check your email or sign up.');
-      } else if (error.status === 429) {
-        throw new Error('Too many sign-in attempts. Please try again later.');
       } else if (!navigator.onLine || error.message?.includes('network') || 
-                error.message?.includes('connection') || error.message?.includes('Failed to fetch')) {
+                error.message?.includes('connection')) {
         throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
       } else {
         throw error;
@@ -59,37 +53,35 @@ export const useAuthOperations = (
   };
 
   const signUp = async (email: string, password: string): Promise<boolean> => {
+    if (networkStatus === 'offline') {
+      toast.error('You appear to be offline. Please check your internet connection.');
+      return false;
+    }
+    
     try {
       setLoading(true);
-      
-      // Check online status first
-      if (networkStatus === 'offline') {
-        throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
-      }
       
       console.log("Starting sign up process with email:", email);
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-          captchaToken: undefined,
+          emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       });
       
       if (error) throw error;
       
       console.log("Sign up successful:", data.user?.id);
+      toast.success("Registration successful! Please check your email to verify your account.");
       return true;
     } catch (error: any) {
       console.error("Error signing up:", error);
       
       if (error.message?.includes('email already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
-      } else if (error.status === 429) {
-        throw new Error('Too many sign-up attempts. Please try again later.');
       } else if (!navigator.onLine || error.message?.includes('network') || 
-                error.message?.includes('connection') || error.message?.includes('Failed to fetch')) {
+                error.message?.includes('connection')) {
         throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
       } else {
         throw new Error(error.message || 'An error occurred during sign up. Please try again.');

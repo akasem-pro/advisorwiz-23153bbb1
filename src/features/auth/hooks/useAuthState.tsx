@@ -32,20 +32,22 @@ export const useAuthState = () => {
           setConsumerProfile(null);
           setAdvisorProfile(null);
         } else if (currentSession.user) {
-          // User signed in - set a default userType for testing if not already set
-          // In a real app, you would determine this from database
-          await fetchUserProfile(currentSession.user.id);
-          
-          // Set a default userType for new users for testing purposes
-          // Fix: Don't use functional update pattern, directly set the value
-          setTimeout(() => {
-            // Check if userType is already set in local storage or context
-            // If not, set a default value for testing purposes
-            setUserType('advisor');
-          }, 500);
+          // User signed in
+          try {
+            if (mounted) {
+              // Set a default userType for new users for testing purposes
+              setTimeout(() => {
+                setUserType('advisor');
+              }, 500);
+            }
+          } catch (error) {
+            console.error("Error setting up authenticated user:", error);
+          }
         }
         
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     );
 
@@ -59,19 +61,21 @@ export const useAuthState = () => {
         setUser(currentSession?.user ?? null);
         setIsAuthenticated(!!currentSession);
         
-        // Fetch user profile to determine user type if logged in
+        // Set user profile and type if logged in
         if (currentSession?.user) {
-          await fetchUserProfile(currentSession.user.id);
-          
-          // Set a default userType for testing if not already set
-          // Fix: Don't use functional update pattern, directly set the value
-          setTimeout(() => {
-            // For testing purposes set a default value
-            setUserType('advisor');
-          }, 500);
+          try {
+            // Set a default userType for testing
+            setTimeout(() => {
+              setUserType('advisor');
+            }, 500);
+          } catch (error) {
+            console.error("Error initializing authenticated user:", error);
+          }
         }
         
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       } catch (error) {
         console.error("Failed to get session:", error);
         if (mounted) {
@@ -88,23 +92,7 @@ export const useAuthState = () => {
     };
   }, [setIsAuthenticated, setUserType, setConsumerProfile, setAdvisorProfile]);
 
-  const fetchUserProfile = async (userId: string) => {
-    try {
-      // Fix the query to use proper typing
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId as any) // Using type assertion to bypass the TypeScript error
-        .maybeSingle();
-      
-      if (profile) {
-        // Handle profile data if needed
-        console.log("Found user profile:", profile);
-      }
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-    }
-  };
+  // Removed the fetchUserProfile function as it's causing issues and not critical for authentication flow
 
   return {
     user,
