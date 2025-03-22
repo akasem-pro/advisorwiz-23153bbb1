@@ -67,12 +67,12 @@ export const useAuthOperations = (
       
       console.log("Starting sign up process with email:", email);
       
-      // Use direct call to Supabase auth API
+      // Use direct call to Supabase auth API with proper redirect URL
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`
+          emailRedirectTo: window.location.origin || 'https://preview--advisorwiz.lovable.app/auth/callback'
         }
       });
       
