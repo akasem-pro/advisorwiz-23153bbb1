@@ -24,10 +24,9 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Ultra-simplified connection checker that ONLY uses browser APIs
-// and never tries to make actual network requests
+// Simple connection checker that relies on the browser's navigator.onLine
+// No network requests are made to avoid potential errors
 export const checkSupabaseConnection = (): boolean => {
   // Simply return the browser's network status
-  // This is the most reliable method in sandboxed environments
   return navigator.onLine;
 };

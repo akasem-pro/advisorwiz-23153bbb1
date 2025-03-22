@@ -11,20 +11,20 @@ export const useNetworkStatus = () => {
   );
   const [lastChecked, setLastChecked] = useState<Date>(new Date());
 
-  // Ultra-simplified network check function with no async/await
-  const checkNetworkStatus = useCallback((): boolean => {
+  // Convert to async/Promise-based to maintain API compatibility
+  const checkNetworkStatus = useCallback(async (): Promise<boolean> => {
     try {
-      // Just use browser APIs - no fetch requests
-      const isOnline = checkSupabaseConnection();
+      // Use the browser's navigator.onLine as the primary check
+      const isOnline = navigator.onLine && checkSupabaseConnection();
       setNetworkStatus(isOnline ? 'online' : 'offline');
       setLastChecked(new Date());
-      return isOnline;
+      return Promise.resolve(isOnline);
     } catch (error) {
       console.error("Network status check failed:", error);
       const browserOnline = navigator.onLine;
       setNetworkStatus(browserOnline ? 'online' : 'offline');
       setLastChecked(new Date());
-      return browserOnline;
+      return Promise.resolve(browserOnline);
     }
   }, []);
 

@@ -14,7 +14,7 @@ type AuthContextType = {
   signOut: () => Promise<void>;
   loading: boolean;
   networkStatus: 'online' | 'offline' | 'checking';
-  checkNetworkStatus: () => boolean;
+  checkNetworkStatus: () => Promise<boolean>;
   retryAttempts: number;
   incrementRetry: () => void;
   resetRetryAttempts: () => void;
@@ -28,7 +28,7 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
   loading: true,
   networkStatus: 'checking',
-  checkNetworkStatus: () => false,
+  checkNetworkStatus: async () => false,
   retryAttempts: 0,
   incrementRetry: () => {},
   resetRetryAttempts: () => {}

@@ -40,8 +40,8 @@ export const useAuthFormSubmit = () => {
     
     if (!validateForm()) return;
     
-    // Check network status - now synchronous
-    const isOnline = checkNetworkStatus();
+    // Check network status - now returns a Promise
+    const isOnline = await checkNetworkStatus();
     if (!isOnline) {
       setFormError('Unable to connect to authentication service. Please check your connection and try again.');
       incrementRetry();
@@ -99,8 +99,8 @@ export const useAuthFormSubmit = () => {
     
     if (!validateForm()) return;
     
-    // Check network status - now synchronous
-    const isOnline = checkNetworkStatus();
+    // Check network status - now returns a Promise
+    const isOnline = await checkNetworkStatus();
     if (!isOnline) {
       setFormError('Unable to connect to authentication service. Please check your connection and try again.');
       incrementRetry();
@@ -165,8 +165,8 @@ export const useAuthFormSubmit = () => {
     // Show loading state
     toast.loading('Checking connection...');
     
-    // Check network status - now synchronous
-    const isOnline = checkNetworkStatus();
+    // Check network status - now returns a Promise
+    const isOnline = await checkNetworkStatus();
     console.log("Retry network check result:", isOnline ? "online" : "offline");
     
     // Dismiss loading toast
