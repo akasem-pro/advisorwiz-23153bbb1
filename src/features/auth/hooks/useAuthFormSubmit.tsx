@@ -40,14 +40,8 @@ export const useAuthFormSubmit = () => {
     if (!validateForm()) return;
     setFormError('');
     
-    // Check network status first
-    const isOnline = await checkNetworkStatus();
-    if (!isOnline) {
-      setFormError('You are currently offline. Please check your internet connection and try again.');
-      incrementRetry();
-      return;
-    }
-    
+    // Force online mode for sign-in attempts
+    // The app is running, so we must be online enough to try
     setIsLoading(true);
     resetRetryAttempts();
     
@@ -85,14 +79,8 @@ export const useAuthFormSubmit = () => {
     if (!validateForm()) return;
     setFormError('');
     
-    // Check network status first
-    const isOnline = await checkNetworkStatus();
-    if (!isOnline) {
-      setFormError('You are currently offline. Please check your internet connection and try again.');
-      incrementRetry();
-      return;
-    }
-    
+    // Force online mode for sign-up attempts 
+    // The app is running, so we must be online enough to try
     setIsLoading(true);
     resetRetryAttempts();
     
@@ -138,12 +126,8 @@ export const useAuthFormSubmit = () => {
   ) => {
     setFormError('');
     
-    // Check network status first
-    const isOnline = await checkNetworkStatus();
-    if (!isOnline) {
-      setFormError('Still offline. Please check your internet connection and try again.');
-      return;
-    }
+    // Force online mode for retry attempts
+    // Always assume we're online enough to try the operation
     
     // Create a synthetic event to pass to the form handlers
     const syntheticEvent = new CustomEvent('retry') as unknown as React.FormEvent<HTMLFormElement>;

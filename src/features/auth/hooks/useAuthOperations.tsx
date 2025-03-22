@@ -28,8 +28,9 @@ export const useAuthOperations = (
   };
 
   const isNetworkError = (error: any): boolean => {
-    if (!navigator.onLine) {
-      return true;
+    // Don't trust the error - if we think we're online, assume we're online
+    if (networkStatus === 'online' && navigator.onLine) {
+      return false;
     }
     
     // More extensive error detection for network issues
@@ -52,18 +53,9 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // Check if we're offline before even trying
-      if (networkStatus === 'offline' || !navigator.onLine) {
-        throw new Error('You are currently offline. Please check your internet connection and try again.');
-      }
-      
+      // Force online mode - don't assume we're offline unnecessarily
+      // The browser is already running our code, so we must be at least somewhat connected
       console.log("Starting sign in process with email:", email);
-      
-      // Verify connectivity to Supabase first
-      const canConnect = await checkSupabaseConnection();
-      if (!canConnect) {
-        throw new Error('Network error. Please check your internet connection and try again.');
-      }
       
       // Directly use the Supabase client for authentication
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -108,18 +100,7 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // Check if we're online
-      if (networkStatus === 'offline' || !navigator.onLine) {
-        throw new Error('You are currently offline. Please check your internet connection and try again.');
-      }
-      
       console.log("Starting sign up process with email:", email);
-      
-      // Verify Supabase connection first
-      const canConnect = await checkSupabaseConnection();
-      if (!canConnect) {
-        throw new Error('Network error. Please check your connection and try again.');
-      }
       
       // Directly use the Supabase client for sign up
       const { data, error } = await supabase.auth.signUp({
