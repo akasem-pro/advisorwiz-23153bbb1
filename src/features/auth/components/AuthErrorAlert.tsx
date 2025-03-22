@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Alert, AlertDescription } from '../../../components/ui/alert';
-import { AlertCircle, WifiOff, RefreshCw } from 'lucide-react';
+import { AlertCircle, WifiOff, RefreshCw, Clock } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 
 interface AuthErrorAlertProps {
@@ -19,22 +19,38 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
     error.toLowerCase().includes('offline')
   );
   
+  // Check if the error is related to timeout
+  const isTimeoutError = error && (
+    error.toLowerCase().includes('timeout') || 
+    error.toLowerCase().includes('timed out')
+  );
+  
   return (
     <>
-      {/* Show error message (either network or other error) */}
+      {/* Show error message */}
       {error && (
         <div className="px-4 pt-4">
           <Alert 
             variant="destructive" 
-            className="border-red-500 bg-red-50 text-red-600"
+            className={
+              isTimeoutError 
+                ? "border-amber-500 bg-amber-50 text-amber-600"
+                : isNetworkError 
+                  ? "border-red-500 bg-red-50 text-red-600" 
+                  : "border-red-500 bg-red-50 text-red-600"
+            }
           >
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-2">
-                {isNetworkError ? <WifiOff className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                {isNetworkError ? (
+                  <WifiOff className="h-4 w-4" />
+                ) : isTimeoutError ? (
+                  <Clock className="h-4 w-4" />
+                ) : (
+                  <AlertCircle className="h-4 w-4" />
+                )}
                 <AlertDescription>
-                  {isNetworkError 
-                    ? "Unable to connect to the server. Please check your internet connection and try again." 
-                    : error}
+                  {error}
                 </AlertDescription>
               </div>
               
@@ -43,7 +59,11 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
                   variant="outline" 
                   size="sm" 
                   onClick={onRetry} 
-                  className="ml-2 border-red-500 text-red-600 hover:bg-red-100"
+                  className={
+                    isTimeoutError 
+                      ? "ml-2 border-amber-500 text-amber-600 hover:bg-amber-100"
+                      : "ml-2 border-red-500 text-red-600 hover:bg-red-100"
+                  }
                 >
                   <RefreshCw className="mr-2 h-3 w-3" />
                   Retry

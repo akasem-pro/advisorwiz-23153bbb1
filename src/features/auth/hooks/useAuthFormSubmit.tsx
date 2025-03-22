@@ -40,6 +40,14 @@ export const useAuthFormSubmit = () => {
     
     if (!validateForm()) return;
     
+    // Check network status before attempting sign in
+    const isOnline = await checkNetworkStatus();
+    if (!isOnline) {
+      setFormError('You appear to be offline. Please check your connection and try again.');
+      incrementRetry();
+      return;
+    }
+    
     setFormError('');
     setIsLoading(true);
     resetRetryAttempts();
@@ -52,7 +60,10 @@ export const useAuthFormSubmit = () => {
       console.error('Failed to sign in:', error);
       setFormError(error.message || 'Failed to sign in');
       
-      if (error.message?.includes('network') || error.message?.includes('connection') || !navigator.onLine) {
+      if (error.message?.includes('network') || 
+          error.message?.includes('connection') || 
+          error.message?.includes('timed out') || 
+          !navigator.onLine) {
         incrementRetry();
       }
     } finally {
@@ -76,6 +87,14 @@ export const useAuthFormSubmit = () => {
     }
     
     if (!validateForm()) return;
+    
+    // Check network status before attempting sign up
+    const isOnline = await checkNetworkStatus();
+    if (!isOnline) {
+      setFormError('You appear to be offline. Please check your connection and try again.');
+      incrementRetry();
+      return;
+    }
     
     setFormError('');
     setIsLoading(true);
@@ -101,7 +120,10 @@ export const useAuthFormSubmit = () => {
       } else {
         setFormError(error.message || 'Failed to sign up');
         
-        if (error.message?.includes('network') || error.message?.includes('connection') || !navigator.onLine) {
+        if (error.message?.includes('network') || 
+            error.message?.includes('connection') || 
+            error.message?.includes('timed out') || 
+            !navigator.onLine) {
           incrementRetry();
         }
       }
@@ -138,6 +160,8 @@ export const useAuthFormSubmit = () => {
       await handleSignInSubmit(syntheticEvent);
     } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
       await handleSignUpSubmit(syntheticEvent);
+    } else {
+      setFormError('Please fill in all fields before retrying.');
     }
   };
   

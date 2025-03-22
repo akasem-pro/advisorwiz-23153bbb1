@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 /**
  * Custom hook to track network connectivity status using browser's built-in navigator.onLine
- * with actual network check via fetch
+ * with more reliable fallbacks and timeout handling
  */
 export const useNetworkStatus = () => {
   const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>(
@@ -20,35 +20,40 @@ export const useNetworkStatus = () => {
       if (!navigator.onLine) {
         setNetworkStatus('offline');
         setLastChecked(new Date());
-        return Promise.resolve(false);
+        return false;
       }
       
-      // For more reliability, try a simple head request to the supabase domain
-      // This doesn't require auth and just checks if the domain is reachable
+      // Try a simple HEAD request to a reliable domain
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
       
-      const response = await fetch('https://gkymvotqrdecjjymmmef.supabase.co/rest/v1/', {
-        method: 'HEAD',
-        mode: 'cors',
-        cache: 'no-store',
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      clearTimeout(timeoutId);
-      
-      // If we get here, we're online
-      setNetworkStatus('online');
-      setLastChecked(new Date());
-      return true;
+      try {
+        // Use Google's domain as it's highly reliable
+        const response = await fetch('https://www.google.com', {
+          method: 'HEAD',
+          mode: 'no-cors', // Important for CORS issues
+          cache: 'no-store',
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        // If we get here without error, we're online
+        setNetworkStatus('online');
+        setLastChecked(new Date());
+        return true;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        console.log("Network check failed:", error);
+        
+        // If we're here, the request failed but navigator might still report online
+        const isOnline = navigator.onLine;
+        setNetworkStatus(isOnline ? 'online' : 'offline');
+        setLastChecked(new Date());
+        return isOnline;
+      }
     } catch (error) {
-      console.log("Network check failed:", error);
-      
-      // If navigator says we're online but the request failed, we might have limited connectivity
-      // In this case, we'll trust navigator.onLine as a fallback
+      console.log("Network status check error:", error);
       const isOnline = navigator.onLine;
       setNetworkStatus(isOnline ? 'online' : 'offline');
       setLastChecked(new Date());
@@ -57,7 +62,7 @@ export const useNetworkStatus = () => {
   }, []);
 
   useEffect(() => {
-    // Set initial status based on browser's online property
+    // Set initial status
     checkNetworkStatus();
     
     const handleOnline = () => {
@@ -75,11 +80,9 @@ export const useNetworkStatus = () => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     
-    // Check connectivity periodically (every 30 seconds) when the app thinks it's offline
+    // Check connectivity periodically (every 30 seconds)
     const intervalId = setInterval(() => {
-      if (networkStatus === 'offline') {
-        checkNetworkStatus();
-      }
+      checkNetworkStatus();
     }, 30000);
     
     return () => {
@@ -87,7 +90,7 @@ export const useNetworkStatus = () => {
       window.removeEventListener('offline', handleOffline);
       clearInterval(intervalId);
     };
-  }, [checkNetworkStatus, networkStatus]);
+  }, [checkNetworkStatus]);
 
   return { 
     networkStatus,
