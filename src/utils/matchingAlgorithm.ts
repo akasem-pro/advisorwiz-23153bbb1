@@ -15,7 +15,7 @@ export const calculateMatchScore = (advisor: AdvisorProfileTypes, consumer: Cons
     prioritizeLanguage: true,
     prioritizeExpertise: true,
     prioritizeAvailability: true,
-    prioritizeLocation: consumer.region ? true : false
+    prioritizeLocation: true // Always enable location matching for now
   });
 };
 
