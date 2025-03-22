@@ -1,18 +1,17 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import { Button } from '../components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import PageSEO from '../components/seo/PageSEO';
 import { useAuth } from '../components/auth/AuthProvider';
 import { toast } from 'sonner';
-import { Alert, AlertDescription } from '../components/ui/alert';
-import { AlertCircle, WifiOff } from 'lucide-react';
+import SignInForm from '../components/auth/SignInForm';
+import SignUpForm from '../components/auth/SignUpForm';
+import AuthErrorAlert from '../components/auth/AuthErrorAlert';
 
 const SignIn: React.FC = () => {
   const { signIn, signUp, loading: authLoading, networkStatus } = useAuth();
@@ -215,134 +214,41 @@ const SignIn: React.FC = () => {
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
               
-              {formError && (
-                <div className="px-4 pt-4">
-                  <Alert variant="destructive" className="border-red-500 bg-red-50 text-red-600">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{formError}</AlertDescription>
-                  </Alert>
-                </div>
-              )}
-              
-              {networkStatus === 'offline' && (
-                <div className="px-4 pt-4">
-                  <Alert className="border-amber-500 bg-amber-50 text-amber-700">
-                    <WifiOff className="h-4 w-4" />
-                    <AlertDescription>
-                      You are currently offline. Please check your internet connection to sign in or sign up.
-                    </AlertDescription>
-                  </Alert>
-                </div>
-              )}
+              <AuthErrorAlert error={formError} networkStatus={networkStatus} />
               
               <TabsContent value="signin">
-                <CardContent className="pt-4">
-                  <form onSubmit={handleSignIn} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input 
-                        id="email" 
-                        name="email" 
-                        type="email" 
-                        placeholder="name@example.com" 
-                        value={signInEmail} 
-                        onChange={(e) => setSignInEmail(e.target.value)} 
-                        disabled={isLoading}
-                        className={errors.signInEmail ? "border-red-500" : ""}
-                      />
-                      {errors.signInEmail && (
-                        <p className="text-sm text-red-500">{errors.signInEmail}</p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="password">Password</Label>
-                        <Link to="/reset-password" className="text-sm text-teal-600 hover:text-teal-500">
-                          Forgot password?
-                        </Link>
-                      </div>
-                      <Input 
-                        id="password" 
-                        name="password" 
-                        type="password" 
-                        value={signInPassword} 
-                        onChange={(e) => setSignInPassword(e.target.value)} 
-                        disabled={isLoading}
-                        className={errors.signInPassword ? "border-red-500" : ""}
-                      />
-                      {errors.signInPassword && (
-                        <p className="text-sm text-red-500">{errors.signInPassword}</p>
-                      )}
-                    </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full" 
-                      disabled={isSignInDisabled}
-                    >
-                      {isLoading ? "Signing in..." : "Sign In"}
-                    </Button>
-                  </form>
-                </CardContent>
+                <SignInForm
+                  onSubmit={handleSignIn}
+                  email={signInEmail}
+                  setEmail={setSignInEmail}
+                  password={signInPassword}
+                  setPassword={setSignInPassword}
+                  errors={{
+                    signInEmail: errors.signInEmail,
+                    signInPassword: errors.signInPassword
+                  }}
+                  isLoading={isLoading}
+                  isDisabled={isSignInDisabled}
+                />
               </TabsContent>
               
               <TabsContent value="signup">
-                <CardContent className="pt-4">
-                  <form onSubmit={handleSignUp} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="registerEmail">Email</Label>
-                      <Input 
-                        id="registerEmail" 
-                        name="registerEmail" 
-                        type="email" 
-                        placeholder="name@example.com" 
-                        value={signUpEmail} 
-                        onChange={(e) => setSignUpEmail(e.target.value)} 
-                        disabled={isLoading}
-                        className={errors.signUpEmail ? "border-red-500" : ""}
-                      />
-                      {errors.signUpEmail && (
-                        <p className="text-sm text-red-500">{errors.signUpEmail}</p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="registerPassword">Password</Label>
-                      <Input 
-                        id="registerPassword" 
-                        name="registerPassword" 
-                        type="password" 
-                        value={signUpPassword} 
-                        onChange={(e) => setSignUpPassword(e.target.value)} 
-                        disabled={isLoading}
-                        className={errors.signUpPassword ? "border-red-500" : ""}
-                      />
-                      {errors.signUpPassword && (
-                        <p className="text-sm text-red-500">{errors.signUpPassword}</p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="confirmPassword">Confirm Password</Label>
-                      <Input 
-                        id="confirmPassword" 
-                        name="confirmPassword" 
-                        type="password" 
-                        value={confirmPassword} 
-                        onChange={(e) => setConfirmPassword(e.target.value)} 
-                        disabled={isLoading}
-                        className={errors.confirmPassword ? "border-red-500" : ""}
-                      />
-                      {errors.confirmPassword && (
-                        <p className="text-sm text-red-500">{errors.confirmPassword}</p>
-                      )}
-                    </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full" 
-                      disabled={isSignUpDisabled}
-                    >
-                      {isLoading ? "Creating Account..." : "Sign Up"}
-                    </Button>
-                  </form>
-                </CardContent>
+                <SignUpForm
+                  onSubmit={handleSignUp}
+                  email={signUpEmail}
+                  setEmail={setSignUpEmail}
+                  password={signUpPassword}
+                  setPassword={setSignUpPassword}
+                  confirmPassword={confirmPassword}
+                  setConfirmPassword={setConfirmPassword}
+                  errors={{
+                    signUpEmail: errors.signUpEmail,
+                    signUpPassword: errors.signUpPassword,
+                    confirmPassword: errors.confirmPassword
+                  }}
+                  isLoading={isLoading}
+                  isDisabled={isSignUpDisabled}
+                />
               </TabsContent>
             </Tabs>
             
