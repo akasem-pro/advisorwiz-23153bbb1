@@ -37,6 +37,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
   };
 
   const handleProfileClick = () => {
+    console.log('Profile clicked, navigating to profile for userType:', userType);
     if (userType === 'consumer') {
       navigate('/consumer-profile');
     } else if (userType === 'advisor') {
@@ -44,6 +45,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
     } else if (userType === 'firm_admin') {
       navigate('/firm-profile');
     } else {
+      // Default fallback if userType is not set
       navigate('/settings');
     }
   };

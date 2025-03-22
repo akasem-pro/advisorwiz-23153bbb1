@@ -32,8 +32,19 @@ export const useAuthState = () => {
           setConsumerProfile(null);
           setAdvisorProfile(null);
         } else if (currentSession.user) {
-          // User signed in
+          // User signed in - set a default userType for testing if not already set
+          // In a real app, you would determine this from database
           await fetchUserProfile(currentSession.user.id);
+          // Set a default userType for new users for testing purposes
+          setTimeout(() => {
+            setUserType(prevType => {
+              if (!prevType) {
+                console.log("Setting default userType to advisor");
+                return 'advisor';
+              }
+              return prevType;
+            });
+          }, 500);
         }
         
         setLoading(false);
@@ -53,6 +64,16 @@ export const useAuthState = () => {
         // Fetch user profile to determine user type if logged in
         if (currentSession?.user) {
           await fetchUserProfile(currentSession.user.id);
+          // Set a default userType for testing if not already set
+          setTimeout(() => {
+            setUserType(prevType => {
+              if (!prevType) {
+                console.log("Setting default userType to advisor");
+                return 'advisor';
+              }
+              return prevType;
+            });
+          }, 500);
         }
         
         setLoading(false);
@@ -82,6 +103,7 @@ export const useAuthState = () => {
       
       if (profile) {
         // Handle profile data if needed
+        console.log("Found user profile:", profile);
       }
     } catch (error) {
       console.error("Error fetching user profile:", error);

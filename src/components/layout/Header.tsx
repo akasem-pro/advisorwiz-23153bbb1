@@ -42,9 +42,12 @@ const navigationLinks = [
 ];
 
 const Header: React.FC = () => {
-  const { isAuthenticated, consumerProfile, advisorProfile } = useUser();
+  const { isAuthenticated, consumerProfile, advisorProfile, userType } = useUser();
   const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  console.log('Current userType in Header:', userType);
+  console.log('isAuthenticated:', isAuthenticated);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
