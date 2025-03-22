@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, checkSupabaseConnection } from '../../../integrations/supabase/client';
+import { supabase } from '../../../integrations/supabase/client';
 
 /**
  * Custom hook to track network connectivity status
@@ -26,15 +26,44 @@ export const useNetworkStatus = () => {
         return false;
       }
       
-      // Try to reach Supabase's health endpoint to verify connectivity
-      const isConnected = await checkSupabaseConnection();
+      // Try a simple fetch to our own domain to verify connectivity
+      // This avoids CORS issues with external domains
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
       
-      setNetworkStatus(isConnected ? 'online' : 'offline');
-      return isConnected;
+      try {
+        // Fetch favicon or any static asset from our own domain
+        // with cache busting to ensure we're not getting a cached response
+        const response = await fetch(`/favicon.ico?_=${Date.now()}`, {
+          method: 'HEAD',
+          signal: controller.signal,
+          cache: 'no-store'
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          setNetworkStatus('online');
+          return true;
+        } else {
+          // If we can reach our domain but get a non-200 response,
+          // we're still online but might have other issues
+          setNetworkStatus('online');
+          return true;
+        }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        console.log("Local fetch check failed:", fetchError);
+        
+        // If fetch fails, try Supabase as fallback
+        const isConnected = await checkSupabaseConnection();
+        setNetworkStatus(isConnected ? 'online' : 'offline');
+        return isConnected;
+      }
     } catch (error) {
       console.log("Network check failed:", error);
       
-      // Fallback to navigator.onLine if fetch fails
+      // Fallback to navigator.onLine if everything else fails
       const isOnline = navigator.onLine;
       setNetworkStatus(isOnline ? 'online' : 'offline');
       return isOnline;
@@ -42,6 +71,24 @@ export const useNetworkStatus = () => {
       setLastChecked(new Date());
     }
   }, []);
+
+  // Helper function to check Supabase connectivity
+  const checkSupabaseConnection = async () => {
+    try {
+      // Use a very lightweight query
+      const { error } = await supabase.from('profiles').select('id', { count: 'exact', head: true }).limit(1);
+      
+      if (error) {
+        console.error('Supabase connection error:', error.message);
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Supabase connection check failed:', error);
+      return false;
+    }
+  };
 
   useEffect(() => {
     // Check initial status
