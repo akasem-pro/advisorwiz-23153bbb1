@@ -21,11 +21,28 @@ export const supabase = createClient<Database>(
         'x-application-name': 'advisorwiz'
       },
       fetch: (url, options = {}) => {
-        const requestOptions = {
-          ...options,
-          timeout: 30000, // 30 second timeout
-        };
-        return fetch(url, requestOptions);
+        // We need to implement timeout using AbortController
+        // because fetch doesn't natively support timeout option
+        return new Promise((resolve, reject) => {
+          const controller = new AbortController();
+          const { signal } = controller;
+          
+          // Set a timeout of 30 seconds
+          const timeoutId = setTimeout(() => {
+            controller.abort();
+            reject(new Error('Request timeout'));
+          }, 30000);
+          
+          fetch(url, { ...options, signal })
+            .then(response => {
+              clearTimeout(timeoutId);
+              resolve(response);
+            })
+            .catch(error => {
+              clearTimeout(timeoutId);
+              reject(error);
+            });
+        });
       }
     }
   }
@@ -46,7 +63,7 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
       headers: {
         'apikey': SUPABASE_PUBLISHABLE_KEY,
       },
-      // Short timeout for quick failure
+      // Short timeout for quick failure using AbortSignal
       signal: AbortSignal.timeout(5000)
     });
     
