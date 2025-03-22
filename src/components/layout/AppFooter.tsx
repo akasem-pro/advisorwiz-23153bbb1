@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from 'lucide-react';
@@ -77,7 +76,7 @@ const AppFooter: React.FC = () => {
         </div>
 
         <div className="mt-12 pt-8 border-t border-navy-800">
-          <div className="text-slate-400 text-sm mb-6 max-w-4xl mx-auto">
+          <div className="text-white text-sm mb-6 max-w-4xl mx-auto">
             <p className="mb-4 text-center">
               By using AdvisorWiz, you agree to our Terms & Conditions. AdvisorWiz connects consumers with financial advisors but does not provide financial advice. All advisors are independent professionals, and users are responsible for their own financial decisions.
             </p>
@@ -87,14 +86,14 @@ const AppFooter: React.FC = () => {
           </div>
 
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-slate-400 mb-2 md:mb-0">
+            <p className="text-sm text-white mb-2 md:mb-0">
               &copy; {new Date().getFullYear()} AdvisorWiz. All rights reserved.
             </p>
             <div className="flex space-x-4">
-              <a href="mailto:contact@advisorwiz.com" className="text-sm text-slate-400 hover:text-teal-400">
+              <a href="mailto:contact@advisorwiz.com" className="text-sm text-white hover:text-teal-400">
                 contact@advisorwiz.com
               </a>
-              <Link to="/contact" className="text-sm text-slate-400 hover:text-teal-400">
+              <Link to="/contact" className="text-sm text-white hover:text-teal-400">
                 Contact Us
               </Link>
             </div>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
@@ -144,7 +143,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="mt-8 pt-8 border-t border-navy-800">
-          <div className="text-slate-400 text-sm mb-6 max-w-4xl mx-auto">
+          <div className="text-white text-sm mb-6 max-w-4xl mx-auto">
             <p className="mb-4 text-center">
               By using AdvisorWiz, you agree to our Terms & Conditions. AdvisorWiz connects consumers with financial advisors but does not provide financial advice. All advisors are independent professionals, and users are responsible for their own financial decisions.
             </p>
@@ -153,7 +152,7 @@ const Footer: React.FC = () => {
             </p>
           </div>
 
-          <p className="text-center text-slate-400 text-sm">
+          <p className="text-center text-white text-sm">
             &copy; {new Date().getFullYear()} AdvisorWiz. All rights reserved.
           </p>
         </div>
