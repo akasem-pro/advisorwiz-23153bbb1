@@ -76,13 +76,16 @@ export const getWeightedCompatibilityScore = (
   
   // 4. Location preference weighting
   if (preferences.prioritizeLocation) {
-    // Check if advisor and consumer are in the same region
-    if (advisor.location?.region === consumer.location?.region) {
-      weightedScore += 8; // Medium bonus for location match
+    // Using optional chaining to safely check location properties
+    // Check region match if both have region property
+    const regionMatch = advisor.region === consumer.region;
+    if (regionMatch) {
+      weightedScore += 8; // Medium bonus for region match
     }
     
-    // Check if advisor and consumer are in the same city (bigger bonus)
-    if (advisor.location?.city === consumer.location?.city) {
+    // Check city match if both have city property
+    const cityMatch = advisor.city === consumer.city;
+    if (cityMatch) {
       weightedScore += 12; // Additional bonus for exact city match
     }
   }
