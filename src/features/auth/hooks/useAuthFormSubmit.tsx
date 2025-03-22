@@ -40,10 +40,11 @@ export const useAuthFormSubmit = () => {
     if (!validateForm()) return;
     setFormError('');
     
-    // Check network status
+    // Check network status first
     const isOnline = await checkNetworkStatus();
     if (!isOnline) {
       setFormError('You are currently offline. Please check your internet connection and try again.');
+      incrementRetry();
       return;
     }
     
@@ -84,26 +85,26 @@ export const useAuthFormSubmit = () => {
     if (!validateForm()) return;
     setFormError('');
     
-    // Check network status
+    // Check network status first
     const isOnline = await checkNetworkStatus();
     if (!isOnline) {
       setFormError('You are currently offline. Please check your internet connection and try again.');
+      incrementRetry();
       return;
     }
     
     setIsLoading(true);
-    setFormError('');
     resetRetryAttempts();
     
     try {
       console.log('Attempting signup with:', { email });
       await signUp(email, password);
       
-      setActiveTab('signin');
-      resetFields();
-      
       // Switch to sign in tab
+      resetFields();
+      setActiveTab('signin');
       setSignInEmail(email);
+      
       toast.success("Registration successful! Please check your email to verify your account.");
     } catch (error: any) {
       console.error('Failed to sign up:', error);
@@ -148,9 +149,9 @@ export const useAuthFormSubmit = () => {
     const syntheticEvent = new CustomEvent('retry') as unknown as React.FormEvent<HTMLFormElement>;
     
     if (activeTab === 'signin' && signInEmail && signInPassword) {
-      handleSignInSubmit(syntheticEvent);
+      await handleSignInSubmit(syntheticEvent);
     } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
-      handleSignUpSubmit(syntheticEvent);
+      await handleSignUpSubmit(syntheticEvent);
     }
   };
   

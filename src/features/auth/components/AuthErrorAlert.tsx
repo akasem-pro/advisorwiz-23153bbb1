@@ -31,9 +31,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
               <div className="flex items-center gap-2">
                 {isNetworkError ? <WifiOff className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
                 <AlertDescription>
-                  {isNetworkError 
-                    ? "Network error. Please check your internet connection and try again." 
-                    : error}
+                  {error}
                 </AlertDescription>
               </div>
               
