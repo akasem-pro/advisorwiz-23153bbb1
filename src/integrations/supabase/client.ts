@@ -34,19 +34,58 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Simplified connection checker that defaults to "online" for better user experience
+// Enhanced connection checker with more diagnostic information
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
+    console.log("[Supabase Debug] Starting connection check");
+    
     // Check if browser is online first
     if (!navigator.onLine) {
+      console.log("[Supabase Debug] Browser reports offline status");
       return false;
     }
     
-    // Default to true to avoid blocking authentication
-    return true;
+    console.log("[Supabase Debug] Browser reports online status");
+    
+    // Get browser diagnostic info
+    console.log("[Supabase Debug] Browser diagnostics:", {
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      cookiesEnabled: navigator.cookieEnabled,
+      doNotTrack: navigator.doNotTrack,
+      origin: window.location.origin,
+      href: window.location.href,
+      protocol: window.location.protocol,
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+    });
+    
+    // Try to ping Supabase
+    try {
+      console.log("[Supabase Debug] Making lightweight health check to Supabase");
+      const start = performance.now();
+      
+      // Perform a super lightweight check by getting session (cached)
+      const { data, error } = await supabase.auth.getSession();
+      
+      const end = performance.now();
+      console.log("[Supabase Debug] Health check response time:", Math.round(end - start), "ms");
+      
+      if (error) {
+        console.error("[Supabase Debug] Health check error:", error);
+        return false;
+      }
+      
+      console.log("[Supabase Debug] Health check successful, session exists:", !!data.session);
+      return true;
+    } catch (error) {
+      console.error("[Supabase Debug] Health check exception:", error);
+      // Default to true to avoid blocking auth functionality
+      return true;
+    }
   } catch (error) {
-    console.error("Supabase connection check failed:", error);
+    console.error("[Supabase Debug] Connection check failed:", error);
     // Default to true to prevent blocking auth functionality
     return true;
   }
 };
+
