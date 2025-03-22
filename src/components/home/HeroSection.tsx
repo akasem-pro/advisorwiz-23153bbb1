@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, ArrowRight } from 'lucide-react';
-import { Button } from '../ui/button';
+import { useNavigate } from 'react-router-dom';
+import HeroActions from './hero/HeroActions';
+import HeroStatistics from './hero/HeroStatistics';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 
 const HeroSection: React.FC = () => {
@@ -20,54 +20,8 @@ const HeroSection: React.FC = () => {
             Connect with qualified financial advisors who understand your unique financial situation and goals.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center gap-4 mb-12">
-            {user ? (
-              <Button 
-                className="w-full sm:w-auto text-lg bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-lg flex items-center justify-center"
-                onClick={() => navigate('/matches')}
-              >
-                <Search className="mr-2 h-5 w-5" />
-                Find Your Match
-              </Button>
-            ) : (
-              <>
-                <Button 
-                  className="w-full sm:w-auto text-lg bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-lg flex items-center justify-center"
-                  onClick={() => navigate('/sign-in')}
-                >
-                  Get Started
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full sm:w-auto text-lg border-slate-300 dark:border-navy-600 px-8 py-3 rounded-lg"
-                  onClick={() => navigate('/for-advisors')}
-                >
-                  For Advisors
-                </Button>
-              </>
-            )}
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 mt-8">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-teal-600 dark:text-teal-400">500+</p>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Qualified Advisors</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-teal-600 dark:text-teal-400">98%</p>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Match Satisfaction</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-teal-600 dark:text-teal-400">$10B+</p>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Assets Managed</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-teal-600 dark:text-teal-400">5,000+</p>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Successful Matches</p>
-            </div>
-          </div>
+          <HeroActions user={user} navigate={navigate} />
+          <HeroStatistics />
         </div>
       </div>
       
