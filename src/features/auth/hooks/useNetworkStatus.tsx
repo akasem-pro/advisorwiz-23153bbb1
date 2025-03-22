@@ -19,13 +19,21 @@ export const useNetworkStatus = () => {
     setNetworkStatus('checking');
     
     try {
-      // Try to fetch the favicon from root path to check connectivity
-      // This avoids CORS issues that can occur with third-party domains
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      // First, try the browser's navigator.onLine
+      if (!navigator.onLine) {
+        setNetworkStatus('offline');
+        return false;
+      }
       
-      // Use a cached asset that's guaranteed to exist in the public folder
-      const response = await fetch('/favicon.ico?nocache=' + new Date().getTime(), { 
+      // Simple ping test to validate real connectivity
+      // Use the window.location.origin to ensure we're testing our own domain
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const pingUrl = `${window.location.origin}/favicon.ico?_=${Date.now()}`;
+      console.log("Testing network connection with: ", pingUrl);
+      
+      const response = await fetch(pingUrl, { 
         method: 'HEAD',
         cache: 'no-store',
         signal: controller.signal
@@ -37,12 +45,18 @@ export const useNetworkStatus = () => {
         setNetworkStatus('online');
         return true;
       } else {
-        setNetworkStatus(navigator.onLine ? 'online' : 'offline');
-        return navigator.onLine;
+        setNetworkStatus('offline');
+        return false;
       }
     } catch (error) {
       console.log("Network check failed:", error);
-      // If fetch fails but navigator.onLine is true, we'll trust the browser
+      
+      // If error is due to abort, the request timed out
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        console.log("Network request timed out");
+      }
+      
+      // Fallback to navigator.onLine if fetch fails
       const isOnline = navigator.onLine;
       setNetworkStatus(isOnline ? 'online' : 'offline');
       return isOnline;
@@ -54,6 +68,11 @@ export const useNetworkStatus = () => {
   useEffect(() => {
     // Check initial status
     checkNetworkStatus();
+    
+    // Setup periodic checks every 30 seconds
+    const intervalId = setInterval(() => {
+      checkNetworkStatus();
+    }, 30000);
     
     const handleOnline = () => {
       console.log("Browser reports online status");
@@ -71,6 +90,7 @@ export const useNetworkStatus = () => {
     window.addEventListener('offline', handleOffline);
     
     return () => {
+      clearInterval(intervalId);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };

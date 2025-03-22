@@ -18,24 +18,53 @@ export const supabase = createClient<Database>(
       storage: localStorage
     },
     global: {
-      fetch: (url, options) => {
+      headers: {
+        'X-App-Version': '1.0.0',
+      },
+      // Implement a custom fetch with retry logic
+      fetch: async (url, options = {}) => {
+        const maxRetries = 2;
+        let retries = 0;
+        
+        // Add cache busting for auth endpoints
         const fullUrl = new URL(url.toString());
-        // Add cache-busting for auth operations to avoid caching issues
         if (fullUrl.pathname.includes('auth')) {
           fullUrl.searchParams.set('_', Date.now().toString());
         }
-        return fetch(fullUrl.toString(), {
-          ...options,
-          credentials: 'same-origin'
-        });
-      },
-      headers: {
-        'X-App-Version': '1.0.0',
-      }
-    },
-    realtime: {
-      params: {
-        eventsPerSecond: 2
+        
+        while (retries <= maxRetries) {
+          try {
+            const response = await fetch(fullUrl.toString(), {
+              ...options,
+              credentials: 'same-origin',
+              headers: {
+                ...options.headers,
+                'Cache-Control': 'no-cache, no-store',
+                'Pragma': 'no-cache'
+              }
+            });
+            
+            if (response.ok || response.status >= 400) {
+              return response;
+            }
+            
+            throw new Error(`Request failed with status ${response.status}`);
+          } catch (error) {
+            retries++;
+            
+            if (retries > maxRetries) {
+              console.error("Max retries reached for request:", fullUrl.toString());
+              throw error;
+            }
+            
+            // Exponential backoff
+            const delay = Math.min(1000 * (2 ** retries), 5000);
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        }
+        
+        // This should never be reached because of the throw in the loop
+        throw new Error("Failed to fetch after retries");
       }
     }
   }
@@ -44,7 +73,8 @@ export const supabase = createClient<Database>(
 // Add a helper function to check Supabase connection
 export const checkSupabaseConnection = async () => {
   try {
-    const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true });
+    // Simple health check to verify connectivity to Supabase
+    const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true }).limit(1);
     
     if (error) {
       console.error('Supabase connection error:', error);

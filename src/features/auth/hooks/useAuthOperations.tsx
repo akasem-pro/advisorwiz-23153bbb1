@@ -32,12 +32,13 @@ export const useAuthOperations = (
       return true;
     }
     
-    // Expanded error detection for network issues
+    // More extensive error detection for network issues
     return !!(
       error?.message?.toLowerCase().includes('network') ||
       error?.message?.toLowerCase().includes('connection') ||
       error?.message?.toLowerCase().includes('failed to fetch') ||
       error?.message?.toLowerCase().includes('offline') ||
+      error?.name === 'AbortError' ||
       error?.name === 'AuthRetryableFetchError' ||
       error?.message?.includes('Network Error') ||
       error?.code === 'NETWORK_ERROR' ||
@@ -50,8 +51,8 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // Check if we're offline using the browser's navigator
-      if (!navigator.onLine) {
+      // Check if we're offline before even trying
+      if (networkStatus === 'offline' || !navigator.onLine) {
         throw new Error('You are currently offline. Please check your internet connection and try again.');
       }
       
@@ -106,8 +107,8 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // Check if we're online using the browser's navigator
-      if (!navigator.onLine) {
+      // Check if we're online
+      if (networkStatus === 'offline' || !navigator.onLine) {
         throw new Error('You are currently offline. Please check your internet connection and try again.');
       }
       
