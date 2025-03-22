@@ -38,7 +38,7 @@ export const supabase = createClient<Database>(
               ...options,
               credentials: 'same-origin',
               headers: {
-                ...options.headers,
+                ...(options.headers as Record<string, string> || {}),
                 'Cache-Control': 'no-cache, no-store',
                 'Pragma': 'no-cache'
               }
