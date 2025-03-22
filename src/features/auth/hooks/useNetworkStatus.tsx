@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '../../../integrations/supabase/client';
 
 /**
  * Custom hook to track network connectivity status
@@ -25,36 +26,19 @@ export const useNetworkStatus = () => {
         return false;
       }
       
-      // Simple ping test to validate real connectivity
-      // Use the window.location.origin to ensure we're testing our own domain
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      // Use Supabase healthcheck as a more reliable network test
+      // This avoids CORS issues with external services
+      const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true }).limit(1);
       
-      const pingUrl = `${window.location.origin}/favicon.ico?_=${Date.now()}`;
-      console.log("Testing network connection with: ", pingUrl);
-      
-      const response = await fetch(pingUrl, { 
-        method: 'HEAD',
-        cache: 'no-store',
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
-      
-      if (response.ok) {
-        setNetworkStatus('online');
-        return true;
-      } else {
+      if (error && error.message.includes('network')) {
         setNetworkStatus('offline');
         return false;
       }
+      
+      setNetworkStatus('online');
+      return true;
     } catch (error) {
       console.log("Network check failed:", error);
-      
-      // If error is due to abort, the request timed out
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        console.log("Network request timed out");
-      }
       
       // Fallback to navigator.onLine if fetch fails
       const isOnline = navigator.onLine;

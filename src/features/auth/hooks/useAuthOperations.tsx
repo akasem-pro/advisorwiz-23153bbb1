@@ -33,14 +33,15 @@ export const useAuthOperations = (
     }
     
     // More extensive error detection for network issues
+    const errorMsg = error?.message?.toLowerCase() || '';
     return !!(
-      error?.message?.toLowerCase().includes('network') ||
-      error?.message?.toLowerCase().includes('connection') ||
-      error?.message?.toLowerCase().includes('failed to fetch') ||
-      error?.message?.toLowerCase().includes('offline') ||
+      errorMsg.includes('network') ||
+      errorMsg.includes('connection') ||
+      errorMsg.includes('failed to fetch') ||
+      errorMsg.includes('offline') ||
       error?.name === 'AbortError' ||
       error?.name === 'AuthRetryableFetchError' ||
-      error?.message?.includes('Network Error') ||
+      errorMsg.includes('network error') ||
       error?.code === 'NETWORK_ERROR' ||
       error?.status === 0 ||
       error?.__isAuthError === true
