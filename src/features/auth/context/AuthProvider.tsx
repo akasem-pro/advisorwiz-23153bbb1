@@ -14,7 +14,7 @@ type AuthContextType = {
   signOut: () => Promise<void>;
   loading: boolean;
   networkStatus: 'online' | 'offline' | 'checking';
-  checkNetworkStatus: () => Promise<boolean>;  // Changed from Promise<void> to Promise<boolean>
+  checkNetworkStatus: () => Promise<boolean>;
   retryAttempts: number;
   incrementRetry: () => void;
   resetRetryAttempts: () => void;
@@ -28,7 +28,7 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
   loading: true,
   networkStatus: 'checking',
-  checkNetworkStatus: async () => false,  // Updated default to return boolean
+  checkNetworkStatus: async () => false,
   retryAttempts: 0,
   incrementRetry: () => {},
   resetRetryAttempts: () => {}
@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { user, session, loading, setLoading } = useAuthState();
   const { networkStatus, checkNetworkStatus } = useNetworkStatus();
   const [retryAttempts, setRetryAttempts] = useState(0);
-  const { signIn, signUp, signOut } = useAuthOperations(networkStatus, setLoading);
+  const { signIn, signUp, signOut } = useAuthOperations(networkStatus, setLoading, checkNetworkStatus);
 
   // Monitor network changes and notify user
   useEffect(() => {
@@ -54,6 +54,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       toast.success("You're back online! You can now try again.");
     }
   }, [networkStatus, retryAttempts]);
+
+  // Check network periodically to ensure status is accurate
+  useEffect(() => {
+    // Initial check
+    checkNetworkStatus();
+    
+    // Periodic check every minute
+    const checkInterval = setInterval(() => {
+      if (retryAttempts > 0) {
+        checkNetworkStatus();
+      }
+    }, 60000);
+    
+    return () => clearInterval(checkInterval);
+  }, [checkNetworkStatus, retryAttempts]);
 
   const incrementRetry = () => {
     setRetryAttempts(prev => prev + 1);

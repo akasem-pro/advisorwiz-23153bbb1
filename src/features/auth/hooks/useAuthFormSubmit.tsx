@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 /**
  * Custom hook for handling auth form submissions and retries
+ * with improved error handling and network checking
  */
 export const useAuthFormSubmit = () => {
   const { 
@@ -43,6 +44,18 @@ export const useAuthFormSubmit = () => {
     setIsLoading(true);
     resetRetryAttempts();
     
+    // First check network connectivity
+    if (networkStatus === 'offline') {
+      // Verify network status before showing error
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        setFormError('Network error. Please check your connection and try again.');
+        setIsLoading(false);
+        incrementRetry();
+        return;
+      }
+    }
+    
     try {
       console.log("Attempting sign in with:", { email });
       await signIn(email, password);
@@ -51,7 +64,7 @@ export const useAuthFormSubmit = () => {
       console.error('Failed to sign in:', error);
       setFormError(error.message || 'Failed to sign in');
       
-      if (!navigator.onLine) {
+      if (error.message?.includes('network') || error.message?.includes('connection') || !navigator.onLine) {
         incrementRetry();
       }
     } finally {
@@ -80,6 +93,18 @@ export const useAuthFormSubmit = () => {
     setIsLoading(true);
     resetRetryAttempts();
     
+    // First check network connectivity
+    if (networkStatus === 'offline') {
+      // Verify network status before showing error
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        setFormError('Network error. Please check your connection and try again.');
+        setIsLoading(false);
+        incrementRetry();
+        return;
+      }
+    }
+    
     try {
       console.log('Attempting signup with:', { email });
       await signUp(email, password);
@@ -100,7 +125,7 @@ export const useAuthFormSubmit = () => {
       } else {
         setFormError(error.message || 'Failed to sign up');
         
-        if (!navigator.onLine) {
+        if (error.message?.includes('network') || error.message?.includes('connection') || !navigator.onLine) {
           incrementRetry();
         }
       }
@@ -120,6 +145,9 @@ export const useAuthFormSubmit = () => {
     handleSignUpSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>,
     setFormError: (error: string) => void
   ) => {
+    // First check network status before attempting retry
+    await checkNetworkStatus();
+    
     setFormError('');
     
     // Create a synthetic event to pass to the form handlers

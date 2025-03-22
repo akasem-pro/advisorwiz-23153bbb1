@@ -1,14 +1,15 @@
 
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../../integrations/supabase/client';
+import { supabase, checkSupabaseConnection } from '../../../integrations/supabase/client';
 import { toast } from 'sonner';
 
 /**
- * Custom hook for authentication operations
+ * Custom hook for authentication operations with improved error handling
  */
 export const useAuthOperations = (
   networkStatus: 'online' | 'offline' | 'checking', 
-  setLoading: (loading: boolean) => void
+  setLoading: (loading: boolean) => void,
+  checkNetworkStatus: () => Promise<boolean>
 ) => {
   const navigate = useNavigate();
   
@@ -31,6 +32,12 @@ export const useAuthOperations = (
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
+      
+      // First check network connectivity
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        throw new Error('Network error. Please check your connection and try again.');
+      }
       
       console.log("Starting sign in process with email:", email);
       
@@ -62,8 +69,14 @@ export const useAuthOperations = (
       
       if (error.message?.includes('Invalid login credentials')) {
         throw new Error('Invalid email or password. Please try again.');
-      } else if (!navigator.onLine) {
-        throw new Error('You appear to be offline. Please check your internet connection.');
+      } else if (error.message?.includes('network') || error.message?.includes('fetch') || !navigator.onLine) {
+        // Check connection again to be sure
+        const isOnline = await checkSupabaseConnection();
+        if (!isOnline) {
+          throw new Error('Network error. Please check your connection and try again.');
+        } else {
+          throw new Error('Connection issue with the authentication service. Please try again.');
+        }
       } else {
         throw error;
       }
@@ -75,6 +88,12 @@ export const useAuthOperations = (
   const signUp = async (email: string, password: string) => {
     try {
       setLoading(true);
+      
+      // First check network connectivity
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        throw new Error('Network error. Please check your connection and try again.');
+      }
       
       console.log("Starting sign up process with email:", email);
       
@@ -106,6 +125,14 @@ export const useAuthOperations = (
       
       if (error.message?.includes('email already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
+      } else if (error.message?.includes('network') || error.message?.includes('fetch') || !navigator.onLine) {
+        // Check connection again to be sure
+        const isOnline = await checkSupabaseConnection();
+        if (!isOnline) {
+          throw new Error('Network error. Please check your connection and try again.');
+        } else {
+          throw new Error('Connection issue with the authentication service. Please try again.');
+        }
       } else {
         throw new Error(error.message || 'An error occurred during sign up. Please try again.');
       }

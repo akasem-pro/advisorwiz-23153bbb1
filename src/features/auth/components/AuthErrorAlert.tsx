@@ -11,18 +11,17 @@ interface AuthErrorAlertProps {
 }
 
 const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, onRetry }) => {
-  // Only show offline warnings if the browser actually reports being offline
-  const isOffline = !navigator.onLine;
-  
-  // Determine if the error is related to network connectivity
-  const isNetworkError = 
+  // Check if the error is related to network connectivity
+  const isNetworkError = error && (
     error.toLowerCase().includes('network') || 
     error.toLowerCase().includes('connection') || 
     error.toLowerCase().includes('failed to fetch') ||
-    error.toLowerCase().includes('offline');
+    error.toLowerCase().includes('offline')
+  );
   
   return (
     <>
+      {/* Show error message (either network or other error) */}
       {error && (
         <div className="px-4 pt-4">
           <Alert 
@@ -55,7 +54,8 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
         </div>
       )}
       
-      {isOffline && !error && (
+      {/* Show network status alerts */}
+      {!error && networkStatus === 'offline' && (
         <div className="px-4 pt-4">
           <Alert className="border-amber-500 bg-amber-50 text-amber-700">
             <div className="flex w-full items-center justify-between">
@@ -74,7 +74,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
                   className="ml-2 border-amber-500 text-amber-700 hover:bg-amber-100"
                 >
                   <RefreshCw className="mr-2 h-3 w-3" />
-                  Retry
+                  Check Connection
                 </Button>
               )}
             </div>
@@ -82,7 +82,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
         </div>
       )}
       
-      {networkStatus === 'checking' && !error && !isOffline && (
+      {!error && networkStatus === 'checking' && (
         <div className="px-4 pt-4">
           <Alert className="border-blue-500 bg-blue-50 text-blue-700">
             <div className="flex w-full items-center justify-between">
