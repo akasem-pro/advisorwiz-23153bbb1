@@ -30,7 +30,7 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Simplified connection checker that doesn't rely on fetch
+// Simplified connection checker that doesn't timeout
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
     // Check if browser is online first
@@ -38,11 +38,22 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
       return false;
     }
     
-    // Try to make a lightweight health check
-    const { error } = await supabase.from('profiles').select('count', { count: 'exact', head: true }).limit(1).abortSignal(AbortSignal.timeout(3000));
+    // Use AbortController to prevent long-hanging requests
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3-second timeout
     
-    // If we got a response (even with no data), the connection is working
-    return !error;
+    try {
+      // Try to make a lightweight health check
+      const { error } = await supabase.from('profiles').select('count', { count: 'exact', head: true }).limit(1).abortSignal(controller.signal);
+      clearTimeout(timeoutId);
+      
+      // If we got a response (even with no data), the connection is working
+      return !error;
+    } catch (err) {
+      // If we hit a timeout or other error, assume we're offline
+      console.log("Connection check failed:", err);
+      return false;
+    }
   } catch (error) {
     console.error("Supabase connection check failed:", error);
     return false;

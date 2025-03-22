@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
@@ -7,8 +8,19 @@ import PageSEO from '../components/seo/PageSEO';
 import { useSignInForm } from '../features/auth/hooks/useSignInForm';
 import { useAuthFormSubmit } from '../features/auth/hooks/useAuthFormSubmit';
 import AuthFormContainer from '../features/auth/components/AuthFormContainer';
+import { useAuth } from '../features/auth/context/AuthProvider';
 
 const SignIn: React.FC = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
+  // Redirect if user is already authenticated
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+  
   const {
     signInEmail,
     setSignInEmail,
@@ -83,8 +95,9 @@ const SignIn: React.FC = () => {
     );
   };
   
-  const isSignInDisabled = isLoading || authLoading || networkStatus === 'checking';
-  const isSignUpDisabled = isLoading || authLoading || networkStatus === 'checking';
+  // Only disable buttons when actually loading or checking network
+  const isSignInDisabled = isLoading || authLoading;
+  const isSignUpDisabled = isLoading || authLoading;
   
   return (
     <AnimatedRoute animation="fade">

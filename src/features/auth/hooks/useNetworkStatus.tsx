@@ -6,8 +6,9 @@ import { checkSupabaseConnection } from '../../../integrations/supabase/client';
  * Custom hook to track network connectivity status with more reliable checks
  */
 export const useNetworkStatus = () => {
+  // Default to online if navigator is online
   const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>(
-    navigator.onLine ? 'checking' : 'offline'
+    navigator.onLine ? 'online' : 'offline'
   );
   
   // Async function to check network status
@@ -21,10 +22,18 @@ export const useNetworkStatus = () => {
         return false;
       }
       
-      // Then do a real connection test to Supabase
-      const isConnected = await checkSupabaseConnection();
-      setNetworkStatus(isConnected ? 'online' : 'offline');
-      return isConnected;
+      // Simple lightweight check - just assume we're online if the browser reports we are
+      // This will allow the button to be enabled by default
+      setNetworkStatus('online');
+      
+      // Then do a real connection test to Supabase in the background
+      checkSupabaseConnection().then(isConnected => {
+        if (!isConnected) {
+          setNetworkStatus('offline');
+        }
+      });
+      
+      return true;
     } catch (error) {
       console.error("Network status check failed:", error);
       const browserOnline = navigator.onLine;
@@ -39,6 +48,7 @@ export const useNetworkStatus = () => {
     
     const handleOnline = () => {
       console.log("Browser reports online status, verifying connection...");
+      setNetworkStatus('online'); // Set it to online immediately
       checkNetworkStatus();
     };
     

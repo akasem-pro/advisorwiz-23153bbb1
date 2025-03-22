@@ -21,6 +21,9 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
     error.toLowerCase().includes('timeout')
   );
   
+  // Only show network error if we're really offline
+  const showNetworkAlert = networkStatus === 'offline';
+  
   return (
     <>
       {/* Show error message */}
@@ -58,8 +61,8 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
         </div>
       )}
       
-      {/* Show network status alerts */}
-      {!error && networkStatus === 'offline' && (
+      {/* Show network status alerts only if no other error is showing */}
+      {!error && showNetworkAlert && (
         <div className="px-4 pt-4">
           <Alert 
             variant="destructive"
@@ -69,7 +72,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
               <div className="flex items-center gap-2">
                 <WifiOff className="h-4 w-4" />
                 <AlertDescription>
-                  You are currently offline. Please check your internet connection to sign in or sign up.
+                  You appear to be offline. Please check your internet connection to sign in or sign up.
                 </AlertDescription>
               </div>
               
@@ -89,23 +92,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
         </div>
       )}
       
-      {!error && networkStatus === 'checking' && (
-        <div className="px-4 pt-4">
-          <Alert 
-            variant="default"
-            className="border-blue-500 bg-blue-50 text-blue-700"
-          >
-            <div className="flex w-full items-center justify-between">
-              <div className="flex items-center gap-2">
-                <RefreshCw className="h-4 w-4 animate-spin" />
-                <AlertDescription>
-                  Checking connection to authentication service...
-                </AlertDescription>
-              </div>
-            </div>
-          </Alert>
-        </div>
-      )}
+      {/* Don't show checking status alert as it might flicker */}
     </>
   );
 };

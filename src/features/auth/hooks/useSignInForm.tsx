@@ -99,7 +99,10 @@ export const useSignInForm = () => {
       hasErrors = true;
     }
     
-    if (signUpPassword !== confirmPassword) {
+    if (!confirmPassword) {
+      setErrors(prev => ({ ...prev, confirmPassword: 'Please confirm your password' }));
+      hasErrors = true;
+    } else if (signUpPassword !== confirmPassword) {
       setErrors(prev => ({ ...prev, confirmPassword: "Passwords don't match" }));
       hasErrors = true;
     }
