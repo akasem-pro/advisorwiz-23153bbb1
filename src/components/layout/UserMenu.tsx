@@ -38,16 +38,20 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
 
   const handleProfileClick = () => {
     console.log('Profile clicked, navigating to profile for userType:', userType);
-    if (userType === 'consumer') {
+    
+    // Default to consumer profile if userType is not set
+    if (!userType || userType === 'consumer') {
       navigate('/consumer-profile');
     } else if (userType === 'advisor') {
       navigate('/advisor-profile');
     } else if (userType === 'firm_admin') {
       navigate('/firm-profile');
-    } else {
-      // Default fallback if userType is not set
-      navigate('/settings');
     }
+  };
+
+  const handleSettingsClick = () => {
+    console.log('Settings clicked, navigating to settings');
+    navigate('/settings');
   };
 
   return (
@@ -72,7 +76,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
           <User className="mr-2 h-4 w-4" />
           <span>My Profile</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate('/settings')}>
+        <DropdownMenuItem onClick={handleSettingsClick}>
           Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
