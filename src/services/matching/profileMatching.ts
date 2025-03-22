@@ -17,10 +17,14 @@ export const calculateCompatibilityBetweenProfiles = (
 ): (AdvisorProfile | ConsumerProfile)[] => {
   if (userType === 'consumer') {
     // Consumer looking for advisors
-    const compatibilityScores = mockAdvisors.map(advisor => ({
-      advisor,
-      score: getWeightedCompatibilityScore(advisor.id, userId, preferences)
-    }));
+    const compatibilityScores = mockAdvisors.map(advisor => {
+      const result = getWeightedCompatibilityScore(advisor.id, userId, preferences);
+      return {
+        advisor,
+        score: result.score,
+        explanations: result.matchExplanation
+      };
+    });
     
     // Sort by score (descending)
     const sortedResults = compatibilityScores
@@ -40,10 +44,14 @@ export const calculateCompatibilityBetweenProfiles = (
     return limit ? resultsWithScores.slice(0, limit) : resultsWithScores;
   } else {
     // Advisor looking for consumers
-    const compatibilityScores = mockConsumers.map(consumer => ({
-      consumer,
-      score: getWeightedCompatibilityScore(userId, consumer.id, preferences)
-    }));
+    const compatibilityScores = mockConsumers.map(consumer => {
+      const result = getWeightedCompatibilityScore(userId, consumer.id, preferences);
+      return {
+        consumer,
+        score: result.score,
+        explanations: result.matchExplanation
+      };
+    });
     
     // Sort by score (descending)
     const sortedResults = compatibilityScores

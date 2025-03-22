@@ -22,16 +22,22 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
     // Fetch consumer profile from context or props
     const consumerProfile = item;
     
+    // Get advisor profile from context
+    const advisorProfile = {
+      id: 'advisor-current',
+      name: 'Current Advisor',
+      organization: 'Your Organization'
+    };
+    
     // Import dynamic explanations based on user's profile
+    const score = calculateMatchScore(advisorProfile as any, consumerProfile);
+    const explanations = getMatchExplanations(advisorProfile as any, consumerProfile);
+    
     return (
       <div className="match-explanation">
         <MatchExplanation 
-          score={75} // This would be dynamically calculated
-          explanations={[
-            "Needs your expertise in retirement planning",
-            "Good availability match",
-            "Within your service area"
-          ]} 
+          score={score}
+          explanations={explanations}
           compact={compact}
         />
       </div>
