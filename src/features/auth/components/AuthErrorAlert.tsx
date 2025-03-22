@@ -27,7 +27,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
       {error && (
         <div className="px-4 pt-4">
           <Alert 
-            variant={isNetworkError ? "warning" : "destructive"} 
+            variant="destructive" 
             className={isNetworkError ? "border-amber-500 bg-amber-50 text-amber-600" : "border-red-500 bg-red-50 text-red-600"}
           >
             <div className="flex w-full items-center justify-between">
@@ -61,7 +61,10 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
       {/* Show network status alerts */}
       {!error && networkStatus === 'offline' && (
         <div className="px-4 pt-4">
-          <Alert className="border-amber-500 bg-amber-50 text-amber-700">
+          <Alert 
+            variant="destructive"
+            className="border-amber-500 bg-amber-50 text-amber-700"
+          >
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-2">
                 <WifiOff className="h-4 w-4" />
@@ -88,7 +91,10 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
       
       {!error && networkStatus === 'checking' && (
         <div className="px-4 pt-4">
-          <Alert className="border-blue-500 bg-blue-50 text-blue-700">
+          <Alert 
+            variant="default"
+            className="border-blue-500 bg-blue-50 text-blue-700"
+          >
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-2">
                 <RefreshCw className="h-4 w-4 animate-spin" />
