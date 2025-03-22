@@ -11,28 +11,23 @@ export const useNetworkStatus = () => {
 
   const checkNetworkStatus = useCallback(async () => {
     try {
-      // Start with browser's navigator.onLine as initial check
-      if (!navigator.onLine) {
-        setNetworkStatus('offline');
-        return false;
+      // If the app is running in the browser, we can assume we're online enough
+      // to at least render the UI and attempt auth operations
+      if (navigator.onLine) {
+        setNetworkStatus('online');
+        
+        // Do a background check without affecting the immediate status
+        checkSupabaseConnection().catch(console.error);
+        return true;
       }
-
-      // Set to checking while we verify the connection
-      setNetworkStatus('checking');
       
-      // Simply assume we're online if we can run code in the browser
-      // This is the most reliable approach since we're already loading the app
-      setNetworkStatus('online');
-      
-      // Do a quick background check to Supabase but don't wait for it
-      // or let it affect our immediate "online" status
-      checkSupabaseConnection().catch(console.error);
-      
-      return true;
+      // Only set to offline if the browser explicitly says we're offline
+      setNetworkStatus('offline');
+      return false;
     } catch (error) {
-      console.log("Network check failed:", error);
+      console.error("Network check error:", error);
       
-      // Fallback to navigator.onLine if everything else fails
+      // Even if our check fails, if navigator says we're online, trust that
       const isOnline = navigator.onLine;
       setNetworkStatus(isOnline ? 'online' : 'offline');
       return isOnline;
@@ -44,8 +39,8 @@ export const useNetworkStatus = () => {
   // Helper function to check Supabase connectivity - used for background validation only
   const checkSupabaseConnection = async () => {
     try {
-      // Lightweight query just to verify connectivity
-      const { error } = await supabase.from('profiles').select('id', { count: 'exact', head: true }).limit(1);
+      // Use a more reliable approach that doesn't trigger CORS issues
+      const { data, error } = await supabase.auth.getSession();
       return !error;
     } catch (error) {
       console.error('Supabase connection check failed:', error);
@@ -54,7 +49,7 @@ export const useNetworkStatus = () => {
   };
 
   useEffect(() => {
-    // Check initial status
+    // Check initial status but always assume online if the app is running
     checkNetworkStatus();
     
     // Setup periodic checks every 30 seconds
@@ -64,7 +59,7 @@ export const useNetworkStatus = () => {
     
     const handleOnline = () => {
       console.log("Browser reports online status");
-      setNetworkStatus('online'); // Immediately set to online
+      setNetworkStatus('online');
     };
     
     const handleOffline = () => {

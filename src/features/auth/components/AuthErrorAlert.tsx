@@ -20,7 +20,8 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
     error.toLowerCase().includes('auth error');
   
   // Never show both offline status and an error at the same time - prefer the error message
-  const showOfflineAlert = networkStatus === 'offline' && !error;
+  // And never show offline alert if we're actually online according to the browser
+  const showOfflineAlert = networkStatus === 'offline' && !error && !navigator.onLine;
   
   return (
     <>

@@ -1,6 +1,6 @@
 
 import { useNavigate } from 'react-router-dom';
-import { supabase, checkSupabaseConnection } from '../../../integrations/supabase/client';
+import { supabase } from '../../../integrations/supabase/client';
 import { toast } from 'sonner';
 
 /**
@@ -28,9 +28,17 @@ export const useAuthOperations = (
   };
 
   const isNetworkError = (error: any): boolean => {
-    // Don't trust the error - if we think we're online, assume we're online
-    if (networkStatus === 'online' && navigator.onLine) {
-      return false;
+    // If browser says we're online, trust that for most cases
+    if (navigator.onLine && networkStatus !== 'offline') {
+      // But still check for certain definitive network error signatures
+      const errorMsg = error?.message?.toLowerCase() || '';
+      return (
+        errorMsg.includes('failed to fetch') ||
+        error?.name === 'AbortError' ||
+        error?.name === 'AuthRetryableFetchError' ||
+        error?.code === 'NETWORK_ERROR' ||
+        error?.status === 0
+      );
     }
     
     // More extensive error detection for network issues
@@ -53,8 +61,8 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // Force online mode - don't assume we're offline unnecessarily
-      // The browser is already running our code, so we must be at least somewhat connected
+      // Always assume we're online enough to try authentication
+      // The browser is already running our code, so we must be connected
       console.log("Starting sign in process with email:", email);
       
       // Directly use the Supabase client for authentication
