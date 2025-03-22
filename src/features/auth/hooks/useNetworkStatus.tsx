@@ -24,13 +24,14 @@ export const useNetworkStatus = () => {
         return false;
       }
       
-      // Try a simple GET request to Supabase auth endpoint
+      // Try a simple fetch to Supabase with a reasonable timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout, increased from 3s
       
       try {
+        // Use a simple HEAD request which is faster than a GET request
         const response = await fetch(`${SUPABASE_URL}/auth/v1/`, {
-          method: 'GET',
+          method: 'HEAD', // Changed from GET to HEAD
           headers: {
             'apikey': SUPABASE_PUBLISHABLE_KEY,
             'Content-Type': 'application/json'
@@ -48,10 +49,23 @@ export const useNetworkStatus = () => {
         clearTimeout(timeoutId);
         console.log("Network check failed:", error);
         
-        // If request fails, use navigator.onLine as fallback
-        setNetworkStatus('offline');
-        setLastChecked(new Date());
-        return false;
+        // Fall back to a more reliable public endpoint
+        try {
+          const publicResponse = await fetch('https://www.cloudflare.com/cdn-cgi/trace', { 
+            method: 'HEAD',
+            signal: AbortSignal.timeout(3000) // 3 second timeout using newer AbortSignal.timeout()
+          });
+          
+          const isOnline = publicResponse.ok;
+          setNetworkStatus(isOnline ? 'online' : 'offline');
+          setLastChecked(new Date());
+          return isOnline;
+        } catch (fallbackError) {
+          console.log("Fallback network check failed:", fallbackError);
+          setNetworkStatus('offline');
+          setLastChecked(new Date());
+          return false;
+        }
       }
     } catch (error) {
       console.log("Network status check error:", error);
@@ -80,10 +94,10 @@ export const useNetworkStatus = () => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     
-    // Check connectivity periodically (every 30 seconds)
+    // Check connectivity periodically but less frequently (every minute)
     const intervalId = setInterval(() => {
       checkNetworkStatus();
-    }, 30000);
+    }, 60000);
     
     return () => {
       window.removeEventListener('online', handleOnline);

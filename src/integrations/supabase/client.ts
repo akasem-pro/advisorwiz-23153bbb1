@@ -19,6 +19,26 @@ export const supabase = createClient<Database>(
     global: {
       headers: {
         'x-application-name': 'advisorwiz'
+      },
+      fetch: (url, options) => {
+        // Add custom fetch options with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
+        const fetchOptions = {
+          ...options,
+          signal: controller.signal
+        };
+        
+        return fetch(url, fetchOptions)
+          .then(response => {
+            clearTimeout(timeoutId);
+            return response;
+          })
+          .catch(error => {
+            clearTimeout(timeoutId);
+            throw error;
+          });
       }
     }
   }
@@ -35,11 +55,11 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     
     // Simple ping to Supabase with a short timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout (increased from 3s)
     
     try {
       const response = await fetch(`${SUPABASE_URL}/auth/v1/`, {
-        method: 'GET',
+        method: 'HEAD', // HEAD is faster than GET for connectivity testing
         headers: {
           'apikey': SUPABASE_PUBLISHABLE_KEY,
           'Content-Type': 'application/json'
@@ -53,7 +73,18 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     } catch (error) {
       clearTimeout(timeoutId);
       console.log("Supabase connection test failed:", error);
-      return false; // Connection failed
+      
+      // Try a different endpoint if Supabase is unreachable
+      try {
+        const publicResponse = await fetch('https://www.cloudflare.com/cdn-cgi/trace', { 
+          method: 'HEAD',
+          signal: AbortSignal.timeout(3000)
+        });
+        return publicResponse.ok;
+      } catch (fallbackError) {
+        console.log("Fallback connection test failed:", fallbackError);
+        return false;
+      }
     }
   } catch (error) {
     console.error("Supabase connection check failed:", error);

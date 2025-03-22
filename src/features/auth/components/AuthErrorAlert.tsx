@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Alert, AlertDescription } from '../../../components/ui/alert';
-import { AlertCircle, WifiOff, RefreshCw, Clock } from 'lucide-react';
+import { AlertCircle, WifiOff, RefreshCw } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 
 interface AuthErrorAlertProps {
@@ -17,7 +17,8 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
     error.toLowerCase().includes('connection') || 
     error.toLowerCase().includes('failed to fetch') ||
     error.toLowerCase().includes('offline') ||
-    error.toLowerCase().includes('timeout')
+    error.toLowerCase().includes('timeout') ||
+    error.toLowerCase().includes('unable to connect')
   );
   
   return (
