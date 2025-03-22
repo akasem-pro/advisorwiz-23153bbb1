@@ -1,5 +1,6 @@
 
-import { now } from 'web-vitals';
+// We don't need any import from web-vitals here since we're using the browser's built-in performance API
+// Removing the incorrect import of 'now' from web-vitals
 
 interface PerformanceData {
   functionName: string;
