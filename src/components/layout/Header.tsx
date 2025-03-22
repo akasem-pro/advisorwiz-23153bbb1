@@ -8,7 +8,7 @@ import { Button } from '../ui/button';
 import Logo from './Logo';
 import NavigationMenu from './NavigationMenu';
 import MobileMenu from './MobileMenu';
-import { useAuth } from '../auth/AuthProvider';
+import { useAuth } from '../../features/auth/context/AuthProvider';
 import {
   DropdownMenu,
   DropdownMenuContent,

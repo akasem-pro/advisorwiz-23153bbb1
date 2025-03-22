@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, ArrowRight } from 'lucide-react';
 import { Button } from '../ui/button';
-import { useAuth } from '../auth/AuthProvider';
+import { useAuth } from '../../features/auth/context/AuthProvider';
 
 const HeroSection: React.FC = () => {
   const navigate = useNavigate();
