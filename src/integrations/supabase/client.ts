@@ -16,74 +16,11 @@ export const supabase = createClient<Database>(
       autoRefreshToken: true,
       detectSessionInUrl: true,
       storage: localStorage
-    },
-    global: {
-      headers: {
-        'X-App-Version': '1.0.0',
-      },
-      // Implement a custom fetch with more resilient behavior
-      fetch: async (url: RequestInfo | URL, options: RequestInit = {}) => {
-        const maxRetries = 2;
-        let retries = 0;
-        
-        // Add cache busting for auth endpoints
-        const fullUrl = new URL(url.toString());
-        if (fullUrl.pathname.includes('auth')) {
-          fullUrl.searchParams.set('_', Date.now().toString());
-        }
-        
-        while (retries <= maxRetries) {
-          try {
-            const response = await fetch(fullUrl.toString(), {
-              ...options,
-              credentials: 'same-origin',
-              headers: {
-                ...(options.headers || {}),
-                'Cache-Control': 'no-cache, no-store',
-                'Pragma': 'no-cache'
-              }
-            });
-            
-            // Consider all 2xx and 4xx responses as "successful"
-            // 4xx are expected errors like authentication failures
-            if (response.ok || response.status >= 400) {
-              return response;
-            }
-            
-            throw new Error(`Request failed with status ${response.status}`);
-          } catch (error) {
-            retries++;
-            
-            if (retries > maxRetries) {
-              console.error("Max retries reached for request:", fullUrl.toString());
-              throw error;
-            }
-            
-            // Exponential backoff
-            const delay = Math.min(1000 * (2 ** retries), 5000);
-            await new Promise(resolve => setTimeout(resolve, delay));
-          }
-        }
-        
-        // This should never be reached because of the throw in the loop
-        throw new Error("Failed to fetch after retries");
-      }
     }
   }
 );
 
-// Add a helper function to check Supabase connection that's less likely to fail
+// Simplified connection check that doesn't make network requests
 export const checkSupabaseConnection = async () => {
-  try {
-    // Use navigator.onLine as the primary indicator
-    if (!navigator.onLine) {
-      return false;
-    }
-    
-    return true;
-  } catch (error: any) {
-    console.error('Failed to check Supabase connection:', error);
-    // Always fall back to browser's online status
-    return navigator.onLine;
-  }
+  return navigator.onLine;
 };

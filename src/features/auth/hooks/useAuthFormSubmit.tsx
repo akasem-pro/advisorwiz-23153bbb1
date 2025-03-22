@@ -40,8 +40,6 @@ export const useAuthFormSubmit = () => {
     if (!validateForm()) return;
     setFormError('');
     
-    // Force online mode for sign-in attempts
-    // The app is running, so we must be online enough to try
     setIsLoading(true);
     resetRetryAttempts();
     
@@ -53,7 +51,7 @@ export const useAuthFormSubmit = () => {
       console.error('Failed to sign in:', error);
       setFormError(error.message || 'Failed to sign in');
       
-      if (error.message?.includes('network') || error.message?.includes('connection') || error.message?.includes('offline')) {
+      if (!navigator.onLine) {
         incrementRetry();
       }
     } finally {
@@ -79,8 +77,6 @@ export const useAuthFormSubmit = () => {
     if (!validateForm()) return;
     setFormError('');
     
-    // Force online mode for sign-up attempts 
-    // The app is running, so we must be online enough to try
     setIsLoading(true);
     resetRetryAttempts();
     
@@ -104,7 +100,7 @@ export const useAuthFormSubmit = () => {
       } else {
         setFormError(error.message || 'Failed to sign up');
         
-        if (error.message?.includes('network') || error.message?.includes('connection') || error.message?.includes('offline')) {
+        if (!navigator.onLine) {
           incrementRetry();
         }
       }
@@ -125,9 +121,6 @@ export const useAuthFormSubmit = () => {
     setFormError: (error: string) => void
   ) => {
     setFormError('');
-    
-    // Force online mode for retry attempts
-    // Always assume we're online enough to try the operation
     
     // Create a synthetic event to pass to the form handlers
     const syntheticEvent = new CustomEvent('retry') as unknown as React.FormEvent<HTMLFormElement>;

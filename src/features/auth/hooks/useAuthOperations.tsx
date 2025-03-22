@@ -1,3 +1,4 @@
+
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../integrations/supabase/client';
 import { toast } from 'sonner';
@@ -27,18 +28,9 @@ export const useAuthOperations = (
   };
 
   const isNetworkError = (error: any): boolean => {
-    // If the browser explicitly says we're online, most errors
-    // are likely not network-related
-    if (navigator.onLine && networkStatus !== 'offline') {
-      // But still check for specific network error signatures
-      const errorMsg = error?.message?.toLowerCase() || '';
-      return (
-        errorMsg.includes('failed to fetch') ||
-        error?.name === 'AbortError' ||
-        error?.name === 'AuthRetryableFetchError' ||
-        error?.code === 'NETWORK_ERROR' ||
-        error?.status === 0
-      );
+    // Check if browser says we're online
+    if (navigator.onLine) {
+      return false;
     }
     
     // Standard checks for network-related errors
@@ -61,10 +53,9 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // Always try authentication if the app is running
       console.log("Starting sign in process with email:", email);
       
-      // Directly use the Supabase client for authentication
+      // Add a brief timeout to ensure UI feedback
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -91,12 +82,10 @@ export const useAuthOperations = (
     } catch (error: any) {
       console.error("Error signing in:", error.message, error);
       
-      // Don't report network errors if browser says we're online
-      // This prevents confusing error messages
-      if (isNetworkError(error) && !navigator.onLine) {
-        throw new Error('Network error. Please check your connection and try again.');
-      } else if (error.message?.includes('Invalid login credentials')) {
+      if (error.message?.includes('Invalid login credentials')) {
         throw new Error('Invalid email or password. Please try again.');
+      } else if (!navigator.onLine) {
+        throw new Error('You appear to be offline. Please check your internet connection.');
       } else {
         throw error;
       }
@@ -111,7 +100,6 @@ export const useAuthOperations = (
       
       console.log("Starting sign up process with email:", email);
       
-      // Directly use the Supabase client for sign up
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -138,8 +126,8 @@ export const useAuthOperations = (
       
       if (error.message?.includes('email already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
-      } else if (isNetworkError(error)) {
-        throw new Error('Network error. Please check your connection and try again.');
+      } else if (!navigator.onLine) {
+        throw new Error('You appear to be offline. Please check your internet connection.');
       } else {
         throw new Error(error.message || 'An error occurred during sign up. Please try again.');
       }

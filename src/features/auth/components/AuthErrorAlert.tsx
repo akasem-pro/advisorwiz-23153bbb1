@@ -11,18 +11,18 @@ interface AuthErrorAlertProps {
 }
 
 const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, onRetry }) => {
+  // Check if the browser explicitly says we're offline
+  const browserReportsOffline = !navigator.onLine;
+  
   // Determine if the error is related to network connectivity
   const isNetworkError = 
     error.toLowerCase().includes('network') || 
     error.toLowerCase().includes('connection') || 
     error.toLowerCase().includes('failed to fetch') ||
-    error.toLowerCase().includes('offline') ||
-    error.toLowerCase().includes('auth error');
+    error.toLowerCase().includes('offline');
   
-  // Never show offline alert if the browser reports online status
-  // This prevents false "offline" messages when the app is running
-  const browserReportsOnline = navigator.onLine;
-  const showOfflineAlert = networkStatus === 'offline' && !error && !browserReportsOnline;
+  // Only show offline alert if the browser confirms we're offline
+  const showOfflineAlert = networkStatus === 'offline' && !error && browserReportsOffline;
   
   return (
     <>
@@ -34,9 +34,9 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
           >
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-2">
-                {isNetworkError ? <WifiOff className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                {isNetworkError && browserReportsOffline ? <WifiOff className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
                 <AlertDescription>
-                  {browserReportsOnline && error.toLowerCase().includes('network') 
+                  {isNetworkError && !browserReportsOffline 
                     ? "There was a problem connecting to the server. Please try again." 
                     : error}
                 </AlertDescription>
