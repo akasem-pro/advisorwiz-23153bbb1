@@ -41,7 +41,7 @@ export const useAuthOperations = (
           status: error.status,
           name: error.name,
           stack: error.stack,
-          details: error.details,
+          // Removed the non-existent 'details' property
         });
         throw error;
       }
@@ -124,7 +124,7 @@ export const useAuthOperations = (
           message: error.message,
           status: error.status,
           name: error.name,
-          details: error.details,
+          // Removed the non-existent 'details' property
         });
         throw error;
       }
@@ -199,4 +199,3 @@ export const useAuthOperations = (
     signOut
   };
 };
-
