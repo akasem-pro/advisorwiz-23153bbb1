@@ -40,19 +40,20 @@ export const useAuthFormSubmit = () => {
     
     if (!validateForm()) return;
     
-    // Check network status - now returns a Promise
-    const isOnline = await checkNetworkStatus();
-    if (!isOnline) {
-      setFormError('Unable to connect to authentication service. Please check your connection and try again.');
-      incrementRetry();
-      return;
-    }
-    
+    // Always check network status before attempting sign in
     setFormError('');
     setIsLoading(true);
-    resetRetryAttempts();
     
     try {
+      // First check network status - now returns a Promise
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        setFormError('Unable to connect to authentication service. Please check your connection and try again.');
+        incrementRetry();
+        return;
+      }
+      
+      resetRetryAttempts();
       console.log("Attempting sign in with:", { email });
       const success = await signIn(email, password);
       console.log("Sign in result:", success ? "success" : "failed");
@@ -71,7 +72,8 @@ export const useAuthFormSubmit = () => {
         setFormError('Authentication request timed out. Please try again.');
         incrementRetry();
       } else if (!navigator.onLine || error.message?.includes('network') || 
-                error.message?.includes('connection') || error.message?.includes('Unable to connect')) {
+                error.message?.includes('connection') || error.message?.includes('Unable to connect') ||
+                error.message?.includes('Failed to fetch')) {
         setFormError('Unable to connect to authentication service. Please check your connection and try again.');
         incrementRetry();
       } else {
@@ -99,19 +101,19 @@ export const useAuthFormSubmit = () => {
     
     if (!validateForm()) return;
     
-    // Check network status - now returns a Promise
-    const isOnline = await checkNetworkStatus();
-    if (!isOnline) {
-      setFormError('Unable to connect to authentication service. Please check your connection and try again.');
-      incrementRetry();
-      return;
-    }
-    
     setFormError('');
     setIsLoading(true);
-    resetRetryAttempts();
     
     try {
+      // First check network status - now returns a Promise
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        setFormError('Unable to connect to authentication service. Please check your connection and try again.');
+        incrementRetry();
+        return;
+      }
+      
+      resetRetryAttempts();
       console.log('Attempting signup with:', { email });
       const success = await signUp(email, password);
       
@@ -137,7 +139,8 @@ export const useAuthFormSubmit = () => {
         setFormError('Registration request timed out. Please try again.');
         incrementRetry();
       } else if (!navigator.onLine || error.message?.includes('network') || 
-                error.message?.includes('connection') || error.message?.includes('Unable to connect')) {
+                error.message?.includes('connection') || error.message?.includes('Unable to connect') ||
+                error.message?.includes('Failed to fetch')) {
         setFormError('Unable to connect to authentication service. Please check your connection and try again.');
         incrementRetry();
       } else {
@@ -176,6 +179,8 @@ export const useAuthFormSubmit = () => {
       setFormError('Still unable to connect to authentication service. Please check your connection and try again.');
       return;
     }
+    
+    toast.success('Connection restored! Retrying...');
     
     // Create a synthetic event to pass to the form handlers
     const syntheticEvent = {} as React.FormEvent<HTMLFormElement>;

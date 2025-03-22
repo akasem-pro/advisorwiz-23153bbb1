@@ -7,24 +7,33 @@ import { checkSupabaseConnection } from '../../../integrations/supabase/client';
  */
 export const useNetworkStatus = () => {
   const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>(
-    navigator.onLine ? 'online' : 'offline'
+    navigator.onLine ? 'checking' : 'offline'
   );
   const [lastChecked, setLastChecked] = useState<Date>(new Date());
 
-  // Convert to async/Promise-based to maintain API compatibility
+  // Async function to check network status
   const checkNetworkStatus = useCallback(async (): Promise<boolean> => {
     try {
-      // Use the browser's navigator.onLine as the primary check
-      const isOnline = navigator.onLine && checkSupabaseConnection();
-      setNetworkStatus(isOnline ? 'online' : 'offline');
+      setNetworkStatus('checking');
+      
+      // First check browser's online status
+      if (!navigator.onLine) {
+        setNetworkStatus('offline');
+        setLastChecked(new Date());
+        return false;
+      }
+      
+      // Then do a real connection test to Supabase
+      const isConnected = await checkSupabaseConnection();
+      setNetworkStatus(isConnected ? 'online' : 'offline');
       setLastChecked(new Date());
-      return Promise.resolve(isOnline);
+      return isConnected;
     } catch (error) {
       console.error("Network status check failed:", error);
       const browserOnline = navigator.onLine;
       setNetworkStatus(browserOnline ? 'online' : 'offline');
       setLastChecked(new Date());
-      return Promise.resolve(browserOnline);
+      return browserOnline;
     }
   }, []);
 
@@ -33,9 +42,8 @@ export const useNetworkStatus = () => {
     checkNetworkStatus();
     
     const handleOnline = () => {
-      console.log("Browser reports online status");
-      setNetworkStatus('online');
-      setLastChecked(new Date());
+      console.log("Browser reports online status, verifying connection...");
+      checkNetworkStatus();
     };
     
     const handleOffline = () => {
@@ -48,17 +56,23 @@ export const useNetworkStatus = () => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     
-    // Less frequent checks to reduce unnecessary operations
+    // Periodic checks
     const intervalId = setInterval(() => {
-      checkNetworkStatus();
-    }, 120000); // Check only every 2 minutes
+      if (networkStatus === 'offline') {
+        // Check more frequently when offline to detect recovery
+        checkNetworkStatus();
+      } else {
+        // Just verify connection occasionally when already online
+        checkNetworkStatus();
+      }
+    }, networkStatus === 'offline' ? 10000 : 60000);
     
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       clearInterval(intervalId);
     };
-  }, [checkNetworkStatus]);
+  }, [checkNetworkStatus, networkStatus]);
 
   return { 
     networkStatus,

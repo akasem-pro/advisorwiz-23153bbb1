@@ -25,7 +25,11 @@ export const useAuthOperations = (
       console.log("Starting sign in process with email:", email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password
+        password,
+        options: {
+          // Add some additional options for better reliability
+          captchaToken: undefined,
+        }
       });
       
       if (error) throw error;
@@ -68,7 +72,8 @@ export const useAuthOperations = (
         email,
         password,
         options: {
-          emailRedirectTo: window.location.origin
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          captchaToken: undefined,
         }
       });
       

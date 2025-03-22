@@ -19,14 +19,40 @@ export const supabase = createClient<Database>(
     global: {
       headers: {
         'x-application-name': 'advisorwiz'
+      },
+      fetch: (url, options = {}) => {
+        const requestOptions = {
+          ...options,
+          timeout: 30000, // 30 second timeout
+        };
+        return fetch(url, requestOptions);
       }
     }
   }
 );
 
-// Simple connection checker that relies on the browser's navigator.onLine
-// No network requests are made to avoid potential errors
-export const checkSupabaseConnection = (): boolean => {
-  // Simply return the browser's network status
-  return navigator.onLine;
+// More reliable connection checker that actually tries to make a lightweight request
+export const checkSupabaseConnection = async (): Promise<boolean> => {
+  try {
+    // Check if browser is online first
+    if (!navigator.onLine) {
+      return false;
+    }
+    
+    // Make a lightweight request to check actual connectivity
+    // Use the health check endpoint (doesn't require auth)
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+      method: 'HEAD',
+      headers: {
+        'apikey': SUPABASE_PUBLISHABLE_KEY,
+      },
+      // Short timeout for quick failure
+      signal: AbortSignal.timeout(5000)
+    });
+    
+    return response.ok;
+  } catch (error) {
+    console.error("Supabase connection check failed:", error);
+    return false;
+  }
 };
