@@ -17,33 +17,28 @@ const navigationLinks = [
   {
     name: 'For Firms',
     path: '/for-firms',
-    description: 'Solutions for financial advisory firms',
   },
   {
     name: 'For Advisors',
     path: '/for-advisors',
-    description: 'Connect with potential clients',
   },
   {
     name: 'For Consumers',
     path: '/for-consumers',
-    description: 'Find the right financial advisor',
   },
   {
     name: 'Pricing',
     path: '/pricing',
-    description: 'Subscription plans and pricing options',
   },
   {
     name: 'Contact',
     path: '/contact',
-    description: 'Get in touch with our team',
   },
 ];
 
 const Header: React.FC = () => {
   const { isAuthenticated, consumerProfile, advisorProfile, userType } = useUser();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   console.log('Current userType in Header:', userType);
@@ -107,20 +102,7 @@ const Header: React.FC = () => {
                 getProfileImage={getProfileImage}
               />
             ) : (
-              <div className="hidden md:flex items-center space-x-4">
-                <Link 
-                  to="/sign-in"
-                  className="text-navy-600 dark:text-slate-300 hover:text-navy-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/onboarding"
-                  className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
-                >
-                  Get Started
-                </Link>
-              </div>
+              <AuthButtons />
             )}
             
             <button
@@ -138,7 +120,7 @@ const Header: React.FC = () => {
         <MobileMenu
           isAuthenticated={isAuthenticated}
           onClose={toggleMobileMenu}
-          onSignOut={() => {}}
+          onSignOut={signOut}
         />
       )}
     </header>
