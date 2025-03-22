@@ -21,18 +21,68 @@ const SignIn: React.FC = () => {
   const [signUpEmail, setSignUpEmail] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [activeTab, setActiveTab] = useState('signin');
   const navigate = useNavigate();
+  
+  // Validation state
+  const [errors, setErrors] = useState({
+    signInEmail: '',
+    signInPassword: '',
+    signUpEmail: '',
+    signUpPassword: '',
+    confirmPassword: '',
+    general: ''
+  });
+  
+  const validateEmail = (email: string) => {
+    return /\S+@\S+\.\S+/.test(email);
+  };
   
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Reset errors
+    setErrors({
+      signInEmail: '',
+      signInPassword: '',
+      signUpEmail: '',
+      signUpPassword: '',
+      confirmPassword: '',
+      general: ''
+    });
+    
+    // Validate inputs
+    let hasErrors = false;
+    
+    if (!signInEmail) {
+      setErrors(prev => ({ ...prev, signInEmail: 'Email is required' }));
+      hasErrors = true;
+    } else if (!validateEmail(signInEmail)) {
+      setErrors(prev => ({ ...prev, signInEmail: 'Please enter a valid email' }));
+      hasErrors = true;
+    }
+    
+    if (!signInPassword) {
+      setErrors(prev => ({ ...prev, signInPassword: 'Password is required' }));
+      hasErrors = true;
+    }
+    
+    if (hasErrors) return;
+    
     setIsLoading(true);
     
     try {
+      // Check network connectivity first
+      if (!navigator.onLine) {
+        throw new Error('Network error. Please check your connection and try again.');
+      }
+      
       await signIn(signInEmail, signInPassword);
       // Navigation will be handled in AuthProvider after successful login
     } catch (error: any) {
       console.error('Failed to sign in:', error);
       toast.error(error.message || 'Failed to sign in');
+      setErrors(prev => ({ ...prev, general: error.message }));
     } finally {
       setIsLoading(false);
     }
@@ -41,34 +91,87 @@ const SignIn: React.FC = () => {
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    if (!signUpEmail || !signUpPassword) {
-      toast.error('Please fill in all required fields');
-      return;
+    // Reset errors
+    setErrors({
+      signInEmail: '',
+      signInPassword: '',
+      signUpEmail: '',
+      signUpPassword: '',
+      confirmPassword: '',
+      general: ''
+    });
+    
+    // Validate inputs
+    let hasErrors = false;
+    
+    if (!signUpEmail) {
+      setErrors(prev => ({ ...prev, signUpEmail: 'Email is required' }));
+      hasErrors = true;
+    } else if (!validateEmail(signUpEmail)) {
+      setErrors(prev => ({ ...prev, signUpEmail: 'Please enter a valid email' }));
+      hasErrors = true;
+    }
+    
+    if (!signUpPassword) {
+      setErrors(prev => ({ ...prev, signUpPassword: 'Password is required' }));
+      hasErrors = true;
+    } else if (signUpPassword.length < 6) {
+      setErrors(prev => ({ ...prev, signUpPassword: 'Password must be at least 6 characters' }));
+      hasErrors = true;
     }
     
     if (signUpPassword !== confirmPassword) {
-      toast.error("Passwords don't match");
-      return;
+      setErrors(prev => ({ ...prev, confirmPassword: "Passwords don't match" }));
+      hasErrors = true;
     }
+    
+    if (hasErrors) return;
     
     setIsLoading(true);
     
     try {
+      // Check network connectivity first
+      if (!navigator.onLine) {
+        throw new Error('Network error. Please check your connection and try again.');
+      }
+      
       await signUp(signUpEmail, signUpPassword);
+      
+      // After successful signup, switch to signin tab
+      setActiveTab('signin');
+      // Clear signup form
+      setSignUpEmail('');
+      setSignUpPassword('');
+      setConfirmPassword('');
+      
       toast.success("Registration successful! Please check your email to verify your account.");
-      // Don't navigate immediately after signup as user may need to verify email
     } catch (error: any) {
       console.error('Failed to sign up:', error);
       
-      // More user-friendly error message
-      if (error.message?.includes('Failed to fetch')) {
-        toast.error('Network error. Please check your connection and try again.');
+      if (error.message?.includes('already registered')) {
+        toast.error('This email is already registered. Please sign in instead.');
+        setActiveTab('signin');
+        setSignInEmail(signUpEmail);
       } else {
         toast.error(error.message || 'Failed to sign up');
+        setErrors(prev => ({ ...prev, general: error.message }));
       }
     } finally {
       setIsLoading(false);
     }
+  };
+  
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    // Reset errors when switching tabs
+    setErrors({
+      signInEmail: '',
+      signInPassword: '',
+      signUpEmail: '',
+      signUpPassword: '',
+      confirmPassword: '',
+      general: ''
+    });
   };
   
   return (
@@ -91,11 +194,17 @@ const SignIn: React.FC = () => {
               </CardDescription>
             </CardHeader>
             
-            <Tabs defaultValue="signin" className="w-full">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
+              
+              {errors.general && (
+                <div className="px-4 py-2 mt-4 text-sm text-red-600 bg-red-50 rounded-md">
+                  {errors.general}
+                </div>
+              )}
               
               <TabsContent value="signin">
                 <CardContent className="pt-4">
@@ -109,8 +218,12 @@ const SignIn: React.FC = () => {
                         placeholder="name@example.com" 
                         value={signInEmail} 
                         onChange={(e) => setSignInEmail(e.target.value)} 
-                        required 
+                        disabled={isLoading}
+                        className={errors.signInEmail ? "border-red-500" : ""}
                       />
+                      {errors.signInEmail && (
+                        <p className="text-sm text-red-500">{errors.signInEmail}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
@@ -125,8 +238,12 @@ const SignIn: React.FC = () => {
                         type="password" 
                         value={signInPassword} 
                         onChange={(e) => setSignInPassword(e.target.value)} 
-                        required 
+                        disabled={isLoading}
+                        className={errors.signInPassword ? "border-red-500" : ""}
                       />
+                      {errors.signInPassword && (
+                        <p className="text-sm text-red-500">{errors.signInPassword}</p>
+                      )}
                     </div>
                     <Button type="submit" className="w-full" disabled={isLoading}>
                       {isLoading ? "Signing in..." : "Sign In"}
@@ -147,8 +264,12 @@ const SignIn: React.FC = () => {
                         placeholder="name@example.com" 
                         value={signUpEmail} 
                         onChange={(e) => setSignUpEmail(e.target.value)} 
-                        required 
+                        disabled={isLoading}
+                        className={errors.signUpEmail ? "border-red-500" : ""}
                       />
+                      {errors.signUpEmail && (
+                        <p className="text-sm text-red-500">{errors.signUpEmail}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="registerPassword">Password</Label>
@@ -158,8 +279,12 @@ const SignIn: React.FC = () => {
                         type="password" 
                         value={signUpPassword} 
                         onChange={(e) => setSignUpPassword(e.target.value)} 
-                        required 
+                        disabled={isLoading}
+                        className={errors.signUpPassword ? "border-red-500" : ""}
                       />
+                      {errors.signUpPassword && (
+                        <p className="text-sm text-red-500">{errors.signUpPassword}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="confirmPassword">Confirm Password</Label>
@@ -169,8 +294,12 @@ const SignIn: React.FC = () => {
                         type="password" 
                         value={confirmPassword} 
                         onChange={(e) => setConfirmPassword(e.target.value)} 
-                        required 
+                        disabled={isLoading}
+                        className={errors.confirmPassword ? "border-red-500" : ""}
                       />
+                      {errors.confirmPassword && (
+                        <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+                      )}
                     </div>
                     <Button type="submit" className="w-full" disabled={isLoading}>
                       {isLoading ? "Creating Account..." : "Sign Up"}

@@ -95,6 +95,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signIn = async (email: string, password: string) => {
     try {
+      setLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -112,18 +113,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error("Error signing in:", error.message);
       
       // Add more user-friendly error messages
-      if (error.message?.includes('Failed to fetch')) {
+      if (error.message?.includes('Failed to fetch') || navigator.onLine === false) {
         throw new Error('Network error. Please check your connection and try again.');
       } else if (error.message?.includes('Invalid login credentials')) {
         throw new Error('Invalid email or password. Please try again.');
       } else {
         throw error;
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   const signUp = async (email: string, password: string) => {
     try {
+      setLoading(true);
+      
+      // First check network connectivity
+      if (!navigator.onLine) {
+        throw new Error('Network error. Please check your connection and try again.');
+      }
+      
       // Add error handling for network issues
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -138,27 +148,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
         
         toast.success("Registration successful! Please check your email to verify your account.");
+        
+        // Navigate to sign-in after successful signup
+        navigate('/sign-in');
       }
     } catch (error: any) {
       console.error("Error signing up:", error);
       
       // More user-friendly error messages
-      if (error.message?.includes('Failed to fetch')) {
+      if (error.message?.includes('Failed to fetch') || navigator.onLine === false) {
         throw new Error('Network error. Please check your connection and try again.');
       } else {
         throw error;
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   const signOut = async () => {
     try {
+      setLoading(true);
       await supabase.auth.signOut();
       toast.success("Successfully signed out");
       navigate('/sign-in');
     } catch (error: any) {
       console.error("Error signing out:", error.message);
       toast.error(error.message || "Failed to sign out");
+    } finally {
+      setLoading(false);
     }
   };
 
