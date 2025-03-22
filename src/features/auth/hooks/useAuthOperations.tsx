@@ -1,3 +1,4 @@
+
 import { useNavigate } from 'react-router-dom';
 import { supabase, checkSupabaseConnection } from '../../../integrations/supabase/client';
 import { toast } from 'sonner';
@@ -58,10 +59,10 @@ export const useAuthOperations = (
       
       console.log("Starting sign in process with email:", email);
       
-      // First verify Supabase connection
+      // Verify connectivity to Supabase first
       const canConnect = await checkSupabaseConnection();
       if (!canConnect) {
-        throw new Error('Cannot connect to the authentication service. Please try again later.');
+        throw new Error('Network error. Please check your internet connection and try again.');
       }
       
       // Directly use the Supabase client for authentication
@@ -117,7 +118,7 @@ export const useAuthOperations = (
       // Verify Supabase connection first
       const canConnect = await checkSupabaseConnection();
       if (!canConnect) {
-        throw new Error('Cannot connect to the authentication service. Please try again later.');
+        throw new Error('Network error. Please check your connection and try again.');
       }
       
       // Directly use the Supabase client for sign up

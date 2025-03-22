@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../../../integrations/supabase/client';
+import { supabase, checkSupabaseConnection } from '../../../integrations/supabase/client';
 
 /**
  * Custom hook to track network connectivity status
@@ -26,22 +26,11 @@ export const useNetworkStatus = () => {
         return false;
       }
       
-      // This is a simple connectivity test without any server communication
-      // More reliable than making external requests that might fail due to CORS
-      const online = navigator.onLine && await Promise.race([
-        // Attempt to get the current time from the server
-        fetch('/favicon.ico', { 
-          method: 'HEAD',
-          cache: 'no-store',
-          // Using a very short timeout to quickly detect offline status
-          signal: AbortSignal.timeout(2000)
-        }).then(() => true).catch(() => false),
-        // Fallback to online status if we can't fetch
-        new Promise<boolean>(resolve => setTimeout(() => resolve(navigator.onLine), 2000))
-      ]);
+      // Try to reach Supabase's health endpoint to verify connectivity
+      const isConnected = await checkSupabaseConnection();
       
-      setNetworkStatus(online ? 'online' : 'offline');
-      return online;
+      setNetworkStatus(isConnected ? 'online' : 'offline');
+      return isConnected;
     } catch (error) {
       console.log("Network check failed:", error);
       
