@@ -4,7 +4,7 @@ import { Badge } from '../ui/badge';
 import { InfoIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import MatchFeedback from './MatchFeedback';
-import { submitMatchFeedback } from '../../services/matching/feedbackService';
+import { storeMatchFeedback } from '../../services/matching/supabaseMatching';
 import { useUser } from '../../context/UserContext';
 
 interface MatchExplanationProps {
@@ -29,14 +29,18 @@ const MatchExplanation: React.FC<MatchExplanationProps> = ({
     return null;
   }
 
-  const handleFeedbackSubmit = (feedback: {
+  const handleFeedbackSubmit = async (feedback: {
     matchId: string;
     isHelpful: boolean;
     comment?: string;
   }) => {
-    submitMatchFeedback(
-      'current-user', // Use a default ID or get from another source
+    // Get the current user's ID from Supabase auth
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    
+    await storeMatchFeedback(
       feedback.matchId,
+      user.id,
       feedback.isHelpful,
       feedback.comment
     );

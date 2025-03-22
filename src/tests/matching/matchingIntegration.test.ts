@@ -39,7 +39,19 @@ describe('Matching Integration Tests', () => {
       name: 'Test Advisor',
       organization: 'Test Org',
       expertise: ['retirement', 'tax'],
-      languages: ['English']
+      languages: ['English'],
+      chats: [],
+      chatEnabled: true,
+      appointmentCategories: [],
+      appointments: [],
+      onlineStatus: 'online',
+      lastOnline: new Date().toISOString(),
+      showOnlineStatus: true,
+      isAccredited: false,
+      testimonials: [],
+      pricing: {},
+      assetsUnderManagement: 0,
+      matches: []
     } as AdvisorProfile;
     
     const consumer = {
@@ -47,7 +59,18 @@ describe('Matching Integration Tests', () => {
       name: 'Test Consumer',
       preferredLanguage: ['English'],
       riskTolerance: 'medium',
-      serviceNeeds: ['retirement']
+      serviceNeeds: ['retirement'],
+      status: '',
+      investableAssets: 0,
+      preferredCommunication: [],
+      matches: [],
+      chats: [],
+      chatEnabled: true,
+      appointments: [],
+      onlineStatus: 'online',
+      lastOnline: new Date().toISOString(),
+      showOnlineStatus: true,
+      age: 30
     } as ConsumerProfile;
     
     // Calculate scores using both methods
