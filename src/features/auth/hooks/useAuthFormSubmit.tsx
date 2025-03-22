@@ -22,7 +22,7 @@ export const useAuthFormSubmit = () => {
   // Watch for network status changes
   useEffect(() => {
     if (networkStatus === 'online' && retryAttempts > 0) {
-      toast.success("You're back online! You can now try again.");
+      toast.success("Connection restored! You can now try again.");
     }
   }, [networkStatus, retryAttempts]);
   
@@ -43,7 +43,7 @@ export const useAuthFormSubmit = () => {
     // Check network status before attempting sign in
     const isOnline = await checkNetworkStatus();
     if (!isOnline) {
-      setFormError('You appear to be offline. Please check your connection and try again.');
+      setFormError('Unable to connect to authentication service. Please check your connection and try again.');
       incrementRetry();
       return;
     }
@@ -54,17 +54,21 @@ export const useAuthFormSubmit = () => {
     
     try {
       console.log("Attempting sign in with:", { email });
-      await signIn(email, password);
-      // Navigation will be handled in AuthProvider after successful login
+      const result = await signIn(email, password);
+      console.log("Sign in result:", result ? "success" : "failed");
     } catch (error: any) {
       console.error('Failed to sign in:', error);
-      setFormError(error.message || 'Failed to sign in');
       
-      if (error.message?.includes('network') || 
-          error.message?.includes('connection') || 
-          error.message?.includes('timed out') || 
-          !navigator.onLine) {
+      if (error.message?.includes('Invalid login credentials')) {
+        setFormError('Invalid email or password. Please try again.');
+      } else if (error.message?.includes('timeout') || error.message?.includes('timed out')) {
+        setFormError('Authentication request timed out. Please try again.');
         incrementRetry();
+      } else if (!navigator.onLine || error.message?.includes('network') || error.message?.includes('connection')) {
+        setFormError('Network connection issue. Please check your internet connection and try again.');
+        incrementRetry();
+      } else {
+        setFormError(error.message || 'An error occurred during sign in');
       }
     } finally {
       setIsLoading(false);
@@ -91,7 +95,7 @@ export const useAuthFormSubmit = () => {
     // Check network status before attempting sign up
     const isOnline = await checkNetworkStatus();
     if (!isOnline) {
-      setFormError('You appear to be offline. Please check your connection and try again.');
+      setFormError('Unable to connect to authentication service. Please check your connection and try again.');
       incrementRetry();
       return;
     }
@@ -117,15 +121,14 @@ export const useAuthFormSubmit = () => {
         setFormError('This email is already registered. Please sign in instead.');
         setActiveTab('signin');
         setSignInEmail(email);
+      } else if (error.message?.includes('timeout') || error.message?.includes('timed out')) {
+        setFormError('Registration request timed out. Please try again.');
+        incrementRetry();
+      } else if (!navigator.onLine || error.message?.includes('network') || error.message?.includes('connection')) {
+        setFormError('Network connection issue. Please check your internet connection and try again.');
+        incrementRetry();
       } else {
-        setFormError(error.message || 'Failed to sign up');
-        
-        if (error.message?.includes('network') || 
-            error.message?.includes('connection') || 
-            error.message?.includes('timed out') || 
-            !navigator.onLine) {
-          incrementRetry();
-        }
+        setFormError(error.message || 'An error occurred during registration');
       }
     } finally {
       setIsLoading(false);
@@ -143,11 +146,12 @@ export const useAuthFormSubmit = () => {
     handleSignUpSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>,
     setFormError: (error: string) => void
   ) => {
-    // First check network status before attempting retry
+    // Check network status before retrying
     const isOnline = await checkNetworkStatus();
+    console.log("Retry network check result:", isOnline ? "online" : "offline");
     
     if (!isOnline) {
-      setFormError('You are still offline. Please check your connection and try again.');
+      setFormError('Still unable to connect to authentication service. Please check your connection and try again.');
       return;
     }
     

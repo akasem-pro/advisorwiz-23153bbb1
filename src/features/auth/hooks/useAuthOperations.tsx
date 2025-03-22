@@ -12,76 +12,36 @@ export const useAuthOperations = (
   checkNetworkStatus: () => Promise<boolean>
 ) => {
   const navigate = useNavigate();
-  
-  const fetchUserProfile = async (userId: string) => {
-    try {
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-      
-      if (error) throw error;
-      return profile;
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-      return null;
-    }
-  };
 
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
       
-      // Verify network connectivity first
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
-        throw new Error('Network error. Please check your connection and try again.');
-      }
-      
       console.log("Starting sign in process with email:", email);
-      
-      // Set a timeout for the sign-in process
-      const signInPromise = supabase.auth.signInWithPassword({ email, password });
-      
-      // Create a timeout promise
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Sign in request timed out')), 10000);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
       });
-      
-      // Race the sign-in process against the timeout
-      const { data, error } = await Promise.race([
-        signInPromise,
-        timeoutPromise.then(() => { throw new Error('Sign in request timed out'); })
-      ]) as { data: any, error: any };
       
       if (error) throw error;
       
-      console.log("Sign in successful, user data:", data?.user?.id);
-      
-      if (!data?.user) {
-        throw new Error('Authentication failed. Please try again.');
-      }
-      
+      console.log("Sign in successful, redirecting to home page");
       toast.success("Successfully signed in!");
-      
-      // Fetch user profile data after successful login
-      if (data.user) {
-        await fetchUserProfile(data.user.id);
-      }
-      
-      // Navigate after successful sign-in
       navigate('/');
-      
+      return true;
     } catch (error: any) {
-      console.error("Error signing in:", error.message, error);
+      console.error("Error signing in:", error.message);
       
       if (error.message?.includes('Invalid login credentials')) {
         throw new Error('Invalid email or password. Please try again.');
-      } else if (error.message?.includes('timed out') || error.message?.includes('Failed to fetch')) {
-        throw new Error('Request timed out. Please try again.');
-      } else if (error.message?.includes('network') || error.message?.includes('fetch') || !navigator.onLine) {
-        throw new Error('Network error. Please check your connection and try again.');
+      } else if (error.message?.includes('User not found')) {
+        throw new Error('No account found with this email. Please check your email or sign up.');
+      } else if (error.status === 429) {
+        throw new Error('Too many sign-in attempts. Please try again later.');
+      } else if (error.message?.includes('timed out') || error.message?.includes('timeout')) {
+        throw new Error('Request timed out. Please try again later.');
+      } else if (!navigator.onLine || error.message?.includes('network') || error.message?.includes('connection')) {
+        throw new Error('Network connection issue. Please check your internet connection and try again.');
       } else {
         throw error;
       }
@@ -94,16 +54,8 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // Verify network connectivity first
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
-        throw new Error('Network error. Please check your connection and try again.');
-      }
-      
       console.log("Starting sign up process with email:", email);
-      
-      // Set a timeout for the sign-up process
-      const signUpPromise = supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -111,41 +63,21 @@ export const useAuthOperations = (
         }
       });
       
-      // Create a timeout promise
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Sign up request timed out')), 10000);
-      });
-      
-      // Race the sign-up process against the timeout
-      const { data, error } = await Promise.race([
-        signUpPromise,
-        timeoutPromise.then(() => { throw new Error('Sign up request timed out'); })
-      ]) as { data: any, error: any };
-      
       if (error) throw error;
       
-      if (!data.user) {
-        throw new Error('No user data returned from signup');
-      }
-      
-      console.log("Sign up successful, user data:", data.user.id, "confirmation sent:", data.session === null);
-      
-      toast.success("Registration successful! Please check your email to verify your account.");
-      
-      // Only redirect if there's an active session (no email confirmation required)
-      if (data.session) {
-        navigate('/');
-      }
-      
+      console.log("Sign up successful:", data.user?.id);
+      return true;
     } catch (error: any) {
       console.error("Error signing up:", error);
       
       if (error.message?.includes('email already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
-      } else if (error.message?.includes('timed out')) {
-        throw new Error('Request timed out. Please try again.');
-      } else if (error.message?.includes('network') || error.message?.includes('fetch') || !navigator.onLine) {
-        throw new Error('Network error. Please check your connection and try again.');
+      } else if (error.status === 429) {
+        throw new Error('Too many sign-up attempts. Please try again later.');
+      } else if (error.message?.includes('timed out') || error.message?.includes('timeout')) {
+        throw new Error('Request timed out. Please try again later.');
+      } else if (!navigator.onLine || error.message?.includes('network') || error.message?.includes('connection')) {
+        throw new Error('Network connection issue. Please check your internet connection and try again.');
       } else {
         throw new Error(error.message || 'An error occurred during sign up. Please try again.');
       }
@@ -158,18 +90,12 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // Verify network connectivity first
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
-        throw new Error('Network error. Please check your connection and try again.');
-      }
-      
       await supabase.auth.signOut();
       toast.success("Successfully signed out");
       navigate('/sign-in');
     } catch (error: any) {
       console.error("Error signing out:", error.message);
-      toast.error(error.message || "Failed to sign out");
+      toast.error("Failed to sign out. Please try again.");
     } finally {
       setLoading(false);
     }

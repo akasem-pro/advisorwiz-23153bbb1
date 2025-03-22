@@ -16,13 +16,8 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
     error.toLowerCase().includes('network') || 
     error.toLowerCase().includes('connection') || 
     error.toLowerCase().includes('failed to fetch') ||
-    error.toLowerCase().includes('offline')
-  );
-  
-  // Check if the error is related to timeout
-  const isTimeoutError = error && (
-    error.toLowerCase().includes('timeout') || 
-    error.toLowerCase().includes('timed out')
+    error.toLowerCase().includes('offline') ||
+    error.toLowerCase().includes('timeout')
   );
   
   return (
@@ -32,20 +27,12 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
         <div className="px-4 pt-4">
           <Alert 
             variant="destructive" 
-            className={
-              isTimeoutError 
-                ? "border-amber-500 bg-amber-50 text-amber-600"
-                : isNetworkError 
-                  ? "border-red-500 bg-red-50 text-red-600" 
-                  : "border-red-500 bg-red-50 text-red-600"
-            }
+            className={isNetworkError ? "border-amber-500 bg-amber-50 text-amber-600" : "border-red-500 bg-red-50 text-red-600"}
           >
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-2">
                 {isNetworkError ? (
                   <WifiOff className="h-4 w-4" />
-                ) : isTimeoutError ? (
-                  <Clock className="h-4 w-4" />
                 ) : (
                   <AlertCircle className="h-4 w-4" />
                 )}
@@ -59,11 +46,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
                   variant="outline" 
                   size="sm" 
                   onClick={onRetry} 
-                  className={
-                    isTimeoutError 
-                      ? "ml-2 border-amber-500 text-amber-600 hover:bg-amber-100"
-                      : "ml-2 border-red-500 text-red-600 hover:bg-red-100"
-                  }
+                  className={isNetworkError ? "ml-2 border-amber-500 text-amber-600 hover:bg-amber-100" : "ml-2 border-red-500 text-red-600 hover:bg-red-100"}
                 >
                   <RefreshCw className="mr-2 h-3 w-3" />
                   Retry
@@ -109,7 +92,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
               <div className="flex items-center gap-2">
                 <RefreshCw className="h-4 w-4 animate-spin" />
                 <AlertDescription>
-                  Checking network connection...
+                  Checking connection to authentication service...
                 </AlertDescription>
               </div>
             </div>
