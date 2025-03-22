@@ -22,7 +22,7 @@ export const supabase = createClient<Database>(
         'X-App-Version': '1.0.0',
       },
       // Implement a custom fetch with retry logic
-      fetch: async (url, options = {}) => {
+      fetch: async (url, options: RequestInit = {}) => {
         const maxRetries = 2;
         let retries = 0;
         
@@ -38,7 +38,7 @@ export const supabase = createClient<Database>(
               ...options,
               credentials: 'same-origin',
               headers: {
-                ...(options.headers as Record<string, string> || {}),
+                ...(options.headers || {}),
                 'Cache-Control': 'no-cache, no-store',
                 'Pragma': 'no-cache'
               }
