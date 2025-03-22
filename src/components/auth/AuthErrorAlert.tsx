@@ -12,15 +12,19 @@ interface AuthErrorAlertProps {
 
 const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, onRetry }) => {
   // Determine if the error is related to network connectivity
-  const isNetworkError = error.toLowerCase().includes('network') || error.toLowerCase().includes('connection') || error.toLowerCase().includes('failed to fetch');
+  const isNetworkError = 
+    error.toLowerCase().includes('network') || 
+    error.toLowerCase().includes('connection') || 
+    error.toLowerCase().includes('failed to fetch') ||
+    error.toLowerCase().includes('offline');
   
   return (
     <>
       {error && (
         <div className="px-4 pt-4">
           <Alert 
-            variant={isNetworkError ? "destructive" : "destructive"} 
-            className={isNetworkError ? "border-red-500 bg-red-50 text-red-600" : "border-red-500 bg-red-50 text-red-600"}
+            variant="destructive" 
+            className="border-red-500 bg-red-50 text-red-600"
           >
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-2">
@@ -44,7 +48,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
         </div>
       )}
       
-      {networkStatus === 'offline' && (
+      {networkStatus === 'offline' && !error && (
         <div className="px-4 pt-4">
           <Alert className="border-amber-500 bg-amber-50 text-amber-700">
             <WifiOff className="h-4 w-4" />

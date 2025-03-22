@@ -77,7 +77,7 @@ export const useAuthOperations = (
       
       console.log("Starting sign up process");
       
-      // Use Supabase client directly instead of fetch API
+      // Modified to better handle network issues
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -100,10 +100,17 @@ export const useAuthOperations = (
     } catch (error: any) {
       console.error("Error signing up:", error);
       
-      // More user-friendly error messages
+      // Improved error handling to better detect network issues
       if (error.message?.includes('email already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
-      } else if (error.message?.includes('Failed to fetch') || navigator.onLine === false) {
+      } else if (
+        error.message?.includes('Failed to fetch') || 
+        navigator.onLine === false || 
+        error.name === 'AuthRetryableFetchError' ||
+        error.message?.includes('Network Error') ||
+        error.message?.toLowerCase().includes('network') ||
+        error.code === 'NETWORK_ERROR'
+      ) {
         throw new Error('Network error. Please check your connection and try again.');
       } else {
         throw new Error(error.message || 'An error occurred during sign up. Please try again.');
