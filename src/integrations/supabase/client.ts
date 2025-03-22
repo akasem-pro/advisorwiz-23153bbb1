@@ -5,7 +5,7 @@ import type { Database } from './types';
 export const SUPABASE_URL = "https://gkymvotqrdecjjymmmef.supabase.co";
 export const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdreW12b3RxcmRlY2pqeW1tbWVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NzA5NTIsImV4cCI6MjA1NzA0Njk1Mn0.j7Os6vxWOT35pC3rLiDuMuDty7VJTWvw7khbZpPLijY";
 
-// Create a simpler Supabase client with better timeout and retry settings
+// Create a Supabase client with reliable timeout and retry settings
 export const supabase = createClient<Database>(
   SUPABASE_URL, 
   SUPABASE_PUBLISHABLE_KEY,
@@ -20,11 +20,12 @@ export const supabase = createClient<Database>(
       headers: {
         'x-application-name': 'advisorwiz'
       },
-      fetch: (url, options) => {
-        // Add custom fetch options with timeout
+      fetch: (url, options = {}) => {
+        // Use a more reliable fetch configuration
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // Increase timeout to 15 seconds
         
+        // Clone options to avoid mutation and ensure signal is set
         const fetchOptions = {
           ...options,
           signal: controller.signal
@@ -37,6 +38,7 @@ export const supabase = createClient<Database>(
           })
           .catch(error => {
             clearTimeout(timeoutId);
+            console.error(`Fetch error for ${url}:`, error);
             throw error;
           });
       }
@@ -44,50 +46,68 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Simplified connection check that only checks Supabase health
+// Improved connection check function with multiple fallbacks
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
-    // First check browser's online status as a quick check
+    // First check browser's online status
     if (!navigator.onLine) {
-      console.log("Browser reports offline");
+      console.log("Browser reports offline status");
       return false;
     }
     
-    // Simple ping to Supabase with a short timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout (increased from 3s)
-    
-    try {
-      const response = await fetch(`${SUPABASE_URL}/auth/v1/`, {
-        method: 'HEAD', // HEAD is faster than GET for connectivity testing
-        headers: {
-          'apikey': SUPABASE_PUBLISHABLE_KEY,
-          'Content-Type': 'application/json'
-        },
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
-      console.log("Supabase connection test result:", response.status);
-      return response.ok;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      console.log("Supabase connection test failed:", error);
-      
-      // Try a different endpoint if Supabase is unreachable
-      try {
-        const publicResponse = await fetch('https://www.cloudflare.com/cdn-cgi/trace', { 
+    // Try multiple endpoints to verify connectivity
+    const endpoints = [
+      // Try Supabase health check first (most accurate)
+      {
+        url: `${SUPABASE_URL}/auth/v1/`,
+        options: {
           method: 'HEAD',
-          signal: AbortSignal.timeout(3000)
+          headers: {
+            'apikey': SUPABASE_PUBLISHABLE_KEY,
+            'Content-Type': 'application/json'
+          },
+          timeout: 5000
+        }
+      },
+      // Fallback to reliable public endpoints
+      {
+        url: 'https://www.cloudflare.com/cdn-cgi/trace',
+        options: { method: 'HEAD', timeout: 5000 }
+      },
+      {
+        url: 'https://httpbin.org/get',
+        options: { method: 'HEAD', timeout: 5000 }
+      }
+    ];
+    
+    // Try each endpoint until one works
+    for (const endpoint of endpoints) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), endpoint.options.timeout);
+        
+        const response = await fetch(endpoint.url, {
+          ...endpoint.options,
+          signal: controller.signal
         });
-        return publicResponse.ok;
-      } catch (fallbackError) {
-        console.log("Fallback connection test failed:", fallbackError);
-        return false;
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) {
+          console.log(`Connection test succeeded with ${endpoint.url}`);
+          return true;
+        }
+      } catch (error) {
+        console.log(`Connection test failed for ${endpoint.url}:`, error);
+        // Continue to the next endpoint
       }
     }
+    
+    // If we get here, all connection attempts failed
+    console.log("All connection tests failed");
+    return false;
   } catch (error) {
-    console.error("Supabase connection check failed:", error);
+    console.error("Connection check failed:", error);
     return false;
   }
 };

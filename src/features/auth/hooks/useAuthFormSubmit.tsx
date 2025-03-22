@@ -58,19 +58,21 @@ export const useAuthFormSubmit = () => {
       console.log("Sign in result:", success ? "success" : "failed");
       
       if (!success) {
-        // If signIn doesn't throw an error but returns false
+        // Handle unsuccessful sign-in
         setFormError('Authentication failed. Please check your credentials and try again.');
       }
     } catch (error: any) {
       console.error('Failed to sign in:', error);
       
-      if (error.message?.includes('Invalid login credentials')) {
+      if (error.message?.includes('Invalid login credentials') || 
+          error.message?.includes('Invalid email or password')) {
         setFormError('Invalid email or password. Please try again.');
       } else if (error.message?.includes('timeout') || error.message?.includes('timed out')) {
         setFormError('Authentication request timed out. Please try again.');
         incrementRetry();
-      } else if (!navigator.onLine || error.message?.includes('network') || error.message?.includes('connection')) {
-        setFormError('Network connection issue. Please check your internet connection and try again.');
+      } else if (!navigator.onLine || error.message?.includes('network') || 
+                error.message?.includes('connection') || error.message?.includes('Unable to connect')) {
+        setFormError('Unable to connect to authentication service. Please check your connection and try again.');
         incrementRetry();
       } else {
         setFormError(error.message || 'An error occurred during sign in');
@@ -121,7 +123,7 @@ export const useAuthFormSubmit = () => {
         
         toast.success("Registration successful! Please check your email to verify your account.");
       } else {
-        // If signUp doesn't throw an error but returns false
+        // Handle unsuccessful sign-up
         setFormError('Registration failed. Please try again later.');
       }
     } catch (error: any) {
@@ -134,8 +136,9 @@ export const useAuthFormSubmit = () => {
       } else if (error.message?.includes('timeout') || error.message?.includes('timed out')) {
         setFormError('Registration request timed out. Please try again.');
         incrementRetry();
-      } else if (!navigator.onLine || error.message?.includes('network') || error.message?.includes('connection')) {
-        setFormError('Network connection issue. Please check your internet connection and try again.');
+      } else if (!navigator.onLine || error.message?.includes('network') || 
+                error.message?.includes('connection') || error.message?.includes('Unable to connect')) {
+        setFormError('Unable to connect to authentication service. Please check your connection and try again.');
         incrementRetry();
       } else {
         setFormError(error.message || 'An error occurred during registration');
@@ -156,16 +159,23 @@ export const useAuthFormSubmit = () => {
     handleSignUpSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>,
     setFormError: (error: string) => void
   ) => {
+    // Clear any existing error message
+    setFormError('');
+    
+    // Show loading state
+    toast.loading('Checking connection...');
+    
     // Check network status before retrying
     const isOnline = await checkNetworkStatus();
     console.log("Retry network check result:", isOnline ? "online" : "offline");
+    
+    // Dismiss loading toast
+    toast.dismiss();
     
     if (!isOnline) {
       setFormError('Still unable to connect to authentication service. Please check your connection and try again.');
       return;
     }
-    
-    setFormError('');
     
     // Create a synthetic event to pass to the form handlers
     const syntheticEvent = {} as React.FormEvent<HTMLFormElement>;

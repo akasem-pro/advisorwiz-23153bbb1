@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Monitor network changes and notify user
   useEffect(() => {
-    // We only want to show online notifications if user had previously experienced offline issues
+    // Only show online notifications if user had previously experienced offline issues
     if (networkStatus === 'online' && retryAttempts > 0) {
       toast.success("You're back online! You can now try again.");
     }
@@ -60,12 +60,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Initial check
     checkNetworkStatus();
     
-    // Periodic check every minute
+    // Periodic check more frequently when retries are happening
     const checkInterval = setInterval(() => {
       if (retryAttempts > 0) {
         checkNetworkStatus();
       }
-    }, 60000);
+    }, retryAttempts > 0 ? 10000 : 60000); // Check every 10s when retry attempts exist
     
     return () => clearInterval(checkInterval);
   }, [checkNetworkStatus, retryAttempts]);

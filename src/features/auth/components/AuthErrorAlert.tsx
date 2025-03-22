@@ -15,10 +15,10 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
   const isNetworkError = error && (
     error.toLowerCase().includes('network') || 
     error.toLowerCase().includes('connection') || 
+    error.toLowerCase().includes('unable to connect') ||
     error.toLowerCase().includes('failed to fetch') ||
     error.toLowerCase().includes('offline') ||
-    error.toLowerCase().includes('timeout') ||
-    error.toLowerCase().includes('unable to connect')
+    error.toLowerCase().includes('timeout')
   );
   
   return (
@@ -27,7 +27,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
       {error && (
         <div className="px-4 pt-4">
           <Alert 
-            variant="destructive" 
+            variant={isNetworkError ? "warning" : "destructive"} 
             className={isNetworkError ? "border-amber-500 bg-amber-50 text-amber-600" : "border-red-500 bg-red-50 text-red-600"}
           >
             <div className="flex w-full items-center justify-between">

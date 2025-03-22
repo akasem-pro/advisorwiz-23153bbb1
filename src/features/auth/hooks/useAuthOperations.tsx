@@ -17,6 +17,12 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
+      // First verify network connectivity
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
+      }
+      
       console.log("Starting sign in process with email:", email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -38,14 +44,15 @@ export const useAuthOperations = (
         throw new Error('No account found with this email. Please check your email or sign up.');
       } else if (error.status === 429) {
         throw new Error('Too many sign-in attempts. Please try again later.');
-      } else if (error.message?.includes('timed out') || error.message?.includes('timeout')) {
+      } else if (error.message?.includes('timed out') || error.message?.includes('timeout') || 
+                error.message?.includes('abort') || error.name === 'AbortError') {
         throw new Error('Request timed out. Please try again later.');
-      } else if (!navigator.onLine || error.message?.includes('network') || error.message?.includes('connection')) {
-        throw new Error('Network connection issue. Please check your internet connection and try again.');
+      } else if (!navigator.onLine || error.message?.includes('network') || 
+                error.message?.includes('connection') || error.message?.includes('Failed to fetch')) {
+        throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
       } else {
         throw error;
       }
-      return false;
     } finally {
       setLoading(false);
     }
@@ -54,6 +61,12 @@ export const useAuthOperations = (
   const signUp = async (email: string, password: string): Promise<boolean> => {
     try {
       setLoading(true);
+      
+      // First verify network connectivity
+      const isOnline = await checkNetworkStatus();
+      if (!isOnline) {
+        throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
+      }
       
       console.log("Starting sign up process with email:", email);
       const { data, error } = await supabase.auth.signUp({
@@ -75,14 +88,15 @@ export const useAuthOperations = (
         throw new Error('This email is already registered. Please sign in instead.');
       } else if (error.status === 429) {
         throw new Error('Too many sign-up attempts. Please try again later.');
-      } else if (error.message?.includes('timed out') || error.message?.includes('timeout')) {
+      } else if (error.message?.includes('timed out') || error.message?.includes('timeout') || 
+                error.message?.includes('abort') || error.name === 'AbortError') {
         throw new Error('Request timed out. Please try again later.');
-      } else if (!navigator.onLine || error.message?.includes('network') || error.message?.includes('connection')) {
-        throw new Error('Network connection issue. Please check your internet connection and try again.');
+      } else if (!navigator.onLine || error.message?.includes('network') || 
+                error.message?.includes('connection') || error.message?.includes('Failed to fetch')) {
+        throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
       } else {
         throw new Error(error.message || 'An error occurred during sign up. Please try again.');
       }
-      return false;
     } finally {
       setLoading(false);
     }
