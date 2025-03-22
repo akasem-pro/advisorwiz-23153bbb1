@@ -119,18 +119,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Ping Supabase to verify connectivity
-  const checkSupabaseConnection = async (): Promise<boolean> => {
-    try {
-      // Simple test query to verify connection
-      await supabase.from('profiles').select('count').limit(1);
-      return true;
-    } catch (error) {
-      console.error("Supabase connection check failed:", error);
-      return false;
-    }
-  };
-
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
@@ -140,22 +128,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('You are currently offline. Please check your internet connection and try again.');
       }
       
-      // Test Supabase connection
-      const isConnected = await checkSupabaseConnection();
-      if (!isConnected) {
-        throw new Error('Unable to connect to the authentication service. Please try again later.');
-      }
-      
-      // Attempt sign in with timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
-      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
-      
-      clearTimeout(timeoutId);
       
       if (error) throw error;
       
@@ -168,11 +144,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error: any) {
       console.error("Error signing in:", error.message);
       
-      if (error.name === 'AbortError') {
-        throw new Error('The request took too long to complete. Please try again.');
-      }
-      
-      // Add more user-friendly error messages
       if (error.message?.includes('Failed to fetch') || navigator.onLine === false) {
         throw new Error('Network error. Please check your connection and try again.');
       } else if (error.message?.includes('Invalid login credentials')) {
@@ -194,60 +165,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('You are currently offline. Please check your internet connection and try again.');
       }
       
-      // Test Supabase connection
-      const isConnected = await checkSupabaseConnection();
-      if (!isConnected) {
-        throw new Error('Unable to connect to the authentication service. Please try again later.');
-      }
-      
       console.log("Starting sign up process");
       
-      // Attempt signup with timeout protection
-      const signupPromise = supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin
-        }
-      });
+      // Using direct URL instead of signUp method to avoid CORS issues
+      const signupOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabase.supabaseKey,
+          'Authorization': `Bearer ${supabase.supabaseKey}`
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          data: {},
+          options: {
+            emailRedirectTo: window.location.origin
+          }
+        })
+      };
       
-      // Create a timeout promise
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('The request timed out. Please try again later.')), 15000);
-      });
+      const response = await fetch(`${supabase.supabaseUrl}/auth/v1/signup`, signupOptions);
       
-      // Race the sign up request against the timeout
-      const result = await Promise.race([signupPromise, timeoutPromise]) as { data: any, error: any } | Error;
-      
-      // Handle timeout case
-      if (result instanceof Error) {
-        throw result;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to sign up');
       }
       
-      const { data, error } = result;
+      const data = await response.json();
       
-      if (error) throw error;
-      
-      if (data.user) {
-        if (data.user.identities && data.user.identities.length === 0) {
-          throw new Error('This email is already registered. Please sign in instead.');
-        }
-        
-        toast.success("Registration successful! Please check your email to verify your account.");
-        
-        // Navigate to sign-in after successful signup
-        navigate('/sign-in');
+      if (!data.user) {
+        throw new Error('No user data returned from signup');
       }
+      
+      toast.success("Registration successful! Please check your email to verify your account.");
+      navigate('/sign-in');
+      
     } catch (error: any) {
       console.error("Error signing up:", error);
       
       // More user-friendly error messages
-      if (error.message?.includes('timed out')) {
-        throw new Error('The request took too long to complete. Please try again later.');
-      } else if (error.message?.includes('Failed to fetch') || navigator.onLine === false || error.code === 20) {
-        throw new Error('Network error. Please check your connection and try again.');
-      } else if (error.message?.includes('already registered')) {
+      if (error.message?.includes('email already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
+      } else if (error.message?.includes('Failed to fetch') || navigator.onLine === false) {
+        throw new Error('Network error. Please check your connection and try again.');
       } else {
         throw new Error(error.message || 'An error occurred during sign up. Please try again.');
       }
