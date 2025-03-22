@@ -97,45 +97,47 @@ const SignIn: React.FC = () => {
       <div className="min-h-screen flex flex-col">
         <Header />
         
-        <main className="flex-grow flex items-center justify-center p-4 sm:p-6">
-          <AuthFormContainer
-            title="Welcome to AdvisorWiz"
-            description="Sign in to your account or create a new one"
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            formError={formError}
-            networkStatus={networkStatus}
-            onRetry={handleRetrySubmit}
-            onSignIn={handleSignInSubmit}
-            onSignUp={handleSignUpSubmit}
-            signInProps={{
-              email: signInEmail,
-              setEmail: setSignInEmail,
-              password: signInPassword,
-              setPassword: setSignInPassword,
-              errors: {
-                signInEmail: errors.signInEmail,
-                signInPassword: errors.signInPassword
-              },
-              isLoading,
-              isDisabled: isSignInDisabled
-            }}
-            signUpProps={{
-              email: signUpEmail,
-              setEmail: setSignUpEmail,
-              password: signUpPassword,
-              setPassword: setSignUpPassword,
-              confirmPassword,
-              setConfirmPassword,
-              errors: {
-                signUpEmail: errors.signUpEmail,
-                signUpPassword: errors.signUpPassword,
-                confirmPassword: errors.confirmPassword
-              },
-              isLoading,
-              isDisabled: isSignUpDisabled
-            }}
-          />
+        <main className="flex-grow flex items-center justify-center py-8 px-4 sm:py-12">
+          <div className="w-full max-w-md">
+            <AuthFormContainer
+              title="Welcome to AdvisorWiz"
+              description="Sign in to your account or create a new one"
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+              formError={formError}
+              networkStatus={networkStatus}
+              onRetry={handleRetrySubmit}
+              onSignIn={handleSignInSubmit}
+              onSignUp={handleSignUpSubmit}
+              signInProps={{
+                email: signInEmail,
+                setEmail: setSignInEmail,
+                password: signInPassword,
+                setPassword: setSignInPassword,
+                errors: {
+                  signInEmail: errors.signInEmail,
+                  signInPassword: errors.signInPassword
+                },
+                isLoading,
+                isDisabled: isSignInDisabled
+              }}
+              signUpProps={{
+                email: signUpEmail,
+                setEmail: setSignUpEmail,
+                password: signUpPassword,
+                setPassword: setSignUpPassword,
+                confirmPassword,
+                setConfirmPassword,
+                errors: {
+                  signUpEmail: errors.signUpEmail,
+                  signUpPassword: errors.signUpPassword,
+                  confirmPassword: errors.confirmPassword
+                },
+                isLoading,
+                isDisabled: isSignUpDisabled
+              }}
+            />
+          </div>
         </main>
         
         <Footer />

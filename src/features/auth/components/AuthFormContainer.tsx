@@ -60,10 +60,10 @@ const AuthFormContainer: React.FC<AuthFormContainerProps> = ({
   signUpProps
 }) => {
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full shadow-md">
       <CardHeader className="px-4 sm:px-6 pt-6 pb-2">
-        <CardTitle className="text-xl sm:text-2xl text-center">{title}</CardTitle>
-        <CardDescription className="text-center text-sm sm:text-base">{description}</CardDescription>
+        <CardTitle className="text-2xl sm:text-3xl font-serif text-center text-navy-900 dark:text-white">{title}</CardTitle>
+        <CardDescription className="text-center text-sm sm:text-base mt-2 text-slate-600 dark:text-slate-300">{description}</CardDescription>
       </CardHeader>
       
       <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
@@ -114,8 +114,8 @@ const AuthFormContainer: React.FC<AuthFormContainerProps> = ({
         </TabsContent>
       </Tabs>
       
-      <CardFooter className="flex flex-col space-y-3 pt-0 px-4 sm:px-6 pb-4">
-        <div className="text-center text-xs sm:text-sm">
+      <CardFooter className="flex flex-col space-y-3 pt-0 px-4 sm:px-6 pb-6 text-center">
+        <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
           By continuing, you agree to our{' '}
           <Link to="/terms" className="text-teal-600 hover:text-teal-500 font-medium">
             Terms of Service

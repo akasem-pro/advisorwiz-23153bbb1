@@ -31,10 +31,10 @@ const SignInForm: React.FC<SignInFormProps> = ({
   isDisabled
 }) => {
   return (
-    <CardContent className="pt-2 px-4 sm:px-6">
-      <form onSubmit={onSubmit} className="space-y-3">
-        <div className="space-y-1">
-          <Label htmlFor="email" className="text-sm">Email</Label>
+    <CardContent className="pt-4 px-4 sm:px-6">
+      <form onSubmit={onSubmit} className="space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-sm font-medium">Email</Label>
           <Input 
             id="email" 
             name="email" 
@@ -43,15 +43,15 @@ const SignInForm: React.FC<SignInFormProps> = ({
             value={email} 
             onChange={(e) => setEmail(e.target.value)} 
             disabled={isLoading}
-            className={`h-11 ${errors.signInEmail ? "border-red-500" : ""}`}
+            className={`h-11 text-base ${errors.signInEmail ? "border-red-500" : ""}`}
           />
           {errors.signInEmail && (
-            <p className="text-xs sm:text-sm text-red-500">{errors.signInEmail}</p>
+            <p className="text-xs sm:text-sm text-red-500 mt-1">{errors.signInEmail}</p>
           )}
         </div>
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-sm">Password</Label>
+            <Label htmlFor="password" className="text-sm font-medium">Password</Label>
             <Link to="/reset-password" className="text-xs sm:text-sm text-teal-600 hover:text-teal-500">
               Forgot password?
             </Link>
@@ -63,15 +63,15 @@ const SignInForm: React.FC<SignInFormProps> = ({
             value={password} 
             onChange={(e) => setPassword(e.target.value)} 
             disabled={isLoading}
-            className={`h-11 ${errors.signInPassword ? "border-red-500" : ""}`}
+            className={`h-11 text-base ${errors.signInPassword ? "border-red-500" : ""}`}
           />
           {errors.signInPassword && (
-            <p className="text-xs sm:text-sm text-red-500">{errors.signInPassword}</p>
+            <p className="text-xs sm:text-sm text-red-500 mt-1">{errors.signInPassword}</p>
           )}
         </div>
         <Button 
           type="submit" 
-          className="w-full h-11 text-base" 
+          className="w-full h-11 text-base bg-navy-600 hover:bg-navy-700 dark:bg-teal-600 dark:hover:bg-teal-700 text-white" 
           disabled={isDisabled}
         >
           {isLoading ? "Signing in..." : "Sign In"}

@@ -39,7 +39,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       {withHeader && <Header />}
       
-      <main className="flex-grow pt-16 w-full">
+      <main className="flex-grow w-full pt-20 px-4 sm:px-6">
         {animation !== 'none' ? (
           <AnimatedRoute animation={animation as 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale'}>
             <Content />
