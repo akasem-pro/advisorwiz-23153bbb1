@@ -14,26 +14,29 @@ export const useAuthState = () => {
   const { setUserType, setIsAuthenticated, setConsumerProfile, setAdvisorProfile } = useUser();
 
   useEffect(() => {
-    let isMounted = true;
+    let mounted = true;
     
     // Set up auth state change listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
+      async (event, currentSession) => {
         console.log("Auth state changed:", event);
-        if (isMounted) {
-          setSession(currentSession);
-          setUser(currentSession?.user ?? null);
-          setIsAuthenticated(!!currentSession);
-          
-          if (!currentSession) {
-            // User signed out
-            setUserType(null);
-            setConsumerProfile(null);
-            setAdvisorProfile(null);
-          }
-          
-          setLoading(false);
+        if (!mounted) return;
+        
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+        setIsAuthenticated(!!currentSession);
+        
+        if (!currentSession) {
+          // User signed out
+          setUserType(null);
+          setConsumerProfile(null);
+          setAdvisorProfile(null);
+        } else if (currentSession.user) {
+          // User signed in
+          await fetchUserProfile(currentSession.user.id);
         }
+        
+        setLoading(false);
       }
     );
 
@@ -41,20 +44,21 @@ export const useAuthState = () => {
     const initializeAuth = async () => {
       try {
         const { data: { session: currentSession } } = await supabase.auth.getSession();
-        if (isMounted) {
-          setSession(currentSession);
-          setUser(currentSession?.user ?? null);
-          setIsAuthenticated(!!currentSession);
-          setLoading(false);
-          
-          // Fetch user profile to determine user type if logged in
-          if (currentSession?.user) {
-            fetchUserProfile(currentSession.user.id);
-          }
+        if (!mounted) return;
+        
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+        setIsAuthenticated(!!currentSession);
+        
+        // Fetch user profile to determine user type if logged in
+        if (currentSession?.user) {
+          await fetchUserProfile(currentSession.user.id);
         }
+        
+        setLoading(false);
       } catch (error) {
         console.error("Failed to get session:", error);
-        if (isMounted) {
+        if (mounted) {
           setLoading(false);
         }
       }
@@ -63,7 +67,7 @@ export const useAuthState = () => {
     initializeAuth();
     
     return () => {
-      isMounted = false;
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [setIsAuthenticated, setUserType, setConsumerProfile, setAdvisorProfile]);
@@ -77,7 +81,7 @@ export const useAuthState = () => {
         .maybeSingle();
       
       if (profile) {
-        // Logic to set user type based on profile
+        // Handle profile data if needed
       }
     } catch (error) {
       console.error("Error fetching user profile:", error);

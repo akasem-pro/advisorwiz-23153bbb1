@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -13,7 +14,7 @@ import SignUpForm from '../components/auth/SignUpForm';
 import AuthErrorAlert from '../components/auth/AuthErrorAlert';
 
 const SignIn: React.FC = () => {
-  const { signIn, signUp, loading: authLoading, networkStatus } = useAuth();
+  const { signIn, signUp, loading: authLoading, networkStatus, checkNetworkStatus } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [signInEmail, setSignInEmail] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
@@ -22,6 +23,7 @@ const SignIn: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [activeTab, setActiveTab] = useState('signin');
   const [formError, setFormError] = useState('');
+  const [retryCount, setRetryCount] = useState(0);
   
   useEffect(() => {
     if (networkStatus === 'online' && formError && formError.toLowerCase().includes('offline')) {
@@ -43,10 +45,14 @@ const SignIn: React.FC = () => {
     return /\S+@\S+\.\S+/.test(email);
   };
   
-  const handleRetry = () => {
+  const handleRetry = async () => {
     setFormError('');
+    setRetryCount(prev => prev + 1);
     
-    if (!navigator.onLine) {
+    // Attempt to check network status
+    await checkNetworkStatus();
+    
+    if (networkStatus === 'offline') {
       setFormError('Still offline. Please check your internet connection and try again.');
       return;
     }
@@ -89,6 +95,8 @@ const SignIn: React.FC = () => {
     
     if (hasErrors) return;
     
+    // Check network status before attempting sign in
+    await checkNetworkStatus();
     if (networkStatus === 'offline') {
       setFormError('Network error. Please check your connection and try again.');
       return;
@@ -147,6 +155,8 @@ const SignIn: React.FC = () => {
     
     if (hasErrors) return;
     
+    // Check network status before attempting sign up
+    await checkNetworkStatus();
     if (networkStatus === 'offline') {
       setFormError('Network error. Please check your connection and try again.');
       return;
@@ -192,8 +202,13 @@ const SignIn: React.FC = () => {
     setFormError('');
   };
   
-  const isSignInDisabled = isLoading || authLoading || networkStatus === 'offline';
-  const isSignUpDisabled = isLoading || authLoading || networkStatus === 'offline';
+  const isSignInDisabled = isLoading || authLoading || networkStatus === 'checking';
+  const isSignUpDisabled = isLoading || authLoading || networkStatus === 'checking';
+  
+  // Check network on first render
+  useEffect(() => {
+    checkNetworkStatus();
+  }, [checkNetworkStatus]);
   
   return (
     <AnimatedRoute animation="fade">

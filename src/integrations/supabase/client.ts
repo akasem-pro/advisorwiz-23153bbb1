@@ -18,6 +18,17 @@ export const supabase = createClient<Database>(
       autoRefreshToken: true,
       detectSessionInUrl: true,
       storage: localStorage
+    },
+    global: {
+      fetch: (...args) => fetch(...args),
+      headers: {
+        'X-App-Version': '1.0.0',
+      }
+    },
+    realtime: {
+      params: {
+        eventsPerSecond: 2
+      }
     }
   }
 );

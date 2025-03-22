@@ -30,16 +30,44 @@ export const useAuthOperations = (
   };
 
   const isNetworkError = (error: any): boolean => {
-    return (
-      !navigator.onLine ||
+    if (!navigator.onLine) {
+      return true;
+    }
+    
+    return !!(
       error?.message?.toLowerCase().includes('network') ||
       error?.message?.toLowerCase().includes('connection') ||
       error?.message?.toLowerCase().includes('failed to fetch') ||
       error?.message?.toLowerCase().includes('offline') ||
       error?.name === 'AuthRetryableFetchError' ||
       error?.message?.includes('Network Error') ||
-      error?.code === 'NETWORK_ERROR'
+      error?.code === 'NETWORK_ERROR' ||
+      error?.status === 0
     );
+  };
+
+  const waitForNetworkConnection = async (timeoutMs = 5000): Promise<boolean> => {
+    if (networkStatus === 'online') {
+      return true;
+    }
+    
+    return new Promise((resolve) => {
+      const timeoutId = setTimeout(() => {
+        resolve(navigator.onLine);
+      }, timeoutMs);
+      
+      const checkOnline = () => {
+        clearTimeout(timeoutId);
+        resolve(true);
+      };
+      
+      window.addEventListener('online', checkOnline, { once: true });
+      
+      // Also clean up if we resolve due to timeout
+      setTimeout(() => {
+        window.removeEventListener('online', checkOnline);
+      }, timeoutMs + 100);
+    });
   };
 
   const signIn = async (email: string, password: string) => {
@@ -52,6 +80,12 @@ export const useAuthOperations = (
       }
       
       console.log("Starting sign in process with email:", email);
+      
+      // Wait for network connection
+      const hasNetwork = await waitForNetworkConnection();
+      if (!hasNetwork) {
+        throw new Error('Network connection unavailable. Please check your internet connection and try again.');
+      }
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -94,18 +128,13 @@ export const useAuthOperations = (
       
       console.log("Starting sign up process with email:", email);
       
-      // Use direct timeout to check for network availability before proceeding
-      await new Promise((resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-          if (!navigator.onLine) {
-            reject(new Error('Network connection appears to be unavailable. Please check your internet connection.'));
-          } else {
-            clearTimeout(timeoutId);
-            resolve(true);
-          }
-        }, 1000);
-      });
+      // Wait for network connection
+      const hasNetwork = await waitForNetworkConnection();
+      if (!hasNetwork) {
+        throw new Error('Network connection unavailable. Please check your internet connection and try again.');
+      }
       
+      // Only attempt signup if we have network connection
       const { data, error } = await supabase.auth.signUp({
         email,
         password,

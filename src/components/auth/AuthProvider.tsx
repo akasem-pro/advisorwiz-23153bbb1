@@ -13,6 +13,7 @@ type AuthContextType = {
   signOut: () => Promise<void>;
   loading: boolean;
   networkStatus: 'online' | 'offline' | 'checking';
+  checkNetworkStatus: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -22,7 +23,8 @@ const AuthContext = createContext<AuthContextType>({
   signUp: async () => {},
   signOut: async () => {},
   loading: true,
-  networkStatus: 'checking'
+  networkStatus: 'checking',
+  checkNetworkStatus: async () => {}
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -34,7 +36,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Use our custom hooks
   const { user, session, loading, setLoading } = useAuthState();
-  const { networkStatus } = useNetworkStatus();
+  const { networkStatus, checkNetworkStatus } = useNetworkStatus();
   const { signIn, signUp, signOut } = useAuthOperations(networkStatus, setLoading);
 
   return (
@@ -45,7 +47,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       signUp, 
       signOut, 
       loading,
-      networkStatus 
+      networkStatus,
+      checkNetworkStatus 
     }}>
       {children}
     </AuthContext.Provider>

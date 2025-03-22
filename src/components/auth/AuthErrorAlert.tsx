@@ -16,7 +16,8 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
     error.toLowerCase().includes('network') || 
     error.toLowerCase().includes('connection') || 
     error.toLowerCase().includes('failed to fetch') ||
-    error.toLowerCase().includes('offline');
+    error.toLowerCase().includes('offline') ||
+    error.toLowerCase().includes('auth error');
   
   return (
     <>
@@ -29,10 +30,14 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center gap-2">
                 {isNetworkError ? <WifiOff className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>
+                  {isNetworkError 
+                    ? "Network error. Please check your internet connection and try again." 
+                    : error}
+                </AlertDescription>
               </div>
               
-              {(isNetworkError || networkStatus === 'offline') && onRetry && (
+              {(isNetworkError || networkStatus === 'offline' || networkStatus === 'checking') && onRetry && (
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -70,6 +75,21 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
                   Check Connection
                 </Button>
               )}
+            </div>
+          </Alert>
+        </div>
+      )}
+      
+      {networkStatus === 'checking' && !error && (
+        <div className="px-4 pt-4">
+          <Alert className="border-blue-500 bg-blue-50 text-blue-700">
+            <div className="flex w-full items-center justify-between">
+              <div className="flex items-center gap-2">
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                <AlertDescription>
+                  Checking network connection...
+                </AlertDescription>
+              </div>
             </div>
           </Alert>
         </div>
