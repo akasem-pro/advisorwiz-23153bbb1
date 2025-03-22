@@ -9,8 +9,8 @@ import { toast } from 'sonner';
 type AuthContextType = {
   session: Session | null;
   user: User | null;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<boolean>;
+  signUp: (email: string, password: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   loading: boolean;
   networkStatus: 'online' | 'offline' | 'checking';
@@ -23,8 +23,8 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
-  signIn: async () => {},
-  signUp: async () => {},
+  signIn: async () => false,
+  signUp: async () => false,
   signOut: async () => {},
   loading: true,
   networkStatus: 'checking',

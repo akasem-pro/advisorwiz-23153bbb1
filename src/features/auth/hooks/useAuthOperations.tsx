@@ -13,7 +13,7 @@ export const useAuthOperations = (
 ) => {
   const navigate = useNavigate();
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<boolean> => {
     try {
       setLoading(true);
       
@@ -45,12 +45,13 @@ export const useAuthOperations = (
       } else {
         throw error;
       }
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string): Promise<boolean> => {
     try {
       setLoading(true);
       
@@ -81,12 +82,13 @@ export const useAuthOperations = (
       } else {
         throw new Error(error.message || 'An error occurred during sign up. Please try again.');
       }
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  const signOut = async () => {
+  const signOut = async (): Promise<void> => {
     try {
       setLoading(true);
       

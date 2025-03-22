@@ -54,8 +54,8 @@ export const useAuthFormSubmit = () => {
     
     try {
       console.log("Attempting sign in with:", { email });
-      const result = await signIn(email, password);
-      console.log("Sign in result:", result ? "success" : "failed");
+      const success = await signIn(email, password);
+      console.log("Sign in result:", success ? "success" : "failed");
     } catch (error: any) {
       console.error('Failed to sign in:', error);
       
@@ -106,14 +106,16 @@ export const useAuthFormSubmit = () => {
     
     try {
       console.log('Attempting signup with:', { email });
-      await signUp(email, password);
+      const success = await signUp(email, password);
       
-      // Switch to sign in tab
-      resetFields();
-      setActiveTab('signin');
-      setSignInEmail(email);
-      
-      toast.success("Registration successful! Please check your email to verify your account.");
+      if (success) {
+        // Switch to sign in tab
+        resetFields();
+        setActiveTab('signin');
+        setSignInEmail(email);
+        
+        toast.success("Registration successful! Please check your email to verify your account.");
+      }
     } catch (error: any) {
       console.error('Failed to sign up:', error);
       
