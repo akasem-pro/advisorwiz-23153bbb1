@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { useTheme } from '../../context/ThemeContext';
 import { useUser } from '../../context/UserContext';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 import Logo from './Logo';

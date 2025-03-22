@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 import { LogOut } from 'lucide-react';
@@ -41,28 +40,8 @@ const AuthButtons: React.FC<AuthButtonsProps> = ({ className = '' }) => {
     );
   }
   
-  // Show sign in / get started buttons if user is not authenticated
-  return (
-    <div className={`flex items-center space-x-2 ${className}`}>
-      <Link to="/sign-in">
-        <Button 
-          variant="outline" 
-          size="sm"
-          className="text-navy-600 dark:text-slate-300 border-navy-600 dark:border-slate-300 h-9"
-        >
-          Sign In
-        </Button>
-      </Link>
-      <Link to="/onboarding" className="hidden sm:block">
-        <Button 
-          size="sm"
-          className="bg-teal-600 hover:bg-teal-700 text-white h-9"
-        >
-          Get Started
-        </Button>
-      </Link>
-    </div>
-  );
+  // No buttons for unauthenticated users
+  return null;
 };
 
 export default AuthButtons;

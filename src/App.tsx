@@ -15,12 +15,10 @@ import {
 import { trackWebVitals, setupLazyLoading, optimizeCriticalRendering } from './utils/performanceTracking';
 import { initializeTagManager, trackPageView } from './utils/tagManager';
 import { AuthProvider } from './features/auth/context/AuthProvider';
-import AuthGuard from './features/auth/components/AuthGuard';
 
 // Import all page components
 import Index from './pages/Index';
 import Onboarding from './pages/Onboarding';
-import SignIn from './pages/SignIn';
 import AdvisorProfile from './pages/AdvisorProfile';
 import ConsumerProfile from './pages/ConsumerProfile';
 import MatchingInterface from './pages/MatchingInterface';
@@ -104,21 +102,20 @@ function AppWithAuth() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/sign-in" element={<SignIn />} />
         
-        <Route path="/advisor-profile" element={<AuthGuard><AdvisorProfile /></AuthGuard>} />
-        <Route path="/consumer-profile" element={<AuthGuard><ConsumerProfile /></AuthGuard>} />
-        <Route path="/matches" element={<AuthGuard><MatchingInterface /></AuthGuard>} />
-        <Route path="/chat" element={<AuthGuard><Chat /></AuthGuard>} />
-        <Route path="/chat/:id" element={<AuthGuard><Chat /></AuthGuard>} />
-        <Route path="/schedule" element={<AuthGuard><Schedule /></AuthGuard>} />
-        <Route path="/firm-profile" element={<AuthGuard><FirmProfile /></AuthGuard>} />
-        <Route path="/firm/:id" element={<AuthGuard><FirmProfile /></AuthGuard>} />
-        <Route path="/leads" element={<AuthGuard><LeadManagementPage /></AuthGuard>} />
-        <Route path="/consumer-dashboard" element={<AuthGuard><ConsumerDashboard /></AuthGuard>} />
-        <Route path="/advisor-dashboard" element={<AuthGuard><AdvisorDashboard /></AuthGuard>} />
-        <Route path="/firm-dashboard" element={<AuthGuard><FirmDashboard /></AuthGuard>} />
-        <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+        <Route path="/advisor-profile" element={<AdvisorProfile />} />
+        <Route path="/consumer-profile" element={<ConsumerProfile />} />
+        <Route path="/matches" element={<MatchingInterface />} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/chat/:id" element={<Chat />} />
+        <Route path="/schedule" element={<Schedule />} />
+        <Route path="/firm-profile" element={<FirmProfile />} />
+        <Route path="/firm/:id" element={<FirmProfile />} />
+        <Route path="/leads" element={<LeadManagementPage />} />
+        <Route path="/consumer-dashboard" element={<ConsumerDashboard />} />
+        <Route path="/advisor-dashboard" element={<AdvisorDashboard />} />
+        <Route path="/firm-dashboard" element={<FirmDashboard />} />
+        <Route path="/settings" element={<Settings />} />
         
         <Route path="/for-firms" element={<ForFirms />} />
         <Route path="/for-advisors" element={<ForAdvisors />} />

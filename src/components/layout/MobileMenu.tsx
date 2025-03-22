@@ -39,10 +39,10 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isAuthenticated, onClose, onSig
       <NavigationMenu 
         links={navigationLinks} 
         onClick={onClose}
-        showGetStarted={!isAuthenticated} 
+        showGetStarted={false} 
       />
       
-      {isAuthenticated ? (
+      {isAuthenticated && (
         <button
           onClick={() => {
             onSignOut();
@@ -53,23 +53,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isAuthenticated, onClose, onSig
           <LogOut className="h-4 w-4 mr-2" />
           <span>Sign Out</span>
         </button>
-      ) : (
-        <div className="mt-4 flex flex-col space-y-3">
-          <Link
-            to="/sign-in"
-            className="w-full px-4 py-2.5 text-center text-navy-600 dark:text-slate-300 border border-navy-600 dark:border-slate-300 rounded-lg"
-            onClick={onClose}
-          >
-            Sign In
-          </Link>
-          <Link
-            to="/onboarding"
-            className="w-full px-4 py-2.5 text-center bg-teal-600 text-white rounded-lg"
-            onClick={onClose}
-          >
-            Get Started
-          </Link>
-        </div>
       )}
     </div>
   );
