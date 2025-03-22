@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
 import { toast } from 'sonner';
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '../integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
 /**
@@ -78,39 +77,25 @@ export const useAuthOperations = (
       
       console.log("Starting sign up process");
       
-      // Using fetch API directly to avoid CORS issues
-      const signupOptions = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_PUBLISHABLE_KEY,
-          'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          data: {},
-          options: {
-            emailRedirectTo: window.location.origin
-          }
-        })
-      };
+      // Use Supabase client directly instead of fetch API
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: window.location.origin
+        }
+      });
       
-      const response = await fetch(`${SUPABASE_URL}/auth/v1/signup`, signupOptions);
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to sign up');
-      }
-      
-      const data = await response.json();
+      if (error) throw error;
       
       if (!data.user) {
         throw new Error('No user data returned from signup');
       }
       
       toast.success("Registration successful! Please check your email to verify your account.");
-      navigate('/sign-in');
+      
+      // Don't navigate away if email confirmation is required
+      // We'll stay on the sign-in page with a success message
       
     } catch (error: any) {
       console.error("Error signing up:", error);

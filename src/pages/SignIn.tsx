@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -24,17 +23,14 @@ const SignIn: React.FC = () => {
   const [activeTab, setActiveTab] = useState('signin');
   const [formError, setFormError] = useState('');
   
-  // Update form error based on network status
   useEffect(() => {
     if (networkStatus === 'offline') {
       setFormError('You appear to be offline. Please check your internet connection.');
     } else if (formError === 'You appear to be offline. Please check your internet connection.') {
-      // Clear the error only if it was the offline error
       setFormError('');
     }
   }, [networkStatus, formError]);
   
-  // Validation state
   const [errors, setErrors] = useState({
     signInEmail: '',
     signInPassword: '',
@@ -47,10 +43,21 @@ const SignIn: React.FC = () => {
     return /\S+@\S+\.\S+/.test(email);
   };
   
-  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleRetry = () => {
+    setFormError('');
     
-    // Reset errors
+    if (activeTab === 'signin' && signInEmail && signInPassword) {
+      handleSignIn(new CustomEvent('retry') as unknown as React.FormEvent<HTMLFormElement>);
+    } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
+      handleSignUp(new CustomEvent('retry') as unknown as React.FormEvent<HTMLFormElement>);
+    }
+  };
+  
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
+    
     setErrors({
       signInEmail: '',
       signInPassword: '',
@@ -60,7 +67,6 @@ const SignIn: React.FC = () => {
     });
     setFormError('');
     
-    // Validate inputs
     let hasErrors = false;
     
     if (!signInEmail) {
@@ -97,9 +103,10 @@ const SignIn: React.FC = () => {
   };
   
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
     
-    // Reset errors
     setErrors({
       signInEmail: '',
       signInPassword: '',
@@ -109,7 +116,6 @@ const SignIn: React.FC = () => {
     });
     setFormError('');
     
-    // Validate inputs
     let hasErrors = false;
     
     if (!signUpEmail) {
@@ -141,15 +147,13 @@ const SignIn: React.FC = () => {
     }
     
     setIsLoading(true);
-    setFormError(''); // Clear any previous errors
+    setFormError('');
     
     try {
       console.log('Attempting signup with:', { email: signUpEmail, passwordLength: signUpPassword.length });
       await signUp(signUpEmail, signUpPassword);
       
-      // After successful signup, switch to signin tab
       setActiveTab('signin');
-      // Clear signup form
       setSignUpEmail('');
       setSignUpPassword('');
       setConfirmPassword('');
@@ -160,7 +164,6 @@ const SignIn: React.FC = () => {
       
       if (error.message?.includes('already registered')) {
         setFormError('This email is already registered. Please sign in instead.');
-        // Automatically switch to sign in tab and prefill email
         setActiveTab('signin');
         setSignInEmail(signUpEmail);
       } else {
@@ -173,7 +176,6 @@ const SignIn: React.FC = () => {
   
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    // Reset errors when switching tabs
     setErrors({
       signInEmail: '',
       signInPassword: '',
@@ -184,7 +186,6 @@ const SignIn: React.FC = () => {
     setFormError('');
   };
   
-  // Determine if buttons should be disabled
   const isSignInDisabled = isLoading || authLoading || networkStatus === 'offline';
   const isSignUpDisabled = isLoading || authLoading || networkStatus === 'offline';
   
@@ -214,7 +215,11 @@ const SignIn: React.FC = () => {
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
               
-              <AuthErrorAlert error={formError} networkStatus={networkStatus} />
+              <AuthErrorAlert 
+                error={formError} 
+                networkStatus={networkStatus} 
+                onRetry={handleRetry}
+              />
               
               <TabsContent value="signin">
                 <SignInForm
