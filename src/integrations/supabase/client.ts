@@ -22,7 +22,7 @@ export const supabase = createClient<Database>(
         'X-App-Version': '1.0.0',
       },
       // Implement a custom fetch with retry logic
-      fetch: async (url, options: RequestInit = {}) => {
+      fetch: async (url: RequestInfo | URL, options: RequestInit = {}) => {
         const maxRetries = 2;
         let retries = 0;
         
@@ -73,16 +73,23 @@ export const supabase = createClient<Database>(
 // Add a helper function to check Supabase connection
 export const checkSupabaseConnection = async () => {
   try {
-    // Simple health check to verify connectivity to Supabase
-    const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true }).limit(1);
+    // Try a simple call to Supabase that doesn't require authentication
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/health`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_PUBLISHABLE_KEY
+      },
+      cache: 'no-store'
+    });
     
-    if (error) {
-      console.error('Supabase connection error:', error);
-      return false;
+    if (response.ok) {
+      console.log('Supabase connection successful');
+      return true;
     }
     
-    console.log('Supabase connection successful');
-    return true;
+    console.error('Supabase health check failed:', response.status);
+    return false;
   } catch (error) {
     console.error('Failed to check Supabase connection:', error);
     return false;

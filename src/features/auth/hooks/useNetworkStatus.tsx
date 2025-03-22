@@ -26,17 +26,22 @@ export const useNetworkStatus = () => {
         return false;
       }
       
-      // Use Supabase healthcheck as a more reliable network test
-      // This avoids CORS issues with external services
-      const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true }).limit(1);
+      // This is a simple connectivity test without any server communication
+      // More reliable than making external requests that might fail due to CORS
+      const online = navigator.onLine && await Promise.race([
+        // Attempt to get the current time from the server
+        fetch('/favicon.ico', { 
+          method: 'HEAD',
+          cache: 'no-store',
+          // Using a very short timeout to quickly detect offline status
+          signal: AbortSignal.timeout(2000)
+        }).then(() => true).catch(() => false),
+        // Fallback to online status if we can't fetch
+        new Promise<boolean>(resolve => setTimeout(() => resolve(navigator.onLine), 2000))
+      ]);
       
-      if (error && error.message.includes('network')) {
-        setNetworkStatus('offline');
-        return false;
-      }
-      
-      setNetworkStatus('online');
-      return true;
+      setNetworkStatus(online ? 'online' : 'offline');
+      return online;
     } catch (error) {
       console.log("Network check failed:", error);
       

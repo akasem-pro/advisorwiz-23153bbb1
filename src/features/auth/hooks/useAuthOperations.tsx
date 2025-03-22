@@ -1,4 +1,3 @@
-
 import { useNavigate } from 'react-router-dom';
 import { supabase, checkSupabaseConnection } from '../../../integrations/supabase/client';
 import { toast } from 'sonner';
@@ -171,7 +170,7 @@ export const useAuthOperations = (
       setLoading(false);
     }
   };
-
+  
   return {
     signIn,
     signUp,
