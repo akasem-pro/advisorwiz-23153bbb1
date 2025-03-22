@@ -32,3 +32,21 @@ export const supabase = createClient<Database>(
     }
   }
 );
+
+// Add a helper function to check Supabase connection
+export const checkSupabaseConnection = async () => {
+  try {
+    const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true });
+    
+    if (error) {
+      console.error('Supabase connection error:', error);
+      return false;
+    }
+    
+    console.log('Supabase connection successful');
+    return true;
+  } catch (error) {
+    console.error('Failed to check Supabase connection:', error);
+    return false;
+  }
+};
