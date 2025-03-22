@@ -17,9 +17,8 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // First verify network connectivity
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
+      // Check online status first
+      if (networkStatus === 'offline') {
         throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
       }
       
@@ -44,9 +43,6 @@ export const useAuthOperations = (
         throw new Error('No account found with this email. Please check your email or sign up.');
       } else if (error.status === 429) {
         throw new Error('Too many sign-in attempts. Please try again later.');
-      } else if (error.message?.includes('timed out') || error.message?.includes('timeout') || 
-                error.message?.includes('abort') || error.name === 'AbortError') {
-        throw new Error('Request timed out. Please try again later.');
       } else if (!navigator.onLine || error.message?.includes('network') || 
                 error.message?.includes('connection') || error.message?.includes('Failed to fetch')) {
         throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
@@ -62,9 +58,8 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // First verify network connectivity
-      const isOnline = await checkNetworkStatus();
-      if (!isOnline) {
+      // Check online status first
+      if (networkStatus === 'offline') {
         throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
       }
       
@@ -88,9 +83,6 @@ export const useAuthOperations = (
         throw new Error('This email is already registered. Please sign in instead.');
       } else if (error.status === 429) {
         throw new Error('Too many sign-up attempts. Please try again later.');
-      } else if (error.message?.includes('timed out') || error.message?.includes('timeout') || 
-                error.message?.includes('abort') || error.name === 'AbortError') {
-        throw new Error('Request timed out. Please try again later.');
       } else if (!navigator.onLine || error.message?.includes('network') || 
                 error.message?.includes('connection') || error.message?.includes('Failed to fetch')) {
         throw new Error('Unable to connect to authentication service. Please check your connection and try again.');

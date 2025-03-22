@@ -11,7 +11,7 @@ export const useNetworkStatus = () => {
   );
   const [lastChecked, setLastChecked] = useState<Date>(new Date());
 
-  // Improved network check function with retry and fallback logic
+  // Improved network check function with simplified logic for sandbox environments
   const checkNetworkStatus = useCallback(async (): Promise<boolean> => {
     try {
       setNetworkStatus('checking');
@@ -49,20 +49,10 @@ export const useNetworkStatus = () => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     
-    // Set up periodic check with increasing intervals on failure
-    let checkInterval = 60000; // 1 minute by default
-    
-    const intervalId = setInterval(async () => {
-      const isOnline = await checkNetworkStatus();
-      
-      // If offline, check more frequently (every 30s)
-      // If online, check less frequently (every 2 minutes)
-      checkInterval = isOnline ? 120000 : 30000;
-      
-      // Update the interval
-      clearInterval(intervalId);
-      setInterval(checkNetworkStatus, checkInterval);
-    }, checkInterval);
+    // Set up periodic check
+    const intervalId = setInterval(() => {
+      checkNetworkStatus();
+    }, 30000); // Check every 30 seconds
     
     return () => {
       window.removeEventListener('online', handleOnline);
