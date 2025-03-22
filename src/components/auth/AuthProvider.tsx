@@ -6,6 +6,9 @@ import { useUser } from '../../context/UserContext';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
+// Import the constants directly from the integrations file
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '../../integrations/supabase/client';
+
 type AuthContextType = {
   session: Session | null;
   user: User | null;
@@ -167,13 +170,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       console.log("Starting sign up process");
       
-      // Using direct URL instead of signUp method to avoid CORS issues
+      // Using fetch API directly to avoid CORS issues
       const signupOptions = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': supabase.supabaseKey,
-          'Authorization': `Bearer ${supabase.supabaseKey}`
+          'apikey': SUPABASE_PUBLISHABLE_KEY,
+          'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
         },
         body: JSON.stringify({
           email,
@@ -185,7 +188,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         })
       };
       
-      const response = await fetch(`${supabase.supabaseUrl}/auth/v1/signup`, signupOptions);
+      const response = await fetch(`${SUPABASE_URL}/auth/v1/signup`, signupOptions);
       
       if (!response.ok) {
         const errorData = await response.json();
