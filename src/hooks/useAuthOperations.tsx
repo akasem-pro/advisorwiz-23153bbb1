@@ -34,6 +34,7 @@ export const useAuthOperations = (
       return true;
     }
     
+    // Expanded error detection for network issues
     return !!(
       error?.message?.toLowerCase().includes('network') ||
       error?.message?.toLowerCase().includes('connection') ||
@@ -42,7 +43,8 @@ export const useAuthOperations = (
       error?.name === 'AuthRetryableFetchError' ||
       error?.message?.includes('Network Error') ||
       error?.code === 'NETWORK_ERROR' ||
-      error?.status === 0
+      error?.status === 0 ||
+      error?.__isAuthError === true
     );
   };
 
@@ -74,7 +76,7 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // Check if we're online
+      // Check if we're offline
       if (networkStatus === 'offline') {
         throw new Error('You are currently offline. Please check your internet connection and try again.');
       }
@@ -128,8 +130,8 @@ export const useAuthOperations = (
       
       console.log("Starting sign up process with email:", email);
       
-      // Wait for network connection
-      const hasNetwork = await waitForNetworkConnection();
+      // Wait for network connection with shorter timeout
+      const hasNetwork = await waitForNetworkConnection(3000);
       if (!hasNetwork) {
         throw new Error('Network connection unavailable. Please check your internet connection and try again.');
       }

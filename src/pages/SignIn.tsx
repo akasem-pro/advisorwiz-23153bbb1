@@ -14,7 +14,17 @@ import SignUpForm from '../components/auth/SignUpForm';
 import AuthErrorAlert from '../components/auth/AuthErrorAlert';
 
 const SignIn: React.FC = () => {
-  const { signIn, signUp, loading: authLoading, networkStatus, checkNetworkStatus } = useAuth();
+  const { 
+    signIn, 
+    signUp, 
+    loading: authLoading, 
+    networkStatus, 
+    checkNetworkStatus,
+    retryAttempts,
+    incrementRetry,
+    resetRetryAttempts
+  } = useAuth();
+  
   const [isLoading, setIsLoading] = useState(false);
   const [signInEmail, setSignInEmail] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
@@ -23,10 +33,9 @@ const SignIn: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [activeTab, setActiveTab] = useState('signin');
   const [formError, setFormError] = useState('');
-  const [retryCount, setRetryCount] = useState(0);
   
   useEffect(() => {
-    if (networkStatus === 'online' && formError && formError.toLowerCase().includes('offline')) {
+    if (networkStatus === 'online' && formError && formError.toLowerCase().includes('network')) {
       setFormError('');
     } else if (networkStatus === 'offline' && !formError) {
       setFormError('You appear to be offline. Please check your internet connection.');
@@ -47,7 +56,7 @@ const SignIn: React.FC = () => {
   
   const handleRetry = async () => {
     setFormError('');
-    setRetryCount(prev => prev + 1);
+    incrementRetry();
     
     // Attempt to check network status
     await checkNetworkStatus();
@@ -103,6 +112,7 @@ const SignIn: React.FC = () => {
     }
     
     setIsLoading(true);
+    resetRetryAttempts();
     
     try {
       console.log("Attempting sign in with:", { email: signInEmail });
@@ -111,6 +121,10 @@ const SignIn: React.FC = () => {
     } catch (error: any) {
       console.error('Failed to sign in:', error);
       setFormError(error.message || 'Failed to sign in');
+      
+      if (error.message?.includes('network') || error.message?.includes('connection') || error.message?.includes('offline')) {
+        incrementRetry();
+      }
     } finally {
       setIsLoading(false);
     }
@@ -164,6 +178,7 @@ const SignIn: React.FC = () => {
     
     setIsLoading(true);
     setFormError('');
+    resetRetryAttempts();
     
     try {
       console.log('Attempting signup with:', { email: signUpEmail });
@@ -184,6 +199,10 @@ const SignIn: React.FC = () => {
         setSignInEmail(signUpEmail);
       } else {
         setFormError(error.message || 'Failed to sign up');
+        
+        if (error.message?.includes('network') || error.message?.includes('connection') || error.message?.includes('offline')) {
+          incrementRetry();
+        }
       }
     } finally {
       setIsLoading(false);
@@ -200,6 +219,7 @@ const SignIn: React.FC = () => {
       confirmPassword: '',
     });
     setFormError('');
+    resetRetryAttempts();
   };
   
   const isSignInDisabled = isLoading || authLoading || networkStatus === 'checking';

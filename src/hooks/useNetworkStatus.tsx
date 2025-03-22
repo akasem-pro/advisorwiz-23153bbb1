@@ -19,21 +19,27 @@ export const useNetworkStatus = () => {
     setNetworkStatus('checking');
     
     try {
-      // Try to fetch a small amount of data to validate the connection
+      // Use a more reliable endpoint with a shorter timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // Reduced timeout to 3 seconds
       
-      await fetch('https://www.google.com/favicon.ico', { 
-        mode: 'no-cors',
+      // Try a simple HEAD request to a reliable endpoint
+      const response = await fetch('https://www.cloudflare.com/cdn-cgi/trace', { 
+        method: 'HEAD',
         cache: 'no-store',
         signal: controller.signal
       });
       
       clearTimeout(timeoutId);
-      setNetworkStatus('online');
+      
+      if (response.ok) {
+        setNetworkStatus('online');
+      } else {
+        setNetworkStatus(navigator.onLine ? 'online' : 'offline');
+      }
     } catch (error) {
       console.log("Network check failed:", error);
-      // If fetch fails, we might be offline
+      // If using navigator.onLine as fallback when fetch fails
       setNetworkStatus(navigator.onLine ? 'online' : 'offline');
     }
     
