@@ -40,8 +40,7 @@ export const markChatMessagesAsRead = (
     if (msg.recipientId === userId && !msg.read) {
       return {
         ...msg,
-        read: true,
-        readTimestamp: new Date().toISOString()
+        read: true
       };
     }
     return msg;

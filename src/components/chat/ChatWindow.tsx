@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -76,6 +75,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, onBack }) => {
       senderId: currentUserId,
       senderName: currentUserName,
       recipientId: otherParticipantId,
+      recipientName: otherParticipantName,
       content: message,
       timestamp: new Date().toISOString(),
       read: false

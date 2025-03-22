@@ -153,6 +153,14 @@ export type ChatMessage = {
   read: boolean;
 };
 
+// Chat type for conversations
+export type Chat = {
+  id: string;
+  participants: string[];
+  messages: ChatMessage[];
+  lastUpdated: string; // ISO string format
+};
+
 // Review type
 export type Review = {
   id: string;
@@ -178,3 +186,4 @@ export type Notification = {
 
 // User type
 export type UserType = 'consumer' | 'advisor' | 'firm_admin' | null;
+

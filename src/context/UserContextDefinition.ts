@@ -47,6 +47,7 @@ export type UserContextType = {
   getFirmByAdmin: (adminId: string) => FinancialFirm[];
   calculateCompatibilityScore: (advisorId: string, consumerId: string) => number;
   updateMatchPreferences: (preferences: MatchPreferences) => void;
+  matchPreferences: MatchPreferences;
   getTopMatches: (limit?: number) => (AdvisorProfile | ConsumerProfile)[];
   getRecommendedMatches: () => (AdvisorProfile | ConsumerProfile)[];
   // New call functionality
@@ -103,6 +104,14 @@ const UserContext = createContext<UserContextType>({
   getFirmByAdmin: () => [],
   calculateCompatibilityScore: () => 0,
   updateMatchPreferences: () => {},
+  matchPreferences: {
+    prioritizeLanguage: true,
+    prioritizeAvailability: true,
+    prioritizeExpertise: true,
+    prioritizeLocation: false,
+    minimumMatchScore: 40,
+    considerInteractionData: true
+  },
   getTopMatches: () => [],
   getRecommendedMatches: () => [],
   // New call functionality

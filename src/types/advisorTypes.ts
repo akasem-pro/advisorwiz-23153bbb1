@@ -1,7 +1,7 @@
 
-import { AdvisorProfile, ServiceCategory, TimeSlot, AppointmentCategory } from '../context/UserContext';
+import { AdvisorProfile, ServiceCategory, TimeSlot, AppointmentCategory } from '../types/userTypes';
 
-export interface ExtendedAdvisorProfileForm extends Partial<AdvisorProfile> {
+export interface ExtendedAdvisorProfileForm extends Partial<Omit<AdvisorProfile, 'yearsOfExperience'>> {
   // Core profile info
   id: string;
   name: string;
@@ -19,7 +19,7 @@ export interface ExtendedAdvisorProfileForm extends Partial<AdvisorProfile> {
   // Professional details
   licensingBody: string;
   registrationNumber: string;
-  yearsOfExperience: string;
+  yearsOfExperience: string; // String for form input, will be converted to number
   hasViolations: boolean;
   consentToBackgroundCheck: boolean;
   
