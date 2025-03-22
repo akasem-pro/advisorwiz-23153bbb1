@@ -24,27 +24,15 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Simplified connection check function that works in sandboxed environments
+// Simpler connection check that doesn't rely on external API calls
 export const checkSupabaseConnection = async (): Promise<boolean> => {
-  try {
-    // First check browser's online status
-    if (!navigator.onLine) {
-      console.log("Browser reports offline status");
-      return false;
-    }
-    
-    // Use a simple and reliable check - just verify that the browser can make a request
-    // This approach works better in sandboxes
-    try {
-      // Try to get session - lightweight operation that will succeed if Supabase is available
-      await supabase.auth.getSession();
-      return true;
-    } catch (error) {
-      console.error("Supabase connection check failed:", error);
-      return false;
-    }
-  } catch (error) {
-    console.error("Connection check failed:", error);
+  // First check the browser's online status
+  if (!navigator.onLine) {
+    console.log("Browser reports offline status");
     return false;
   }
+  
+  // Use simple navigator.onLine as primary indicator
+  // This is more reliable in sandboxed environments
+  return navigator.onLine;
 };
