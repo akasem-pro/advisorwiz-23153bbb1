@@ -1,23 +1,16 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Sun, Moon, Menu, X, User, LogOut } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useUser } from '../../context/UserContext';
-import { Button } from '../ui/button';
+import { useAuth } from '../../features/auth/context/AuthProvider';
 import Logo from './Logo';
 import NavigationMenu from './NavigationMenu';
 import MobileMenu from './MobileMenu';
-import { useAuth } from '../../features/auth/context/AuthProvider';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { toast } from 'sonner';
+import ThemeToggleButton from './ThemeToggleButton';
+import UserMenu from './UserMenu';
+import AuthButtons from './AuthButtons';
 
 // Define the navigation links
 const navigationLinks = [
@@ -48,16 +41,10 @@ const navigationLinks = [
   },
 ];
 
-interface HeaderProps {
-  // Add any props here if needed
-}
-
 const Header: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
-  const { isAuthenticated, consumerProfile, advisorProfile, userType } = useUser();
-  const { signOut, user } = useAuth();
+  const { isAuthenticated, consumerProfile, advisorProfile } = useUser();
+  const { user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const navigate = useNavigate();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -83,17 +70,6 @@ const Header: React.FC = () => {
     return '';
   };
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast.success('You have been signed out successfully');
-      navigate('/');
-    } catch (error) {
-      console.error('Error signing out:', error);
-      toast.error('Failed to sign out. Please try again.');
-    }
-  };
-
   const getUserName = () => {
     if (consumerProfile?.name) {
       return consumerProfile.name;
@@ -105,16 +81,8 @@ const Header: React.FC = () => {
     return 'User';
   };
 
-  const handleProfileClick = () => {
-    if (userType === 'consumer') {
-      navigate('/consumer-profile');
-    } else if (userType === 'advisor') {
-      navigate('/advisor-profile');
-    } else if (userType === 'firm_admin') {
-      navigate('/firm-profile');
-    } else {
-      navigate('/settings');
-    }
+  const handleSignOut = async () => {
+    // This method is now in UserMenu component
   };
 
   return (
@@ -128,57 +96,16 @@ const Header: React.FC = () => {
         </div>
         
         <div className="flex items-center">
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-navy-800 mr-2"
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
+          <ThemeToggleButton className="mr-2" />
           
           {isAuthenticated ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center space-x-2 hover:opacity-80">
-                  <Avatar className="h-8 w-8 border border-slate-200 dark:border-navy-700">
-                    <AvatarImage src={getProfileImage()} alt={getUserName()} />
-                    <AvatarFallback className="bg-teal-100 text-teal-800 dark:bg-teal-800 dark:text-teal-100">
-                      {getInitials()}
-                    </AvatarFallback>
-                  </Avatar>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <div className="px-3 py-2">
-                  <p className="text-sm font-medium">{getUserName()}</p>
-                  <p className="text-xs text-slate-500">{user?.email}</p>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleProfileClick}>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>My Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/settings')}>
-                  Settings
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <UserMenu 
+              getUserName={getUserName}
+              getInitials={getInitials}
+              getProfileImage={getProfileImage}
+            />
           ) : (
-            <div className="hidden md:flex items-center space-x-4">
-              <Link to="/sign-in">
-                <Button variant="outline" size="sm">
-                  Sign In
-                </Button>
-              </Link>
-              <Link to="/onboarding">
-                <Button size="sm">Get Started</Button>
-              </Link>
-            </div>
+            <AuthButtons className="hidden md:flex" />
           )}
           
           <button

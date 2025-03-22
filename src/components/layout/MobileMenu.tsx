@@ -1,8 +1,11 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, Settings, User } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 import { Button } from '../ui/button';
+import { useAuth } from '../../features/auth/context/AuthProvider';
+import { toast } from 'sonner';
 
 interface MobileMenuProps {
   isAuthenticated: boolean;
@@ -10,13 +13,26 @@ interface MobileMenuProps {
   onSignOut: () => void;
 }
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isAuthenticated, onClose, onSignOut }) => {
+const MobileMenu: React.FC<MobileMenuProps> = ({ isAuthenticated, onClose }) => {
   const { userType } = useUser();
+  const { signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleNavigation = (path: string) => {
     navigate(path);
     onClose();
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success('You have been signed out successfully');
+      navigate('/');
+      onClose();
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast.error('Failed to sign out. Please try again.');
+    }
   };
 
   return (
@@ -49,7 +65,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isAuthenticated, onClose, onSig
             </button>
             
             <button
-              onClick={onSignOut}
+              onClick={handleSignOut}
               className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-slate-100 dark:hover:bg-navy-800"
             >
               <LogOut className="h-5 w-5 text-slate-400" />
