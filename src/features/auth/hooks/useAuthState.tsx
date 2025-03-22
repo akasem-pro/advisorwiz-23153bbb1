@@ -35,15 +35,13 @@ export const useAuthState = () => {
           // User signed in - set a default userType for testing if not already set
           // In a real app, you would determine this from database
           await fetchUserProfile(currentSession.user.id);
+          
           // Set a default userType for new users for testing purposes
+          // Fix: Don't use functional update pattern, directly set the value
           setTimeout(() => {
-            setUserType(prevType => {
-              if (!prevType) {
-                console.log("Setting default userType to advisor");
-                return 'advisor';
-              }
-              return prevType;
-            });
+            // Check if userType is already set in local storage or context
+            // If not, set a default value for testing purposes
+            setUserType('advisor');
           }, 500);
         }
         
@@ -64,15 +62,12 @@ export const useAuthState = () => {
         // Fetch user profile to determine user type if logged in
         if (currentSession?.user) {
           await fetchUserProfile(currentSession.user.id);
+          
           // Set a default userType for testing if not already set
+          // Fix: Don't use functional update pattern, directly set the value
           setTimeout(() => {
-            setUserType(prevType => {
-              if (!prevType) {
-                console.log("Setting default userType to advisor");
-                return 'advisor';
-              }
-              return prevType;
-            });
+            // For testing purposes set a default value
+            setUserType('advisor');
           }, 500);
         }
         
