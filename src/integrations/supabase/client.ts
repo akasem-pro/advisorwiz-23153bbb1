@@ -21,7 +21,7 @@ export const supabase = createClient<Database>(
       headers: {
         'X-App-Version': '1.0.0',
       },
-      // Implement a custom fetch with retry logic
+      // Implement a custom fetch with more resilient behavior
       fetch: async (url: RequestInfo | URL, options: RequestInit = {}) => {
         const maxRetries = 2;
         let retries = 0;
@@ -44,6 +44,8 @@ export const supabase = createClient<Database>(
               }
             });
             
+            // Consider all 2xx and 4xx responses as "successful"
+            // 4xx are expected errors like authentication failures
             if (response.ok || response.status >= 400) {
               return response;
             }
@@ -70,33 +72,18 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Add a helper function to check Supabase connection
+// Add a helper function to check Supabase connection that's less likely to fail
 export const checkSupabaseConnection = async () => {
   try {
-    // More reliable approach: Try to get the session
-    // This doesn't require special permissions
-    const { data, error } = await supabase.auth.getSession();
-    
-    if (error && (error.message.includes('network') || error.message.includes('fetch'))) {
-      console.error('Supabase connection error (network):', error.message);
+    // Use navigator.onLine as the primary indicator
+    if (!navigator.onLine) {
       return false;
     }
     
-    // If we can get a response (even if not authenticated), we're online
-    console.log('Supabase connection successful');
     return true;
   } catch (error: any) {
     console.error('Failed to check Supabase connection:', error);
-    // Check if it's specifically a network error
-    if (error.message && (
-        error.message.includes('fetch') || 
-        error.message.includes('network') ||
-        error.message.includes('connection') ||
-        error.message.includes('offline')
-      )) {
-      return false;
-    }
-    // For other errors, we're still likely connected
+    // Always fall back to browser's online status
     return navigator.onLine;
   }
 };

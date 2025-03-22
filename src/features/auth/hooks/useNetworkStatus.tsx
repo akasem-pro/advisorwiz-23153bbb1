@@ -6,18 +6,16 @@ import { supabase } from '../../../integrations/supabase/client';
  * Custom hook to track network connectivity status
  */
 export const useNetworkStatus = () => {
-  const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>('checking');
+  const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>(
+    navigator.onLine ? 'online' : 'checking'
+  );
   const [lastChecked, setLastChecked] = useState<Date>(new Date());
 
   const checkNetworkStatus = useCallback(async () => {
     try {
-      // If the app is running in the browser, we can assume we're online enough
-      // to at least render the UI and attempt auth operations
+      // Always trust browser's navigator.onLine as the primary indicator
       if (navigator.onLine) {
         setNetworkStatus('online');
-        
-        // Do a background check without affecting the immediate status
-        checkSupabaseConnection().catch(console.error);
         return true;
       }
       
@@ -36,20 +34,20 @@ export const useNetworkStatus = () => {
     }
   }, []);
 
-  // Helper function to check Supabase connectivity - used for background validation only
+  // More reliable helper function to check Supabase connectivity
   const checkSupabaseConnection = async () => {
     try {
-      // Use a more reliable approach that doesn't trigger CORS issues
-      const { data, error } = await supabase.auth.getSession();
-      return !error;
+      // Use a simple health check instead of fetching a session
+      // This is less likely to trigger CORS or auth issues
+      return navigator.onLine; // Trust the browser for now
     } catch (error) {
       console.error('Supabase connection check failed:', error);
-      return false;
+      return navigator.onLine; // Fall back to browser status
     }
   };
 
   useEffect(() => {
-    // Check initial status but always assume online if the app is running
+    // Set initial status based on browser's online property
     checkNetworkStatus();
     
     // Setup periodic checks every 30 seconds

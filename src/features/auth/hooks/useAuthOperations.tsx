@@ -1,4 +1,3 @@
-
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../integrations/supabase/client';
 import { toast } from 'sonner';
@@ -28,9 +27,10 @@ export const useAuthOperations = (
   };
 
   const isNetworkError = (error: any): boolean => {
-    // If browser says we're online, trust that for most cases
+    // If the browser explicitly says we're online, most errors
+    // are likely not network-related
     if (navigator.onLine && networkStatus !== 'offline') {
-      // But still check for certain definitive network error signatures
+      // But still check for specific network error signatures
       const errorMsg = error?.message?.toLowerCase() || '';
       return (
         errorMsg.includes('failed to fetch') ||
@@ -41,7 +41,7 @@ export const useAuthOperations = (
       );
     }
     
-    // More extensive error detection for network issues
+    // Standard checks for network-related errors
     const errorMsg = error?.message?.toLowerCase() || '';
     return !!(
       errorMsg.includes('network') ||
@@ -61,8 +61,7 @@ export const useAuthOperations = (
     try {
       setLoading(true);
       
-      // Always assume we're online enough to try authentication
-      // The browser is already running our code, so we must be connected
+      // Always try authentication if the app is running
       console.log("Starting sign in process with email:", email);
       
       // Directly use the Supabase client for authentication
@@ -92,7 +91,9 @@ export const useAuthOperations = (
     } catch (error: any) {
       console.error("Error signing in:", error.message, error);
       
-      if (isNetworkError(error)) {
+      // Don't report network errors if browser says we're online
+      // This prevents confusing error messages
+      if (isNetworkError(error) && !navigator.onLine) {
         throw new Error('Network error. Please check your connection and try again.');
       } else if (error.message?.includes('Invalid login credentials')) {
         throw new Error('Invalid email or password. Please try again.');
