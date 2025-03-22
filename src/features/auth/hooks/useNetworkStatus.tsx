@@ -11,37 +11,16 @@ export const useNetworkStatus = () => {
   );
   const [lastChecked, setLastChecked] = useState<Date>(new Date());
 
-  // Simplified network check function that relies on browser APIs
-  const checkNetworkStatus = useCallback(async (): Promise<boolean> => {
+  // Ultra-simplified network check function with no async/await
+  const checkNetworkStatus = useCallback((): boolean => {
     try {
-      setNetworkStatus('checking');
-      
-      // Use the navigator.onLine as primary source of truth
-      const isOnline = navigator.onLine;
-      
-      // Only attempt connection check if browser reports online
-      if (isOnline) {
-        try {
-          // Double-check with our simplified check
-          const supabaseOnline = await checkSupabaseConnection();
-          setNetworkStatus(supabaseOnline ? 'online' : 'offline');
-          setLastChecked(new Date());
-          return supabaseOnline;
-        } catch (error) {
-          console.error("Supabase connection check failed:", error);
-          // Fall back to browser online status
-          setNetworkStatus(isOnline ? 'online' : 'offline');
-          setLastChecked(new Date());
-          return isOnline;
-        }
-      } else {
-        setNetworkStatus('offline');
-        setLastChecked(new Date());
-        return false;
-      }
+      // Just use browser APIs - no fetch requests
+      const isOnline = checkSupabaseConnection();
+      setNetworkStatus(isOnline ? 'online' : 'offline');
+      setLastChecked(new Date());
+      return isOnline;
     } catch (error) {
       console.error("Network status check failed:", error);
-      // Fall back to browser online status as last resort
       const browserOnline = navigator.onLine;
       setNetworkStatus(browserOnline ? 'online' : 'offline');
       setLastChecked(new Date());
@@ -69,10 +48,10 @@ export const useNetworkStatus = () => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     
-    // Set up periodic check (less frequent to reduce unnecessary calls)
+    // Less frequent checks to reduce unnecessary operations
     const intervalId = setInterval(() => {
       checkNetworkStatus();
-    }, 60000); // Check every minute
+    }, 120000); // Check only every 2 minutes
     
     return () => {
       window.removeEventListener('online', handleOnline);

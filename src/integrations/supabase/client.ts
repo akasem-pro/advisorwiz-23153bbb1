@@ -24,15 +24,10 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Simpler connection check that doesn't rely on external API calls
-export const checkSupabaseConnection = async (): Promise<boolean> => {
-  // First check the browser's online status
-  if (!navigator.onLine) {
-    console.log("Browser reports offline status");
-    return false;
-  }
-  
-  // Use simple navigator.onLine as primary indicator
-  // This is more reliable in sandboxed environments
+// Ultra-simplified connection checker that ONLY uses browser APIs
+// and never tries to make actual network requests
+export const checkSupabaseConnection = (): boolean => {
+  // Simply return the browser's network status
+  // This is the most reliable method in sandboxed environments
   return navigator.onLine;
 };
