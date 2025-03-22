@@ -49,10 +49,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Monitor network changes and notify user
   useEffect(() => {
+    // We only want to show online notifications if user had previously experienced offline issues
     if (networkStatus === 'online' && retryAttempts > 0) {
       toast.success("You're back online! You can now try again.");
-    } else if (networkStatus === 'offline') {
-      toast.error("You're offline. Some features may not work.");
     }
   }, [networkStatus, retryAttempts]);
 

@@ -12,16 +12,17 @@ export const useAuthFormSubmit = () => {
     signUp, 
     loading: authLoading, 
     networkStatus, 
-    checkNetworkStatus,
     retryAttempts,
     incrementRetry,
     resetRetryAttempts
   } = useAuth();
   
-  // Check network on first render
+  // Watch for network status changes
   useEffect(() => {
-    checkNetworkStatus();
-  }, [checkNetworkStatus]);
+    if (networkStatus === 'online' && retryAttempts > 0) {
+      toast.success("You're back online! You can now try again.");
+    }
+  }, [networkStatus, retryAttempts]);
   
   const handleSignIn = async (
     e: React.FormEvent<HTMLFormElement>,
@@ -38,10 +39,9 @@ export const useAuthFormSubmit = () => {
     if (!validateForm()) return;
     setFormError('');
     
-    // Check network status before attempting sign in
-    await checkNetworkStatus();
-    if (networkStatus === 'offline') {
-      setFormError('Network error. Please check your connection and try again.');
+    // Skip additional network check - we'll rely on the browser's navigator.onLine
+    if (!navigator.onLine) {
+      setFormError('You are currently offline. Please check your internet connection and try again.');
       return;
     }
     
@@ -82,10 +82,9 @@ export const useAuthFormSubmit = () => {
     if (!validateForm()) return;
     setFormError('');
     
-    // Check network status before attempting sign up
-    await checkNetworkStatus();
-    if (networkStatus === 'offline') {
-      setFormError('Network error. Please check your connection and try again.');
+    // Skip additional network check - we'll rely on the browser's navigator.onLine
+    if (!navigator.onLine) {
+      setFormError('You are currently offline. Please check your internet connection and try again.');
       return;
     }
     
@@ -134,10 +133,7 @@ export const useAuthFormSubmit = () => {
     setFormError('');
     incrementRetry();
     
-    // Attempt to check network status
-    await checkNetworkStatus();
-    
-    if (networkStatus === 'offline') {
+    if (!navigator.onLine) {
       setFormError('Still offline. Please check your internet connection and try again.');
       return;
     }
