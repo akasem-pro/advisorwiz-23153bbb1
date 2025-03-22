@@ -80,4 +80,19 @@
   button, .button, [type="button"], [type="submit"] {
     min-height: 44px;
   }
+  
+  /* Additional spacing for sign-in page */
+  main {
+    padding-top: 5rem !important;
+  }
+  
+  /* Add more space after the header */
+  .auth-container {
+    margin-top: 1.5rem;
+  }
+}
+
+/* Add some spacing for auth forms */
+.auth-form-container {
+  margin-top: 1rem;
 }
