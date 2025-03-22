@@ -20,13 +20,26 @@ export const useAuthOperations = (
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
       return profile;
     } catch (error) {
       console.error("Error fetching user profile:", error);
       return null;
     }
+  };
+
+  const isNetworkError = (error: any): boolean => {
+    return (
+      !navigator.onLine ||
+      error?.message?.toLowerCase().includes('network') ||
+      error?.message?.toLowerCase().includes('connection') ||
+      error?.message?.toLowerCase().includes('failed to fetch') ||
+      error?.message?.toLowerCase().includes('offline') ||
+      error?.name === 'AuthRetryableFetchError' ||
+      error?.message?.includes('Network Error') ||
+      error?.code === 'NETWORK_ERROR'
+    );
   };
 
   const signIn = async (email: string, password: string) => {
@@ -38,12 +51,16 @@ export const useAuthOperations = (
         throw new Error('You are currently offline. Please check your internet connection and try again.');
       }
       
+      console.log("Starting sign in process with email:", email);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
       
       if (error) throw error;
+      
+      console.log("Sign in successful, user data:", data.user?.id);
       
       toast.success("Successfully signed in!");
       navigate('/');
@@ -52,9 +69,9 @@ export const useAuthOperations = (
         await fetchUserProfile(data.user.id);
       }
     } catch (error: any) {
-      console.error("Error signing in:", error.message);
+      console.error("Error signing in:", error.message, error);
       
-      if (error.message?.includes('Failed to fetch') || navigator.onLine === false) {
+      if (isNetworkError(error)) {
         throw new Error('Network error. Please check your connection and try again.');
       } else if (error.message?.includes('Invalid login credentials')) {
         throw new Error('Invalid email or password. Please try again.');
@@ -75,9 +92,20 @@ export const useAuthOperations = (
         throw new Error('You are currently offline. Please check your internet connection and try again.');
       }
       
-      console.log("Starting sign up process");
+      console.log("Starting sign up process with email:", email);
       
-      // Modified to better handle network issues
+      // Use direct timeout to check for network availability before proceeding
+      await new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          if (!navigator.onLine) {
+            reject(new Error('Network connection appears to be unavailable. Please check your internet connection.'));
+          } else {
+            clearTimeout(timeoutId);
+            resolve(true);
+          }
+        }, 1000);
+      });
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -92,6 +120,8 @@ export const useAuthOperations = (
         throw new Error('No user data returned from signup');
       }
       
+      console.log("Sign up successful, user data:", data.user.id, "confirmation sent:", data.session === null);
+      
       toast.success("Registration successful! Please check your email to verify your account.");
       
       // Don't navigate away if email confirmation is required
@@ -100,17 +130,9 @@ export const useAuthOperations = (
     } catch (error: any) {
       console.error("Error signing up:", error);
       
-      // Improved error handling to better detect network issues
       if (error.message?.includes('email already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
-      } else if (
-        error.message?.includes('Failed to fetch') || 
-        navigator.onLine === false || 
-        error.name === 'AuthRetryableFetchError' ||
-        error.message?.includes('Network Error') ||
-        error.message?.toLowerCase().includes('network') ||
-        error.code === 'NETWORK_ERROR'
-      ) {
+      } else if (isNetworkError(error)) {
         throw new Error('Network error. Please check your connection and try again.');
       } else {
         throw new Error(error.message || 'An error occurred during sign up. Please try again.');

@@ -24,10 +24,10 @@ const SignIn: React.FC = () => {
   const [formError, setFormError] = useState('');
   
   useEffect(() => {
-    if (networkStatus === 'offline') {
-      setFormError('You appear to be offline. Please check your internet connection.');
-    } else if (formError === 'You appear to be offline. Please check your internet connection.') {
+    if (networkStatus === 'online' && formError && formError.toLowerCase().includes('offline')) {
       setFormError('');
+    } else if (networkStatus === 'offline' && !formError) {
+      setFormError('You appear to be offline. Please check your internet connection.');
     }
   }, [networkStatus, formError]);
   
@@ -45,6 +45,11 @@ const SignIn: React.FC = () => {
   
   const handleRetry = () => {
     setFormError('');
+    
+    if (!navigator.onLine) {
+      setFormError('Still offline. Please check your internet connection and try again.');
+      return;
+    }
     
     if (activeTab === 'signin' && signInEmail && signInPassword) {
       handleSignIn(new CustomEvent('retry') as unknown as React.FormEvent<HTMLFormElement>);
@@ -92,6 +97,7 @@ const SignIn: React.FC = () => {
     setIsLoading(true);
     
     try {
+      console.log("Attempting sign in with:", { email: signInEmail });
       await signIn(signInEmail, signInPassword);
       // Navigation will be handled in AuthProvider after successful login
     } catch (error: any) {
@@ -150,7 +156,7 @@ const SignIn: React.FC = () => {
     setFormError('');
     
     try {
-      console.log('Attempting signup with:', { email: signUpEmail, passwordLength: signUpPassword.length });
+      console.log('Attempting signup with:', { email: signUpEmail });
       await signUp(signUpEmail, signUpPassword);
       
       setActiveTab('signin');

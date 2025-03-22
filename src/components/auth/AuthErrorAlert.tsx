@@ -32,7 +32,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
                 <AlertDescription>{error}</AlertDescription>
               </div>
               
-              {isNetworkError && onRetry && (
+              {(isNetworkError || networkStatus === 'offline') && onRetry && (
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -51,10 +51,26 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
       {networkStatus === 'offline' && !error && (
         <div className="px-4 pt-4">
           <Alert className="border-amber-500 bg-amber-50 text-amber-700">
-            <WifiOff className="h-4 w-4" />
-            <AlertDescription>
-              You are currently offline. Please check your internet connection to sign in or sign up.
-            </AlertDescription>
+            <div className="flex w-full items-center justify-between">
+              <div className="flex items-center gap-2">
+                <WifiOff className="h-4 w-4" />
+                <AlertDescription>
+                  You are currently offline. Please check your internet connection to sign in or sign up.
+                </AlertDescription>
+              </div>
+              
+              {onRetry && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onRetry} 
+                  className="ml-2 border-amber-500 text-amber-700 hover:bg-amber-100"
+                >
+                  <RefreshCw className="mr-2 h-3 w-3" />
+                  Check Connection
+                </Button>
+              )}
+            </div>
           </Alert>
         </div>
       )}
