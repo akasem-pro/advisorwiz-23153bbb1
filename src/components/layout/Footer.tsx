@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
   const isLightMode = theme === 'light';
   
   return (
-    <footer className={`${isLightMode ? 'bg-slate-100 text-navy-800' : 'bg-navy-900 text-white'} pt-16 pb-8 border-t border-slate-200 dark:border-navy-800`}>
+    <footer className={`${isLightMode ? 'bg-gray-50 text-gray-800' : 'bg-navy-900 text-white'} pt-16 pb-8 border-t ${isLightMode ? 'border-gray-200' : 'border-navy-800'}`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="space-y-4">
@@ -21,75 +21,75 @@ const Footer: React.FC = () => {
                 loading="lazy"
               />
             </div>
-            <p className={`${isLightMode ? 'text-slate-600' : 'text-slate-300'} max-w-xs`}>
+            <p className={`${isLightMode ? 'text-gray-600' : 'text-slate-300'} max-w-xs`}>
               Connecting consumers with trusted financial advisors through an innovative matching platform.
             </p>
             <div className="flex space-x-4 pt-2">
-              <a href="https://www.x.com/advisorwiz" target="_blank" rel="noopener noreferrer" className={`${isLightMode ? 'text-slate-500 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`} aria-label="Twitter">
+              <a href="https://www.x.com/advisorwiz" target="_blank" rel="noopener noreferrer" className={`${isLightMode ? 'text-gray-500 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`} aria-label="Twitter">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="https://www.facebook.com/379597858579446" target="_blank" rel="noopener noreferrer" className={`${isLightMode ? 'text-slate-500 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`} aria-label="Facebook">
+              <a href="https://www.facebook.com/379597858579446" target="_blank" rel="noopener noreferrer" className={`${isLightMode ? 'text-gray-500 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`} aria-label="Facebook">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="https://www.linkedin.com/company/advisorwiz/" target="_blank" rel="noopener noreferrer" className={`${isLightMode ? 'text-slate-500 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`} aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/company/advisorwiz/" target="_blank" rel="noopener noreferrer" className={`${isLightMode ? 'text-gray-500 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`} aria-label="LinkedIn">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="https://www.instagram.com/advisorwiz" target="_blank" rel="noopener noreferrer" className={`${isLightMode ? 'text-slate-500 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`} aria-label="Instagram">
+              <a href="https://www.instagram.com/advisorwiz" target="_blank" rel="noopener noreferrer" className={`${isLightMode ? 'text-gray-500 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`} aria-label="Instagram">
                 <Instagram className="w-5 h-5" />
               </a>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h4 className={`text-lg font-medium ${isLightMode ? 'text-navy-900' : 'text-white'}`}>Quick Links</h4>
+            <h4 className={`text-lg font-medium ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/for-advisors" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/for-advisors" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Advisors
                 </Link>
               </li>
               <li>
-                <Link to="/for-consumers" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/for-consumers" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Consumer
                 </Link>
               </li>
               <li>
-                <Link to="/resources" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/resources" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Resources
                 </Link>
               </li>
               <li>
-                <Link to="/pricing" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/pricing" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link to="/blog" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/blog" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Blog
                 </Link>
               </li>
               <li>
-                <Link to="/careers" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/careers" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Careers
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/contact" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link to="/sitemap" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/sitemap" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Sitemap
                 </Link>
               </li>
               <li>
-                <Link to="/onboarding" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/onboarding" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Get Started
                 </Link>
               </li>
@@ -97,19 +97,19 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="space-y-4">
-            <h4 className={`text-lg font-medium ${isLightMode ? 'text-navy-900' : 'text-white'}`}>Contact Us</h4>
+            <h4 className={`text-lg font-medium ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Contact Us</h4>
             <ul className="space-y-3">
               <li className="flex items-start space-x-3">
                 <MapPin className={`w-5 h-5 ${isLightMode ? 'text-teal-600' : 'text-teal-400'} mt-0.5`} />
-                <span className={`${isLightMode ? 'text-slate-600' : 'text-slate-300'}`}>123 Financial District, Toronto, ON M5J 2Y7</span>
+                <span className={`${isLightMode ? 'text-gray-600' : 'text-slate-300'}`}>123 Financial District, Toronto, ON M5J 2Y7</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className={`w-5 h-5 ${isLightMode ? 'text-teal-600' : 'text-teal-400'}`} />
-                <span className={`${isLightMode ? 'text-slate-600' : 'text-slate-300'}`}>+1 (800) 555-1234</span>
+                <span className={`${isLightMode ? 'text-gray-600' : 'text-slate-300'}`}>+1 (800) 555-1234</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Mail className={`w-5 h-5 ${isLightMode ? 'text-teal-600' : 'text-teal-400'}`} />
-                <a href="mailto:info@advisorwiz.com" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <a href="mailto:info@advisorwiz.com" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   info@advisorwiz.com
                 </a>
               </li>
@@ -117,25 +117,25 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="space-y-4">
-            <h4 className={`text-lg font-medium ${isLightMode ? 'text-navy-900' : 'text-white'}`}>Legal</h4>
+            <h4 className={`text-lg font-medium ${isLightMode ? 'text-gray-900' : 'text-white'}`}>Legal</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/terms" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/terms" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/privacy" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/disclaimer" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/disclaimer" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Financial Disclaimer
                 </Link>
               </li>
               <li>
-                <Link to="/cookies" className={`${isLightMode ? 'text-slate-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
+                <Link to="/cookies" className={`${isLightMode ? 'text-gray-600 hover:text-teal-600' : 'text-slate-300 hover:text-teal-400'} transition-colors`}>
                   Cookies Policy
                 </Link>
               </li>
@@ -143,8 +143,8 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className={`mt-8 pt-8 border-t ${isLightMode ? 'border-slate-200' : 'border-navy-800'}`}>
-          <div className={`${isLightMode ? 'text-slate-600' : 'text-slate-400'} text-sm mb-6 max-w-4xl mx-auto`}>
+        <div className={`mt-8 pt-8 border-t ${isLightMode ? 'border-gray-200' : 'border-navy-800'}`}>
+          <div className={`${isLightMode ? 'text-gray-600' : 'text-slate-400'} text-sm mb-6 max-w-4xl mx-auto`}>
             <p className="mb-4 text-center">
               By using AdvisorWiz, you agree to our Terms & Conditions. AdvisorWiz connects consumers with financial advisors but does not provide financial advice. All advisors are independent professionals, and users are responsible for their own financial decisions.
             </p>
@@ -153,7 +153,7 @@ const Footer: React.FC = () => {
             </p>
           </div>
 
-          <p className={`text-center ${isLightMode ? 'text-slate-600' : 'text-slate-400'} text-sm`}>
+          <p className={`text-center ${isLightMode ? 'text-gray-600' : 'text-slate-400'} text-sm`}>
             &copy; {new Date().getFullYear()} AdvisorWiz. All rights reserved.
           </p>
         </div>
