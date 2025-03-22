@@ -22,7 +22,7 @@ const MatchExplanation: React.FC<MatchExplanationProps> = ({
   showFeedback = true,
   matchId
 }) => {
-  const { userType, userId } = useUser();
+  const { userType } = useUser();
   
   // Only display if we have explanations and a reasonable score
   if (!explanations.length || score === 0) {
@@ -34,14 +34,12 @@ const MatchExplanation: React.FC<MatchExplanationProps> = ({
     isHelpful: boolean;
     comment?: string;
   }) => {
-    if (userId) {
-      submitMatchFeedback(
-        userId,
-        feedback.matchId,
-        feedback.isHelpful,
-        feedback.comment
-      );
-    }
+    submitMatchFeedback(
+      'current-user', // Use a default ID or get from another source
+      feedback.matchId,
+      feedback.isHelpful,
+      feedback.comment
+    );
   };
 
   if (compact) {

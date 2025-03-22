@@ -1,5 +1,5 @@
 
-import { performance } from 'web-vitals';
+import { now } from 'web-vitals';
 
 interface PerformanceData {
   functionName: string;

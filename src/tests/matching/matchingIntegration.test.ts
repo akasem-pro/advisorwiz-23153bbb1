@@ -2,6 +2,7 @@
 import { calculateCompatibilityBetweenProfiles } from '../../services/matching/profileMatching';
 import { getWeightedCompatibilityScore } from '../../services/matching/weightedScoring';
 import { calculateMatchScore, getMatchExplanations } from '../../utils/matchingAlgorithm';
+import { AdvisorProfile, ConsumerProfile } from '../../context/UserContext';
 
 describe('Matching Integration Tests', () => {
   test('calculateCompatibilityBetweenProfiles should return appropriate profiles', () => {
@@ -23,8 +24,10 @@ describe('Matching Integration Tests', () => {
     
     // Check if results are properly sorted (descending by score)
     for (let i = 1; i < consumerResults.length; i++) {
-      const prevScore = consumerResults[i-1].compatibilityScores?.['consumer-1'] || 0;
-      const currScore = consumerResults[i].compatibilityScores?.['consumer-1'] || 0;
+      const prevItem = consumerResults[i-1] as AdvisorProfile;
+      const currItem = consumerResults[i] as AdvisorProfile;
+      const prevScore = prevItem.compatibilityScores?.['consumer-1'] || 0;
+      const currScore = currItem.compatibilityScores?.['consumer-1'] || 0;
       expect(prevScore).toBeGreaterThanOrEqual(currScore);
     }
   });
@@ -37,7 +40,7 @@ describe('Matching Integration Tests', () => {
       organization: 'Test Org',
       expertise: ['retirement', 'tax'],
       languages: ['English']
-    };
+    } as AdvisorProfile;
     
     const consumer = {
       id: 'consumer-test',
@@ -45,10 +48,10 @@ describe('Matching Integration Tests', () => {
       preferredLanguage: ['English'],
       riskTolerance: 'medium',
       serviceNeeds: ['retirement']
-    };
+    } as ConsumerProfile;
     
     // Calculate scores using both methods
-    const directScore = calculateMatchScore(advisor as any, consumer as any);
+    const directScore = calculateMatchScore(advisor, consumer);
     
     // Scores should be of the same type and within reasonable range
     expect(typeof directScore).toBe('number');
