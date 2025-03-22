@@ -14,12 +14,13 @@ export const useAuthOperations = (
   
   const fetchUserProfile = async (userId: string) => {
     try {
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
       
+      if (error) throw error;
       return profile;
     } catch (error) {
       console.error("Error fetching user profile:", error);
@@ -29,10 +30,6 @@ export const useAuthOperations = (
 
   const signIn = async (email: string, password: string) => {
     try {
-      if (!navigator.onLine) {
-        throw new Error('You appear to be offline. Please check your internet connection.');
-      }
-
       setLoading(true);
       
       console.log("Starting sign in process with email:", email);
@@ -77,10 +74,6 @@ export const useAuthOperations = (
 
   const signUp = async (email: string, password: string) => {
     try {
-      if (!navigator.onLine) {
-        throw new Error('You appear to be offline. Please check your internet connection.');
-      }
-
       setLoading(true);
       
       console.log("Starting sign up process with email:", email);
@@ -103,16 +96,16 @@ export const useAuthOperations = (
       
       toast.success("Registration successful! Please check your email to verify your account.");
       
-      // Don't navigate away if email confirmation is required
-      // We'll stay on the sign-in page with a success message
+      // Only redirect if there's an active session (no email confirmation required)
+      if (data.session) {
+        navigate('/');
+      }
       
     } catch (error: any) {
       console.error("Error signing up:", error);
       
       if (error.message?.includes('email already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
-      } else if (!navigator.onLine) {
-        throw new Error('You appear to be offline. Please check your internet connection.');
       } else {
         throw new Error(error.message || 'An error occurred during sign up. Please try again.');
       }

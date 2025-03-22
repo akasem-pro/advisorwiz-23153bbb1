@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 /**
- * Custom hook to track network connectivity status
+ * Custom hook to track network connectivity status using browser's built-in navigator.onLine
  */
 export const useNetworkStatus = () => {
   const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>(
@@ -10,7 +10,7 @@ export const useNetworkStatus = () => {
   );
   const [lastChecked, setLastChecked] = useState<Date>(new Date());
 
-  const checkNetworkStatus = useCallback(async () => {
+  const checkNetworkStatus = useCallback(() => {
     // Simply use the browser's navigator.onLine
     const isOnline = navigator.onLine;
     setNetworkStatus(isOnline ? 'online' : 'offline');

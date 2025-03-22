@@ -11,7 +11,7 @@ interface AuthErrorAlertProps {
 }
 
 const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, onRetry }) => {
-  // Only use browser's native online status
+  // Only show offline warnings if the browser actually reports being offline
   const isOffline = !navigator.onLine;
   
   // Determine if the error is related to network connectivity

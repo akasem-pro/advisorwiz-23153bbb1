@@ -40,13 +40,6 @@ export const useAuthFormSubmit = () => {
     if (!validateForm()) return;
     
     setFormError('');
-    
-    // Check if we're online
-    if (!navigator.onLine) {
-      setFormError('You appear to be offline. Please check your internet connection.');
-      return;
-    }
-    
     setIsLoading(true);
     resetRetryAttempts();
     
@@ -84,13 +77,6 @@ export const useAuthFormSubmit = () => {
     if (!validateForm()) return;
     
     setFormError('');
-    
-    // Check if we're online
-    if (!navigator.onLine) {
-      setFormError('You appear to be offline. Please check your internet connection.');
-      return;
-    }
-    
     setIsLoading(true);
     resetRetryAttempts();
     
@@ -135,12 +121,6 @@ export const useAuthFormSubmit = () => {
     setFormError: (error: string) => void
   ) => {
     setFormError('');
-    
-    // Check if we're online now
-    if (!navigator.onLine) {
-      setFormError('You are still offline. Please check your internet connection and try again.');
-      return;
-    }
     
     // Create a synthetic event to pass to the form handlers
     const syntheticEvent = {} as React.FormEvent<HTMLFormElement>;
