@@ -2,6 +2,7 @@
 import { AdvisorProfile, ConsumerProfile } from '../../types/userTypes';
 import { MatchPreferences } from '../../context/UserContextDefinition';
 import { calculateBaseCompatibility } from './compatibility';
+import { withPerformanceTracking } from '../../utils/matchingPerformance';
 
 // Mock data imports (these would be replaced with real data in a production environment)
 import { mockAdvisors, mockConsumers } from '../../data/mockUsers';
@@ -16,14 +17,15 @@ const PREFERENCE_WEIGHTS = {
     CALL_COUNT: 10,       // Up to 10 points for call frequency
     DURATION: 10,         // Up to 10 points for call duration
     COMPLETION_RATE: 10   // Up to 10 points for call completion rate
-  }
+  },
+  USER_FEEDBACK: 15       // Weight for user feedback adjustments
 };
 
 /**
  * Calculates a weighted compatibility score based on user preferences and historical interaction data
  * @returns {Object} Contains both the score and explanation for the match
  */
-export const getWeightedCompatibilityScore = (
+const calculateWeightedCompatibilityScore = (
   advisorId: string,
   consumerId: string,
   preferences: MatchPreferences,
@@ -191,3 +193,9 @@ export const getWeightedCompatibilityScore = (
     matchExplanation
   };
 };
+
+// Export the function with performance tracking wrapper
+export const getWeightedCompatibilityScore = withPerformanceTracking(
+  calculateWeightedCompatibilityScore,
+  'getWeightedCompatibilityScore'
+);

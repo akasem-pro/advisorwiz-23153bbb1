@@ -8,12 +8,14 @@ interface MatchExplanationDisplayProps {
   userType: 'consumer' | 'advisor' | null;
   item: any;
   compact?: boolean;
+  showFeedback?: boolean;
 }
 
 const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({ 
   userType,
   item,
-  compact = false
+  compact = false,
+  showFeedback = true
 }) => {
   if (!item || !userType) return null;
   
@@ -33,12 +35,17 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
     const score = calculateMatchScore(advisorProfile as any, consumerProfile);
     const explanations = getMatchExplanations(advisorProfile as any, consumerProfile);
     
+    // Generate a matchId from the two profiles
+    const matchId = `match-${advisorProfile.id}-${consumerProfile.id}`;
+    
     return (
       <div className="match-explanation">
         <MatchExplanation 
           score={score}
           explanations={explanations}
           compact={compact}
+          showFeedback={showFeedback}
+          matchId={matchId}
         />
       </div>
     );
@@ -59,12 +66,17 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
     const score = calculateMatchScore(item, consumerProfile);
     const explanations = getMatchExplanations(item, consumerProfile);
     
+    // Generate a matchId from the two profiles
+    const matchId = `match-${item.id}-${consumerProfile.id}`;
+    
     return (
       <div className="match-explanation">
         <MatchExplanation 
           score={score}
           explanations={explanations}
           compact={compact}
+          showFeedback={showFeedback}
+          matchId={matchId}
         />
       </div>
     );

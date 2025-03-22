@@ -3,22 +3,46 @@ import React from 'react';
 import { Badge } from '../ui/badge';
 import { InfoIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import MatchFeedback from './MatchFeedback';
+import { submitMatchFeedback } from '../../services/matching/feedbackService';
+import { useUser } from '../../context/UserContext';
 
 interface MatchExplanationProps {
   score: number;
   explanations: string[];
   compact?: boolean;
+  showFeedback?: boolean;
+  matchId?: string;
 }
 
 const MatchExplanation: React.FC<MatchExplanationProps> = ({ 
   score, 
   explanations, 
-  compact = false 
+  compact = false,
+  showFeedback = true,
+  matchId
 }) => {
+  const { userType, userId } = useUser();
+  
   // Only display if we have explanations and a reasonable score
   if (!explanations.length || score === 0) {
     return null;
   }
+
+  const handleFeedbackSubmit = (feedback: {
+    matchId: string;
+    isHelpful: boolean;
+    comment?: string;
+  }) => {
+    if (userId) {
+      submitMatchFeedback(
+        userId,
+        feedback.matchId,
+        feedback.isHelpful,
+        feedback.comment
+      );
+    }
+  };
 
   if (compact) {
     return (
@@ -58,6 +82,13 @@ const MatchExplanation: React.FC<MatchExplanationProps> = ({
           </Badge>
         ))}
       </div>
+      
+      {showFeedback && matchId && (
+        <MatchFeedback 
+          matchId={matchId} 
+          onFeedbackSubmit={handleFeedbackSubmit}
+        />
+      )}
     </div>
   );
 };
