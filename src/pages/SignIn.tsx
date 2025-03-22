@@ -97,8 +97,8 @@ const SignIn: React.FC = () => {
       <div className="min-h-screen flex flex-col">
         <Header />
         
-        <main className="flex-grow flex items-center justify-center py-8 px-4 sm:py-12">
-          <div className="w-full max-w-md">
+        <main className="flex-grow flex items-center justify-center py-12 px-4 sm:py-16 auth-main-container">
+          <div className="w-full max-w-md auth-form-container">
             <AuthFormContainer
               title="Welcome to AdvisorWiz"
               description="Sign in to your account or create a new one"

@@ -61,13 +61,13 @@ const AuthFormContainer: React.FC<AuthFormContainerProps> = ({
 }) => {
   return (
     <Card className="w-full shadow-md">
-      <CardHeader className="px-4 sm:px-6 pt-6 pb-2">
-        <CardTitle className="text-2xl sm:text-3xl font-serif text-center text-navy-900 dark:text-white">{title}</CardTitle>
-        <CardDescription className="text-center text-sm sm:text-base mt-2 text-slate-600 dark:text-slate-300">{description}</CardDescription>
+      <CardHeader className="px-4 sm:px-6 pt-8 pb-4">
+        <CardTitle className="text-2xl sm:text-3xl font-serif text-center text-navy-900 dark:text-white card-title">{title}</CardTitle>
+        <CardDescription className="text-center text-sm sm:text-base mt-3 text-slate-600 dark:text-slate-300">{description}</CardDescription>
       </CardHeader>
       
       <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-2">
+        <TabsList className="grid w-full grid-cols-2 mb-4">
           <TabsTrigger value="signin" className="text-sm sm:text-base py-2">Sign In</TabsTrigger>
           <TabsTrigger value="signup" className="text-sm sm:text-base py-2">Sign Up</TabsTrigger>
         </TabsList>
