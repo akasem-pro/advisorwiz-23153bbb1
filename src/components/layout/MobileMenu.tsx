@@ -1,11 +1,8 @@
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, Settings, User } from 'lucide-react';
-import { useUser } from '../../context/UserContext';
-import { Button } from '../ui/button';
-import { useAuth } from '../../features/auth/context/AuthProvider';
-import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
+import NavigationMenu from './NavigationMenu';
 
 interface MobileMenuProps {
   isAuthenticated: boolean;
@@ -13,147 +10,65 @@ interface MobileMenuProps {
   onSignOut: () => void;
 }
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isAuthenticated, onClose }) => {
-  const { userType } = useUser();
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
+const navigationLinks = [
+  {
+    name: 'For Firms',
+    path: '/for-firms',
+  },
+  {
+    name: 'For Advisors',
+    path: '/for-advisors',
+  },
+  {
+    name: 'For Consumers',
+    path: '/for-consumers',
+  },
+  {
+    name: 'Pricing',
+    path: '/pricing',
+  },
+  {
+    name: 'Contact',
+    path: '/contact',
+  },
+];
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    onClose();
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast.success('You have been signed out successfully');
-      navigate('/');
-      onClose();
-    } catch (error) {
-      console.error('Error signing out:', error);
-      toast.error('Failed to sign out. Please try again.');
-    }
-  };
-
+const MobileMenu: React.FC<MobileMenuProps> = ({ isAuthenticated, onClose, onSignOut }) => {
   return (
-    <div className="bg-white dark:bg-navy-900 py-4 px-6 fixed inset-x-0 top-16 h-auto z-40 md:hidden border-t border-slate-200 dark:border-navy-700 shadow-lg transition-all">
+    <div className="md:hidden bg-white dark:bg-navy-900 shadow-lg pt-2 pb-4 px-4 border-t border-slate-200 dark:border-navy-700">
+      <NavigationMenu 
+        links={navigationLinks} 
+        onClick={onClose}
+        showGetStarted={!isAuthenticated} 
+      />
+      
       {isAuthenticated ? (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <button
-              onClick={() => {
-                if (userType === 'consumer') {
-                  handleNavigation('/consumer-profile');
-                } else if (userType === 'advisor') {
-                  handleNavigation('/advisor-profile');
-                } else if (userType === 'firm_admin') {
-                  handleNavigation('/firm-profile');
-                }
-              }}
-              className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-slate-100 dark:hover:bg-navy-800"
-            >
-              <User className="h-5 w-5 text-slate-400" />
-              <span>My Profile</span>
-            </button>
-            
-            <button
-              onClick={() => handleNavigation('/settings')}
-              className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-slate-100 dark:hover:bg-navy-800"
-            >
-              <Settings className="h-5 w-5 text-slate-400" />
-              <span>Settings</span>
-            </button>
-            
-            <button
-              onClick={handleSignOut}
-              className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-slate-100 dark:hover:bg-navy-800"
-            >
-              <LogOut className="h-5 w-5 text-slate-400" />
-              <span>Sign Out</span>
-            </button>
-          </div>
-          
-          <div className="pt-2 border-t border-slate-200 dark:border-navy-700 space-y-2">
-            <Link 
-              to="/matches" 
-              className="block p-2 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-md"
-              onClick={onClose}
-            >
-              Find Advisors
-            </Link>
-            <Link 
-              to="/for-advisors" 
-              className="block p-2 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-md"
-              onClick={onClose}
-            >
-              For Advisors
-            </Link>
-            <Link 
-              to="/for-firms" 
-              className="block p-2 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-md"
-              onClick={onClose}
-            >
-              For Firms
-            </Link>
-            <Link 
-              to="/pricing" 
-              className="block p-2 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-md"
-              onClick={onClose}
-            >
-              Pricing
-            </Link>
-            <Link 
-              to="/contact" 
-              className="block p-2 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-md"
-              onClick={onClose}
-            >
-              Contact Us
-            </Link>
-          </div>
-        </div>
+        <button
+          onClick={() => {
+            onSignOut();
+            onClose();
+          }}
+          className="mt-4 w-full flex items-center justify-center px-4 py-2 text-navy-600 dark:text-slate-300 border border-navy-600 dark:border-slate-300 rounded-lg"
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          <span>Sign Out</span>
+        </button>
       ) : (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Link 
-              to="/for-consumers" 
-              className="block p-2 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-md"
-              onClick={onClose}
-            >
-              For Consumers
-            </Link>
-            <Link 
-              to="/for-advisors" 
-              className="block p-2 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-md"
-              onClick={onClose}
-            >
-              For Advisors
-            </Link>
-            <Link 
-              to="/for-firms" 
-              className="block p-2 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-md"
-              onClick={onClose}
-            >
-              For Firms
-            </Link>
-            <Link 
-              to="/pricing" 
-              className="block p-2 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-md"
-              onClick={onClose}
-            >
-              Pricing
-            </Link>
-          </div>
-          
-          <div className="pt-4 border-t border-slate-200 dark:border-navy-700 flex flex-col space-y-2">
-            <Link to="/sign-in" onClick={onClose}>
-              <Button variant="outline" className="w-full">
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/onboarding" onClick={onClose}>
-              <Button className="w-full">Get Started</Button>
-            </Link>
-          </div>
+        <div className="mt-4 flex flex-col space-y-2">
+          <Link
+            to="/sign-in"
+            className="w-full px-4 py-2 text-center text-navy-600 dark:text-slate-300 border border-navy-600 dark:border-slate-300 rounded-lg"
+            onClick={onClose}
+          >
+            Sign In
+          </Link>
+          <Link
+            to="/onboarding"
+            className="w-full px-4 py-2 text-center bg-teal-600 text-white rounded-lg"
+            onClick={onClose}
+          >
+            Get Started
+          </Link>
         </div>
       )}
     </div>

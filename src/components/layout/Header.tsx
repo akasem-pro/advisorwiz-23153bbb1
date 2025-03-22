@@ -81,40 +81,53 @@ const Header: React.FC = () => {
     return 'User';
   };
 
-  const handleSignOut = async () => {
-    // This method is now in UserMenu component
-  };
-
   return (
-    <header className="fixed w-full bg-white dark:bg-navy-900 shadow-sm z-50">
-      <div className="container mx-auto px-4 flex justify-between items-center h-16">
-        <div className="flex items-center">
-          <Link to="/" className="mr-6">
-            <Logo />
-          </Link>
-          <NavigationMenu links={navigationLinks} />
-        </div>
-        
-        <div className="flex items-center">
-          <ThemeToggleButton className="mr-2" />
+    <header className="fixed top-0 left-0 w-full bg-white dark:bg-navy-900 shadow-sm z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center">
+            <Link to="/" className="flex-shrink-0">
+              <Logo />
+            </Link>
+            <div className="hidden md:block ml-10">
+              <NavigationMenu links={navigationLinks} />
+            </div>
+          </div>
           
-          {isAuthenticated ? (
-            <UserMenu 
-              getUserName={getUserName}
-              getInitials={getInitials}
-              getProfileImage={getProfileImage}
-            />
-          ) : (
-            <AuthButtons className="hidden md:flex" />
-          )}
-          
-          <button
-            className="ml-4 md:hidden"
-            onClick={toggleMobileMenu}
-            aria-label="Toggle mobile menu"
-          >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          <div className="flex items-center space-x-4">
+            <ThemeToggleButton className="mr-2" />
+            
+            {isAuthenticated ? (
+              <UserMenu 
+                getUserName={getUserName}
+                getInitials={getInitials}
+                getProfileImage={getProfileImage}
+              />
+            ) : (
+              <div className="hidden md:flex items-center space-x-4">
+                <Link 
+                  to="/sign-in"
+                  className="text-navy-600 dark:text-slate-300 hover:text-navy-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/onboarding"
+                  className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
+            
+            <button
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-navy-800 focus:outline-none"
+              onClick={toggleMobileMenu}
+              aria-label="Toggle mobile menu"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
       </div>
       
@@ -122,7 +135,7 @@ const Header: React.FC = () => {
         <MobileMenu
           isAuthenticated={isAuthenticated}
           onClose={toggleMobileMenu}
-          onSignOut={handleSignOut}
+          onSignOut={() => {}}
         />
       )}
     </header>

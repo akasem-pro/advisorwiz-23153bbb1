@@ -32,7 +32,7 @@ const AuthButtons: React.FC<AuthButtonsProps> = ({ className = '' }) => {
           variant="outline" 
           size="sm" 
           onClick={() => signOut()}
-          className="flex items-center space-x-2"
+          className="flex items-center space-x-2 border-navy-600 text-navy-600 dark:border-slate-300 dark:text-slate-300"
         >
           <LogOut className="h-4 w-4" />
           <span>Sign Out</span>
@@ -45,12 +45,21 @@ const AuthButtons: React.FC<AuthButtonsProps> = ({ className = '' }) => {
   return (
     <div className={`flex items-center space-x-4 ${className}`}>
       <Link to="/sign-in">
-        <Button variant="outline" size="sm">
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="text-navy-600 dark:text-slate-300 border-navy-600 dark:border-slate-300"
+        >
           Sign In
         </Button>
       </Link>
       <Link to="/onboarding">
-        <Button size="sm">Get Started</Button>
+        <Button 
+          size="sm"
+          className="bg-teal-600 hover:bg-teal-700 text-white"
+        >
+          Get Started
+        </Button>
       </Link>
     </div>
   );
