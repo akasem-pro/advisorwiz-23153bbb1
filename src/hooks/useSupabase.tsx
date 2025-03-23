@@ -3,13 +3,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import * as dataLayer from '../lib/supabase/dataLayer';
 
-// Define the DataResult interface that's missing
-interface DataResult<T> {
-  data: T | null;
-  error: string | null;
-  isFromCache: boolean;
-}
-
 /**
  * Custom hook for using Supabase data with improved error handling and offline support
  * This provides a consistent interface for data operations
@@ -53,10 +46,10 @@ export const useSupabase = () => {
 
   // Generic data fetching wrapper
   const fetchData = useCallback(async <T,>(
-    fetchFunction: () => Promise<DataResult<T>>,
+    fetchFunction: () => Promise<dataLayer.DataResult<T>>,
     successCallback?: (data: T) => void,
     errorCallback?: (error: string) => void
-  ): Promise<DataResult<T>> => {
+  ): Promise<dataLayer.DataResult<T>> => {
     setIsLoading(true);
     setError(null);
     
