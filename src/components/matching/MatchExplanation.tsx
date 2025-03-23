@@ -4,14 +4,7 @@ import { Card, CardContent } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
 import { trackMatchEngagement } from '../../utils/analytics/matchEngagementTracker';
-
-// Define a type for the explanation object
-interface MatchExplanation {
-  category: string;
-  explanation: string;
-  scoreImpact: number;
-  isPrimary: boolean;
-}
+import { MatchExplanation } from './MatchExplanation.d';
 
 // Define a type for the props that the component will receive
 interface MatchExplanationProps {
