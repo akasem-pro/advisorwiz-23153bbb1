@@ -1,5 +1,4 @@
 
-import { UserBehaviorEvent } from './types';
 import { storeAnalyticsMetric } from '../performance/core';
 import { trackUserBehavior } from './eventTracker';
 
