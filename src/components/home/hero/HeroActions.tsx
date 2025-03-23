@@ -32,8 +32,8 @@ const HeroActions: React.FC<HeroActionsProps> = ({ user, navigate }) => {
           </Button>
           
           <Button 
-            variant="outline" 
-            className="w-full sm:w-auto text-base sm:text-lg border-white text-white hover:bg-white/20 dark:border-slate-300 dark:text-slate-300 px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg"
+            variant="secondary"
+            className="w-full sm:w-auto text-base sm:text-lg bg-navy-600 hover:bg-navy-700 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg"
             onClick={() => navigate('/for-advisors')}
           >
             For Advisors

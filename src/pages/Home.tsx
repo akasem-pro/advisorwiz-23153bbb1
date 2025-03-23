@@ -75,7 +75,7 @@ const Home: React.FC = () => {
         
         <Button 
           onClick={user ? handleFindAdvisor : handleGetStarted}
-          className="bg-navy-600 hover:bg-navy-700 text-white"
+          className="bg-teal-600 hover:bg-teal-700 text-white"
         >
           {user ? 'Find My Advisor Match' : 'Create Free Account'}
         </Button>

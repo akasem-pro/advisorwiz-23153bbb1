@@ -67,8 +67,8 @@ const MainCTASection: React.FC = () => {
           </Button>
           <Button
             asChild
-            variant="outline"
-            className="border-white text-white hover:bg-white/20 text-lg px-6 py-7 h-auto font-medium"
+            variant="secondary"
+            className="bg-navy-600 hover:bg-navy-700 text-white text-lg px-6 py-7 h-auto font-medium"
           >
             <Link to="/pricing">
               View Pricing
