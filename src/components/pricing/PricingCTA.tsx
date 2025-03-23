@@ -47,10 +47,10 @@ const PricingCTA: React.FC<PricingCTAProps> = ({ userType }) => {
   
   return (
     <div className="text-center mt-16 max-w-2xl mx-auto">
-      <h3 className="text-2xl font-serif font-bold text-navy-900 dark:text-white mb-4">
+      <h3 className="text-2xl md:text-3xl font-serif font-bold text-navy-900 dark:text-white mb-5">
         Ready to Take the Next Step?
       </h3>
-      <p className="text-slate-700 dark:text-slate-300 mb-6">
+      <p className="text-lg text-slate-700 dark:text-slate-300 mb-8 leading-relaxed">
         {userType === 'consumer' 
           ? 'Start your journey to finding the right financial advisor today.' 
           : userType === 'advisor'
@@ -58,12 +58,14 @@ const PricingCTA: React.FC<PricingCTAProps> = ({ userType }) => {
           : 'Transform how your firm connects with clients and manages advisors.'}
       </p>
       
-      <div className="bg-slate-50 dark:bg-navy-800/50 p-6 rounded-lg mb-8">
-        <ul className="text-left mb-6 space-y-2">
+      <div className="bg-slate-50 dark:bg-navy-800/70 p-8 rounded-xl shadow-lg border border-slate-200 dark:border-navy-700/50 mb-8">
+        <ul className="text-left mb-8 space-y-4">
           {benefits.map((benefit, index) => (
             <li key={index} className="flex items-start">
-              <Check className="h-5 w-5 text-teal-500 mt-0.5 mr-2 flex-shrink-0" />
-              <span className="text-slate-700 dark:text-slate-300">{benefit}</span>
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-teal-100 dark:bg-teal-900/70 flex items-center justify-center mt-0.5 mr-3">
+                <Check className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+              </div>
+              <span className="text-slate-700 dark:text-slate-200 font-medium">{benefit}</span>
             </li>
           ))}
         </ul>
@@ -71,14 +73,14 @@ const PricingCTA: React.FC<PricingCTAProps> = ({ userType }) => {
         <Button 
           size="lg"
           onClick={handleCTAClick}
-          className="bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700 text-white px-8 py-6 h-auto text-lg w-full sm:w-auto group"
+          className="bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700 text-white px-8 py-6 h-auto text-lg w-full sm:w-auto group font-medium shadow-md"
         >
           {getCtaText()} <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
         </Button>
       </div>
       
-      <p className="text-sm text-slate-500 dark:text-slate-400">
-        Questions? <a href="/contact" className="text-teal-600 hover:underline">Contact our support team</a>
+      <p className="text-base text-slate-600 dark:text-slate-400">
+        Questions? <a href="/contact" className="text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 font-medium underline">Contact our support team</a>
       </p>
     </div>
   );
