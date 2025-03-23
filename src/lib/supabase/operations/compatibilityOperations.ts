@@ -4,16 +4,7 @@ import { handleSupabaseError } from '../utils/errorHandling';
 import { DataResult } from '../types/dataTypes';
 import { saveToCache, getFromCache, CACHE_KEYS } from '../utils/cacheUtils';
 import { trackPerformance } from '../types/dataTypes';
-
-export type CompatibilityScore = {
-  id: string;
-  advisor_id: string;
-  consumer_id: string;
-  score: number;
-  match_explanations?: string[];
-  created_at: string;
-  updated_at: string;
-};
+import { CompatibilityScore } from '../../../types/compatibilityTypes';
 
 /**
  * Fetches compatibility scores for a given user.
