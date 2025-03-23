@@ -32,14 +32,14 @@ const Home: React.FC = () => {
         {!user ? (
           <Button 
             onClick={handleGetStarted} 
-            className="text-lg bg-teal-600 hover:bg-teal-700 h-12 px-8"
+            className="text-lg bg-teal-600 hover:bg-teal-700 text-white h-12 px-8"
           >
             Get Started
           </Button>
         ) : userType === 'consumer' ? (
           <Button 
             onClick={handleFindAdvisor} 
-            className="text-lg bg-teal-600 hover:bg-teal-700 h-12 px-8"
+            className="text-lg bg-teal-600 hover:bg-teal-700 text-white h-12 px-8"
           >
             Find My Advisor Match
           </Button>
@@ -75,7 +75,7 @@ const Home: React.FC = () => {
         
         <Button 
           onClick={user ? handleFindAdvisor : handleGetStarted}
-          className="bg-navy-600 hover:bg-navy-700"
+          className="bg-navy-600 hover:bg-navy-700 text-white"
         >
           {user ? 'Find My Advisor Match' : 'Create Free Account'}
         </Button>
