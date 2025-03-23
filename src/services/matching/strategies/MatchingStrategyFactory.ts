@@ -1,6 +1,7 @@
 
 import { MatchingStrategy } from './MatchingStrategy';
 import { DefaultMatchingStrategy } from './DefaultMatchingStrategy';
+import { RiskFocusedMatchingStrategy } from './RiskFocusedMatchingStrategy';
 
 /**
  * Available matching strategy types
@@ -18,11 +19,11 @@ export class MatchingStrategyFactory {
     switch (strategyType) {
       case 'default':
         return new DefaultMatchingStrategy();
+      case 'risk-focused':
+        return new RiskFocusedMatchingStrategy();
       // Add more strategies here when they're implemented
       // case 'premium':
       //   return new PremiumMatchingStrategy();
-      // case 'risk-focused':
-      //   return new RiskFocusedMatchingStrategy();
       default:
         return new DefaultMatchingStrategy();
     }
