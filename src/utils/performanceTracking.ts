@@ -2,10 +2,21 @@
 // This is the main export file for performance tracking functionality
 // It re-exports functions from the more focused modules
 
-// Importing the functions we need for initPerformanceOptimizations
+// Import the necessary modules
 import { trackWebVitals } from './performance/webVitals';
 import { setupLazyLoading, optimizeImagesForCWV } from './performance/imageOptimization';
 import { implementResourceHints } from './performance/resourceHints';
+import {
+  trackPerformance,
+  getPerformanceData,
+  clearPerformanceData,
+  storeAnalyticsMetric
+} from './performance/core';
+import { withPerformanceTracking } from './performance/functionTracking';
+import { trackVisitorActivity } from './analytics/visitorTracking';
+import { trackFeatureUsage } from './analytics/featureTracking';
+import { trackAIInteraction } from './analytics/aiTracking';
+import { recordMatchHistory } from './analytics/matchTracking';
 
 // Core performance tracking
 export {
@@ -13,34 +24,31 @@ export {
   getPerformanceData,
   clearPerformanceData,
   storeAnalyticsMetric
-} from './performance/core';
+};
 
 // Web Vitals tracking
-export { trackWebVitals } from './performance/webVitals';
+export { trackWebVitals };
 
 // Function performance tracking
-export { withPerformanceTracking } from './performance/functionTracking';
+export { withPerformanceTracking };
 
 // Image optimization
-export { 
-  setupLazyLoading,
-  optimizeImagesForCWV
-} from './performance/imageOptimization';
+export { setupLazyLoading, optimizeImagesForCWV };
 
 // Resource hints
-export { implementResourceHints } from './performance/resourceHints';
+export { implementResourceHints };
 
 // Visitor analytics
-export { trackVisitorActivity } from './analytics/visitorTracking';
+export { trackVisitorActivity };
 
 // Feature usage tracking
-export { trackFeatureUsage } from './analytics/featureTracking';
+export { trackFeatureUsage };
 
 // AI interaction tracking
-export { trackAIInteraction } from './analytics/aiTracking';
+export { trackAIInteraction };
 
 // Match history recording
-export { recordMatchHistory } from './analytics/matchTracking';
+export { recordMatchHistory };
 
 // Initialize performance optimizations
 export const initPerformanceOptimizations = () => {
