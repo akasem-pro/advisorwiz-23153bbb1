@@ -1,6 +1,6 @@
 
 import React, { useContext } from 'react';
-import { getVariant, Variant } from '../../utils/abTesting';
+import { getVariant, Variant, trackConversion } from '../../utils/abTesting';
 import PromotionalBanner from './PromotionalBanner';
 import UserContext from '../../context/UserContext';
 
@@ -55,6 +55,11 @@ const ABTestPromotionExample: React.FC<ABTestPromotionExampleProps> = ({
   // Get the variant for this user
   const selectedVariant = getVariant<PromotionVariant>(experimentId, promoVariants, userId);
   
+  // Function to handle CTA click - track as conversion
+  const handleCtaClick = () => {
+    trackConversion(experimentId, selectedVariant.id, 'click', userId);
+  };
+  
   return (
     <PromotionalBanner
       id={`${experimentId}_${selectedVariant.id}`}
@@ -64,6 +69,7 @@ const ABTestPromotionExample: React.FC<ABTestPromotionExampleProps> = ({
       variant={selectedVariant.value.variant}
       durationInSeconds={15}
       userId={userId}
+      onCtaClick={handleCtaClick}
     />
   );
 };

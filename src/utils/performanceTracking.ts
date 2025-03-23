@@ -26,6 +26,7 @@ import {
 } from './analytics/userBehaviorTracker';
 import { trackUserEngagement } from './analytics/userEngagementTracker';
 import { trackMatchEngagement } from './analytics/matchEngagementTracker';
+import { trackVariantImpression, trackVariantConversion } from './analytics/abTestTracker';
 
 // Core performance tracking
 export {
@@ -73,6 +74,12 @@ export { trackUserEngagement };
 
 // Match engagement tracking
 export { trackMatchEngagement };
+
+// A/B Testing tracking
+export {
+  trackVariantImpression,
+  trackVariantConversion
+};
 
 // Initialize performance optimizations
 export const initPerformanceOptimizations = () => {

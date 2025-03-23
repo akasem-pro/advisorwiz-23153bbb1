@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '../ui/button';
-import { trackUserBehavior } from '../../utils/analytics/eventTracker';
+import { Link } from 'react-router-dom';
+import { trackUserBehavior } from '../../utils/analytics/userBehaviorTracker';
 
 interface PromotionalBannerProps {
   id: string;
@@ -11,7 +12,9 @@ interface PromotionalBannerProps {
   ctaUrl: string;
   variant?: 'primary' | 'secondary' | 'accent';
   durationInSeconds?: number;
+  persistent?: boolean;
   userId?: string;
+  onCtaClick?: () => void;
 }
 
 const PromotionalBanner: React.FC<PromotionalBannerProps> = ({
@@ -20,85 +23,123 @@ const PromotionalBanner: React.FC<PromotionalBannerProps> = ({
   ctaText,
   ctaUrl,
   variant = 'primary',
-  durationInSeconds = 10,
-  userId
+  durationInSeconds,
+  persistent = false,
+  userId,
+  onCtaClick
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   
+  // Check if this banner was dismissed before
   useEffect(() => {
-    // Track impression when banner is shown
+    if (persistent) return;
+    
+    const dismissedBanners = localStorage.getItem('dismissedBanners');
+    if (dismissedBanners) {
+      const parsed = JSON.parse(dismissedBanners);
+      if (parsed.includes(id)) {
+        setIsVisible(false);
+      }
+    }
+  }, [id, persistent]);
+  
+  // Auto-hide after duration if specified
+  useEffect(() => {
+    if (!isVisible || !durationInSeconds) return;
+    
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+      trackBannerEvent('auto_hide');
+    }, durationInSeconds * 1000);
+    
+    return () => clearTimeout(timer);
+  }, [isVisible, durationInSeconds]);
+  
+  // Track banner events
+  const trackBannerEvent = (action: 'view' | 'click' | 'dismiss' | 'auto_hide') => {
+    trackUserBehavior(`promo_banner_${action}`, userId, {
+      banner_id: id,
+      message,
+      variant
+    });
+  };
+  
+  // Track view once when component mounts
+  useEffect(() => {
     if (isVisible) {
-      trackUserBehavior('promo_impression', userId, {
-        promo_id: id,
-        variant
-      });
+      trackBannerEvent('view');
+    }
+  }, []);
+  
+  const handleDismiss = () => {
+    setIsVisible(false);
+    
+    // Remember this banner was dismissed
+    if (!persistent) {
+      const dismissedBanners = localStorage.getItem('dismissedBanners');
+      const parsed = dismissedBanners ? JSON.parse(dismissedBanners) : [];
+      parsed.push(id);
+      localStorage.setItem('dismissedBanners', JSON.stringify(parsed));
     }
     
-    // Auto-hide after duration if specified
-    if (durationInSeconds > 0) {
-      const timer = setTimeout(() => {
-        setIsVisible(false);
-      }, durationInSeconds * 1000);
-      
-      return () => clearTimeout(timer);
+    trackBannerEvent('dismiss');
+  };
+  
+  const handleCtaClick = () => {
+    trackBannerEvent('click');
+    
+    // Call the custom click handler if provided
+    if (onCtaClick) {
+      onCtaClick();
     }
-  }, [id, isVisible, durationInSeconds, userId, variant]);
+  };
   
   if (!isVisible) return null;
   
-  const handleClick = () => {
-    // Track click when CTA is clicked
-    trackUserBehavior('promo_click', userId, {
-      promo_id: id,
-      variant
-    });
-    
-    // Navigate or open the URL
-    if (ctaUrl.startsWith('http')) {
-      window.open(ctaUrl, '_blank');
-    } else {
-      window.location.href = ctaUrl;
+  const getVariantStyles = () => {
+    switch (variant) {
+      case 'primary':
+        return 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-100';
+      case 'secondary':
+        return 'bg-purple-50 border-purple-200 text-purple-800 dark:bg-purple-900/20 dark:border-purple-800 dark:text-purple-100';
+      case 'accent':
+        return 'bg-teal-50 border-teal-200 text-teal-800 dark:bg-teal-900/20 dark:border-teal-800 dark:text-teal-100';
+      default:
+        return 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-100';
     }
   };
   
-  const handleDismiss = () => {
-    // Track dismiss when banner is closed
-    trackUserBehavior('promo_dismiss', userId, {
-      promo_id: id,
-      variant
-    });
-    
-    setIsVisible(false);
+  const getButtonVariant = () => {
+    switch (variant) {
+      case 'primary': return 'default';
+      case 'secondary': return 'secondary';
+      case 'accent': return 'accent';
+      default: return 'default';
+    }
   };
-  
-  const variantClasses = {
-    primary: 'bg-teal-600 text-white',
-    secondary: 'bg-navy-800 text-white',
-    accent: 'bg-amber-500 text-navy-900'
-  };
-  
+
   return (
-    <div className={`relative px-4 py-3 ${variantClasses[variant]} animate-in fade-in slide-in-from-top`}>
-      <div className="container mx-auto flex items-center justify-between">
-        <p className="text-sm md:text-base font-medium mr-4">{message}</p>
-        <div className="flex items-center space-x-4">
+    <div className={`w-full border-b py-3 px-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 ${getVariantStyles()}`}>
+      <p className="font-medium text-center sm:text-left flex-grow">
+        {message}
+      </p>
+      <div className="flex items-center gap-3 ml-auto">
+        <Link to={ctaUrl}>
           <Button 
-            variant="outline" 
+            variant={getButtonVariant()} 
             size="sm"
-            className="whitespace-nowrap bg-white text-navy-800 border-transparent hover:bg-slate-100"
-            onClick={handleClick}
+            onClick={handleCtaClick}
           >
             {ctaText}
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="h-8 w-8 text-white hover:bg-black/10"
-            onClick={handleDismiss}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+        </Link>
+        <button 
+          onClick={handleDismiss}
+          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          aria-label="Dismiss"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );

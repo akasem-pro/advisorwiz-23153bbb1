@@ -4,10 +4,10 @@
  * and track the results using the existing analytics framework
  */
 
-import { trackUserBehavior } from './analytics/eventTracker';
+import { trackVariantImpression, trackVariantConversion } from './analytics/abTestTracker';
 
-type VariantId = string;
-type ExperimentId = string;
+export type VariantId = string;
+export type ExperimentId = string;
 
 export interface Variant<T> {
   id: VariantId;
@@ -52,11 +52,8 @@ export function getVariant<T>(
   for (const variant of variants) {
     cumulativeWeight += variant.weight || 1;
     if (selection <= cumulativeWeight) {
-      // Track which variant was assigned
-      trackUserBehavior('experiment_assignment', userId, {
-        experiment_id: experimentId,
-        variant_id: variant.id
-      });
+      // Track which variant was assigned using the new tracker
+      trackVariantImpression(experimentId, variant.id, userId);
       
       return variant;
     }
@@ -82,10 +79,5 @@ export function trackConversion(
   userId?: string,
   value?: number
 ): void {
-  trackUserBehavior('experiment_conversion', userId, {
-    experiment_id: experimentId,
-    variant_id: variantId,
-    conversion_type: conversionType,
-    value
-  });
+  trackVariantConversion(experimentId, variantId, conversionType, userId, value);
 }
