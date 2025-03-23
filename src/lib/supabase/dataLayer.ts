@@ -1,4 +1,3 @@
-
 import { supabase } from '../../integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -8,6 +7,13 @@ import { trackPerformance } from '../../utils/performance/core';
  * A centralized data access layer for Supabase operations
  * This provides consistent error handling, logging, and offline support
  */
+
+// Add this interface to match what's used in useSupabase
+export interface DataResult<T> {
+  data: T | null;
+  error: string | null;
+  isFromCache: boolean;
+}
 
 // Error handling constants
 const ERROR_MESSAGES = {
@@ -110,12 +116,6 @@ const validateData = <T>(data: T, schema: any): { valid: boolean; errors?: strin
 };
 
 // Specific data functions
-interface DataResult<T> {
-  data: T | null;
-  error: string | null;
-  isFromCache: boolean;
-}
-
 // Profile operations
 export const getProfile = async (userId: string, useCache: boolean = true): Promise<DataResult<any>> => {
   const startTime = performance.now();
@@ -193,7 +193,7 @@ export const updateProfile = async (userId: string, profileData: any, schema?: a
     
     // Update cache
     if (data && navigator.onLine) {
-      const existingCache = getFromCache(`${CACHE_KEYS.PROFILES}_${userId}`);
+      const existingCache = getFromCache(`${CACHE_KEYS.PROFILES}_${userId}`) || {};
       saveToCache(`${CACHE_KEYS.PROFILES}_${userId}`, { ...existingCache, ...data });
     }
     

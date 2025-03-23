@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { useSupabase } from '../../../hooks/useSupabase';
 import { toast } from 'sonner';
+import { supabase } from '../../../integrations/supabase/client';
 
 type AuthContextType = {
   session: Session | null;
@@ -39,7 +39,6 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // Use our custom hook for Supabase operations
   const { 
     isOnline, 
     isLoading, 
@@ -55,11 +54,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>('checking');
 
-  // Initialize auth state
   useEffect(() => {
     setLoading(true);
     
-    // Set up subscription to auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         console.log("Auth state changed:", event, !!currentSession);
@@ -69,7 +66,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     );
     
-    // Get initial session
     getCurrentSession().then(({ session, user, error }) => {
       if (!error) {
         setSession(session);
@@ -80,37 +76,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(false);
     });
     
-    // Cleanup subscription
     return () => {
       authListener?.subscription.unsubscribe();
     };
   }, [getCurrentSession]);
 
-  // Update network status based on online state
   useEffect(() => {
     setNetworkStatus(isOnline ? 'online' : 'offline');
   }, [isOnline]);
 
-  // Monitor network changes and notify user
   useEffect(() => {
-    // Only show online notifications if user had previously experienced offline issues
     if (networkStatus === 'online' && retryAttempts > 0) {
       toast.success("You're back online! You can now try again.");
     }
   }, [networkStatus, retryAttempts]);
 
-  // Perform full network check
   const checkNetworkStatus = async (): Promise<boolean> => {
     try {
       setNetworkStatus('checking');
       
-      // First check navigator.onLine
       if (!navigator.onLine) {
         setNetworkStatus('offline');
         return false;
       }
       
-      // Try to ping a reliable endpoint for true connection check
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       
@@ -145,7 +134,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setRetryAttempts(0);
   };
 
-  // Auth operations using data layer
   const signIn = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     try {
