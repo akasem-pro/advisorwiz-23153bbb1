@@ -1,34 +1,32 @@
 
-import { AdvisorProfile, ConsumerProfile } from '../../types/userTypes';
+/**
+ * Weighted compatibility scoring system
+ * Central coordinator for the matching algorithm
+ */
 import { MatchPreferences } from '../../context/UserContextDefinition';
-import { calculateBaseCompatibility } from './compatibility';
 import { withPerformanceTracking } from '../../utils/matchingPerformance';
+import { CallMetrics } from '../../types/callTypes';
+
+// Algorithm components
+import { calculateLanguageMatchScore } from './algorithms/languageMatching';
+import { 
+  calculateExpertiseMatchScore, 
+  calculateRiskAlignmentScore,
+  checkExcludedCategories 
+} from './algorithms/expertiseMatching';
+import { calculateAvailabilityScore } from './algorithms/availabilityMatching';
+import { calculateCallInteractionScore } from './algorithms/callInteractionScoring';
+
+// Cache management
+import { 
+  getCachedResult, 
+  cacheResult, 
+  clearCompatibilityCache, 
+  getCompatibilityCacheStats 
+} from './cache/compatibilityCache';
 
 // Mock data imports (these would be replaced with real data in a production environment)
 import { mockAdvisors, mockConsumers } from '../../data/mockUsers';
-
-// Define preference weights
-const PREFERENCE_WEIGHTS = {
-  LANGUAGE: 10,           // Language match bonus
-  EXPERTISE: 15,          // Expertise coverage bonus
-  AVAILABILITY: 5,        // Availability bonus (max)
-  EXCLUDED_PENALTY: 25,   // Penalty for excluded categories
-  CALL_INTERACTION: {
-    CALL_COUNT: 10,       // Up to 10 points for call frequency
-    DURATION: 10,         // Up to 10 points for call duration
-    COMPLETION_RATE: 10   // Up to 10 points for call completion rate
-  },
-  USER_FEEDBACK: 15       // Weight for user feedback adjustments
-};
-
-// In-memory cache for weighted compatibility scores
-const scoreCache = new Map<string, {
-  result: { score: number; matchExplanation: string[] };
-  timestamp: number;
-}>();
-
-// Cache expiration time (5 minutes)
-const CACHE_EXPIRATION_MS = 5 * 60 * 1000;
 
 /**
  * Performance-optimized weighted compatibility score calculation
@@ -38,15 +36,15 @@ const calculateWeightedCompatibilityScore = (
   advisorId: string,
   consumerId: string,
   preferences: MatchPreferences,
-  callMetrics?: any[]
+  callMetrics?: CallMetrics[]
 ): { score: number; matchExplanation: string[] } => {
   // Create a comprehensive cache key that includes preferences
   const cacheKey = `${advisorId}-${consumerId}-${JSON.stringify(preferences)}`;
   
   // Check if we have this calculation cached and it's not expired
-  const cachedEntry = scoreCache.get(cacheKey);
-  if (cachedEntry && (Date.now() - cachedEntry.timestamp < CACHE_EXPIRATION_MS)) {
-    return cachedEntry.result;
+  const cachedResult = getCachedResult(cacheKey);
+  if (cachedResult) {
+    return cachedResult;
   }
   
   const advisor = mockAdvisors.find(a => a.id === advisorId);
@@ -55,77 +53,33 @@ const calculateWeightedCompatibilityScore = (
   if (!advisor || !consumer) return { score: 0, matchExplanation: ["No match data available"] };
   
   // Get base compatibility score
-  let baseScore = calculateBaseCompatibility(advisor, consumer);
-  
-  // Apply preference weights
-  let weightedScore = baseScore;
+  let weightedScore = 0;
   let matchExplanation: string[] = [];
   
-  // Optimized matching logic - Using short-circuit evaluation for better performance
-  if (preferences.prioritizeLanguage && consumer.preferredLanguage?.length && advisor.languages?.length) {
-    // Check for language match - fast path for common case
-    const matchingLanguages = consumer.preferredLanguage.filter(lang => 
-      advisor.languages.includes(lang)
-    );
-    
-    const matchCount = matchingLanguages.length;
-    
-    if (matchCount > 0) {
-      const perfectLanguageMatch = matchCount === consumer.preferredLanguage.length;
-      
-      if (perfectLanguageMatch) {
-        weightedScore += PREFERENCE_WEIGHTS.LANGUAGE;
-        matchExplanation.push(`Speaks all your preferred languages`);
-      } else {
-        // Partial language match
-        const partialBonus = Math.floor(PREFERENCE_WEIGHTS.LANGUAGE * 
-          (matchCount / consumer.preferredLanguage.length));
-        
-        weightedScore += partialBonus;
-        if (partialBonus > 0) {
-          matchExplanation.push(`Speaks ${matchCount} of your preferred languages`);
-        }
-      }
+  // 1. Language match calculation
+  if (preferences.prioritizeLanguage) {
+    const languageResult = calculateLanguageMatchScore(advisor, consumer);
+    weightedScore += languageResult.score;
+    if (languageResult.explanation) {
+      matchExplanation.push(languageResult.explanation);
     }
   }
   
-  // Optimized expertise matching with early exits
-  if (preferences.prioritizeExpertise && consumer.serviceNeeds?.length && advisor.expertise?.length) {
-    // Calculate matching services in one pass
-    const matchedServices = consumer.serviceNeeds.filter(service => 
-      advisor.expertise.includes(service as any)
-    );
-    
-    const matchCount = matchedServices.length;
-    
-    if (matchCount > 0) {
-      const coverage = matchCount / consumer.serviceNeeds.length;
-      const expertiseBonus = Math.floor(PREFERENCE_WEIGHTS.EXPERTISE * coverage);
-      
-      weightedScore += expertiseBonus;
-      
-      if (coverage === 1) {
-        matchExplanation.push(`Expert in all your financial service needs`);
-      } else if (coverage > 0.5) {
-        matchExplanation.push(`Expertise in most of your service needs (${matchCount} of ${consumer.serviceNeeds.length})`);
-      } else if (matchCount > 0) {
-        matchExplanation.push(`Expertise in ${matchCount} of your ${consumer.serviceNeeds.length} service needs`);
-      }
+  // 2. Expertise match calculation
+  if (preferences.prioritizeExpertise) {
+    const expertiseResult = calculateExpertiseMatchScore(advisor, consumer);
+    weightedScore += expertiseResult.score;
+    if (expertiseResult.explanation) {
+      matchExplanation.push(expertiseResult.explanation);
     }
   }
   
-  // 3. Availability preference weighting - simplified calculation
-  if (preferences.prioritizeAvailability && advisor.availability?.length) {
-    // Reward advisors with more availability slots
-    const availableSlots = advisor.availability.filter(slot => slot.isAvailable).length;
-    // Cap the bonus at PREFERENCE_WEIGHTS.AVAILABILITY points
-    const availabilityBonus = Math.min(availableSlots, PREFERENCE_WEIGHTS.AVAILABILITY);
-    weightedScore += availabilityBonus;
-    
-    if (availabilityBonus > 3) {
-      matchExplanation.push("Highly available for appointments");
-    } else if (availabilityBonus > 0) {
-      matchExplanation.push("Some availability for appointments");
+  // 3. Availability preference weighting
+  if (preferences.prioritizeAvailability) {
+    const availabilityResult = calculateAvailabilityScore(advisor);
+    weightedScore += availabilityResult.score;
+    if (availabilityResult.explanation) {
+      matchExplanation.push(availabilityResult.explanation);
     }
   }
   
@@ -135,66 +89,28 @@ const calculateWeightedCompatibilityScore = (
     weightedScore += 5;
   }
   
-  // 5. Call interaction data weighting (if available and preference enabled)
-  if (preferences.considerInteractionData && callMetrics?.length) {
-    const metrics = callMetrics.find(m => 
-      m.advisorId === advisorId && m.consumerId === consumerId
-    );
-    
-    if (metrics) {
-      // Add bonus for high engagement users (more calls and longer duration)
-      const callCountBonus = Math.min(metrics.totalCalls * 2, PREFERENCE_WEIGHTS.CALL_INTERACTION.CALL_COUNT);
-      const durationBonus = Math.min(Math.floor(metrics.totalDuration / 300), PREFERENCE_WEIGHTS.CALL_INTERACTION.DURATION);
-      const completionRateBonus = metrics.totalCalls > 0 
-        ? Math.min((metrics.callOutcomes.completed / metrics.totalCalls) * PREFERENCE_WEIGHTS.CALL_INTERACTION.COMPLETION_RATE, PREFERENCE_WEIGHTS.CALL_INTERACTION.COMPLETION_RATE)
-        : 0;
-        
-      const totalInteractionBonus = callCountBonus + durationBonus + completionRateBonus;
-      weightedScore += totalInteractionBonus;
-      
-      if (totalInteractionBonus > 15) {
-        matchExplanation.push("Excellent communication history with this advisor");
-      } else if (totalInteractionBonus > 5) {
-        matchExplanation.push("Good communication history with this advisor");
-      }
+  // 5. Call interaction data weighting
+  if (preferences.considerInteractionData) {
+    const interactionResult = calculateCallInteractionScore(advisorId, consumerId, callMetrics);
+    weightedScore += interactionResult.score;
+    if (interactionResult.explanation) {
+      matchExplanation.push(interactionResult.explanation);
     }
   }
   
-  // 6. Risk tolerance alignment - optimized comparison
-  if (consumer.riskTolerance && advisor.expertise?.length) {
-    const riskToExpertiseMap: Record<string, string[]> = {
-      'low': ['insurance', 'estate', 'education'],
-      'medium': ['retirement', 'tax', 'philanthropic'],
-      'high': ['investment', 'business']
-    };
-    
-    const recommendedExpertise = riskToExpertiseMap[consumer.riskTolerance] || [];
-    
-    if (recommendedExpertise.length) {
-      const expertiseMatches = recommendedExpertise.filter(exp => 
-        advisor.expertise.includes(exp as any)
-      );
-      
-      if (expertiseMatches.length > 0) {
-        const riskBonus = Math.min(expertiseMatches.length * 3, 10);
-        weightedScore += riskBonus;
-        
-        if (riskBonus > 5) {
-          matchExplanation.push(`Well-aligned with your ${consumer.riskTolerance} risk tolerance`);
-        }
-      }
-    }
+  // 6. Risk tolerance alignment
+  const riskResult = calculateRiskAlignmentScore(advisor, consumer);
+  weightedScore += riskResult.score;
+  if (riskResult.explanation) {
+    matchExplanation.push(riskResult.explanation);
   }
   
-  // 7. Filter out excluded categories - optimized to exit early if possible
-  if (preferences.excludedCategories?.length && advisor.expertise?.length) {
-    const hasExcludedCategory = advisor.expertise.some(exp => 
-      preferences.excludedCategories?.includes(exp as any)
-    );
-    
-    if (hasExcludedCategory) {
-      weightedScore -= PREFERENCE_WEIGHTS.EXCLUDED_PENALTY;
-      matchExplanation.push("Contains some expertise areas you've excluded");
+  // 7. Filter out excluded categories
+  if (preferences.excludedCategories?.length) {
+    const exclusionResult = checkExcludedCategories(advisor, preferences.excludedCategories);
+    weightedScore -= exclusionResult.penalty;
+    if (exclusionResult.explanation) {
+      matchExplanation.push(exclusionResult.explanation);
     }
   }
   
@@ -219,33 +135,9 @@ const calculateWeightedCompatibilityScore = (
   const result = { score: finalScore, matchExplanation };
   
   // Cache the result with a timestamp
-  scoreCache.set(cacheKey, {
-    result,
-    timestamp: Date.now()
-  });
+  cacheResult(cacheKey, result);
   
   return result;
-};
-
-// Utility function to clear cache (e.g., when preferences change globally)
-export const clearCompatibilityCache = (): void => {
-  scoreCache.clear();
-};
-
-// Utility to get cache stats for debugging
-export const getCompatibilityCacheStats = (): { size: number, oldestEntry: number | null } => {
-  let oldestTimestamp: number | null = null;
-  
-  for (const entry of scoreCache.values()) {
-    if (oldestTimestamp === null || entry.timestamp < oldestTimestamp) {
-      oldestTimestamp = entry.timestamp;
-    }
-  }
-  
-  return {
-    size: scoreCache.size,
-    oldestEntry: oldestTimestamp ? Date.now() - oldestTimestamp : null
-  };
 };
 
 // Export the function with performance tracking wrapper
@@ -253,3 +145,9 @@ export const getWeightedCompatibilityScore = withPerformanceTracking(
   calculateWeightedCompatibilityScore,
   'getWeightedCompatibilityScore'
 );
+
+// Re-export cache utilities
+export {
+  clearCompatibilityCache,
+  getCompatibilityCacheStats
+};

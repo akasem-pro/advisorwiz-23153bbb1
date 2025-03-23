@@ -1,7 +1,8 @@
 
 import { getWeightedCompatibilityScore, clearCompatibilityCache } from '../../services/matching/weightedScoring';
-import { calculateMatchScore, clearMatchCache } from '../../utils/matchingAlgorithm';
+import { calculateMatchScore, clearMatchCache, getMatchExplanations } from '../../utils/matchingAlgorithm';
 import { mockAdvisors, mockConsumers } from '../../data/mockUsers';
+import { ServiceCategory } from '../../types/userTypes';
 
 describe('Match Caching System', () => {
   // Sample test data
@@ -48,7 +49,7 @@ describe('Match Caching System', () => {
     const modifiedPreferences = {
       ...defaultPreferences,
       prioritizeLocation: false,
-      excludedCategories: ['tax']
+      excludedCategories: ['tax' as ServiceCategory]
     };
     
     const secondResult = getWeightedCompatibilityScore(advisorId, consumerId, modifiedPreferences);
