@@ -581,7 +581,7 @@ export const invalidateAllCache = () => {
 };
 
 // Auth specific utilities with the same error handling
-export const getCurrentSession = async (): Promise<{ session: Session | null; user: User | null; error: string | null }> => {
+export const getCurrentSession = async (): Promise<DataResult<{session: Session | null; user: User | null}>> => {
   try {
     const { data, error } = await supabase.auth.getSession();
     
@@ -590,17 +590,24 @@ export const getCurrentSession = async (): Promise<{ session: Session | null; us
     }
     
     return { 
-      session: data.session, 
-      user: data.session?.user || null,
-      error: null 
+      data: {
+        session: data.session,
+        user: data.session?.user || null
+      },
+      error: null,
+      isFromCache: false
     };
   } catch (error) {
     const errorMessage = handleSupabaseError(error, 'Failed to get current session');
-    return { session: null, user: null, error: errorMessage };
+    return { 
+      data: { session: null, user: null },
+      error: errorMessage,
+      isFromCache: false
+    };
   }
 };
 
-export const signInWithEmail = async (email: string, password: string): Promise<{ session: Session | null; user: User | null; error: string | null }> => {
+export const signInWithEmail = async (email: string, password: string): Promise<DataResult<{session: Session | null; user: User | null}>> => {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({ 
       email, 
@@ -612,17 +619,24 @@ export const signInWithEmail = async (email: string, password: string): Promise<
     }
     
     return { 
-      session: data.session, 
-      user: data.user,
-      error: null 
+      data: {
+        session: data.session,
+        user: data.user
+      },
+      error: null,
+      isFromCache: false
     };
   } catch (error) {
     const errorMessage = handleSupabaseError(error, 'Failed to sign in');
-    return { session: null, user: null, error: errorMessage };
+    return { 
+      data: { session: null, user: null },
+      error: errorMessage,
+      isFromCache: false
+    };
   }
 };
 
-export const signUpWithEmail = async (email: string, password: string): Promise<{ session: Session | null; user: User | null; error: string | null }> => {
+export const signUpWithEmail = async (email: string, password: string): Promise<DataResult<{session: Session | null; user: User | null}>> => {
   try {
     const { data, error } = await supabase.auth.signUp({ 
       email, 
@@ -637,17 +651,24 @@ export const signUpWithEmail = async (email: string, password: string): Promise<
     }
     
     return { 
-      session: data.session, 
-      user: data.user,
-      error: null 
+      data: {
+        session: data.session,
+        user: data.user
+      },
+      error: null,
+      isFromCache: false
     };
   } catch (error) {
     const errorMessage = handleSupabaseError(error, 'Failed to sign up');
-    return { session: null, user: null, error: errorMessage };
+    return { 
+      data: { session: null, user: null },
+      error: errorMessage,
+      isFromCache: false
+    };
   }
 };
 
-export const signOut = async (): Promise<{ error: string | null }> => {
+export const signOut = async (): Promise<DataResult<null>> => {
   try {
     const { error } = await supabase.auth.signOut();
     
@@ -658,9 +679,55 @@ export const signOut = async (): Promise<{ error: string | null }> => {
     // Clear all cached data on sign out
     invalidateAllCache();
     
-    return { error: null };
+    return { data: null, error: null, isFromCache: false };
   } catch (error) {
     const errorMessage = handleSupabaseError(error, 'Failed to sign out');
-    return { error: errorMessage };
+    return { data: null, error: errorMessage, isFromCache: false };
+  }
+};
+
+// Fix for spread operation error in updateProfile function
+export const updateProfile = async (userId: string, profileData: any, schema?: any): Promise<DataResult<any>> => {
+  const startTime = performance.now();
+  const functionName = 'updateProfile';
+  
+  try {
+    // Validate data if schema provided
+    if (schema) {
+      const validation = validateData(profileData, schema);
+      if (!validation.valid) {
+        const errorMsg = validation.errors?.join(', ') || 'Invalid profile data';
+        return { data: null, error: errorMsg, isFromCache: false };
+      }
+    }
+    
+    // Update in Supabase
+    const { data, error } = await supabase
+      .from('profiles')
+      .update(profileData)
+      .eq('id', userId)
+      .select()
+      .single();
+    
+    if (error) {
+      throw error;
+    }
+    
+    // Update cache
+    if (data && navigator.onLine) {
+      const existingCache = getFromCache(`${CACHE_KEYS.PROFILES}_${userId}`);
+      if (existingCache) {
+        saveToCache(`${CACHE_KEYS.PROFILES}_${userId}`, { ...existingCache, ...data });
+      } else {
+        saveToCache(`${CACHE_KEYS.PROFILES}_${userId}`, data);
+      }
+    }
+    
+    trackPerformance(functionName, performance.now() - startTime, 1);
+    return { data, error: null, isFromCache: false };
+  } catch (error) {
+    const errorMessage = handleSupabaseError(error, 'Failed to update profile');
+    trackPerformance(functionName, performance.now() - startTime, 0);
+    return { data: null, error: errorMessage, isFromCache: false };
   }
 };

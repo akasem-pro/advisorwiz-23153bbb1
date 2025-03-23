@@ -71,11 +71,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     );
     
     // Get initial session
-    getCurrentSession().then(({ session, user, error }) => {
-      if (!error) {
-        setSession(session);
-        setUser(user);
-      } else {
+    getCurrentSession().then(({ data, error }) => {
+      if (!error && data) {
+        setSession(data.session);
+        setUser(data.user);
+      } else if (error) {
         console.error("Error getting initial session:", error);
       }
       setLoading(false);
@@ -150,9 +150,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signIn = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     try {
-      const { user: authUser, error } = await signInWithEmail(email, password);
+      const { data, error } = await signInWithEmail(email, password);
       
-      if (error || !authUser) {
+      if (error || !data || !data.user) {
         return false;
       }
       
@@ -170,9 +170,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signUp = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     try {
-      const { user: authUser, error } = await signUpWithEmail(email, password);
+      const { data, error } = await signUpWithEmail(email, password);
       
-      if (error || !authUser) {
+      if (error || !data || !data.user) {
         return false;
       }
       

@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import * as dataLayer from '../lib/supabase/dataLayer';
+import { Session, User } from '@supabase/supabase-js';
 
 /**
  * Custom hook for using Supabase data with improved error handling and offline support
