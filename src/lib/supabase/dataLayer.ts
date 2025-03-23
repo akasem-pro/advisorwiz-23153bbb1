@@ -1,7 +1,8 @@
 
 // Re-export all services from a central location
 import { validateData } from './core/errorHandling';
-import { DataResult, CACHE_KEYS, ERROR_MESSAGES } from './core/types';
+import type { DataResult } from './core/types';
+import { CACHE_KEYS, ERROR_MESSAGES } from './core/types';
 import { saveToCache, getFromCache, clearCache, invalidateCache, invalidateAllCache } from './core/cacheUtils';
 
 // Import and re-export profile services
@@ -31,7 +32,7 @@ import { getCurrentSession, signInWithEmail, signUpWithEmail, signOut } from './
 // Export everything
 export {
   // Types
-  DataResult,
+  type DataResult,
   CACHE_KEYS,
   ERROR_MESSAGES,
   

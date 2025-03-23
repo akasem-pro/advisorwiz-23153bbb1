@@ -5,6 +5,7 @@ import { handleSupabaseError } from '../core/errorHandling';
 import { saveToCache, getFromCache } from '../core/cacheUtils';
 import { CACHE_KEYS } from '../core/types';
 import { trackPerformance } from '../../../utils/performance/core';
+import { validateData } from '../core/errorHandling';
 
 // Profile operations
 export const getProfile = async (userId: string, useCache: boolean = true): Promise<DataResult<any>> => {
