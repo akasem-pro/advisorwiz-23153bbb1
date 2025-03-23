@@ -108,10 +108,14 @@ const MatchExplanation: React.FC<MatchExplanationProps> = ({
       const currentPrefs = prefsData?.matching_preferences || {};
       
       // Type guard to ensure currentPrefs is an object
-      if (typeof currentPrefs === 'object' && currentPrefs !== null) {
+      if (typeof currentPrefs === 'object' && currentPrefs !== null && !Array.isArray(currentPrefs)) {
+        // Create a more precise type guard for the object structure
+        const prefsObject = currentPrefs as Record<string, any>;
+        
         // Safely access weightFactors with type checking
-        const currentWeights = currentPrefs.weightFactors && typeof currentPrefs.weightFactors === 'object'
-          ? currentPrefs.weightFactors as Record<string, number>
+        const weightFactorsValue = prefsObject.weightFactors;
+        const currentWeights = typeof weightFactorsValue === 'object' && weightFactorsValue !== null && !Array.isArray(weightFactorsValue)
+          ? weightFactorsValue as Record<string, number>
           : {};
           
         // Calculate new weights by applying adjustments
@@ -131,7 +135,7 @@ const MatchExplanation: React.FC<MatchExplanationProps> = ({
           .upsert({
             user_id: userId,
             matching_preferences: {
-              ...currentPrefs,
+              ...prefsObject,
               weightFactors: newWeights
             }
           });
