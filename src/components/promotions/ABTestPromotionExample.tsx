@@ -12,7 +12,7 @@ interface ABTestPromotionExampleProps {
 type PromotionVariant = {
   message: string;
   ctaText: string;
-  variant: 'primary' | 'secondary' | 'accent';
+  variant: 'primary' | 'secondary' | 'accent'; // Kept for consistency with the data model
 };
 
 const ABTestPromotionExample: React.FC<ABTestPromotionExampleProps> = ({ 

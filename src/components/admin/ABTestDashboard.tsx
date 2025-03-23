@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
@@ -27,20 +26,10 @@ const ABTestDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('active');
 
   useEffect(() => {
-    // In a real app, this would fetch data from your analytics database
     const fetchExperiments = async () => {
       try {
         setLoading(true);
         
-        // Example of how you might query this data from Supabase
-        // This is simplified and would need to be adapted to your schema
-        const { data, error } = await supabase
-          .rpc('get_ab_test_results')
-          .eq('status', activeTab);
-          
-        if (error) throw error;
-        
-        // For demo, using mock data
         const mockData: ExperimentData[] = [
           {
             experimentId: 'premium_promo_test',
@@ -106,7 +95,6 @@ const ABTestDashboard: React.FC = () => {
     fetchExperiments();
   }, [activeTab]);
   
-  // Function to determine if a variant is winning
   const isWinningVariant = (experiment: ExperimentData, variantId: string) => {
     const variant = experiment.variants.find(v => v.id === variantId);
     if (!variant) return false;

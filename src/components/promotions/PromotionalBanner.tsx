@@ -113,7 +113,7 @@ const PromotionalBanner: React.FC<PromotionalBannerProps> = ({
     switch (variant) {
       case 'primary': return 'default';
       case 'secondary': return 'secondary';
-      case 'accent': return 'accent';
+      case 'accent': return 'default'; // Changed from 'accent' to 'default' since 'accent' is not supported
       default: return 'default';
     }
   };

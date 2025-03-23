@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
@@ -7,9 +6,8 @@ import { useUser } from '../../context/UserContext';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, Cell } from 'recharts';
 import ABTestDashboard from './ABTestDashboard';
 import { Button } from '../ui/button';
-import { FilterIcon, DownloadIcon, RefreshIcon } from 'lucide-react';
+import { FilterIcon, DownloadIcon, RefreshCwIcon } from 'lucide-react';
 
-// Mock data for charts
 const pageViewData = [
   { date: '2023-07-01', views: 1200, uniqueVisitors: 780 },
   { date: '2023-07-02', views: 1300, uniqueVisitors: 820 },
@@ -63,10 +61,8 @@ const AnalyticsDashboard: React.FC = () => {
   const [dateRange, setDateRange] = useState('14d');
   const [activeTab, setActiveTab] = useState('overview');
   
-  // In a real app, you would fetch this data based on the selected date range
   const handleDateRangeChange = (value: string) => {
     setDateRange(value);
-    // Fetch new data for the selected date range
     console.log(`Fetching data for range: ${value}`);
   };
 
@@ -98,7 +94,7 @@ const AnalyticsDashboard: React.FC = () => {
           </Button>
           
           <Button variant="outline" size="icon">
-            <RefreshIcon className="h-4 w-4" />
+            <RefreshCwIcon className="h-4 w-4" />
           </Button>
         </div>
       </div>
