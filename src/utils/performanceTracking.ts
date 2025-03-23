@@ -1,5 +1,5 @@
 
-import { getCLS, getFID, getLCP, getFCP, getTTFB, getINP } from 'web-vitals';
+import * as webVitals from 'web-vitals';
 
 // Consolidated performance tracking data
 interface PerformanceData {
@@ -16,12 +16,12 @@ const MAX_ENTRIES = 100;
 export const trackWebVitals = () => {
   if (typeof window !== 'undefined') {
     try {
-      getCLS(sendToAnalytics);
-      getFID(sendToAnalytics);
-      getLCP(sendToAnalytics);
-      getFCP(sendToAnalytics);
-      getTTFB(sendToAnalytics);
-      getINP(sendToAnalytics);
+      webVitals.onCLS(sendToAnalytics);
+      webVitals.onFID(sendToAnalytics);
+      webVitals.onLCP(sendToAnalytics);
+      webVitals.onFCP(sendToAnalytics);
+      webVitals.onTTFB(sendToAnalytics);
+      webVitals.onINP(sendToAnalytics);
     } catch (error) {
       console.error('Failed to load web-vitals:', error);
     }
@@ -29,7 +29,7 @@ export const trackWebVitals = () => {
 };
 
 // Consolidated function to send metrics to analytics
-const sendToAnalytics = (metric) => {
+const sendToAnalytics = (metric: webVitals.Metric) => {
   // Check if gtag is available
   if (typeof window !== 'undefined' && 'gtag' in window) {
     // @ts-ignore
@@ -39,7 +39,7 @@ const sendToAnalytics = (metric) => {
       value: Math.round(metric.value),
       non_interaction: true,
       metric_id: metric.id,
-      metric_rating: metric.rating || 'unknown'
+      metric_rating: metric.navigationType || 'unknown'
     });
   }
   
