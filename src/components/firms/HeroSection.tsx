@@ -2,6 +2,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { Button } from '../ui/button';
 
 const HeroSection: React.FC = () => {
   const navigate = useNavigate();
@@ -17,13 +18,13 @@ const HeroSection: React.FC = () => {
             Create and manage multiple advisor profiles, streamline client matching, and grow your firm with our comprehensive platform.
           </p>
           
-          <button 
+          <Button 
             onClick={() => navigate('/onboarding')}
-            className="btn-primary inline-flex items-center text-lg dark:bg-teal-600 dark:hover:bg-teal-700 dark:text-white"
+            className="bg-teal-600 hover:bg-teal-700 text-white text-lg px-6 py-3 h-auto inline-flex items-center"
           >
             Get Started
             <ArrowRight className="ml-2 h-5 w-5" />
-          </button>
+          </Button>
           
           <div className="mt-8 text-sm text-slate-500 dark:text-slate-400">
             <p>
