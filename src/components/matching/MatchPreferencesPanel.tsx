@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Slider } from "../ui/slider";
 import { Switch } from "../ui/switch";
@@ -13,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/
 import { toast } from "sonner";
 import { trackPreferenceUpdate } from "../../utils/analytics/userBehaviorTracker";
 import { useUser } from "../../context/UserContext";
+import { PREFERENCE_WEIGHTS } from "../../services/matching/constants/matchingWeights";
 
 interface MatchPreferencesPanelProps {
   preferences: MatchPreferences;
@@ -33,9 +33,9 @@ const MatchPreferencesPanel: React.FC<MatchPreferencesPanelProps> = ({
 
   // Factor weights (0-100)
   const [weights, setWeights] = useState({
-    language: preferences.weightFactors?.language || 50,
-    expertise: preferences.weightFactors?.expertise || 50,
-    availability: preferences.weightFactors?.availability || 30,
+    language: preferences.weightFactors?.language || PREFERENCE_WEIGHTS.LANGUAGE,
+    expertise: preferences.weightFactors?.expertise || PREFERENCE_WEIGHTS.EXPERTISE,
+    availability: preferences.weightFactors?.availability || PREFERENCE_WEIGHTS.AVAILABILITY,
     location: preferences.weightFactors?.location || 20,
     interaction: preferences.weightFactors?.interaction || 40,
   });

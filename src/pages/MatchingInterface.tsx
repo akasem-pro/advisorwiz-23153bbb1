@@ -12,6 +12,7 @@ import PageSEO from '../components/seo/PageSEO';
 import { generateServiceSchema, generateBreadcrumbSchema } from '../utils/schemas';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 import { Link } from 'react-router-dom';
+import MatchWeightAdjuster from '../components/matching/MatchWeightAdjuster';
 
 const MatchingInterface: React.FC = () => {
   const {
@@ -86,11 +87,18 @@ const MatchingInterface: React.FC = () => {
                 />
 
                 {!viewingMatches && (
-                  <SearchFilters 
-                    userType={userTypeForComponents}
-                    onSearch={handleSearch}
-                    onFilterChange={handleFilterChange}
-                  />
+                  <div className="mb-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+                      <SearchFilters 
+                        userType={userTypeForComponents}
+                        onSearch={handleSearch}
+                        onFilterChange={handleFilterChange}
+                      />
+                      <div className="mt-4 sm:mt-0">
+                        <MatchWeightAdjuster />
+                      </div>
+                    </div>
+                  </div>
                 )}
 
                 <div className="max-w-md mx-auto">
