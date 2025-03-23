@@ -2,7 +2,8 @@
 // This is the main entry point for the data layer, re-exporting all functionality from the modular files
 
 // Types
-export { DataResult, trackPerformance } from './types/dataTypes';
+export type { DataResult } from './types/dataTypes';
+export { trackPerformance } from './types/dataTypes';
 
 // Auth operations
 export { getCurrentSession, signInWithEmail, signUpWithEmail, signOut } from './operations/authOperations';
