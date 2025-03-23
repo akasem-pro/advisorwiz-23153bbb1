@@ -111,42 +111,22 @@ export const useSupabase = () => {
     return fetchData(() => dataLayer.getChatMessages(userId1, userId2, useCache));
   }, [fetchData]);
 
-  // Auth operations - modified to handle different return type from dataLayer
-  const getCurrentSession = useCallback(async () => {
-    const result = await dataLayer.getCurrentSession();
-    return {
-      data: { session: result.session, user: result.user },
-      error: result.error,
-      isFromCache: false
-    };
-  }, []);
+  // Auth operations
+  const getCurrentSession = useCallback(() => {
+    return fetchData(dataLayer.getCurrentSession);
+  }, [fetchData]);
 
-  const signInWithEmail = useCallback(async (email: string, password: string) => {
-    const result = await dataLayer.signInWithEmail(email, password);
-    return {
-      data: { session: result.session, user: result.user },
-      error: result.error,
-      isFromCache: false
-    };
-  }, []);
+  const signInWithEmail = useCallback((email: string, password: string) => {
+    return fetchData(() => dataLayer.signInWithEmail(email, password));
+  }, [fetchData]);
 
-  const signUpWithEmail = useCallback(async (email: string, password: string) => {
-    const result = await dataLayer.signUpWithEmail(email, password);
-    return {
-      data: { session: result.session, user: result.user },
-      error: result.error,
-      isFromCache: false
-    };
-  }, []);
+  const signUpWithEmail = useCallback((email: string, password: string) => {
+    return fetchData(() => dataLayer.signUpWithEmail(email, password));
+  }, [fetchData]);
 
-  const signOut = useCallback(async () => {
-    const result = await dataLayer.signOut();
-    return {
-      data: null,
-      error: result.error,
-      isFromCache: false
-    };
-  }, []);
+  const signOut = useCallback(() => {
+    return fetchData(dataLayer.signOut);
+  }, [fetchData]);
 
   // Subscription utilities
   const subscribeToChats = useCallback((userId: string, callback: (payload: any) => void) => {
