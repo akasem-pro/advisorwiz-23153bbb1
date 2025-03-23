@@ -1,7 +1,5 @@
-
 import React from 'react';
 import MatchExplanation from './MatchExplanation';
-import { UserType } from '../../types/userTypes';
 import { calculateMatchScore, getMatchExplanations } from '../../utils/matchingAlgorithm';
 import { trackUserBehavior, UserBehaviorEvent } from '../../utils/analytics/userBehaviorTracker';
 

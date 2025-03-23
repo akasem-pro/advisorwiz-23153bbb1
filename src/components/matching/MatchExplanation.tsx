@@ -1,12 +1,11 @@
 
 import React, { useState } from 'react';
-import { Badge } from '../ui/badge';
 import { InfoIcon, ChevronDown, ChevronUp } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
-import MatchFeedback from './MatchFeedback';
-import { UserBehaviorEvent, trackUserBehavior } from '../../utils/analytics/userBehaviorTracker';
 import { useUser } from '../../context/UserContext';
-import { supabase } from '../../integrations/supabase/client';
+import CompactMatchExplanation from './CompactMatchExplanation';
+import MatchExplanationCategories from './MatchExplanationCategories';
+import MatchFeedbackHandler from './MatchFeedbackHandler';
+import { categorizeExplanations } from './utils/matchExplanationUtils';
 
 interface MatchExplanationProps {
   score: number;
@@ -35,138 +34,18 @@ const MatchExplanation: React.FC<MatchExplanationProps> = ({
     return null;
   }
 
-  // Categorize explanations to improve display
-  const categorizeExplanations = () => {
-    const categories: Record<string, string[]> = {
-      primary: [],
-      secondary: []
-    };
-    
-    // Sort explanations by importance/relevance
-    explanations.forEach(explanation => {
-      if (
-        explanation.includes('Expert') || 
-        explanation.includes('Expertise') || 
-        explanation.includes('language') || 
-        explanation.includes('Languages')
-      ) {
-        categories.primary.push(explanation);
-      } else {
-        categories.secondary.push(explanation);
-      }
-    });
-    
-    return categories;
-  };
-  
-  const explanationCategories = categorizeExplanations();
-
-  const handleFeedbackSubmit = async (feedback: {
-    matchId: string;
-    isHelpful: boolean;
-    comment?: string;
-    adjustWeights?: boolean;
-    weightAdjustments?: Record<string, number>;
-  }) => {
-    // Get the current user's ID from context
-    const userId = userType === 'consumer' 
-      ? consumerProfile?.id 
-      : advisorProfile?.id;
-      
-    if (!userId) return;
-    
-    // Log this feedback event for analytics
-    await trackUserBehavior(
-      UserBehaviorEvent.FEEDBACK_SUBMITTED,
-      userId,
-      {
-        match_id: feedback.matchId,
-        is_helpful: feedback.isHelpful,
-        adjustments: feedback.weightAdjustments
-      }
-    );
-    
-    // Store feedback in Supabase
-    await supabase
-      .from('match_feedback')
-      .insert({
-        match_id: feedback.matchId,
-        user_id: userId,
-        is_helpful: feedback.isHelpful,
-        comment: feedback.comment
-      });
-    
-    // If the user wants to adjust weights, we apply those changes
-    if (feedback.adjustWeights && feedback.weightAdjustments) {
-      // Get current preferences
-      const { data: prefsData } = await supabase
-        .from('user_preferences')
-        .select('matching_preferences')
-        .eq('user_id', userId)
-        .single();
-        
-      const currentPrefs = prefsData?.matching_preferences || {};
-      
-      // Type guard to ensure currentPrefs is an object
-      if (typeof currentPrefs === 'object' && currentPrefs !== null && !Array.isArray(currentPrefs)) {
-        // Create a more precise type guard for the object structure
-        const prefsObject = currentPrefs as Record<string, any>;
-        
-        // Safely access weightFactors with type checking
-        const weightFactorsValue = prefsObject.weightFactors;
-        const currentWeights = typeof weightFactorsValue === 'object' && weightFactorsValue !== null && !Array.isArray(weightFactorsValue)
-          ? weightFactorsValue as Record<string, number>
-          : {};
-          
-        // Calculate new weights by applying adjustments
-        const newWeights = { ...currentWeights };
-        
-        for (const [factor, adjustment] of Object.entries(feedback.weightAdjustments)) {
-          if (adjustment !== 0) {
-            const currentValue = newWeights[factor] || 50;
-            // Apply the adjustment with bounds checking (0-100)
-            newWeights[factor] = Math.max(0, Math.min(100, currentValue + adjustment));
-          }
-        }
-        
-        // Update preferences in database with proper type handling
-        await supabase
-          .from('user_preferences')
-          .upsert({
-            user_id: userId,
-            matching_preferences: {
-              ...prefsObject,
-              weightFactors: newWeights
-            }
-          });
-      }
-    }
-  };
-
+  // If compact mode is enabled, show the tooltip version
   if (compact) {
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex items-center cursor-help">
-              <InfoIcon className="h-4 w-4 text-teal-600 mr-1" />
-              <span className="text-xs text-slate-600">Why this match?</span>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-xs">
-            <div className="text-sm">
-              <p className="font-medium mb-1">Why we matched you:</p>
-              <ul className="list-disc pl-4 space-y-1">
-                {explanations.map((explanation, index) => (
-                  <li key={index}>{explanation}</li>
-                ))}
-              </ul>
-            </div>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
+    return <CompactMatchExplanation explanations={explanations} />;
   }
+
+  // Get categorized explanations for display
+  const explanationCategories = categorizeExplanations(explanations);
+  
+  // Get the current user's ID from context
+  const userId = userType === 'consumer' 
+    ? consumerProfile?.id 
+    : advisorProfile?.id;
 
   return (
     <div className="mt-3 p-3 bg-slate-50 border border-slate-200 rounded-md">
@@ -185,40 +64,17 @@ const MatchExplanation: React.FC<MatchExplanationProps> = ({
         )}
       </div>
       
-      <div className="mt-2">
-        {/* Always show primary reasons */}
-        {explanationCategories.primary.length > 0 && (
-          <div className="mb-2">
-            <p className="text-xs text-slate-600 mb-1">Key factors:</p>
-            <div className="flex flex-wrap gap-1">
-              {explanationCategories.primary.map((explanation, index) => (
-                <Badge key={`primary-${index}`} variant="outline" className="bg-white text-slate-700 border-teal-200">
-                  {explanation}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {/* Show secondary reasons if expanded or few explanations */}
-        {(expanded || explanations.length <= 3) && explanationCategories.secondary.length > 0 && (
-          <div className="mt-2">
-            <p className="text-xs text-slate-600 mb-1">Additional factors:</p>
-            <div className="flex flex-wrap gap-1">
-              {explanationCategories.secondary.map((explanation, index) => (
-                <Badge key={`secondary-${index}`} variant="outline" className="bg-white text-slate-700">
-                  {explanation}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      <MatchExplanationCategories 
+        explanationCategories={explanationCategories} 
+        expanded={expanded} 
+      />
       
-      {showFeedback && matchId && (
-        <MatchFeedback 
-          matchId={matchId} 
-          onFeedbackSubmit={handleFeedbackSubmit}
+      {showFeedback && matchId && userId && (
+        <MatchFeedbackHandler
+          userType={userType}
+          userId={userId}
+          matchId={matchId}
+          showFeedback={showFeedback}
           explanations={explanations}
         />
       )}
