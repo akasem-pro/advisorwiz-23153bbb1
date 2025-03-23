@@ -106,29 +106,36 @@ const MatchExplanation: React.FC<MatchExplanationProps> = ({
         .single();
         
       const currentPrefs = prefsData?.matching_preferences || {};
-      const currentWeights = currentPrefs.weightFactors || {};
       
-      // Calculate new weights by applying adjustments
-      const newWeights = { ...currentWeights };
-      
-      for (const [factor, adjustment] of Object.entries(feedback.weightAdjustments)) {
-        if (adjustment !== 0) {
-          const currentValue = newWeights[factor] || 50;
-          // Apply the adjustment with bounds checking (0-100)
-          newWeights[factor] = Math.max(0, Math.min(100, currentValue + adjustment));
-        }
-      }
-      
-      // Update preferences in database
-      await supabase
-        .from('user_preferences')
-        .upsert({
-          user_id: userId,
-          matching_preferences: {
-            ...currentPrefs,
-            weightFactors: newWeights
+      // Type guard to ensure currentPrefs is an object
+      if (typeof currentPrefs === 'object' && currentPrefs !== null) {
+        // Safely access weightFactors with type checking
+        const currentWeights = currentPrefs.weightFactors && typeof currentPrefs.weightFactors === 'object'
+          ? currentPrefs.weightFactors as Record<string, number>
+          : {};
+          
+        // Calculate new weights by applying adjustments
+        const newWeights = { ...currentWeights };
+        
+        for (const [factor, adjustment] of Object.entries(feedback.weightAdjustments)) {
+          if (adjustment !== 0) {
+            const currentValue = newWeights[factor] || 50;
+            // Apply the adjustment with bounds checking (0-100)
+            newWeights[factor] = Math.max(0, Math.min(100, currentValue + adjustment));
           }
-        });
+        }
+        
+        // Update preferences in database with proper type handling
+        await supabase
+          .from('user_preferences')
+          .upsert({
+            user_id: userId,
+            matching_preferences: {
+              ...currentPrefs,
+              weightFactors: newWeights
+            }
+          });
+      }
     }
   };
 
