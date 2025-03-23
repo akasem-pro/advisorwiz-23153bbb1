@@ -1,9 +1,9 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
 import { Session, User } from '@supabase/supabase-js';
-import { useSupabase } from '../../../hooks/useSupabase';
-import { toast } from 'sonner';
-import { supabase } from '../../../integrations/supabase/client'; // Added import for supabase
+import { useAuthSession } from '../hooks/useAuthSession';
+import { useNetworkRetry } from '../hooks/useNetworkRetry';
+import { useAuthActions } from '../hooks/useAuthActions';
 
 type AuthContextType = {
   session: Session | null;
@@ -40,168 +40,19 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // Use our custom hook for Supabase operations
+  // Use custom hooks to separate concerns
+  const { user, session, loading: sessionLoading } = useAuthSession();
   const { 
-    isOnline, 
-    isLoading, 
-    getCurrentSession,
-    signInWithEmail,
-    signUpWithEmail,
-    signOut: supabaseSignOut
-  } = useSupabase();
+    networkStatus, 
+    retryAttempts, 
+    checkNetworkStatus, 
+    incrementRetry, 
+    resetRetryAttempts 
+  } = useNetworkRetry();
+  const { signIn, signUp, signOut, loading: authActionLoading } = useAuthActions();
   
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [retryAttempts, setRetryAttempts] = useState(0);
-  const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>('checking');
-
-  // Initialize auth state
-  useEffect(() => {
-    setLoading(true);
-    
-    // Set up subscription to auth changes
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
-        console.log("Auth state changed:", event, !!currentSession);
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-        setLoading(false);
-      }
-    );
-    
-    // Get initial session
-    getCurrentSession().then(({ data, error }) => {
-      if (!error && data) {
-        setSession(data.session);
-        setUser(data.user);
-      } else if (error) {
-        console.error("Error getting initial session:", error);
-      }
-      setLoading(false);
-    });
-    
-    // Cleanup subscription
-    return () => {
-      authListener?.subscription.unsubscribe();
-    };
-  }, [getCurrentSession]);
-
-  // Update network status based on online state
-  useEffect(() => {
-    setNetworkStatus(isOnline ? 'online' : 'offline');
-  }, [isOnline]);
-
-  // Monitor network changes and notify user
-  useEffect(() => {
-    // Only show online notifications if user had previously experienced offline issues
-    if (networkStatus === 'online' && retryAttempts > 0) {
-      toast.success("You're back online! You can now try again.");
-    }
-  }, [networkStatus, retryAttempts]);
-
-  // Perform full network check
-  const checkNetworkStatus = async (): Promise<boolean> => {
-    try {
-      setNetworkStatus('checking');
-      
-      // First check navigator.onLine
-      if (!navigator.onLine) {
-        setNetworkStatus('offline');
-        return false;
-      }
-      
-      // Try to ping a reliable endpoint for true connection check
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-      
-      try {
-        const response = await fetch('https://www.google.com/generate_204', { 
-          method: 'HEAD',
-          mode: 'no-cors',
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-        
-        setNetworkStatus('online');
-        return true;
-      } catch (error) {
-        clearTimeout(timeoutId);
-        console.error("Network check failed:", error);
-        setNetworkStatus('offline');
-        return false;
-      }
-    } catch (error) {
-      console.error("Network status check error:", error);
-      setNetworkStatus('offline');
-      return false;
-    }
-  };
-
-  const incrementRetry = () => {
-    setRetryAttempts(prev => prev + 1);
-  };
-
-  const resetRetryAttempts = () => {
-    setRetryAttempts(0);
-  };
-
-  // Auth operations using data layer
-  const signIn = async (email: string, password: string): Promise<boolean> => {
-    setLoading(true);
-    try {
-      const { data, error } = await signInWithEmail(email, password);
-      
-      if (error || !data || !data.user) {
-        return false;
-      }
-      
-      toast.success("Successfully signed in!");
-      resetRetryAttempts();
-      return true;
-    } catch (error) {
-      console.error("Sign in error:", error);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const signUp = async (email: string, password: string): Promise<boolean> => {
-    setLoading(true);
-    try {
-      const { data, error } = await signUpWithEmail(email, password);
-      
-      if (error || !data || !data.user) {
-        return false;
-      }
-      
-      toast.success("Registration successful! Please check your email to verify your account.");
-      resetRetryAttempts();
-      return true;
-    } catch (error) {
-      console.error("Sign up error:", error);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const signOut = async (): Promise<void> => {
-    setLoading(true);
-    try {
-      const { error } = await supabaseSignOut();
-      
-      if (!error) {
-        toast.success("Successfully signed out");
-      }
-    } catch (error) {
-      console.error("Sign out error:", error);
-      toast.error("Failed to sign out. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Combine loading states
+  const loading = sessionLoading || authActionLoading;
 
   return (
     <AuthContext.Provider value={{ 
@@ -210,7 +61,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       signIn, 
       signUp, 
       signOut, 
-      loading: loading || isLoading,
+      loading,
       networkStatus,
       checkNetworkStatus,
       retryAttempts,
