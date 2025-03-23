@@ -3,7 +3,7 @@ import React from 'react';
 import SEO from './SEO';
 import StructuredData from './StructuredData';
 import { generateLocalBusinessSchema, generateBreadcrumbSchema } from '../../utils/jsonLdData';
-import { Link } from 'react-router-dom';
+import BreadcrumbNav from '../navigation/BreadcrumbNav';
 
 interface LocalBusinessSEOProps {
   title: string;
@@ -54,27 +54,7 @@ const LocalBusinessSEO: React.FC<LocalBusinessSEOProps> = ({
       <StructuredData data={structuredData} />
       
       {/* Breadcrumb navigation */}
-      <nav className="container mx-auto px-4 py-4" aria-label="Breadcrumb">
-        <ol className="flex text-sm text-slate-500 flex-wrap">
-          {breadcrumbs.map((crumb, index) => {
-            const isLast = index === breadcrumbs.length - 1;
-            return (
-              <React.Fragment key={crumb.url}>
-                <li>
-                  {isLast ? (
-                    <span className="text-teal-600">{crumb.name}</span>
-                  ) : (
-                    <Link to={crumb.url.replace('https://advisorwiz.com', '')} className="hover:text-teal-600">
-                      {crumb.name}
-                    </Link>
-                  )}
-                </li>
-                {!isLast && <li className="mx-2">/</li>}
-              </React.Fragment>
-            );
-          })}
-        </ol>
-      </nav>
+      <BreadcrumbNav items={breadcrumbs} />
     </>
   );
 };

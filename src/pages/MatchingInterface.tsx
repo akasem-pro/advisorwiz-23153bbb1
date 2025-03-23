@@ -10,6 +10,7 @@ import MatchHeader from '../components/matching/MatchHeader';
 import { useMatchingInterface } from '../hooks/useMatchingInterface';
 import PageSEO from '../components/seo/PageSEO';
 import { generateServiceSchema, generateBreadcrumbSchema } from '../utils/schemas';
+import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 import { Link } from 'react-router-dom';
 
 const MatchingInterface: React.FC = () => {
@@ -49,8 +50,8 @@ const MatchingInterface: React.FC = () => {
       : 'AdvisorWiz matches financial advisors with consumers based on their specific needs and preferences.';
   
   const breadcrumbs = [
-    { name: "Home", url: "https://advisorwiz.com/" },
-    { name: "Matches", url: "https://advisorwiz.com/matches" }
+    { name: "Home", url: "/" },
+    { name: "Matches", url: "/matches" }
   ];
   
   const structuredData = [
@@ -72,17 +73,11 @@ const MatchingInterface: React.FC = () => {
         <Header />
         
         <main className="flex-grow pt-20">
+          {validUserType && <BreadcrumbNav items={breadcrumbs} />}
+          
           <div className="container mx-auto px-4 py-12 max-w-4xl">
             {validUserType ? (
-              <>
-                <nav className="mb-6" aria-label="Breadcrumb">
-                  <ol className="flex text-sm text-slate-500">
-                    <li><Link to="/" className="hover:text-teal-600">Home</Link></li>
-                    <li className="mx-2">/</li>
-                    <li className="text-teal-600">Matches</li>
-                  </ol>
-                </nav>
-                
+              <>                
                 <MatchHeader 
                   userType={userTypeForComponents}
                   viewingMatches={viewingMatches}

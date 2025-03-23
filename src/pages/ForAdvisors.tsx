@@ -6,8 +6,8 @@ import Footer from '../components/layout/Footer';
 import PageSEO from '../components/seo/PageSEO';
 import { generateServiceSchema, generateFAQSchema, generateBreadcrumbSchema } from '../utils/schemas';
 
-// Import our new components
-import BreadcrumbNav from '../components/advisors/BreadcrumbNav';
+// Import our components
+import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 import HeroSection from '../components/advisors/HeroSection';
 import BenefitsSection from '../components/advisors/BenefitsSection';
 import FeaturesSection from '../components/advisors/FeaturesSection';
@@ -33,8 +33,8 @@ const ForAdvisors: React.FC = () => {
   
   // Breadcrumb data
   const breadcrumbs = [
-    { name: "Home", url: "https://advisorwiz.com/" },
-    { name: "For Advisors", url: "https://advisorwiz.com/for-advisors" }
+    { name: "Home", url: "/" },
+    { name: "For Advisors", url: "/for-advisors" }
   ];
   
   // Combined structured data

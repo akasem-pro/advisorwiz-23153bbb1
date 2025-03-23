@@ -8,6 +8,7 @@ import { BlogList } from '../components/blog/BlogList';
 import { BlogPost } from '../components/blog/BlogPost';
 import { generateBlogListingSchema } from '../utils/schemas/blogSchema';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
+import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 
 const Blog: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -17,6 +18,17 @@ const Blog: React.FC = () => {
   
   // Generate structured data for the blog listing
   const structuredData = !isSinglePost ? generateBlogListingSchema() : undefined;
+
+  const breadcrumbs = isSinglePost 
+    ? [
+        { name: "Home", url: "/" },
+        { name: "Blog", url: "/blog" },
+        { name: slug || "", url: `/blog/${slug}` }
+      ]
+    : [
+        { name: "Home", url: "/" },
+        { name: "Blog", url: "/blog" }
+      ];
   
   return (
     <AnimatedRoute animation="fade">
@@ -31,6 +43,8 @@ const Blog: React.FC = () => {
         />
         
         <main className="flex-grow pt-20">
+          <BreadcrumbNav items={breadcrumbs} />
+          
           <div className="container mx-auto px-4 py-8 md:py-12">
             {isSinglePost ? (
               <BlogPost slug={slug} />

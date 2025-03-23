@@ -11,16 +11,32 @@ import PricingFAQs from '../components/pricing/PricingFAQs';
 import PricingTrustSignals from '../components/pricing/PricingTrustSignals';
 import PricingValueProposition from '../components/pricing/PricingValueProposition';
 import PricingCTA from '../components/pricing/PricingCTA';
+import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
+import PageSEO from '../components/seo/PageSEO';
 
 const Pricing: React.FC = () => {
   const [userType, setUserType] = useState<'consumer' | 'advisor' | 'enterprise'>('consumer');
 
+  const breadcrumbs = [
+    { name: "Home", url: "/" },
+    { name: "Pricing", url: "/pricing" }
+  ];
+
   return (
     <AnimatedRoute animation="fade">
+      <PageSEO 
+        title="Transparent Pricing Plans | AdvisorWiz"
+        description="Explore our flexible pricing options for consumers, advisors, and enterprises. Find the perfect plan for your financial journey."
+        keywords="financial advisor pricing, advisor subscriptions, enterprise advisor platform, transparent pricing"
+        canonicalUrl="https://advisorwiz.com/pricing"
+      />
+      
       <div className="min-h-screen flex flex-col">
         <Header />
         
         <main className="flex-grow pt-20">
+          <BreadcrumbNav items={breadcrumbs} />
+          
           {/* Pricing Section */}
           <section className="py-16 md:py-24 bg-gradient-to-b from-white to-slate-50 dark:from-navy-900 dark:to-navy-950">
             <div className="container mx-auto px-4">
