@@ -858,6 +858,30 @@ export type Database = {
         }
         Relationships: []
       }
+      tooltip_content: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          section_key: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          section_key: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          section_key?: string
+          title?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           advisor_id: string | null

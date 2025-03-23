@@ -1,4 +1,3 @@
-
 import { supabase } from '../../../integrations/supabase/client';
 import { handleSupabaseError } from '../utils/errorHandling';
 import { DataResult } from '../types/dataTypes';
@@ -9,7 +8,7 @@ import { trackPerformance } from '../types/dataTypes';
 export const getAdvisorProfiles = async (limit: number = 10, filters: any = {}, useCache: boolean = true): Promise<DataResult<any[]>> => {
   const startTime = performance.now();
   const functionName = 'getAdvisorProfiles';
-  const cacheKey = `${CACHE_KEYS.ADVISORS}_${limit}_${JSON.stringify(filters)}`;
+  const cacheKey = `${CACHE_KEYS.ADVISOR_PROFILES}_${limit}_${JSON.stringify(filters)}`;
   
   try {
     // Try cache first if requested

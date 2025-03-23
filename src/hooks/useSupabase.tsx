@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import * as dataLayer from '../lib/supabase/dataLayer';
@@ -168,6 +167,14 @@ export const useSupabase = () => {
     subscribeToAppointments,
     // Cache management
     invalidateCache,
-    invalidateAllCache
+    invalidateAllCache,
+    // Add tooltips functions
+    getTooltips: useCallback((useCache: boolean = true) => {
+      return fetchData(() => dataLayer.getTooltips(useCache));
+    }, [fetchData]),
+    
+    getTooltipByKey: useCallback((sectionKey: string, useCache: boolean = true) => {
+      return fetchData(() => dataLayer.getTooltipByKey(sectionKey, useCache));
+    }, [fetchData])
   };
 };
