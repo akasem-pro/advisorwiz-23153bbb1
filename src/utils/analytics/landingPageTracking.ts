@@ -12,7 +12,7 @@ export const trackLandingPageInteraction = async (
   properties?: Record<string, any>
 ): Promise<void> => {
   await trackUserBehavior(
-    UserBehaviorEvent.FEATURE_INTERACTION,
+    UserBehaviorEvent.FEATURE_USED, // Changed from FEATURE_INTERACTION to FEATURE_USED
     userId,
     {
       feature,
@@ -32,7 +32,7 @@ export const trackLandingPageCTA = async (
   userId?: string
 ): Promise<void> => {
   await trackUserBehavior(
-    UserBehaviorEvent.CTA_CLICK,
+    UserBehaviorEvent.FEATURE_USED, // Changed from CTA_CLICK to FEATURE_USED
     userId,
     {
       location: ctaLocation,
@@ -53,7 +53,7 @@ export const createSectionViewTracker = (
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         trackUserBehavior(
-          UserBehaviorEvent.SECTION_VIEW,
+          UserBehaviorEvent.PAGE_VIEW, // Changed from SECTION_VIEW to PAGE_VIEW
           undefined,
           {
             section_id: sectionId,
