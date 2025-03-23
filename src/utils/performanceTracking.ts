@@ -2,6 +2,11 @@
 // This is the main export file for performance tracking functionality
 // It re-exports functions from the more focused modules
 
+// Importing the functions we need for initPerformanceOptimizations
+import { trackWebVitals } from './performance/webVitals';
+import { setupLazyLoading, optimizeImagesForCWV } from './performance/imageOptimization';
+import { implementResourceHints } from './performance/resourceHints';
+
 // Core performance tracking
 export {
   trackPerformance,
