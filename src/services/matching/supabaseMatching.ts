@@ -1,7 +1,7 @@
 
 import { supabase } from '../../integrations/supabase/client';
 import { AdvisorProfile, ConsumerProfile, ServiceCategory } from '../../types/userTypes';
-import { trackPerformance } from '../../utils/matchingPerformance';
+import { trackPerformance } from '../../utils/performance/core';
 import { calculateMatchScore, getMatchExplanations } from '../../utils/matchingAlgorithm';
 import { MatchPreferences } from '../../context/UserContextDefinition';
 

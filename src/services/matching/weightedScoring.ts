@@ -4,7 +4,7 @@
  * Central coordinator for the matching algorithm
  */
 import { MatchPreferences } from '../../context/UserContextDefinition';
-import { withPerformanceTracking } from '../../utils/matchingPerformance';
+import { withPerformanceTracking } from '../../utils/performance/functionTracking';
 import { CallMetrics } from '../../types/callTypes';
 import { trackMatchingInteraction } from '../../utils/analytics/matchTracker';
 

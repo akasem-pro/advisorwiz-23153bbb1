@@ -62,9 +62,9 @@ export const getButtonClasses = ({
   size = 'md',
   width = 'auto',
   className = '',
-  outline = '',
-  ghost = '',
-  link = '',
+  outline = 'default',
+  ghost = 'default',
+  link = 'default',
 }: {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'link';
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -81,11 +81,11 @@ export const getButtonClasses = ({
   } else if (variant === 'secondary') {
     variantClass = buttonVariants.secondary;
   } else if (variant === 'outline') {
-    variantClass = buttonVariants.outline[outline || 'default'];
+    variantClass = buttonVariants.outline[outline];
   } else if (variant === 'ghost') {
-    variantClass = buttonVariants.ghost[ghost || 'default'];
+    variantClass = buttonVariants.ghost[ghost];
   } else if (variant === 'link') {
-    variantClass = buttonVariants.link[link || 'default'];
+    variantClass = buttonVariants.link[link];
   }
   
   return cn(
