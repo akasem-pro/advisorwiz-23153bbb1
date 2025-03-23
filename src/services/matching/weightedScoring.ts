@@ -1,4 +1,3 @@
-
 import { AdvisorProfile, ConsumerProfile } from '../../types/userTypes';
 import { MatchPreferences } from '../../context/UserContextDefinition';
 import { calculateBaseCompatibility } from './compatibility';
@@ -22,7 +21,7 @@ const PREFERENCE_WEIGHTS = {
 };
 
 /**
- * Calculates a weighted compatibility score based on user preferences and historical interaction data
+ * Performance-optimized weighted compatibility score calculation
  * @returns {Object} Contains both the score and explanation for the match
  */
 const calculateWeightedCompatibilityScore = (
@@ -31,6 +30,17 @@ const calculateWeightedCompatibilityScore = (
   preferences: MatchPreferences,
   callMetrics?: any[]
 ): { score: number; matchExplanation: string[] } => {
+  // Use memoization technique to cache results for identical input parameters
+  const cacheKey = `${advisorId}-${consumerId}-${JSON.stringify(preferences)}`;
+  
+  // Check if we have this calculation cached for this session
+  // This would ideally be stored in a more permanent cache or state management solution
+  // @ts-ignore - Using a session-based caching approach
+  if (window.__matchCalculationCache && window.__matchCalculationCache[cacheKey]) {
+    // @ts-ignore
+    return window.__matchCalculationCache[cacheKey];
+  }
+  
   const advisor = mockAdvisors.find(a => a.id === advisorId);
   const consumer = mockConsumers.find(c => c.id === consumerId);
   
@@ -43,41 +53,63 @@ const calculateWeightedCompatibilityScore = (
   let weightedScore = baseScore;
   let matchExplanation: string[] = [];
   
-  // 1. Language preference weighting
-  if (preferences.prioritizeLanguage) {
-    // Check for perfect language match
-    const perfectLanguageMatch = consumer.preferredLanguage.every(lang => 
+  // Optimized matching logic
+  if (preferences.prioritizeLanguage && consumer.preferredLanguage && advisor.languages) {
+    // Check for language match - fast path for common case
+    const hasLanguageMatch = consumer.preferredLanguage.some(lang => 
       advisor.languages.includes(lang)
     );
     
-    if (perfectLanguageMatch) {
-      weightedScore += PREFERENCE_WEIGHTS.LANGUAGE;
-      matchExplanation.push(`Speaks all your preferred languages`);
+    if (hasLanguageMatch) {
+      // For perfect match, check all languages
+      const perfectLanguageMatch = consumer.preferredLanguage.every(lang => 
+        advisor.languages.includes(lang)
+      );
+      
+      if (perfectLanguageMatch) {
+        weightedScore += PREFERENCE_WEIGHTS.LANGUAGE;
+        matchExplanation.push(`Speaks all your preferred languages`);
+      } else {
+        // Partial language match
+        const matchCount = consumer.preferredLanguage.filter(lang => 
+          advisor.languages.includes(lang)
+        ).length;
+        
+        const partialBonus = Math.floor(PREFERENCE_WEIGHTS.LANGUAGE * 
+          (matchCount / consumer.preferredLanguage.length));
+        
+        weightedScore += partialBonus;
+        if (partialBonus > 0) {
+          matchExplanation.push(`Speaks ${matchCount} of your preferred languages`);
+        }
+      }
     }
   }
   
-  // 2. Expertise preference weighting
-  if (preferences.prioritizeExpertise) {
-    // Check for comprehensive expertise coverage
-    if (consumer.serviceNeeds) {
-      const expertiseCoverage = consumer.serviceNeeds.every(service => 
+  // Optimized expertise matching
+  if (preferences.prioritizeExpertise && consumer.serviceNeeds && advisor.expertise) {
+    // Fast path check - do they have any matching service at all?
+    const hasExpertiseMatch = consumer.serviceNeeds.some(service => 
+      advisor.expertise.includes(service)
+    );
+    
+    if (hasExpertiseMatch) {
+      // Calculate what percentage of needs are covered
+      const matchedServices = consumer.serviceNeeds.filter(service => 
         advisor.expertise.includes(service)
       );
       
-      if (expertiseCoverage) {
-        weightedScore += PREFERENCE_WEIGHTS.EXPERTISE;
+      const coverage = matchedServices.length / consumer.serviceNeeds.length;
+      const expertiseBonus = Math.floor(PREFERENCE_WEIGHTS.EXPERTISE * coverage);
+      
+      weightedScore += expertiseBonus;
+      
+      if (coverage === 1) {
         matchExplanation.push(`Expert in all your financial service needs`);
-      } else {
-        // Check for partial coverage
-        const matchedServices = consumer.serviceNeeds.filter(service => 
-          advisor.expertise.includes(service)
-        );
-        
-        if (matchedServices.length > 0) {
-          const partialBonus = Math.floor(PREFERENCE_WEIGHTS.EXPERTISE * (matchedServices.length / consumer.serviceNeeds.length));
-          weightedScore += partialBonus;
-          matchExplanation.push(`Expertise in ${matchedServices.length} of your ${consumer.serviceNeeds.length} service needs`);
-        }
+      } else if (coverage > 0.5) {
+        matchExplanation.push(`Expertise in most of your service needs (${matchedServices.length} of ${consumer.serviceNeeds.length})`);
+      } else if (matchedServices.length > 0) {
+        matchExplanation.push(`Expertise in ${matchedServices.length} of your ${consumer.serviceNeeds.length} service needs`);
       }
     }
   }
@@ -188,10 +220,15 @@ const calculateWeightedCompatibilityScore = (
     matchExplanation.push("Basic compatibility with your financial needs");
   }
   
-  return { 
-    score: finalScore,
-    matchExplanation
-  };
+  const result = { score: finalScore, matchExplanation };
+  
+  // Cache the result for future use
+  // @ts-ignore - Using a session-based caching approach
+  if (!window.__matchCalculationCache) window.__matchCalculationCache = {};
+  // @ts-ignore
+  window.__matchCalculationCache[cacheKey] = result;
+  
+  return result;
 };
 
 // Export the function with performance tracking wrapper

@@ -1,7 +1,6 @@
-
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { UserProvider } from './context/UserContext';
+import { UserProvider } from './context/UserProvider';
 import { ThemeProvider } from './context/ThemeContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/toaster';
@@ -12,38 +11,46 @@ import {
   generateOrganizationSchema, 
   generateWebsiteSchema
 } from './utils/schemas';
-import { trackWebVitals, setupLazyLoading, optimizeCriticalRendering } from './utils/performanceTracking';
+import { initPerformanceOptimizations } from './utils/performanceTracking';
 import { initializeTagManager, trackPageView } from './utils/tagManager';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 
-// Import all page components
-import Index from './pages/Index';
-import Onboarding from './pages/Onboarding';
-import AdvisorProfile from './pages/AdvisorProfile';
-import ConsumerProfile from './pages/ConsumerProfile';
-import MatchingInterface from './pages/MatchingInterface';
-import Chat from './pages/Chat';
-import Schedule from './pages/Schedule';
-import FirmProfile from './pages/FirmProfile';
-import LeadManagementPage from './pages/LeadManagementPage';
-import ConsumerDashboard from './pages/ConsumerDashboard';
-import AdvisorDashboard from './pages/AdvisorDashboard';
-import FirmDashboard from './pages/FirmDashboard';
-import Settings from './pages/Settings';
-import ForFirms from './pages/ForFirms';
-import ForAdvisors from './pages/ForAdvisors';
-import ForConsumers from './pages/ForConsumers';
-import Pricing from './pages/Pricing';
-import ContactUs from './pages/ContactUs';
-import Blog from './pages/Blog';
-import Careers from './pages/Careers';
-import Sitemap from './pages/Sitemap';
-import Resources from './pages/Resources';
-import Terms from './pages/Terms';
-import Privacy from './pages/Privacy';
-import NotFound from './pages/NotFound';
+// Implement React.lazy for code splitting
+const Index = lazy(() => import('./pages/Index'));
+const Onboarding = lazy(() => import('./pages/Onboarding'));
+const AdvisorProfile = lazy(() => import('./pages/AdvisorProfile'));
+const ConsumerProfile = lazy(() => import('./pages/ConsumerProfile'));
+const MatchingInterface = lazy(() => import('./pages/MatchingInterface'));
+const Chat = lazy(() => import('./pages/Chat'));
+const Schedule = lazy(() => import('./pages/Schedule'));
+const FirmProfile = lazy(() => import('./pages/FirmProfile'));
+const LeadManagementPage = lazy(() => import('./pages/LeadManagementPage'));
+const ConsumerDashboard = lazy(() => import('./pages/ConsumerDashboard'));
+const AdvisorDashboard = lazy(() => import('./pages/AdvisorDashboard'));
+const FirmDashboard = lazy(() => import('./pages/FirmDashboard'));
+const Settings = lazy(() => import('./pages/Settings'));
+const ForFirms = lazy(() => import('./pages/ForFirms'));
+const ForAdvisors = lazy(() => import('./pages/ForAdvisors'));
+const ForConsumers = lazy(() => import('./pages/ForConsumers'));
+const Pricing = lazy(() => import('./pages/Pricing'));
+const ContactUs = lazy(() => import('./pages/ContactUs'));
+const Blog = lazy(() => import('./pages/Blog'));
+const Careers = lazy(() => import('./pages/Careers'));
+const Sitemap = lazy(() => import('./pages/Sitemap'));
+const Resources = lazy(() => import('./pages/Resources'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
-import './App.css';
+// Optimized loading fallback component
+const PageLoading = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="text-center">
+      <div className="animate-spin h-10 w-10 border-4 border-teal-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+      <p className="text-slate-600">Loading...</p>
+    </div>
+  </div>
+);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -99,41 +106,43 @@ function AppWithAuth() {
   return (
     <AuthProvider>
       <PageTracker />
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        
-        <Route path="/advisor-profile" element={<AdvisorProfile />} />
-        <Route path="/consumer-profile" element={<ConsumerProfile />} />
-        <Route path="/matches" element={<MatchingInterface />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/chat/:id" element={<Chat />} />
-        <Route path="/schedule" element={<Schedule />} />
-        <Route path="/firm-profile" element={<FirmProfile />} />
-        <Route path="/firm/:id" element={<FirmProfile />} />
-        <Route path="/leads" element={<LeadManagementPage />} />
-        <Route path="/consumer-dashboard" element={<ConsumerDashboard />} />
-        <Route path="/advisor-dashboard" element={<AdvisorDashboard />} />
-        <Route path="/firm-dashboard" element={<FirmDashboard />} />
-        <Route path="/settings" element={<Settings />} />
-        
-        <Route path="/for-firms" element={<ForFirms />} />
-        <Route path="/for-advisors" element={<ForAdvisors />} />
-        <Route path="/for-consumers" element={<ForConsumers />} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/contact" element={<ContactUs />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/blog/:slug" element={<Blog />} />
-        <Route path="/careers" element={<Careers />} />
-        <Route path="/sitemap" element={<Sitemap />} />
-        <Route path="/resources" element={<Resources />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/disclaimer" element={<Privacy />} />
-        <Route path="/cookies" element={<Privacy />} />
-        
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Suspense fallback={<PageLoading />}>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          
+          <Route path="/advisor-profile" element={<AdvisorProfile />} />
+          <Route path="/consumer-profile" element={<ConsumerProfile />} />
+          <Route path="/matches" element={<MatchingInterface />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/chat/:id" element={<Chat />} />
+          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/firm-profile" element={<FirmProfile />} />
+          <Route path="/firm/:id" element={<FirmProfile />} />
+          <Route path="/leads" element={<LeadManagementPage />} />
+          <Route path="/consumer-dashboard" element={<ConsumerDashboard />} />
+          <Route path="/advisor-dashboard" element={<AdvisorDashboard />} />
+          <Route path="/firm-dashboard" element={<FirmDashboard />} />
+          <Route path="/settings" element={<Settings />} />
+          
+          <Route path="/for-firms" element={<ForFirms />} />
+          <Route path="/for-advisors" element={<ForAdvisors />} />
+          <Route path="/for-consumers" element={<ForConsumers />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<Blog />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/sitemap" element={<Sitemap />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/disclaimer" element={<Privacy />} />
+          <Route path="/cookies" element={<Privacy />} />
+          
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
       <Toaster />
     </AuthProvider>
   );
@@ -141,16 +150,8 @@ function AppWithAuth() {
 
 function App() {
   useEffect(() => {
+    initPerformanceOptimizations();
     initializeTagManager();
-    trackWebVitals();
-    optimizeCriticalRendering();
-    
-    if (document.readyState === 'complete') {
-      setupLazyLoading();
-    } else {
-      window.addEventListener('load', setupLazyLoading);
-      return () => window.removeEventListener('load', setupLazyLoading);
-    }
   }, []);
 
   return (
@@ -187,3 +188,4 @@ function App() {
 }
 
 export default App;
+

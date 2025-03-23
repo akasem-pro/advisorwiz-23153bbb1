@@ -1,29 +1,35 @@
 
-/**
- * Advanced utility functions for tracking and improving web performance
- */
+import { getCLS, getFID, getLCP, getFCP, getTTFB, getINP } from 'web-vitals';
 
-// Track Core Web Vitals
+// Consolidated performance tracking data
+interface PerformanceData {
+  functionName: string;
+  executionTime: number;
+  inputSize: number;
+  timestamp: number;
+}
+
+let performanceData: PerformanceData[] = [];
+const MAX_ENTRIES = 100;
+
+// Initialize and track all web vitals
 export const trackWebVitals = () => {
   if (typeof window !== 'undefined') {
-    // Check if the browser supports the Web Vitals API
     try {
-      import('web-vitals').then((webVitals) => {
-        webVitals.onCLS(sendToAnalytics);
-        webVitals.onFID(sendToAnalytics);
-        webVitals.onLCP(sendToAnalytics);
-        webVitals.onFCP(sendToAnalytics);
-        webVitals.onTTFB(sendToAnalytics);
-        webVitals.onINP(sendToAnalytics);
-      });
+      getCLS(sendToAnalytics);
+      getFID(sendToAnalytics);
+      getLCP(sendToAnalytics);
+      getFCP(sendToAnalytics);
+      getTTFB(sendToAnalytics);
+      getINP(sendToAnalytics);
     } catch (error) {
       console.error('Failed to load web-vitals:', error);
     }
   }
 };
 
-// Send metrics to analytics
-const sendToAnalytics = (metric: { name: string; value: number; rating?: string; delta: number; entries: any[]; id: string; navigationType?: string }) => {
+// Consolidated function to send metrics to analytics
+const sendToAnalytics = (metric) => {
   // Check if gtag is available
   if (typeof window !== 'undefined' && 'gtag' in window) {
     // @ts-ignore
@@ -37,13 +43,73 @@ const sendToAnalytics = (metric: { name: string; value: number; rating?: string;
     });
   }
   
-  // You can also log to console during development
+  // Log to console during development
   if (process.env.NODE_ENV === 'development') {
     console.log(metric);
   }
 };
 
-// Lazy load images when they enter viewport
+// Track the performance of a function execution
+export const trackPerformance = (
+  functionName: string,
+  executionTime: number,
+  inputSize: number = 0
+): void => {
+  // Add new entry
+  performanceData.push({
+    functionName,
+    executionTime,
+    inputSize,
+    timestamp: Date.now()
+  });
+  
+  // Trim if exceeding max size
+  if (performanceData.length > MAX_ENTRIES) {
+    performanceData = performanceData.slice(-MAX_ENTRIES);
+  }
+  
+  // Log to console in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log(
+      `Performance: ${functionName} executed in ${executionTime.toFixed(2)}ms with input size ${inputSize}`
+    );
+  }
+};
+
+// Get performance data for analysis
+export const getPerformanceData = (): PerformanceData[] => {
+  return [...performanceData];
+};
+
+// Clear performance data
+export const clearPerformanceData = (): void => {
+  performanceData = [];
+};
+
+// Performance wrapper for functions
+export function withPerformanceTracking<T extends (...args: any[]) => any>(
+  fn: T,
+  fnName: string
+): (...args: Parameters<T>) => ReturnType<T> {
+  return (...args: Parameters<T>): ReturnType<T> => {
+    const startTime = performance.now();
+    
+    // Use performance mark for more detailed profiling in DevTools
+    performance.mark(`${fnName}-start`);
+    
+    const result = fn(...args);
+    
+    const endTime = performance.now();
+    performance.mark(`${fnName}-end`);
+    performance.measure(fnName, `${fnName}-start`, `${fnName}-end`);
+    
+    trackPerformance(fnName, endTime - startTime, args.length);
+    
+    return result;
+  };
+}
+
+// Setup lazy loading for images
 export const setupLazyLoading = () => {
   if ('IntersectionObserver' in window) {
     const lazyImages = document.querySelectorAll('img[loading="lazy"]');
@@ -78,29 +144,34 @@ export const setupLazyLoading = () => {
   }
 };
 
-// Reduce render-blocking resources
-export const optimizeCriticalRendering = () => {
-  // Add rel="preload" to critical CSS
-  const linkElements = document.querySelectorAll('link[rel="stylesheet"]');
-  linkElements.forEach((link) => {
-    const href = link.getAttribute('href');
-    if (href && href.includes('critical')) {
-      link.setAttribute('rel', 'preload');
-      link.setAttribute('as', 'style');
-      link.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
+// Consolidated function to initialize all performance optimizations
+export const initPerformanceOptimizations = () => {
+  if (typeof window !== 'undefined') {
+    // Track web vitals
+    trackWebVitals();
+    
+    // Setup optimizations when DOM is loaded
+    if (document.readyState === 'complete') {
+      setupLazyLoading();
+      optimizeImagesForCWV();
+      implementResourceHints();
+    } else {
+      window.addEventListener('DOMContentLoaded', () => {
+        setupLazyLoading();
+        optimizeImagesForCWV();
+        implementResourceHints();
+      });
     }
-  });
-  
-  // Defer non-critical JavaScript
-  const scriptElements = document.querySelectorAll('script:not([async]):not([defer])');
-  scriptElements.forEach((script) => {
-    if (!script.getAttribute('src')?.includes('critical')) {
-      script.setAttribute('defer', '');
-    }
-  });
+    
+    // Add event listeners for client-side navigation
+    document.addEventListener('newpage', () => {
+      setupLazyLoading();
+      optimizeImagesForCWV();
+    });
+  }
 };
 
-// Optimize images for Core Web Vitals
+// Optimize images for Core Web Vitals (extracted from previous version)
 export const optimizeImagesForCWV = () => {
   if ('loading' in HTMLImageElement.prototype) {
     document.querySelectorAll('img').forEach((img) => {
@@ -125,7 +196,7 @@ export const optimizeImagesForCWV = () => {
   });
 };
 
-// Implement resource hints
+// Implement resource hints (extracted from previous version)
 export const implementResourceHints = () => {
   const head = document.head;
   
@@ -146,26 +217,4 @@ export const implementResourceHints = () => {
       head.appendChild(link);
     }
   });
-};
-
-// Initialize performance optimizations
-export const initPerformanceOptimizations = () => {
-  if (typeof window !== 'undefined') {
-    // Track web vitals
-    trackWebVitals();
-    
-    // Setup optimizations when DOM is loaded
-    window.addEventListener('DOMContentLoaded', () => {
-      setupLazyLoading();
-      optimizeCriticalRendering();
-      optimizeImagesForCWV();
-      implementResourceHints();
-    });
-    
-    // Add event listeners for client-side navigation
-    document.addEventListener('newpage', () => {
-      setupLazyLoading();
-      optimizeImagesForCWV();
-    });
-  }
 };
