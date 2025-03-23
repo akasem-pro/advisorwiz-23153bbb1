@@ -36,8 +36,8 @@ const CTASection: React.FC = () => {
           </Button>
           <Button
             onClick={() => navigate('/pricing')}
-            variant="outline"
-            className="border-white border-2 text-white hover:bg-white/20 text-lg px-6 py-7 h-auto font-medium"
+            variant="secondary"
+            className="bg-navy-600/80 hover:bg-navy-600 text-white border-navy-500 text-lg px-6 py-7 h-auto font-medium shadow-md"
             size="lg"
           >
             View Pricing Options
