@@ -38,7 +38,7 @@ export { trackAIInteraction } from './analytics/aiTracking';
 export { recordMatchHistory } from './analytics/matchTracking';
 
 // Create an image optimization file if it doesn't exist
-<lov-write file_path="src/utils/performance/imageOptimization.ts">
+// <lov-write file_path="src/utils/performance/imageOptimization.ts">
 // Setup lazy loading for images
 export const setupLazyLoading = () => {
   if ('IntersectionObserver' in window) {
