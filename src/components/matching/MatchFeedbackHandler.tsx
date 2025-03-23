@@ -5,8 +5,8 @@ import { supabase } from '../../integrations/supabase/client';
 import MatchFeedback from './MatchFeedback';
 
 interface MatchFeedbackHandlerProps {
-  userType: 'consumer' | 'advisor' | null;
-  userId?: string;
+  userType: 'consumer' | 'advisor';
+  userId: string;
   matchId: string;
   showFeedback: boolean;
   explanations: string[];

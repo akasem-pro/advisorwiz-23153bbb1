@@ -43,6 +43,12 @@ const MatchExplanation: React.FC<MatchExplanationProps> = ({
   const explanationCategories = categorizeExplanations(explanations);
   
   // Get the current user's ID from context
+  // Only pass consumer or advisor types to components, filter out firm_admin
+  const userTypeForComponents = 
+    userType === 'consumer' || userType === 'advisor' 
+      ? userType 
+      : null;
+      
   const userId = userType === 'consumer' 
     ? consumerProfile?.id 
     : advisorProfile?.id;
@@ -69,9 +75,9 @@ const MatchExplanation: React.FC<MatchExplanationProps> = ({
         expanded={expanded} 
       />
       
-      {showFeedback && matchId && userId && (
+      {showFeedback && matchId && userId && userTypeForComponents && (
         <MatchFeedbackHandler
-          userType={userType}
+          userType={userTypeForComponents}
           userId={userId}
           matchId={matchId}
           showFeedback={showFeedback}
