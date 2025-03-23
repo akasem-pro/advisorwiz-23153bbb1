@@ -80,13 +80,44 @@ describe('Weighted Scoring Algorithm', () => {
     // First use default strategy
     const defaultResult = getWeightedCompatibilityScore(advisorId, consumerId, defaultPreferences);
     
-    // Set a different strategy (though we're just setting it to default again for now)
-    setMatchingStrategy('default');
+    // Set a different strategy
+    setMatchingStrategy('premium');
     
-    // This would test with a different strategy once we have more implementations
-    const newStrategyResult = getWeightedCompatibilityScore(advisorId, consumerId, defaultPreferences);
+    // This should use the premium strategy
+    const premiumResult = getWeightedCompatibilityScore(advisorId, consumerId, defaultPreferences);
     
-    // For now, results should be the same since we're using the default strategy twice
-    expect(newStrategyResult.score).toEqual(defaultResult.score);
+    // Premium strategy should be different than default
+    expect(premiumResult.score).not.toEqual(defaultResult.score);
+    
+    // Risk-focused strategy should also be different
+    setMatchingStrategy('risk-focused');
+    const riskResult = getWeightedCompatibilityScore(advisorId, consumerId, defaultPreferences);
+    expect(riskResult.score).not.toEqual(defaultResult.score);
+  });
+
+  test('weight factors should influence score', () => {
+    const withoutWeights = getWeightedCompatibilityScore(
+      advisorId, 
+      consumerId, 
+      defaultPreferences
+    );
+    
+    const withWeights = getWeightedCompatibilityScore(
+      advisorId, 
+      consumerId, 
+      {
+        ...defaultPreferences,
+        weightFactors: {
+          language: 80,
+          expertise: 90,
+          availability: 40,
+          location: 30,
+          interaction: 60
+        }
+      }
+    );
+    
+    // Scores should be different when weights are applied
+    expect(withWeights.score).not.toEqual(withoutWeights.score);
   });
 });

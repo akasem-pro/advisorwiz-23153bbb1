@@ -73,4 +73,33 @@ describe('Match Caching System', () => {
     // Verify explanations were returned
     expect(explanations.length).toBeGreaterThan(0);
   });
+
+  test('weighted factors should affect score', () => {
+    // First calculation with default weights
+    const firstResult = getWeightedCompatibilityScore(
+      advisorId, 
+      consumerId, 
+      defaultPreferences
+    );
+    
+    // Second calculation with custom weights
+    const weightedPreferences = {
+      ...defaultPreferences,
+      weightFactors: {
+        language: 90,
+        expertise: 80,
+        availability: 20,
+        location: 10
+      }
+    };
+    
+    const secondResult = getWeightedCompatibilityScore(
+      advisorId, 
+      consumerId, 
+      weightedPreferences
+    );
+    
+    // Scores should be different with weights applied
+    expect(secondResult.score).not.toEqual(firstResult.score);
+  });
 });

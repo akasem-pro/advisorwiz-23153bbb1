@@ -1,6 +1,11 @@
 
-import { useCallback, useMemo } from 'react';
-import { clearCompatibilityCache, getCompatibilityCacheStats } from '../services/matching/weightedScoring';
+import { useCallback, useMemo, useEffect } from 'react';
+import { 
+  clearCompatibilityCache, 
+  getCompatibilityCacheStats, 
+  cleanupStaleEntries,
+  retainTopHitEntries
+} from '../services/matching/cache/compatibilityCache';
 import { clearMatchCache, invalidateMatchCache } from '../utils/matchingAlgorithm';
 import { toast } from 'sonner';
 
@@ -28,19 +33,44 @@ export const useMatchingCache = () => {
     return true;
   }, []);
   
+  // Optimize cache by removing stale entries and retaining only valuable ones
+  const optimizeCache = useCallback(() => {
+    cleanupStaleEntries();
+    retainTopHitEntries(1000); // Keep top 1000 most accessed entries
+    toast.success('Cache optimized successfully');
+  }, []);
+  
   // Get cache statistics for monitoring
   const cacheStats = useMemo(() => {
     try {
       return getCompatibilityCacheStats();
     } catch (error) {
       console.error('Error getting cache stats:', error);
-      return { size: 0, oldestEntry: null };
+      return { 
+        size: 0, 
+        hitRate: 0, 
+        oldestEntry: null,
+        frequentlyAccessedCount: 0 
+      };
     }
   }, []);
+  
+  // Periodically optimize cache to maintain performance
+  useEffect(() => {
+    const cacheCleanupInterval = setInterval(() => {
+      // Only run cleanup if cache is getting large
+      if (cacheStats.size > 500) {
+        cleanupStaleEntries();
+      }
+    }, 60 * 60 * 1000); // Run hourly
+    
+    return () => clearInterval(cacheCleanupInterval);
+  }, [cacheStats.size]);
   
   return {
     clearAllCaches,
     invalidateUserCache,
+    optimizeCache,
     cacheStats
   };
 };
