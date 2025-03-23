@@ -9,7 +9,7 @@ import { trackUserBehavior } from './analytics/eventTracker';
 type VariantId = string;
 type ExperimentId = string;
 
-interface Variant<T> {
+export interface Variant<T> {
   id: VariantId;
   value: T;
   weight?: number; // Optional weighting factor (default is equal distribution)

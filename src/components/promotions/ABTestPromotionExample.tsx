@@ -1,12 +1,19 @@
 
 import React, { useContext } from 'react';
-import { getVariant } from '../../utils/abTesting';
+import { getVariant, Variant } from '../../utils/abTesting';
 import PromotionalBanner from './PromotionalBanner';
 import UserContext from '../../context/UserContext';
 
 interface ABTestPromotionExampleProps {
   experimentId: string;
 }
+
+// Define the type for our promotional variants
+type PromotionVariant = {
+  message: string;
+  ctaText: string;
+  variant: 'primary' | 'secondary' | 'accent';
+};
 
 const ABTestPromotionExample: React.FC<ABTestPromotionExampleProps> = ({ 
   experimentId = 'premium_promo_test' 
@@ -15,13 +22,13 @@ const ABTestPromotionExample: React.FC<ABTestPromotionExampleProps> = ({
   const userId = userContext?.consumerProfile?.id || userContext?.advisorProfile?.id;
   
   // Define variants for our test
-  const promoVariants = [
+  const promoVariants: Variant<PromotionVariant>[] = [
     {
       id: 'control',
       value: {
         message: 'Upgrade to Premium for better matches',
         ctaText: 'Learn More',
-        variant: 'primary' as const
+        variant: 'primary'
       },
       weight: 50 // 50% of users see this
     },
@@ -30,7 +37,7 @@ const ABTestPromotionExample: React.FC<ABTestPromotionExampleProps> = ({
       value: {
         message: 'Get 3x more matches with Premium',
         ctaText: 'Upgrade Now',
-        variant: 'accent' as const
+        variant: 'accent'
       },
       weight: 25 // 25% of users see this
     },
@@ -39,14 +46,14 @@ const ABTestPromotionExample: React.FC<ABTestPromotionExampleProps> = ({
       value: {
         message: 'Premium users find advisors 2x faster',
         ctaText: 'Go Premium',
-        variant: 'secondary' as const
+        variant: 'secondary'
       },
       weight: 25 // 25% of users see this
     }
   ];
   
   // Get the variant for this user
-  const selectedVariant = getVariant(experimentId, promoVariants, userId);
+  const selectedVariant = getVariant<PromotionVariant>(experimentId, promoVariants, userId);
   
   return (
     <PromotionalBanner
