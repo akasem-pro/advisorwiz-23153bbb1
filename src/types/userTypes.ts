@@ -50,6 +50,7 @@ export type ConsumerProfile = {
   investmentAmount?: number;
   financialGoals?: string[];
   incomeBracket?: string;
+  incomeRange?: string; // Added this property
   preferredAdvisorSpecialties?: string[];
   location?: Location;
   advisorPreferences?: {
@@ -81,6 +82,8 @@ export type ConsumerProfile = {
   wantsEducation?: boolean;
   termsConsent?: boolean;
   advisorContactConsent?: boolean;
+  hasAdvisor?: boolean; // Added this property
+  currentAdvisorReason?: string; // Added this property
 };
 
 export type AdvisorProfile = {
