@@ -1,4 +1,3 @@
-
 import { supabase } from '../../integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -116,7 +115,6 @@ const validateData = <T>(data: T, schema: any): { valid: boolean; errors?: strin
   }
 };
 
-// Specific data functions
 // Profile operations
 export const getProfile = async (userId: string, useCache: boolean = true): Promise<DataResult<any>> => {
   const startTime = performance.now();
