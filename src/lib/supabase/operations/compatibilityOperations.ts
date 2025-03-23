@@ -1,3 +1,4 @@
+
 import { supabase } from '../../../integrations/supabase/client';
 import { handleSupabaseError } from '../utils/errorHandling';
 import { DataResult } from '../types/dataTypes';
@@ -6,12 +7,12 @@ import { trackPerformance } from '../types/dataTypes';
 
 export type CompatibilityScore = {
   id: string;
-  user_type: 'consumer' | 'advisor';
-  user_id: string;
-  target_id: string;
+  advisor_id: string;
+  consumer_id: string;
   score: number;
-  details: any;
+  match_explanations?: string[];
   created_at: string;
+  updated_at: string;
 };
 
 /**
@@ -42,11 +43,17 @@ export const getCompatibilityScores = async (
 
     let query = supabase
       .from('compatibility_scores')
-      .select('*')
-      .eq('user_type', userType)
-      .eq('user_id', userId)
-      .order('score', { ascending: false })
-      .limit(limit);
+      .select('*');
+      
+    // Apply filter based on user type
+    if (userType === 'consumer') {
+      query = query.eq('consumer_id', userId);
+    } else {
+      query = query.eq('advisor_id', userId);
+    }
+    
+    // Apply order and limit
+    query = query.order('score', { ascending: false }).limit(limit);
 
     const { data, error } = await query;
 
@@ -60,7 +67,7 @@ export const getCompatibilityScores = async (
     }
 
     trackPerformance(functionName, performance.now() - startTime, 1);
-    return { data, error: null, isFromCache: false };
+    return { data: data as CompatibilityScore[], error: null, isFromCache: false };
   } catch (error) {
     const errorMessage = handleSupabaseError(error, 'Failed to fetch compatibility scores');
     trackPerformance(functionName, performance.now() - startTime, 0);

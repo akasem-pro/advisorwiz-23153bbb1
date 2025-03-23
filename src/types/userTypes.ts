@@ -1,4 +1,3 @@
-
 // Types for user profiles and related data
 
 // Time slot type for weekly availability
@@ -68,6 +67,20 @@ export type ConsumerProfile = {
   onlineStatus: 'online' | 'offline' | 'away'; // New field for online status
   lastOnline: string; // ISO string for last online time
   showOnlineStatus: boolean; // Toggle to show/hide online status
+
+  // Additional fields for the form
+  email?: string;
+  phone?: string;
+  dateOfBirth?: string;
+  province?: string;
+  postalCode?: string;
+  industry?: string;
+  jobTitle?: string;
+  preferredMeetingTimes?: string[];
+  advisorInvolvement?: string;
+  wantsEducation?: boolean;
+  termsConsent?: boolean;
+  advisorContactConsent?: boolean;
 };
 
 export type AdvisorProfile = {
@@ -186,4 +199,3 @@ export type Notification = {
 
 // User type
 export type UserType = 'consumer' | 'advisor' | 'firm_admin' | null;
-
