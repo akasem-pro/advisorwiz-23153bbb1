@@ -19,7 +19,9 @@ export enum UserBehaviorEvent {
   FEATURE_USED = 'feature_used',
   SEARCH_PERFORMED = 'search_performed',
   FILTER_APPLIED = 'filter_applied',
-  SORT_APPLIED = 'sort_applied'
+  SORT_APPLIED = 'sort_applied',
+  PREFERENCE_UPDATED = 'preference_updated',
+  MATCH_FEEDBACK = 'match_feedback'
 }
 
 /**
@@ -80,6 +82,50 @@ export const trackUserBehavior = async (
 };
 
 /**
+ * Track preference updates for dynamic matching
+ */
+export const trackPreferenceUpdate = async (
+  userId: string,
+  prevPreferences: Record<string, any>,
+  newPreferences: Record<string, any>
+): Promise<void> => {
+  // Determine what preferences were changed
+  const changedPrefs: Record<string, { from: any, to: any }> = {};
+  
+  for (const [key, value] of Object.entries(newPreferences)) {
+    if (JSON.stringify(prevPreferences[key]) !== JSON.stringify(value)) {
+      changedPrefs[key] = {
+        from: prevPreferences[key],
+        to: value
+      };
+    }
+  }
+  
+  // Track the preference update event
+  await trackUserBehavior(
+    UserBehaviorEvent.PREFERENCE_UPDATED,
+    userId,
+    {
+      changes: changedPrefs,
+      timestamp: new Date().toISOString()
+    }
+  );
+  
+  // Update the preferences in the database for future reference
+  try {
+    await supabase
+      .from('user_preferences')
+      .upsert({
+        user_id: userId,
+        matching_preferences: newPreferences,
+        updated_at: new Date().toISOString()
+      });
+  } catch (error) {
+    console.error('Failed to store updated preferences:', error);
+  }
+};
+
+/**
  * Track detailed information about a matching interaction
  */
 export const trackMatchingInteraction = async (
@@ -112,6 +158,23 @@ export const trackMatchingInteraction = async (
         algorithm_version: '1.0', // Update as your algorithm evolves
         factors: additionalDetails || null
       });
+    }
+    
+    // Store feedback specifically if that was the action
+    if (matchAction === 'feedback' && additionalDetails?.feedback) {
+      await supabase.from('match_feedback').insert({
+        match_id: matchId || `${advisorId}_${consumerId}`,
+        user_id: consumerId,
+        is_helpful: additionalDetails.feedback.isHelpful,
+        comment: additionalDetails.feedback.comment || null
+      });
+      
+      // Update matching weights based on feedback if that's implemented
+      if (additionalDetails.feedback.adjustWeights && additionalDetails.feedback.weightAdjustments) {
+        // This would call a function to gradually adjust algorithm weights based on feedback
+        // updateAlgorithmWeights(additionalDetails.feedback.weightAdjustments);
+        console.log('Algorithm weight adjustments:', additionalDetails.feedback.weightAdjustments);
+      }
     }
     
     // Log the match interaction for analytics

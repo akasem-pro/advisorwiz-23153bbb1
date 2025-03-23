@@ -3,6 +3,7 @@ import React from 'react';
 import MatchExplanation from './MatchExplanation';
 import { UserType } from '../../types/userTypes';
 import { calculateMatchScore, getMatchExplanations } from '../../utils/matchingAlgorithm';
+import { trackUserBehavior, UserBehaviorEvent } from '../../utils/analytics/userBehaviorTracker';
 
 interface MatchExplanationDisplayProps {
   userType: 'consumer' | 'advisor' | null;
@@ -38,6 +39,17 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
     // Generate a matchId from the two profiles
     const matchId = `match-${advisorProfile.id}-${consumerProfile.id}`;
     
+    // Track this match view event
+    trackUserBehavior(
+      UserBehaviorEvent.MATCH_VIEW,
+      advisorProfile.id,
+      {
+        consumer_id: consumerProfile.id,
+        score: score,
+        explanations: explanations
+      }
+    );
+    
     return (
       <div className="match-explanation">
         <MatchExplanation 
@@ -46,6 +58,8 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
           compact={compact}
           showFeedback={showFeedback}
           matchId={matchId}
+          advisorId={advisorProfile.id}
+          consumerId={consumerProfile.id}
         />
       </div>
     );
@@ -69,6 +83,17 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
     // Generate a matchId from the two profiles
     const matchId = `match-${item.id}-${consumerProfile.id}`;
     
+    // Track this match view event
+    trackUserBehavior(
+      UserBehaviorEvent.MATCH_VIEW,
+      consumerProfile.id,
+      {
+        advisor_id: item.id,
+        score: score,
+        explanations: explanations
+      }
+    );
+    
     return (
       <div className="match-explanation">
         <MatchExplanation 
@@ -77,6 +102,8 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
           compact={compact}
           showFeedback={showFeedback}
           matchId={matchId}
+          advisorId={item.id}
+          consumerId={consumerProfile.id}
         />
       </div>
     );

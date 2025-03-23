@@ -65,7 +65,7 @@ export type UserContextType = {
   getAdvisorLeads: (advisorId: string) => Lead[];
 };
 
-// New type for match preferences
+// Expanded type for match preferences with weighting factors
 export type MatchPreferences = {
   prioritizeLanguage?: boolean;
   prioritizeAvailability?: boolean;
@@ -73,8 +73,16 @@ export type MatchPreferences = {
   prioritizeLocation?: boolean;
   minimumMatchScore?: number;
   excludedCategories?: ServiceCategory[];
-  // New field for considering call interaction data
+  // Consider call interaction data
   considerInteractionData?: boolean;
+  // Dynamic weight factors (0-100)
+  weightFactors?: {
+    language?: number;
+    expertise?: number;
+    availability?: number;
+    location?: number;
+    interaction?: number;
+  };
 };
 
 // Create the context with default values
@@ -110,7 +118,14 @@ const UserContext = createContext<UserContextType>({
     prioritizeExpertise: true,
     prioritizeLocation: false,
     minimumMatchScore: 40,
-    considerInteractionData: true
+    considerInteractionData: true,
+    weightFactors: {
+      language: 50,
+      expertise: 50,
+      availability: 30,
+      location: 20,
+      interaction: 40
+    }
   },
   getTopMatches: () => [],
   getRecommendedMatches: () => [],

@@ -3,7 +3,7 @@
 // It re-exports functions from the more focused modules
 
 // Import the necessary modules
-import { trackWebVitals } from './performance/webVitals';
+import { trackWebVitals as trackWebVitalsFunc } from './performance/webVitals';
 import { setupLazyLoading, optimizeImagesForCWV } from './performance/imageOptimization';
 import { implementResourceHints } from './performance/resourceHints';
 import {
@@ -17,6 +17,13 @@ import { trackVisitorActivity } from './analytics/visitorTracking';
 import { trackFeatureUsage } from './analytics/featureTracking';
 import { trackAIInteraction } from './analytics/aiTracking';
 import { recordMatchHistory } from './analytics/matchTracking';
+import { 
+  trackUserBehavior, 
+  trackMatchingInteraction, 
+  trackPageView,
+  trackPreferenceUpdate,
+  UserBehaviorEvent
+} from './analytics/userBehaviorTracker';
 
 // Core performance tracking
 export {
@@ -27,7 +34,7 @@ export {
 };
 
 // Web Vitals tracking
-export { trackWebVitals };
+export { trackWebVitalsFunc as trackWebVitals };
 
 // Function performance tracking
 export { withPerformanceTracking };
@@ -49,6 +56,15 @@ export { trackAIInteraction };
 
 // Match history recording
 export { recordMatchHistory };
+
+// User behavior tracking
+export { 
+  trackUserBehavior, 
+  trackMatchingInteraction, 
+  trackPageView,
+  trackPreferenceUpdate,
+  UserBehaviorEvent
+};
 
 // User behavior metrics tracking
 export const trackUserEngagement = async (
@@ -88,6 +104,9 @@ export const trackUserEngagement = async (
       }
     }
     
+    // Also track as general user behavior
+    await trackUserBehavior(eventType, userId, details);
+    
     console.log(`User engagement tracked: ${eventType}`, details);
   } catch (error) {
     console.error('Failed to track user engagement:', error);
@@ -118,6 +137,24 @@ export const trackMatchEngagement = async (
       ...details
     });
     
+    // Extract advisor and consumer IDs from the match ID if available
+    // Format is typically: "match-{advisorId}-{consumerId}"
+    const parts = matchId.split('-');
+    if (parts.length >= 3) {
+      const advisorId = parts[1];
+      const consumerId = parts[2];
+      
+      // Track detailed matching interaction
+      await trackMatchingInteraction(
+        action,
+        advisorId,
+        consumerId,
+        score,
+        matchId,
+        details
+      );
+    }
+    
     console.log(`Match engagement tracked: ${action}`, { matchId, score, details });
   } catch (error) {
     console.error('Failed to track match engagement:', error);
@@ -128,7 +165,7 @@ export const trackMatchEngagement = async (
 export const initPerformanceOptimizations = () => {
   if (typeof window !== 'undefined') {
     // Track web vitals
-    trackWebVitals();
+    trackWebVitalsFunc();
     
     // Optimize images for Core Web Vitals
     optimizeImagesForCWV();
