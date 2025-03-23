@@ -2,6 +2,7 @@ import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { UserProvider } from './context/UserProvider';
 import { ThemeProvider } from './context/ThemeContext';
+import { FeedbackProvider } from './context/FeedbackContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/toaster';
 import { Helmet } from 'react-helmet';
@@ -14,8 +15,8 @@ import {
 import { initPerformanceOptimizations } from './utils/performanceTracking';
 import { initializeTagManager, trackPageView } from './utils/tagManager';
 import { AuthProvider } from './features/auth/context/AuthProvider';
+import FeedbackContainer from './components/feedback/FeedbackContainer';
 
-// Implement React.lazy for code splitting
 const Index = lazy(() => import('./pages/Index'));
 const Onboarding = lazy(() => import('./pages/Onboarding'));
 const AdvisorProfile = lazy(() => import('./pages/AdvisorProfile'));
@@ -42,7 +43,6 @@ const Terms = lazy(() => import('./pages/Terms'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
-// Optimized loading fallback component
 const PageLoading = () => (
   <div className="min-h-screen flex items-center justify-center">
     <div className="text-center">
@@ -144,6 +144,7 @@ function AppWithAuth() {
         </Routes>
       </Suspense>
       <Toaster />
+      <FeedbackContainer position="bottom-right" />
     </AuthProvider>
   );
 }
@@ -158,29 +159,31 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <UserProvider>
         <ThemeProvider>
-          <Helmet>
-            <html lang="en" />
-            <meta charSet="utf-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-            <meta name="theme-color" content="#1E3A8A" />
-            <link rel="icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
-            <link rel="apple-touch-icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
-            
-            <meta name="application-name" content="AdvisorWiz" />
-            <meta name="apple-mobile-web-app-capable" content="yes" />
-            <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-            <meta name="format-detection" content="telephone=no" />
-            <meta name="mobile-web-app-capable" content="yes" />
-          </Helmet>
-          <Preload 
-            resources={criticalResources}
-            preconnect={preconnectDomains}
-            dnsPrefetch={dnsPrefetchDomains}
-          />
-          <StructuredData data={globalStructuredData} />
-          <Router>
-            <AppWithAuth />
-          </Router>
+          <FeedbackProvider>
+            <Helmet>
+              <html lang="en" />
+              <meta charSet="utf-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+              <meta name="theme-color" content="#1E3A8A" />
+              <link rel="icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
+              <link rel="apple-touch-icon" href="/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png" />
+              
+              <meta name="application-name" content="AdvisorWiz" />
+              <meta name="apple-mobile-web-app-capable" content="yes" />
+              <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+              <meta name="format-detection" content="telephone=no" />
+              <meta name="mobile-web-app-capable" content="yes" />
+            </Helmet>
+            <Preload 
+              resources={criticalResources}
+              preconnect={preconnectDomains}
+              dnsPrefetch={dnsPrefetchDomains}
+            />
+            <StructuredData data={globalStructuredData} />
+            <Router>
+              <AppWithAuth />
+            </Router>
+          </FeedbackProvider>
         </ThemeProvider>
       </UserProvider>
     </QueryClientProvider>
