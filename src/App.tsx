@@ -1,3 +1,4 @@
+
 import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { UserProvider } from './context/UserProvider';
@@ -17,7 +18,9 @@ import { initializeTagManager, trackPageView } from './utils/tagManager';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import FeedbackContainer from './components/feedback/FeedbackContainer';
 
+// Lazy loaded components
 const Index = lazy(() => import('./pages/Index'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 const Onboarding = lazy(() => import('./pages/Onboarding'));
 const AdvisorProfile = lazy(() => import('./pages/AdvisorProfile'));
 const ConsumerProfile = lazy(() => import('./pages/ConsumerProfile'));
@@ -108,7 +111,8 @@ function AppWithAuth() {
       <PageTracker />
       <Suspense fallback={<PageLoading />}>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/home" element={<Index />} />
           <Route path="/onboarding" element={<Onboarding />} />
           
           <Route path="/advisor-profile" element={<AdvisorProfile />} />
