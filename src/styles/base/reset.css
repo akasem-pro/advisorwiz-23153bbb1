@@ -1,0 +1,18 @@
+
+* {
+  @apply border-border;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior-y: none;
+}
+
+body {
+  @apply bg-background text-foreground font-sans antialiased;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+  font-size: 16px;
+  line-height: 1.6;
+}

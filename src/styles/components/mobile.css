@@ -1,0 +1,32 @@
+
+/* Mobile-specific components */
+.mobile-card {
+  @apply bg-white dark:bg-navy-800 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-navy-700;
+}
+
+/* Mobile Navigation */
+.mobile-nav-item {
+  @apply flex flex-col items-center justify-center text-xs;
+}
+
+.mobile-nav-icon {
+  @apply mb-1 h-5 w-5;
+}
+
+/* Mobile optimized spacing */
+.mobile-container {
+  @apply px-4 py-3;
+}
+
+.mobile-section {
+  @apply py-6;
+}
+
+/* Mobile Card Components */
+.mobile-card-title {
+  @apply text-lg font-semibold text-navy-800 dark:text-slate-200 mb-2;
+}
+
+.mobile-card-description {
+  @apply text-sm text-slate-600 dark:text-slate-400;
+}

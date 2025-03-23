@@ -1,0 +1,31 @@
+
+/* Card styles refined for mature professionals */
+.professional-card {
+  @apply bg-white dark:bg-navy-800 rounded-lg p-6 shadow-md border border-slate-200 dark:border-navy-700 transition-all duration-300 hover:shadow-lg;
+}
+
+.resource-card {
+  @apply bg-white dark:bg-navy-800 rounded-lg overflow-hidden shadow-md border border-slate-200 dark:border-navy-700 transition-all duration-300 hover:shadow-lg hover:border-teal-200 dark:hover:border-teal-700;
+}
+
+/* Resource Card Variations */
+.resource-card-compact {
+  @apply p-4;
+}
+
+.resource-card-title {
+  @apply text-lg font-semibold text-navy-800 dark:text-slate-200 mb-2;
+}
+
+.resource-card-description {
+  @apply text-sm text-slate-600 dark:text-slate-400 mb-3;
+}
+
+.resource-card-link {
+  @apply text-teal-600 hover:text-teal-700 dark:text-teal-300 dark:hover:text-teal-200 font-medium transition-colors;
+}
+
+/* Glass effect card */
+.glass-card {
+  @apply bg-white/70 dark:bg-navy-800/70 backdrop-blur-sm border border-white/40 dark:border-navy-700/40 shadow-sm;
+}

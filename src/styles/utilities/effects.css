@@ -1,0 +1,33 @@
+
+@layer utilities {
+  /* General utilities */
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Hover effects */
+  .hover-glow {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .hover-glow:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Animations */
+@keyframes slide-in-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-bottom {
+  animation: slide-in-bottom 0.5s ease-out forwards;
+}
