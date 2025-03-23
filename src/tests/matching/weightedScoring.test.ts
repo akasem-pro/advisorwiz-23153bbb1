@@ -1,5 +1,5 @@
 
-import { getWeightedCompatibilityScore } from '../../services/matching/weightedScoring';
+import { getWeightedCompatibilityScore, setMatchingStrategy } from '../../services/matching/weightedScoring';
 import { mockAdvisors, mockConsumers } from '../../data/mockUsers';
 
 describe('Weighted Scoring Algorithm', () => {
@@ -12,6 +12,11 @@ describe('Weighted Scoring Algorithm', () => {
     prioritizeAvailability: true,
     prioritizeLocation: true
   };
+
+  beforeEach(() => {
+    // Reset to default strategy before each test
+    setMatchingStrategy('default');
+  });
 
   test('should return valid score structure', () => {
     const result = getWeightedCompatibilityScore(advisorId, consumerId, defaultPreferences);
@@ -69,5 +74,19 @@ describe('Weighted Scoring Algorithm', () => {
     
     // With exclusions that match advisor expertise, score should be lower
     expect(withExclusions.score).toBeLessThanOrEqual(withoutExclusions.score);
+  });
+
+  test('changing matching strategy should be possible', () => {
+    // First use default strategy
+    const defaultResult = getWeightedCompatibilityScore(advisorId, consumerId, defaultPreferences);
+    
+    // Set a different strategy (though we're just setting it to default again for now)
+    setMatchingStrategy('default');
+    
+    // This would test with a different strategy once we have more implementations
+    const newStrategyResult = getWeightedCompatibilityScore(advisorId, consumerId, defaultPreferences);
+    
+    // For now, results should be the same since we're using the default strategy twice
+    expect(newStrategyResult.score).toEqual(defaultResult.score);
   });
 });

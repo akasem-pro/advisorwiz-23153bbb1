@@ -4,7 +4,8 @@ export { calculateBaseCompatibility } from './compatibility';
 export { 
   getWeightedCompatibilityScore,
   clearCompatibilityCache,
-  getCompatibilityCacheStats 
+  getCompatibilityCacheStats,
+  setMatchingStrategy
 } from './weightedScoring';
 export { calculateCompatibilityBetweenProfiles } from './profileMatching';
 export { getRecommendedProfilesBasedOnActivity } from './activityRecommendations';
@@ -14,3 +15,8 @@ export * from './algorithms/languageMatching';
 export * from './algorithms/expertiseMatching';
 export * from './algorithms/availabilityMatching';
 export * from './algorithms/callInteractionScoring';
+
+// Export strategy pattern components
+export * from './strategies/MatchingStrategy';
+export * from './strategies/MatchingStrategyFactory';
+export * from './strategies/MatchingStrategyContext';
