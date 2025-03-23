@@ -42,23 +42,24 @@ export const trackUserBehavior = async (
     
     // Store in the user_interactions table for more detailed analysis
     if (userId) {
-      const interactionData: Record<string, any> = {
+      // Create an interaction data object with the required interaction_type
+      const interactionData = {
         interaction_type: event,
         notes: properties ? JSON.stringify(properties) : null
       };
       
       // Handle advisor/consumer specific interactions if those IDs are provided
       if (properties?.advisor_id) {
-        interactionData.advisor_id = properties.advisor_id;
+        interactionData['advisor_id'] = properties.advisor_id;
       }
       
       if (properties?.consumer_id) {
-        interactionData.consumer_id = properties.consumer_id;
+        interactionData['consumer_id'] = properties.consumer_id;
       }
       
       // Add duration if provided
       if (properties?.duration) {
-        interactionData.duration = properties.duration;
+        interactionData['duration'] = properties.duration;
       }
       
       await supabase
