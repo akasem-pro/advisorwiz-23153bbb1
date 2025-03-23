@@ -1,3 +1,4 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -193,7 +194,7 @@ export const updateProfile = async (userId: string, profileData: any, schema?: a
     
     // Update cache
     if (data && navigator.onLine) {
-      const existingCache = getFromCache(`${CACHE_KEYS.PROFILES}_${userId}`) || {};
+      const existingCache = getFromCache<Record<string, any>>(`${CACHE_KEYS.PROFILES}_${userId}`) || {};
       saveToCache(`${CACHE_KEYS.PROFILES}_${userId}`, { ...existingCache, ...data });
     }
     
@@ -298,7 +299,7 @@ export const getAdvisorProfiles = async (limit: number = 10, filters: any = {}, 
       }
     }
     
-    return { data: [], error: errorMessage, isFromCache: false };
+    return { data: [] as any[], error: errorMessage, isFromCache: false };
   }
 };
 
@@ -398,7 +399,7 @@ export const getCompatibilityScores = async (
       }
     }
     
-    return { data: [], error: errorMessage, isFromCache: false };
+    return { data: [] as any[], error: errorMessage, isFromCache: false };
   }
 };
 
@@ -455,7 +456,7 @@ export const getAppointments = async (userId: string, useCache: boolean = true):
       }
     }
     
-    return { data: [], error: errorMessage, isFromCache: false };
+    return { data: [] as any[], error: errorMessage, isFromCache: false };
   }
 };
 
@@ -504,7 +505,7 @@ export const getChatMessages = async (userId1: string, userId2: string, useCache
       }
     }
     
-    return { data: [], error: errorMessage, isFromCache: false };
+    return { data: [] as any[], error: errorMessage, isFromCache: false };
   }
 };
 
