@@ -4,12 +4,12 @@ import { Card, CardContent } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
 import { trackMatchEngagement } from '../../utils/analytics/matchEngagementTracker';
-import { MatchExplanation } from './MatchExplanation.d';
+import type { MatchExplanation as MatchExplanationType } from './MatchExplanation.d';
 
 // Define a type for the props that the component will receive
 interface MatchExplanationProps {
   matchId: string;
-  explanations?: MatchExplanation[];
+  explanations?: MatchExplanationType[];
   score?: number;
   advisorId?: string;
   consumerId?: string;
@@ -27,7 +27,7 @@ const MatchExplanation = ({
   showFeedback = true
 }: MatchExplanationProps) => {
   const [loading, setLoading] = useState(true);
-  const [matchExplanations, setMatchExplanations] = useState<MatchExplanation[]>([]);
+  const [matchExplanations, setMatchExplanations] = useState<MatchExplanationType[]>([]);
   const [categories, setCategories] = useState<{ primary: string[]; secondary: string[] }>({ 
     primary: [], 
     secondary: [] 
@@ -44,7 +44,7 @@ const MatchExplanation = ({
         setLoading(true);
         try {
           // Placeholder for fetching logic - replace with your actual data fetching
-          const fetchedExplanations: MatchExplanation[] = [
+          const fetchedExplanations: MatchExplanationType[] = [
             { category: 'Category A', explanation: 'Explanation for A', scoreImpact: 0.8, isPrimary: true },
             { category: 'Category B', explanation: 'Explanation for B', scoreImpact: 0.6, isPrimary: false },
           ];
@@ -68,7 +68,7 @@ const MatchExplanation = ({
     }
   }, [matchId, explanations, score, advisorId, consumerId]);
   
-  const getMatchCategoriesFromExplanations = (explanations: MatchExplanation[]): { primary: string[]; secondary: string[] } => {
+  const getMatchCategoriesFromExplanations = (explanations: MatchExplanationType[]): { primary: string[]; secondary: string[] } => {
     const categs: { primary: string[]; secondary: string[] } = {
       primary: [],
       secondary: []

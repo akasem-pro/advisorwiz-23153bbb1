@@ -3,7 +3,7 @@
  * Utility functions for match explanations
  */
 
-import { MatchExplanation } from '../MatchExplanation.d';
+import type { MatchExplanation } from '../MatchExplanation.d';
 
 /**
  * Convert string explanations to MatchExplanation objects
