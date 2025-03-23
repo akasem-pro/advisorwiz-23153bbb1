@@ -1,4 +1,3 @@
-
 // This is the main entry point for the data layer, re-exporting all functionality from the modular files
 
 // Types
@@ -31,3 +30,6 @@ export { invalidateCache, invalidateAllCache } from './utils/cacheUtils';
 
 // Error handling utilities
 export { handleSupabaseError, validateData, ERROR_MESSAGES } from './utils/errorHandling';
+
+// Tooltip operations
+export { getTooltips, getTooltipByKey } from './operations/tooltipOperations';

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -25,6 +24,8 @@ import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
+import { useTooltipContent } from '../hooks/useTooltipContent';
+import ConsumerProfileTooltip from '../components/consumer/ConsumerProfileTooltip';
 
 // Define all required options for form fields
 const riskToleranceOptions = [
@@ -121,6 +122,7 @@ const ConsumerProfile: React.FC = () => {
   const [saved, setSaved] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
+  const { tooltipContent, isLoading: tooltipsLoading } = useTooltipContent();
   
   // Enhanced form data with all the new fields
   const [formData, setFormData] = useState({
@@ -261,7 +263,10 @@ const ConsumerProfile: React.FC = () => {
       age: calculateAge(formData.dateOfBirth),
       status: formData.employmentStatus,
       investableAssets: getInvestableAssetValue(formData.investableAssets),
-      riskTolerance: formData.riskTolerance as 'low' | 'medium' | 'high',
+      
+      // Map the form's risk tolerance value to the appropriate enum value
+      riskTolerance: mapRiskToleranceValue(formData.riskTolerance),
+      
       preferredCommunication: formData.preferredCommunication,
       preferredLanguage: formData.preferredLanguage,
       profilePicture: formData.profilePicture,
@@ -305,6 +310,16 @@ const ConsumerProfile: React.FC = () => {
       setSaved(false);
       navigate('/matches');
     }, 2000);
+  };
+
+  // Helper function to map UI risk tolerance values to DB enum values
+  const mapRiskToleranceValue = (value: string): 'low' | 'medium' | 'high' => {
+    switch (value) {
+      case 'conservative': return 'low';
+      case 'aggressive': return 'high';
+      case 'moderate':
+      default: return 'medium';
+    }
   };
 
   const calculateAge = (dob: string): number => {
@@ -363,6 +378,7 @@ const ConsumerProfile: React.FC = () => {
     );
   };
 
+  // Modified render functions to include tooltips
   const renderPersonalInformation = () => {
     return (
       <div className="animate-fade-in">
@@ -556,6 +572,8 @@ const ConsumerProfile: React.FC = () => {
   };
 
   const renderFinancialGoals = () => {
+    const financialGoalsTooltip = tooltipContent.find(t => t.section_key === 'financial_goals');
+    
     return (
       <div className="animate-fade-in">
         <div className="flex items-center mb-6">
@@ -567,10 +585,15 @@ const ConsumerProfile: React.FC = () => {
         
         <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-navy-800 mb-3">
-              What is your main reason for seeking a financial advisor?
-              <span className="text-xs text-gray-500 ml-2">(Select all that apply)</span>
-            </label>
+            <ConsumerProfileTooltip 
+              title={financialGoalsTooltip?.title || "Financial Goals"}
+              description={financialGoalsTooltip?.description || "Your primary financial objectives. This information helps advisors understand what you want to achieve and recommend tailored strategies."}
+            >
+              <label className="block text-sm font-medium text-navy-800 mb-3">
+                What is your main reason for seeking a financial advisor?
+                <span className="text-xs text-gray-500 ml-2">(Select all that apply)</span>
+              </label>
+            </ConsumerProfileTooltip>
             <div className="grid md:grid-cols-2 gap-3">
               {financialGoalsOptions.map(option => (
                 <div key={option.value} className="flex items-center p-3 border rounded-md hover:bg-gray-50">
@@ -597,6 +620,9 @@ const ConsumerProfile: React.FC = () => {
   };
 
   const renderFinancialProfile = () => {
+    const riskToleranceTooltip = tooltipContent.find(t => t.section_key === 'risk_tolerance');
+    const investableAssetsTooltip = tooltipContent.find(t => t.section_key === 'investable_assets');
+    
     return (
       <div className="animate-fade-in">
         <div className="flex items-center mb-6">
@@ -607,6 +633,7 @@ const ConsumerProfile: React.FC = () => {
         </div>
         
         <div className="space-y-6">
+          {/* Income range section - no tooltip needed */}
           <div>
             <label className="block text-sm font-medium text-navy-800 mb-3">
               What is your approximate annual household income?
@@ -631,11 +658,17 @@ const ConsumerProfile: React.FC = () => {
             </div>
           </div>
           
+          {/* Investable assets section with tooltip */}
           <div>
-            <label className="block text-sm font-medium text-navy-800 mb-3">
-              What is your total investable asset value?
-              <span className="text-xs text-gray-500 ml-2">(Excluding primary residence)</span>
-            </label>
+            <ConsumerProfileTooltip
+              title={investableAssetsTooltip?.title || "Investable Assets"}
+              description={investableAssetsTooltip?.description || "The total value of assets you have available for investment. This helps advisors understand your financial capacity and recommend appropriate strategies."}
+            >
+              <label className="block text-sm font-medium text-navy-800 mb-3">
+                What is your total investable asset value?
+                <span className="text-xs text-gray-500 ml-2">(Excluding primary residence)</span>
+              </label>
+            </ConsumerProfileTooltip>
             <div className="space-y-2">
               {investableAssetsOptions.map(option => (
                 <div key={option.value} className="flex items-center">
@@ -656,6 +689,7 @@ const ConsumerProfile: React.FC = () => {
             </div>
           </div>
           
+          {/* Current advisor section - no tooltip needed */}
           <div>
             <label className="block text-sm font-medium text-navy-800 mb-3">
               Do you currently work with a financial advisor?
@@ -704,10 +738,16 @@ const ConsumerProfile: React.FC = () => {
             )}
           </div>
           
+          {/* Risk tolerance section with tooltip */}
           <div>
-            <label className="block text-sm font-medium text-navy-800 mb-3">
-              How would you describe your risk tolerance?
-            </label>
+            <ConsumerProfileTooltip
+              title={riskToleranceTooltip?.title || "Risk Tolerance"}
+              description={riskToleranceTooltip?.description || "Your comfort level with investment volatility. Low risk means prioritizing stability over growth potential, while high risk indicates comfort with fluctuations for potentially higher returns."}
+            >
+              <label className="block text-sm font-medium text-navy-800 mb-3">
+                How would you describe your risk tolerance?
+              </label>
+            </ConsumerProfileTooltip>
             <div className="space-y-2">
               {riskToleranceOptions.map(option => (
                 <div key={option.value} className="flex items-center">
@@ -733,6 +773,8 @@ const ConsumerProfile: React.FC = () => {
   };
 
   const renderServiceExpectations = () => {
+    const languageTooltip = tooltipContent.find(t => t.section_key === 'preferred_language');
+    
     return (
       <div className="animate-fade-in">
         <div className="flex items-center mb-6">
@@ -743,6 +785,7 @@ const ConsumerProfile: React.FC = () => {
         </div>
         
         <div className="space-y-6">
+          {/* Communication preferences */}
           <div>
             <label className="block text-sm font-medium text-navy-800 mb-3">
               Preferred method of communication
@@ -766,6 +809,7 @@ const ConsumerProfile: React.FC = () => {
             </div>
           </div>
           
+          {/* Meeting times */}
           <div>
             <label className="block text-sm font-medium text-navy-800 mb-3">
               Preferred meeting times
@@ -789,232 +833,9 @@ const ConsumerProfile: React.FC = () => {
             </div>
           </div>
           
+          {/* Languages with tooltip */}
           <div>
-            <label className="block text-sm font-medium text-navy-800 mb-3">
-              Do you prefer a financial advisor who speaks a specific language?
-              <span className="text-xs text-gray-500 ml-2">(Select all that apply)</span>
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {languageOptions.map(option => (
-                <div key={option.value} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id={`lang-${option.value}`}
-                    checked={formData.preferredLanguage.includes(option.value)}
-                    onChange={() => handleMultiSelectChange('preferredLanguage', option.value)}
-                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor={`lang-${option.value}`} className="ml-2 block text-sm text-gray-700">
-                    {option.label}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-navy-800 mb-3">
-              How involved do you want your advisor to be?
-            </label>
-            <div className="space-y-2">
-              {advisorInvolvementOptions.map(option => (
-                <div key={option.value} className="flex items-center">
-                  <input
-                    type="radio"
-                    id={`involvement-${option.value}`}
-                    name="advisorInvolvement"
-                    value={option.value}
-                    checked={formData.advisorInvolvement === option.value}
-                    onChange={handleChange}
-                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
-                  />
-                  <label htmlFor={`involvement-${option.value}`} className="ml-2 block text-sm text-gray-700">
-                    {option.label}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="flex items-center">
-            <input
-              id="wantsEducation"
-              name="wantsEducation"
-              type="checkbox"
-              checked={formData.wantsEducation}
-              onChange={(e) => setFormData(prev => ({ ...prev, wantsEducation: e.target.checked }))}
-              className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-            />
-            <label htmlFor="wantsEducation" className="ml-2 block text-sm text-gray-700">
-              I would like to receive financial education & updates (newsletters, webinars, insights)
-            </label>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderCompliance = () => {
-    return (
-      <div className="animate-fade-in">
-        <div className="flex items-center mb-6">
-          <ShieldCheck className="w-6 h-6 text-teal-600 mr-2" />
-          <h2 className="text-2xl font-serif font-semibold text-navy-900">
-            Compliance & Legal Disclosures
-          </h2>
-        </div>
-        
-        <div className="space-y-6">
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <p className="text-sm text-gray-600 mb-4">
-              AdvisorWiz takes your privacy and data security seriously. Please review and confirm the following to proceed:
-            </p>
-            
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <input
-                  id="sharingConsent"
-                  name="sharingConsent"
-                  type="checkbox"
-                  checked={formData.sharingConsent}
-                  onChange={(e) => setFormData(prev => ({ ...prev, sharingConsent: e.target.checked }))}
-                  className="h-4 w-4 mt-1 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-                />
-                <label htmlFor="sharingConsent" className="ml-2 block text-sm text-gray-700">
-                  I am comfortable sharing my financial details for advisory purposes. This information will only be shared with matched advisors and used to provide personalized financial guidance.
-                </label>
-              </div>
-              
-              <div className="flex items-start">
-                <input
-                  id="termsConsent"
-                  name="termsConsent"
-                  type="checkbox"
-                  checked={formData.termsConsent}
-                  onChange={(e) => setFormData(prev => ({ ...prev, termsConsent: e.target.checked }))}
-                  className="h-4 w-4 mt-1 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-                />
-                <label htmlFor="termsConsent" className="ml-2 block text-sm text-gray-700">
-                  I agree to AdvisorWiz's <a href="#" className="text-teal-600 hover:underline">Terms & Conditions</a> and <a href="#" className="text-teal-600 hover:underline">Privacy Policy</a>. <span className="text-red-500">*</span>
-                </label>
-              </div>
-              
-              <div className="flex items-start">
-                <input
-                  id="advisorContactConsent"
-                  name="advisorContactConsent"
-                  type="checkbox"
-                  checked={formData.advisorContactConsent}
-                  onChange={(e) => setFormData(prev => ({ ...prev, advisorContactConsent: e.target.checked }))}
-                  className="h-4 w-4 mt-1 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-                />
-                <label htmlFor="advisorContactConsent" className="ml-2 block text-sm text-gray-700">
-                  I authorize my matched financial advisor to contact me for an initial consultation.
-                </label>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-teal-50 p-4 rounded-lg border border-teal-200">
-            <h3 className="text-lg font-medium text-teal-800 mb-2 flex items-center">
-              <Percent className="w-5 h-5 mr-1" />
-              Account Verification
-            </h3>
-            <p className="text-sm text-teal-600">
-              After submitting your profile, you'll receive a verification email. Please click the link in that email to activate your account and start matching with advisors.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderCurrentStep = () => {
-    switch (currentStep) {
-      case 1:
-        return renderPersonalInformation();
-      case 2:
-        return renderFinancialGoals();
-      case 3:
-        return renderFinancialProfile();
-      case 4:
-        return renderServiceExpectations();
-      case 5:
-        return renderCompliance();
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <AnimatedRoute animation="fade">
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        
-        <main className="flex-grow pt-20">
-          <div className="container mx-auto px-4 py-12 max-w-4xl">
-            <div className="glass-card rounded-2xl overflow-hidden shadow-lg">
-              <div className="p-8 md:p-12">
-                <div className="text-center mb-10">
-                  <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4">
-                    Create Your Consumer Profile
-                  </h1>
-                  <p className="text-slate-600 max-w-2xl mx-auto">
-                    Tell us about yourself so we can match you with the perfect financial advisor.
-                  </p>
-                </div>
-
-                {renderStepIndicator()}
-
-                <form className="space-y-6 max-w-2xl mx-auto">
-                  {renderCurrentStep()}
-
-                  <div className="pt-4 flex justify-between">
-                    <Button
-                      type="button"
-                      onClick={handlePreviousStep}
-                      disabled={currentStep === 1}
-                      variant="outline"
-                      className={`${currentStep === 1 ? 'opacity-50' : ''}`}
-                    >
-                      Back
-                    </Button>
-
-                    <Button
-                      type="button"
-                      onClick={handleNextStep}
-                      className="bg-teal-600 hover:bg-teal-700 text-white"
-                    >
-                      {currentStep === totalSteps ? (
-                        saved ? (
-                          <>
-                            <CheckCircle className="mr-2 w-5 h-5" />
-                            Saved!
-                          </>
-                        ) : (
-                          <>
-                            <Save className="mr-2 w-5 h-5" />
-                            Create Profile
-                          </>
-                        )
-                      ) : (
-                        <>
-                          Continue
-                          <ChevronRight className="ml-2 w-5 h-5" />
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </main>
-
-        <Footer />
-      </div>
-    </AnimatedRoute>
-  );
-};
-
-export default ConsumerProfile;
+            <ConsumerProfileTooltip
+              title={languageTooltip?.title || "Preferred Language"}
+              description={languageTooltip?.description || "Languages you prefer for communication with your advisor. This ensures clear and comfortable conversations about your finances."}
+            >
