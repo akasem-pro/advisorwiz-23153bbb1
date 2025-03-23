@@ -113,6 +113,78 @@ export type Database = {
           },
         ]
       }
+      ai_interactions: {
+        Row: {
+          created_at: string | null
+          feedback_score: number | null
+          id: string
+          interaction_type: string
+          latency_ms: number | null
+          prompt: string | null
+          response: string | null
+          session_id: string
+          tokens_used: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          feedback_score?: number | null
+          id?: string
+          interaction_type: string
+          latency_ms?: number | null
+          prompt?: string | null
+          response?: string | null
+          session_id: string
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          feedback_score?: number | null
+          id?: string
+          interaction_type?: string
+          latency_ms?: number | null
+          prompt?: string | null
+          response?: string | null
+          session_id?: string
+          tokens_used?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      analytics_metrics: {
+        Row: {
+          created_at: string | null
+          dimension_name: string | null
+          dimension_value: string | null
+          id: string
+          metric_date: string
+          metric_name: string
+          metric_type: string
+          metric_value: number
+        }
+        Insert: {
+          created_at?: string | null
+          dimension_name?: string | null
+          dimension_value?: string | null
+          id?: string
+          metric_date: string
+          metric_name: string
+          metric_type: string
+          metric_value: number
+        }
+        Update: {
+          created_at?: string | null
+          dimension_name?: string | null
+          dimension_value?: string | null
+          id?: string
+          metric_date?: string
+          metric_name?: string
+          metric_type?: string
+          metric_value?: number
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           advisor_id: string | null
@@ -328,6 +400,33 @@ export type Database = {
           },
         ]
       }
+      feature_usage: {
+        Row: {
+          feature_name: string
+          first_used_at: string | null
+          id: string
+          last_used_at: string | null
+          usage_count: number | null
+          user_id: string | null
+        }
+        Insert: {
+          feature_name: string
+          first_used_at?: string | null
+          id?: string
+          last_used_at?: string | null
+          usage_count?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          feature_name?: string
+          first_used_at?: string | null
+          id?: string
+          last_used_at?: string | null
+          usage_count?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       firm_advisors: {
         Row: {
           advisor_id: string
@@ -512,6 +611,61 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_history: {
+        Row: {
+          advisor_id: string | null
+          algorithm_version: string | null
+          compatibility_score_id: string | null
+          consumer_id: string | null
+          factors: Json | null
+          id: string
+          recorded_at: string | null
+          score: number
+        }
+        Insert: {
+          advisor_id?: string | null
+          algorithm_version?: string | null
+          compatibility_score_id?: string | null
+          consumer_id?: string | null
+          factors?: Json | null
+          id?: string
+          recorded_at?: string | null
+          score: number
+        }
+        Update: {
+          advisor_id?: string | null
+          algorithm_version?: string | null
+          compatibility_score_id?: string | null
+          consumer_id?: string | null
+          factors?: Json | null
+          id?: string
+          recorded_at?: string | null
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_history_advisor_id_fkey"
+            columns: ["advisor_id"]
+            isOneToOne: false
+            referencedRelation: "advisor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_history_compatibility_score_id_fkey"
+            columns: ["compatibility_score_id"]
+            isOneToOne: false
+            referencedRelation: "compatibility_scores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_history_consumer_id_fkey"
+            columns: ["consumer_id"]
+            isOneToOne: false
+            referencedRelation: "consumer_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -811,6 +965,8 @@ export type Database = {
       }
       user_preferences: {
         Row: {
+          ai_preferences: Json | null
+          dashboard_preferences: Json | null
           matching_preferences: Json | null
           notification_preferences: Json | null
           ui_preferences: Json | null
@@ -818,6 +974,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_preferences?: Json | null
+          dashboard_preferences?: Json | null
           matching_preferences?: Json | null
           notification_preferences?: Json | null
           ui_preferences?: Json | null
@@ -825,6 +983,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_preferences?: Json | null
+          dashboard_preferences?: Json | null
           matching_preferences?: Json | null
           notification_preferences?: Json | null
           ui_preferences?: Json | null
@@ -841,12 +1001,144 @@ export type Database = {
           },
         ]
       }
+      user_segment_memberships: {
+        Row: {
+          added_at: string | null
+          id: string
+          segment_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          added_at?: string | null
+          id?: string
+          segment_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          added_at?: string | null
+          id?: string
+          segment_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_segment_memberships_segment_id_fkey"
+            columns: ["segment_id"]
+            isOneToOne: false
+            referencedRelation: "user_segments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_segments: {
+        Row: {
+          created_at: string | null
+          criteria: Json
+          id: string
+          segment_description: string | null
+          segment_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          criteria: Json
+          id?: string
+          segment_description?: string | null
+          segment_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          criteria?: Json
+          id?: string
+          segment_description?: string | null
+          segment_name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      visitor_analytics: {
+        Row: {
+          browser: string | null
+          conversion_date: string | null
+          conversion_page: string | null
+          country: string | null
+          created_at: string | null
+          device_type: string | null
+          first_visit_date: string | null
+          id: string
+          landing_page: string | null
+          last_visit_date: string | null
+          os: string | null
+          referrer: string | null
+          region: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          visit_count: number | null
+          visitor_id: string
+        }
+        Insert: {
+          browser?: string | null
+          conversion_date?: string | null
+          conversion_page?: string | null
+          country?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          first_visit_date?: string | null
+          id?: string
+          landing_page?: string | null
+          last_visit_date?: string | null
+          os?: string | null
+          referrer?: string | null
+          region?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          visit_count?: number | null
+          visitor_id: string
+        }
+        Update: {
+          browser?: string | null
+          conversion_date?: string | null
+          conversion_page?: string | null
+          country?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          first_visit_date?: string | null
+          id?: string
+          landing_page?: string | null
+          last_visit_date?: string | null
+          os?: string | null
+          referrer?: string | null
+          region?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          visit_count?: number | null
+          visitor_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      record_metric: {
+        Args: {
+          p_metric_type: string
+          p_metric_name: string
+          p_metric_value: number
+          p_dimension_name?: string
+          p_dimension_value?: string
+        }
+        Returns: string
+      }
+      refresh_user_segments: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       online_status: "online" | "offline" | "away"
