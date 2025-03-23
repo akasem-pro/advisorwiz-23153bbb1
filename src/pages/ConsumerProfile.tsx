@@ -27,7 +27,6 @@ import { toast } from 'sonner';
 import { useTooltipContent } from '../hooks/useTooltipContent';
 import ConsumerProfileTooltip from '../components/consumer/ConsumerProfileTooltip';
 
-// Define all required options for form fields
 const riskToleranceOptions = [
   { value: 'conservative', label: 'Conservative – I prefer safe, low-risk investments' },
   { value: 'moderate', label: 'Moderate – A balance between risk & return' },
@@ -124,9 +123,7 @@ const ConsumerProfile: React.FC = () => {
   const totalSteps = 5;
   const { tooltipContent, isLoading: tooltipsLoading } = useTooltipContent();
   
-  // Enhanced form data with all the new fields
   const [formData, setFormData] = useState({
-    // Personal Information
     id: 'consumer-1',
     firstName: '',
     lastName: '',
@@ -139,36 +136,30 @@ const ConsumerProfile: React.FC = () => {
     industry: '',
     jobTitle: '',
     
-    // Financial Goals
     financialGoals: [] as string[],
     
-    // Financial Profile
     incomeRange: '',
     investableAssets: '',
     hasAdvisor: false,
     currentAdvisorReason: '',
     riskTolerance: 'moderate',
     
-    // Service Expectations
     preferredCommunication: [] as string[],
     preferredMeetingTimes: [] as string[],
     preferredLanguage: [] as string[],
     advisorInvolvement: '',
     wantsEducation: false,
     
-    // Compliance
     sharingConsent: false,
     termsConsent: false,
     advisorContactConsent: false,
 
-    // Profile picture and status
     profilePicture: consumerProfile?.profilePicture || '',
     onlineStatus: 'online' as 'online' | 'offline' | 'away',
     lastOnline: new Date().toISOString(),
     showOnlineStatus: true,
     chatEnabled: true,
     
-    // Default fields for compatibility
     matches: [] as string[],
     chats: [] as string[],
     appointments: [] as string[]
@@ -221,14 +212,12 @@ const ConsumerProfile: React.FC = () => {
   };
 
   const handleNextStep = () => {
-    // Basic validation for required fields in the current step
     if (currentStep === 1) {
       if (!formData.firstName || !formData.lastName || !formData.email) {
         toast.error("Please fill in all required fields");
         return;
       }
       
-      // Email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formData.email)) {
         toast.error("Please enter a valid email address");
@@ -250,13 +239,11 @@ const ConsumerProfile: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    // Check for required consents
     if (!formData.termsConsent) {
       toast.error("You must agree to the Terms & Conditions to continue");
       return;
     }
     
-    // Build the consumer profile object from form data
     const updatedProfile: ConsumerProfileType = {
       id: formData.id,
       name: `${formData.firstName} ${formData.lastName}`,
@@ -264,7 +251,6 @@ const ConsumerProfile: React.FC = () => {
       status: formData.employmentStatus,
       investableAssets: getInvestableAssetValue(formData.investableAssets),
       
-      // Map the form's risk tolerance value to the appropriate enum value
       riskTolerance: mapRiskToleranceValue(formData.riskTolerance),
       
       preferredCommunication: formData.preferredCommunication,
@@ -279,9 +265,6 @@ const ConsumerProfile: React.FC = () => {
       showOnlineStatus: formData.showOnlineStatus,
       startTimeline: 'not_sure',
       
-      // Store additional data in the profile object
-      // These would typically be added to the type definition
-      // @ts-ignore - We're adding custom fields not in the type
       email: formData.email,
       phone: formData.phone,
       dateOfBirth: formData.dateOfBirth,
@@ -312,7 +295,6 @@ const ConsumerProfile: React.FC = () => {
     }, 2000);
   };
 
-  // Helper function to map UI risk tolerance values to DB enum values
   const mapRiskToleranceValue = (value: string): 'low' | 'medium' | 'high' => {
     switch (value) {
       case 'conservative': return 'low';
@@ -335,7 +317,6 @@ const ConsumerProfile: React.FC = () => {
   };
 
   const getInvestableAssetValue = (range: string): number => {
-    // Return a representative value based on the selected range
     switch (range) {
       case 'under_10k': return 5000;
       case '10k_50k': return 30000;
@@ -378,7 +359,6 @@ const ConsumerProfile: React.FC = () => {
     );
   };
 
-  // Modified render functions to include tooltips
   const renderPersonalInformation = () => {
     return (
       <div className="animate-fade-in">
@@ -633,7 +613,6 @@ const ConsumerProfile: React.FC = () => {
         </div>
         
         <div className="space-y-6">
-          {/* Income range section - no tooltip needed */}
           <div>
             <label className="block text-sm font-medium text-navy-800 mb-3">
               What is your approximate annual household income?
@@ -658,7 +637,6 @@ const ConsumerProfile: React.FC = () => {
             </div>
           </div>
           
-          {/* Investable assets section with tooltip */}
           <div>
             <ConsumerProfileTooltip
               title={investableAssetsTooltip?.title || "Investable Assets"}
@@ -689,7 +667,6 @@ const ConsumerProfile: React.FC = () => {
             </div>
           </div>
           
-          {/* Current advisor section - no tooltip needed */}
           <div>
             <label className="block text-sm font-medium text-navy-800 mb-3">
               Do you currently work with a financial advisor?
@@ -738,7 +715,6 @@ const ConsumerProfile: React.FC = () => {
             )}
           </div>
           
-          {/* Risk tolerance section with tooltip */}
           <div>
             <ConsumerProfileTooltip
               title={riskToleranceTooltip?.title || "Risk Tolerance"}
@@ -785,7 +761,6 @@ const ConsumerProfile: React.FC = () => {
         </div>
         
         <div className="space-y-6">
-          {/* Communication preferences */}
           <div>
             <label className="block text-sm font-medium text-navy-800 mb-3">
               Preferred method of communication
@@ -809,7 +784,6 @@ const ConsumerProfile: React.FC = () => {
             </div>
           </div>
           
-          {/* Meeting times */}
           <div>
             <label className="block text-sm font-medium text-navy-800 mb-3">
               Preferred meeting times
@@ -833,10 +807,181 @@ const ConsumerProfile: React.FC = () => {
             </div>
           </div>
           
-          {/* Languages with tooltip */}
           <div>
-            <ConsumerProfileTooltip
-              title={languageTooltip?.title || "Preferred Language"}
-              description={languageTooltip?.description || "Languages you prefer for communication with your advisor. This ensures clear and comfortable conversations about your finances."}
-            >
-              <
+            <label className="block text-sm font-medium text-navy-800 mb-3">
+              What languages do you prefer?
+              <span className="text-xs text-gray-500 ml-2">(Select all that apply)</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {languageOptions.map(option => (
+                <div key={option.value} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`lang-${option.value}`}
+                    checked={formData.preferredLanguage.includes(option.value)}
+                    onChange={() => handleMultiSelectChange('preferredLanguage', option.value)}
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor={`lang-${option.value}`} className="ml-2 block text-sm text-gray-700">
+                    {option.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-navy-800 mb-3">
+              How much involvement do you want from your advisor?
+            </label>
+            <div className="space-y-2">
+              {advisorInvolvementOptions.map(option => (
+                <div key={option.value} className="flex items-center">
+                  <input
+                    type="radio"
+                    id={`involvement-${option.value}`}
+                    name="advisorInvolvement"
+                    value={option.value}
+                    checked={formData.advisorInvolvement === option.value}
+                    onChange={handleChange}
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
+                  />
+                  <label htmlFor={`involvement-${option.value}`} className="ml-2 block text-sm text-gray-700">
+                    {option.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="wantsEducation"
+                name="wantsEducation"
+                checked={formData.wantsEducation}
+                onChange={() => setFormData(prev => ({ ...prev, wantsEducation: !prev.wantsEducation }))}
+                className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+              />
+              <label htmlFor="wantsEducation" className="ml-2 block text-sm text-gray-700">
+                I'm interested in educational resources to improve my financial literacy
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCompliance = () => {
+    return (
+      <div className="animate-fade-in">
+        <div className="flex items-center mb-6">
+          <ShieldCheck className="w-6 h-6 text-teal-600 mr-2" />
+          <h2 className="text-2xl font-serif font-semibold text-navy-900">
+            Compliance
+          </h2>
+        </div>
+        
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-navy-800 mb-3">
+              Do you agree to share your personal information with us?
+            </label>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="sharingConsent"
+                name="sharingConsent"
+                checked={formData.sharingConsent}
+                onChange={handleChange}
+                className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+              />
+              <label htmlFor="sharingConsent" className="ml-2 block text-sm text-gray-700">
+                I agree to share my personal information with the financial advisor I choose
+              </label>
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-navy-800 mb-3">
+              Do you agree to the Terms & Conditions?
+            </label>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="termsConsent"
+                name="termsConsent"
+                checked={formData.termsConsent}
+                onChange={handleChange}
+                className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+              />
+              <label htmlFor="termsConsent" className="ml-2 block text-sm text-gray-700">
+                I agree to the Terms & Conditions
+              </label>
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-navy-800 mb-3">
+              Do you agree to share your contact information with the financial advisor?
+            </label>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="advisorContactConsent"
+                name="advisorContactConsent"
+                checked={formData.advisorContactConsent}
+                onChange={handleChange}
+                className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+              />
+              <label htmlFor="advisorContactConsent" className="ml-2 block text-sm text-gray-700">
+                I agree to share my contact information with the financial advisor
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <AnimatedRoute />
+      <Header />
+      <main className="flex flex-col items-center justify-center min-h-screen">
+        <div className="w-full max-w-4xl px-4">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl font-serif font-semibold text-navy-900">
+              Create Your Profile
+            </h1>
+            <div className="flex items-center">
+              <div className="flex items-center">
+                <span className="text-sm font-medium text-navy-800 mr-2">
+                  Step {currentStep} of {totalSteps}
+                </span>
+                <div className="relative w-full h-2 bg-gray-200 rounded">
+                  <div 
+                    className="absolute top-0 left-0 h-2 bg-teal-500 rounded"
+                    style={{ width: `${(currentStep - 1) / (totalSteps - 1) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-8">
+            {renderPersonalInformation()}
+            {renderFinancialGoals()}
+            {renderFinancialProfile()}
+            {renderServiceExpectations()}
+            {renderCompliance()}
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default ConsumerProfile;
