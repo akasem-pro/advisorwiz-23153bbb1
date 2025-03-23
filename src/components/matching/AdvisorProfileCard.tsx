@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AdvisorProfile } from '../../types/userTypes';
 import { Badge } from '../ui/badge';
@@ -6,6 +5,7 @@ import { Star, MapPin, Clock, Award, CheckCircle, MessageCircle, Calendar } from
 import { Button } from '../ui/button';
 import { useNavigate } from 'react-router-dom';
 import MatchExplanation from './MatchExplanation';
+import { convertToMatchExplanations } from './utils/matchExplanationUtils';
 
 interface AdvisorProfileCardProps {
   advisor: AdvisorProfile;
@@ -20,7 +20,7 @@ const AdvisorProfileCard: React.FC<AdvisorProfileCardProps> = ({
   advisor,
   matchScore,
   matchExplanations,
-  matchId,
+  matchId = 'match-default',
   onContact,
   onSchedule
 }) => {
@@ -34,7 +34,6 @@ const AdvisorProfileCard: React.FC<AdvisorProfileCardProps> = ({
     <div className="border rounded-lg shadow-sm overflow-hidden bg-white">
       <div className="p-5">
         <div className="flex items-start gap-4">
-          {/* Profile Picture */}
           <div className="shrink-0">
             <img
               src={advisor.profilePicture || '/placeholder-avatar.png'}
@@ -43,7 +42,6 @@ const AdvisorProfileCard: React.FC<AdvisorProfileCardProps> = ({
             />
           </div>
           
-          {/* Main Content */}
           <div className="flex-1">
             <h3 className="text-lg font-bold text-navy-800 mb-1">{advisor.name}</h3>
             
@@ -80,7 +78,6 @@ const AdvisorProfileCard: React.FC<AdvisorProfileCardProps> = ({
               )}
             </div>
             
-            {/* Certifications */}
             {advisor.certifications && advisor.certifications.length > 0 && (
               <div className="flex items-center gap-1 mb-2">
                 <Award className="h-4 w-4 text-teal-600" />
@@ -90,7 +87,6 @@ const AdvisorProfileCard: React.FC<AdvisorProfileCardProps> = ({
               </div>
             )}
             
-            {/* Expertise Tags */}
             {advisor.expertise && advisor.expertise.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-3">
                 {advisor.expertise.map((tag, index) => (
@@ -101,7 +97,6 @@ const AdvisorProfileCard: React.FC<AdvisorProfileCardProps> = ({
               </div>
             )}
             
-            {/* Match Score */}
             {matchScore !== undefined && (
               <div className="flex items-center mb-2">
                 <div 
@@ -124,18 +119,17 @@ const AdvisorProfileCard: React.FC<AdvisorProfileCardProps> = ({
               </div>
             )}
             
-            {/* Match Explanation */}
             {matchScore !== undefined && matchExplanations && matchExplanations.length > 0 && (
               <MatchExplanation 
-                score={matchScore} 
-                explanations={matchExplanations} 
-                matchId={matchId}
+                matchId={matchId || `match-${advisor.id}`} 
+                explanations={convertToMatchExplanations(matchExplanations)}
+                score={matchScore}
+                advisorId={advisor.id}
               />
             )}
           </div>
         </div>
         
-        {/* Action Buttons */}
         <div className="flex gap-2 mt-4">
           <Button variant="outline" className="flex-1" onClick={viewProfile}>
             View Profile

@@ -1,7 +1,9 @@
+
 import React from 'react';
 import MatchExplanation from './MatchExplanation';
 import { calculateMatchScore, getMatchExplanations } from '../../utils/matchingAlgorithm';
 import { trackUserBehavior, UserBehaviorEvent } from '../../utils/analytics/userBehaviorTracker';
+import { convertToMatchExplanations } from './utils/matchExplanationUtils';
 
 interface MatchExplanationDisplayProps {
   userType: 'consumer' | 'advisor' | null;
@@ -32,7 +34,8 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
     
     // Import dynamic explanations based on user's profile
     const score = calculateMatchScore(advisorProfile as any, consumerProfile);
-    const explanations = getMatchExplanations(advisorProfile as any, consumerProfile);
+    const explanationStrings = getMatchExplanations(advisorProfile as any, consumerProfile);
+    const explanations = convertToMatchExplanations(explanationStrings);
     
     // Generate a matchId from the two profiles
     const matchId = `match-${advisorProfile.id}-${consumerProfile.id}`;
@@ -44,18 +47,18 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
       {
         consumer_id: consumerProfile.id,
         score: score,
-        explanations: explanations
+        explanations: explanationStrings
       }
     );
     
     return (
       <div className="match-explanation">
         <MatchExplanation 
-          score={score}
+          matchId={matchId}
           explanations={explanations}
+          score={score}
           compact={compact}
           showFeedback={showFeedback}
-          matchId={matchId}
           advisorId={advisorProfile.id}
           consumerId={consumerProfile.id}
         />
@@ -76,7 +79,8 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
     
     // Get real explanations
     const score = calculateMatchScore(item, consumerProfile);
-    const explanations = getMatchExplanations(item, consumerProfile);
+    const explanationStrings = getMatchExplanations(item, consumerProfile);
+    const explanations = convertToMatchExplanations(explanationStrings);
     
     // Generate a matchId from the two profiles
     const matchId = `match-${item.id}-${consumerProfile.id}`;
@@ -88,18 +92,18 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
       {
         advisor_id: item.id,
         score: score,
-        explanations: explanations
+        explanations: explanationStrings
       }
     );
     
     return (
       <div className="match-explanation">
         <MatchExplanation 
-          score={score}
+          matchId={matchId}
           explanations={explanations}
+          score={score}
           compact={compact}
           showFeedback={showFeedback}
-          matchId={matchId}
           advisorId={item.id}
           consumerId={consumerProfile.id}
         />
