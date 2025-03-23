@@ -5,7 +5,7 @@ import AppLayout from '../components/layout/AppLayout';
 import PageSEO from '../components/seo/PageSEO';
 import { Button } from '../components/ui/button';
 import { generateBreadcrumbSchema } from '../utils/schemas';
-import { Sitemap as SitemapIcon } from 'lucide-react';
+import { LayoutGrid } from 'lucide-react';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 
 const Sitemap: React.FC = () => {
@@ -95,7 +95,7 @@ const Sitemap: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           <div className="section-header">
             <h1 className="section-title flex items-center justify-center gap-3">
-              <SitemapIcon className="w-10 h-10 text-teal-600 dark:text-teal-400" />
+              <LayoutGrid className="w-10 h-10 text-teal-600 dark:text-teal-400" />
               <span>Sitemap</span>
             </h1>
             <p className="section-description">
