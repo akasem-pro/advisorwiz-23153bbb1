@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -834,4 +835,251 @@ const ConsumerProfile: React.FC = () => {
             <label className="block text-sm font-medium text-navy-800 mb-3">
               How much involvement do you want from your advisor?
             </label>
-            <div className="space-y
+            <div className="space-y-2">
+              {advisorInvolvementOptions.map(option => (
+                <div key={option.value} className="flex items-center">
+                  <input
+                    type="radio"
+                    id={`involvement-${option.value}`}
+                    name="advisorInvolvement"
+                    value={option.value}
+                    checked={formData.advisorInvolvement === option.value}
+                    onChange={handleChange}
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
+                  />
+                  <label htmlFor={`involvement-${option.value}`} className="ml-2 block text-sm text-gray-700">
+                    {option.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="wantsEducation"
+                name="wantsEducation"
+                checked={formData.wantsEducation}
+                onChange={(e) => setFormData(prev => ({ ...prev, wantsEducation: e.target.checked }))}
+                className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+              />
+              <label htmlFor="wantsEducation" className="ml-2 block text-sm text-gray-700">
+                I want my advisor to help educate me about financial concepts
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderTermsConsent = () => {
+    return (
+      <div className="animate-fade-in">
+        <div className="flex items-center mb-6">
+          <ShieldCheck className="w-6 h-6 text-teal-600 mr-2" />
+          <h2 className="text-2xl font-serif font-semibold text-navy-900">
+            Privacy & Consent
+          </h2>
+        </div>
+        
+        <div className="space-y-6">
+          <div className="bg-slate-50 p-4 rounded-lg">
+            <p className="text-sm text-slate-700 mb-4">
+              By creating a profile, you agree to our Terms of Service and Privacy Policy. 
+              Your information will be handled securely, and you can manage how your data is
+              shared at any time in your account settings.
+            </p>
+            
+            <div className="space-y-3">
+              <div className="flex items-start">
+                <div className="flex items-center h-5">
+                  <input
+                    id="termsConsent"
+                    name="termsConsent"
+                    type="checkbox"
+                    checked={formData.termsConsent}
+                    onChange={(e) => setFormData(prev => ({ ...prev, termsConsent: e.target.checked }))}
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                    required
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label htmlFor="termsConsent" className="font-medium text-gray-700">
+                    I agree to the Terms & Conditions and Privacy Policy *
+                  </label>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className="flex items-center h-5">
+                  <input
+                    id="advisorContactConsent"
+                    name="advisorContactConsent"
+                    type="checkbox"
+                    checked={formData.advisorContactConsent}
+                    onChange={(e) => setFormData(prev => ({ ...prev, advisorContactConsent: e.target.checked }))}
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label htmlFor="advisorContactConsent" className="font-medium text-gray-700">
+                    I consent to being contacted by matched financial advisors
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex flex-col space-y-2">
+            <h3 className="text-base font-medium text-navy-800">
+              Your Online Status Preferences
+            </h3>
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="status-online"
+                  name="onlineStatus"
+                  value="online"
+                  checked={formData.onlineStatus === 'online'}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
+                />
+                <label htmlFor="status-online" className="ml-2 block text-sm text-gray-700">
+                  Online - Show me as available for chats
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="status-away"
+                  name="onlineStatus"
+                  value="away"
+                  checked={formData.onlineStatus === 'away'}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
+                />
+                <label htmlFor="status-away" className="ml-2 block text-sm text-gray-700">
+                  Away - Show me as busy but still online
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="status-offline"
+                  name="onlineStatus"
+                  value="offline"
+                  checked={formData.onlineStatus === 'offline'}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
+                />
+                <label htmlFor="status-offline" className="ml-2 block text-sm text-gray-700">
+                  Offline - Hide my online status
+                </label>
+              </div>
+            </div>
+            
+            <div className="flex items-center mt-2">
+              <input
+                type="checkbox"
+                id="showOnlineStatus"
+                name="showOnlineStatus"
+                checked={formData.showOnlineStatus}
+                onChange={(e) => setFormData(prev => ({ ...prev, showOnlineStatus: e.target.checked }))}
+                className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+              />
+              <label htmlFor="showOnlineStatus" className="ml-2 block text-sm text-gray-700">
+                Show my online status to potential matches
+              </label>
+            </div>
+            
+            <div className="flex items-center mt-2">
+              <input
+                type="checkbox"
+                id="chatEnabled"
+                name="chatEnabled"
+                checked={formData.chatEnabled}
+                onChange={(e) => setFormData(prev => ({ ...prev, chatEnabled: e.target.checked }))}
+                className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+              />
+              <label htmlFor="chatEnabled" className="ml-2 block text-sm text-gray-700">
+                Enable in-app chat messaging
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <AnimatedRoute>
+      <div className="min-h-screen bg-slate-50">
+        <Header />
+        
+        <div className="container mx-auto py-8 px-4">
+          <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-sm p-6 md:p-8">
+            {renderStepIndicator()}
+            
+            <form>
+              {currentStep === 1 && renderPersonalInformation()}
+              {currentStep === 2 && renderFinancialGoals()}
+              {currentStep === 3 && renderFinancialProfile()}
+              {currentStep === 4 && renderServiceExpectations()}
+              {currentStep === 5 && renderTermsConsent()}
+              
+              <div className="mt-8 flex justify-between">
+                {currentStep > 1 ? (
+                  <button
+                    type="button"
+                    onClick={handlePreviousStep}
+                    className="btn px-6 py-2 bg-white text-navy-700 border border-slate-300 rounded-md hover:bg-slate-50 transition"
+                  >
+                    Back
+                  </button>
+                ) : (
+                  <div></div>
+                )}
+                
+                <button
+                  type="button"
+                  onClick={handleNextStep}
+                  disabled={saved}
+                  className={`btn px-6 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition flex items-center ${
+                    saved ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {currentStep === totalSteps ? (
+                    saved ? (
+                      <>
+                        <CheckCircle className="w-5 h-5 mr-2" />
+                        Saved!
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-5 h-5 mr-2" />
+                        Submit Profile
+                      </>
+                    )
+                  ) : (
+                    <>
+                      Next
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <Footer />
+      </div>
+    </AnimatedRoute>
+  );
+};
+
+export default ConsumerProfile;
