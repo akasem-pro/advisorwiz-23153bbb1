@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { useSupabase } from '../../../hooks/useSupabase';
 import { toast } from 'sonner';
+import { supabase } from '../../../integrations/supabase/client'; // Added import for supabase
 
 type AuthContextType = {
   session: Session | null;
