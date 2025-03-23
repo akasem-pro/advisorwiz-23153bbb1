@@ -6,6 +6,20 @@ import { trackUserBehavior } from './eventTracker';
 
 /**
  * Track detailed information about a matching interaction
+ * 
+ * This function records match interactions in multiple places:
+ * 1. User behavior tracking for high-level analytics
+ * 2. Match history table for detailed analysis and improvement
+ * 3. Match feedback if provided
+ * 4. Custom analytics metrics for dashboards
+ * 
+ * @param matchAction - The type of match action (view, click, contact, schedule, feedback)
+ * @param advisorId - The ID of the advisor in the match
+ * @param consumerId - The ID of the consumer in the match
+ * @param matchScore - The compatibility score of the match
+ * @param matchId - Optional unique ID for this match interaction
+ * @param additionalDetails - Optional additional data about the match
+ * @returns Promise that resolves when tracking is complete
  */
 export const trackMatchingInteraction = async (
   matchAction: MatchAction,

@@ -8,10 +8,18 @@ import { MatchingStrategy } from './MatchingStrategy';
  * 
  * This strategy leverages dynamic user preferences and weight factors
  * to provide highly personalized matching tailored to premium users.
+ * The algorithm takes into account custom weighting for different factors
+ * and can analyze past interaction data for improved matching.
  */
 export class PremiumMatchingStrategy implements MatchingStrategy {
   /**
    * Calculate compatibility score with emphasis on user-defined preferences
+   * 
+   * @param advisorId - The ID of the advisor to match
+   * @param consumerId - The ID of the consumer to match
+   * @param preferences - User-defined matching preferences, including custom weight factors
+   * @param callMetrics - Optional historical call metrics for interaction-based scoring
+   * @returns Object containing the score and explanations for the match
    */
   calculateScore(
     advisorId: string,

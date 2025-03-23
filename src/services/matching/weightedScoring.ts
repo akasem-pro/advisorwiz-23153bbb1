@@ -6,6 +6,7 @@
 import { MatchPreferences } from '../../context/UserContextDefinition';
 import { withPerformanceTracking } from '../../utils/matchingPerformance';
 import { CallMetrics } from '../../types/callTypes';
+import { trackMatchingInteraction } from '../../utils/analytics/matchTracker';
 
 // Strategy Pattern components
 import { MatchingStrategyContext } from './strategies/MatchingStrategyContext';
@@ -26,6 +27,8 @@ const strategyContext = new MatchingStrategyContext(
 
 /**
  * Set the active matching strategy
+ * 
+ * @param strategyType - The type of matching strategy to use
  */
 export const setMatchingStrategy = (strategyType: MatchingStrategyType): void => {
   const strategy = MatchingStrategyFactory.createStrategy(strategyType);
@@ -34,13 +37,20 @@ export const setMatchingStrategy = (strategyType: MatchingStrategyType): void =>
 
 /**
  * Performance-optimized weighted compatibility score calculation
- * @returns {Object} Contains both the score and explanation for the match
+ * 
+ * @param advisorId - The ID of the advisor to score
+ * @param consumerId - The ID of the consumer to score against
+ * @param preferences - The matching preferences to apply
+ * @param callMetrics - Optional call metrics for interaction-based scoring
+ * @param trackAnalytics - Whether to track this calculation in analytics
+ * @returns Object containing both the score and explanation for the match
  */
 const calculateWeightedCompatibilityScore = (
   advisorId: string,
   consumerId: string,
   preferences: MatchPreferences,
-  callMetrics?: CallMetrics[]
+  callMetrics?: CallMetrics[],
+  trackAnalytics: boolean = false
 ): { score: number; matchExplanation: string[] } => {
   // Create a comprehensive cache key that includes preferences
   const cacheKey = `${advisorId}-${consumerId}-${JSON.stringify(preferences)}`;
@@ -48,6 +58,21 @@ const calculateWeightedCompatibilityScore = (
   // Check if we have this calculation cached and it's not expired
   const cachedResult = getCachedResult(cacheKey);
   if (cachedResult) {
+    // Track analytics even for cached results if requested
+    if (trackAnalytics) {
+      // Generate a unique ID for this match calculation
+      const matchId = `${advisorId}_${consumerId}_${Date.now()}`;
+      
+      // Track the match view event asynchronously
+      trackMatchingInteraction(
+        'view',
+        advisorId,
+        consumerId,
+        cachedResult.score,
+        matchId,
+        { explanations: cachedResult.matchExplanation }
+      );
+    }
     return cachedResult;
   }
   
@@ -61,6 +86,22 @@ const calculateWeightedCompatibilityScore = (
   
   // Cache the result with a timestamp
   cacheResult(cacheKey, result);
+  
+  // Track analytics for newly calculated match if requested
+  if (trackAnalytics) {
+    // Generate a unique ID for this match calculation
+    const matchId = `${advisorId}_${consumerId}_${Date.now()}`;
+    
+    // Track the match view event asynchronously
+    trackMatchingInteraction(
+      'view',
+      advisorId,
+      consumerId,
+      result.score,
+      matchId,
+      { explanations: result.matchExplanation }
+    );
+  }
   
   return result;
 };

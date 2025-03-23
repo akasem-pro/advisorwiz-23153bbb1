@@ -11,6 +11,14 @@ import { toast } from 'sonner';
 
 /**
  * Hook for monitoring and managing the matching algorithm cache
+ * 
+ * This hook provides utilities for:
+ * - Clearing caches to free memory
+ * - Invalidating specific user entries when data changes
+ * - Optimizing cache performance automatically
+ * - Monitoring cache statistics
+ * 
+ * @returns An object with cache management functions and statistics
  */
 export const useMatchingCache = () => {
   // Clear all caches (both scoring and match caches)
