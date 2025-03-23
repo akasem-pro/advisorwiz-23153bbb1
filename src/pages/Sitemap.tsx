@@ -5,6 +5,8 @@ import AppLayout from '../components/layout/AppLayout';
 import PageSEO from '../components/seo/PageSEO';
 import { Button } from '../components/ui/button';
 import { generateBreadcrumbSchema } from '../utils/schemas';
+import { Sitemap as SitemapIcon } from 'lucide-react';
+import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 
 const Sitemap: React.FC = () => {
   // Breadcrumbs for SEO
@@ -87,19 +89,26 @@ const Sitemap: React.FC = () => {
         structuredData={structuredData}
       />
       
+      <BreadcrumbNav items={breadcrumbs} />
+      
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-serif font-semibold text-navy-900 mb-4">Sitemap</h1>
-          <p className="text-slate-600 mb-8">
-            Use this sitemap to navigate to any section of the AdvisorWiz platform. 
-            We've organized all our pages by category to help you find what you're looking for.
-          </p>
+          <div className="section-header">
+            <h1 className="section-title flex items-center justify-center gap-3">
+              <SitemapIcon className="w-10 h-10 text-teal-600 dark:text-teal-400" />
+              <span>Sitemap</span>
+            </h1>
+            <p className="section-description">
+              Use this sitemap to navigate to any section of the AdvisorWiz platform. 
+              We've organized all our pages by category to help you find what you're looking for.
+            </p>
+          </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
           {siteCategories.map((category, index) => (
-            <div key={index} className="space-y-4">
-              <h2 className="text-xl font-serif font-semibold text-navy-900 pb-2 border-b border-slate-200">
+            <div key={index} className="professional-card">
+              <h2 className="text-xl font-serif font-semibold text-navy-900 dark:text-slate-100 pb-4 mb-4 border-b border-slate-200 dark:border-navy-700">
                 {category.title}
               </h2>
               <ul className="space-y-3">
@@ -107,7 +116,7 @@ const Sitemap: React.FC = () => {
                   <li key={linkIndex}>
                     <Link 
                       to={link.path} 
-                      className="text-slate-600 hover:text-teal-600 transition-colors"
+                      className="text-slate-600 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
                     >
                       {link.name}
                     </Link>
@@ -119,7 +128,7 @@ const Sitemap: React.FC = () => {
         </div>
 
         <div className="mt-16 text-center">
-          <p className="text-slate-600 mb-6">Can't find what you're looking for?</p>
+          <p className="text-slate-600 dark:text-slate-300 mb-6">Can't find what you're looking for?</p>
           <Button asChild variant="default" className="bg-teal-600 hover:bg-teal-700">
             <Link to="/contact">Contact Us</Link>
           </Button>
