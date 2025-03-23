@@ -21,4 +21,4 @@ export enum UserBehaviorEvent {
   MATCH_FEEDBACK = 'match_feedback'
 }
 
-export type MatchAction = 'view' | 'click' | 'contact' | 'schedule' | 'feedback';
+export type MatchAction = 'view' | 'click' | 'contact' | 'schedule' | 'feedback' | 'view_explanation';
