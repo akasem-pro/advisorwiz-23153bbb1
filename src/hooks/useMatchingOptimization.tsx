@@ -1,5 +1,5 @@
 
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
 import { 
   AdvisorProfile, 
   ConsumerProfile, 
@@ -7,7 +7,8 @@ import {
 } from '../types/userTypes';
 import { MatchPreferences } from '../context/UserContextDefinition';
 import { CallMetrics } from '../types/callTypes';
-import { getWeightedCompatibilityScore } from '../services/matching/weightedScoring';
+import { getWeightedCompatibilityScore, clearCompatibilityCache } from '../services/matching/weightedScoring';
+import { clearMatchCache } from '../utils/matchingAlgorithm';
 
 // New hook for optimizing the matching algorithm
 export const useMatchingOptimization = (
@@ -17,6 +18,15 @@ export const useMatchingOptimization = (
   matchPreferences: MatchPreferences,
   callMetrics?: CallMetrics[]
 ) => {
+  // Clear caches when preferences change
+  useEffect(() => {
+    if (matchPreferences) {
+      // Clear both caches to ensure fresh results with new preferences
+      clearCompatibilityCache();
+      clearMatchCache();
+    }
+  }, [matchPreferences]);
+
   // Memoize the calculate compatibility score function
   const calculateCompatibilityScore = useCallback((advisorId: string, consumerId: string) => {
     // Enhanced logic using matchPreferences to compute more accurate scores
