@@ -1,3 +1,4 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -27,6 +28,13 @@ const CACHE_KEYS = {
   APPOINTMENTS: 'cache_appointments',
   CHATS: 'cache_chats',
 };
+
+// Export DataResult interface to fix the import error in useSupabase.tsx
+export interface DataResult<T> {
+  data: T | null;
+  error: string | null;
+  isFromCache: boolean;
+}
 
 // Cache utility functions
 const saveToCache = <T>(key: string, data: T): void => {
@@ -108,13 +116,6 @@ const validateData = <T>(data: T, schema: any): { valid: boolean; errors?: strin
   }
 };
 
-// Specific data functions
-interface DataResult<T> {
-  data: T | null;
-  error: string | null;
-  isFromCache: boolean;
-}
-
 // Profile operations
 export const getProfile = async (userId: string, useCache: boolean = true): Promise<DataResult<any>> => {
   const startTime = performance.now();
@@ -193,7 +194,11 @@ export const updateProfile = async (userId: string, profileData: any, schema?: a
     // Update cache
     if (data && navigator.onLine) {
       const existingCache = getFromCache(`${CACHE_KEYS.PROFILES}_${userId}`);
-      saveToCache(`${CACHE_KEYS.PROFILES}_${userId}`, { ...existingCache, ...data });
+      if (existingCache) {
+        saveToCache(`${CACHE_KEYS.PROFILES}_${userId}`, { ...existingCache, ...data });
+      } else {
+        saveToCache(`${CACHE_KEYS.PROFILES}_${userId}`, data);
+      }
     }
     
     trackPerformance(functionName, performance.now() - startTime, 1);
@@ -214,7 +219,7 @@ export const getAdvisorProfiles = async (limit: number = 10, filters: any = {}, 
   try {
     // Try cache first if requested
     if (useCache && navigator.onLine) {
-      const cachedData = getFromCache(cacheKey);
+      const cachedData = getFromCache<any[]>(cacheKey);
       if (cachedData) {
         return { data: cachedData, error: null, isFromCache: true };
       }
@@ -291,13 +296,14 @@ export const getAdvisorProfiles = async (limit: number = 10, filters: any = {}, 
     
     // Get from cache as fallback if we're offline
     if (!navigator.onLine) {
-      const cachedData = getFromCache(cacheKey);
+      const cachedData = getFromCache<any[]>(cacheKey);
       if (cachedData) {
         return { data: cachedData, error: 'Using cached data (offline)', isFromCache: true };
       }
     }
     
-    return { data: [], error: errorMessage, isFromCache: false };
+    // Return empty array instead of empty object to fix TS error
+    return { data: [] as any[], error: errorMessage, isFromCache: false };
   }
 };
 
@@ -315,7 +321,7 @@ export const getCompatibilityScores = async (
   try {
     // Try cache first if requested
     if (useCache && navigator.onLine) {
-      const cachedData = getFromCache(cacheKey);
+      const cachedData = getFromCache<any[]>(cacheKey);
       if (cachedData) {
         return { data: cachedData, error: null, isFromCache: true };
       }
@@ -391,13 +397,14 @@ export const getCompatibilityScores = async (
     
     // Get from cache as fallback if we're offline
     if (!navigator.onLine) {
-      const cachedData = getFromCache(cacheKey);
+      const cachedData = getFromCache<any[]>(cacheKey);
       if (cachedData) {
         return { data: cachedData, error: 'Using cached data (offline)', isFromCache: true };
       }
     }
     
-    return { data: [], error: errorMessage, isFromCache: false };
+    // Return empty array instead of empty object to fix TS error
+    return { data: [] as any[], error: errorMessage, isFromCache: false };
   }
 };
 
@@ -410,7 +417,7 @@ export const getAppointments = async (userId: string, useCache: boolean = true):
   try {
     // Try cache first if requested
     if (useCache && navigator.onLine) {
-      const cachedData = getFromCache(cacheKey);
+      const cachedData = getFromCache<any[]>(cacheKey);
       if (cachedData) {
         return { data: cachedData, error: null, isFromCache: true };
       }
@@ -448,13 +455,14 @@ export const getAppointments = async (userId: string, useCache: boolean = true):
     
     // Get from cache as fallback if we're offline
     if (!navigator.onLine) {
-      const cachedData = getFromCache(cacheKey);
+      const cachedData = getFromCache<any[]>(cacheKey);
       if (cachedData) {
         return { data: cachedData, error: 'Using cached data (offline)', isFromCache: true };
       }
     }
     
-    return { data: [], error: errorMessage, isFromCache: false };
+    // Return empty array instead of empty object to fix TS error
+    return { data: [] as any[], error: errorMessage, isFromCache: false };
   }
 };
 
@@ -467,7 +475,7 @@ export const getChatMessages = async (userId1: string, userId2: string, useCache
   try {
     // Try cache first if requested
     if (useCache && navigator.onLine) {
-      const cachedData = getFromCache(cacheKey);
+      const cachedData = getFromCache<any[]>(cacheKey);
       if (cachedData) {
         return { data: cachedData, error: null, isFromCache: true };
       }
@@ -497,13 +505,14 @@ export const getChatMessages = async (userId1: string, userId2: string, useCache
     
     // Get from cache as fallback if we're offline
     if (!navigator.onLine) {
-      const cachedData = getFromCache(cacheKey);
+      const cachedData = getFromCache<any[]>(cacheKey);
       if (cachedData) {
         return { data: cachedData, error: 'Using cached data (offline)', isFromCache: true };
       }
     }
     
-    return { data: [], error: errorMessage, isFromCache: false };
+    // Return empty array instead of empty object to fix TS error
+    return { data: [] as any[], error: errorMessage, isFromCache: false };
   }
 };
 
