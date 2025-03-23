@@ -1,18 +1,28 @@
 
-// This is the main export file for performance tracking functionality
-// It re-exports functions from the more focused modules
+// Main exports file for performance tracking functionality
+// Re-exports functions from more focused modules
 
-// Import the necessary modules
-import { trackWebVitals as trackWebVitalsFunc } from './performance/webVitals';
-import { setupLazyLoading, optimizeImagesForCWV } from './performance/imageOptimization';
-import { implementResourceHints } from './performance/resourceHints';
+// Import from core performance module
 import {
   trackPerformance,
   getPerformanceData,
   clearPerformanceData,
   storeAnalyticsMetric
 } from './performance/core';
+
+// Import from function tracking module
 import { withPerformanceTracking } from './performance/functionTracking';
+
+// Import from web vitals module
+import { trackWebVitals as trackWebVitalsFunc } from './performance/webVitals';
+
+// Import from image optimization module
+import { setupLazyLoading, optimizeImagesForCWV } from './performance/imageOptimization';
+
+// Import from resource hints module
+import { implementResourceHints } from './performance/resourceHints';
+
+// Import from analytics modules
 import { trackVisitorActivity } from './analytics/visitorTracking';
 import { trackFeatureUsage } from './analytics/featureTracking';
 import { trackAIInteraction } from './analytics/aiTracking';
@@ -48,40 +58,39 @@ export { setupLazyLoading, optimizeImagesForCWV };
 // Resource hints
 export { implementResourceHints };
 
-// Visitor analytics
-export { trackVisitorActivity };
-
-// Feature usage tracking
-export { trackFeatureUsage };
-
-// AI interaction tracking
-export { trackAIInteraction };
-
-// Match history recording
-export { recordMatchHistory };
-
-// User behavior tracking
+// Analytics exports
 export { 
-  trackUserBehavior, 
+  // Visitor tracking
+  trackVisitorActivity,
+  
+  // Feature usage tracking
+  trackFeatureUsage,
+  
+  // AI interaction tracking
+  trackAIInteraction,
+  
+  // Match history tracking
+  recordMatchHistory,
+  
+  // User behavior tracking
+  trackUserBehavior,
   trackMatchingInteraction, 
   trackPageView,
   trackPreferenceUpdate,
-  UserBehaviorEvent
-};
-
-// User engagement tracking
-export { trackUserEngagement };
-
-// Match engagement tracking
-export { trackMatchEngagement };
-
-// A/B Testing tracking
-export {
+  UserBehaviorEvent,
+  
+  // Engagement tracking
+  trackUserEngagement,
+  trackMatchEngagement,
+  
+  // A/B Testing tracking
   trackVariantImpression,
   trackVariantConversion
 };
 
-// Initialize performance optimizations
+/**
+ * Initialize all performance optimizations
+ */
 export const initPerformanceOptimizations = () => {
   if (typeof window !== 'undefined') {
     // Track web vitals
