@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -11,7 +10,7 @@ import { FinancialFirm } from '../types/firmTypes';
 import AuthGuard from '../components/auth/AuthGuard';
 
 const FirmProfile: React.FC = () => {
-  const { firms, addFirm } = useUser();
+  const { firms, addFirm, userType } = useUser();
   const navigate = useNavigate();
   
   // For demo purposes, we'll assume the user is editing the first firm
@@ -53,19 +52,21 @@ const FirmProfile: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Create a new firm entry
+    // Create a new firm entry with required fields
     addFirm({
       name: formData.name || 'My Firm',
-      description: formData.description,
-      website: formData.website,
-      logo: formData.logo,
-      city: formData.city,
-      state: formData.state,
+      description: formData.description || '',
+      website: formData.website || '',
+      logo: formData.logo || '',
+      city: formData.city || '',
+      state: formData.state || '',
       country: formData.country || 'US',
-      industry: formData.industry,
-      size: formData.size,
-      assetsUnderManagement: formData.assetsUnderManagement,
-      employeeCount: formData.employeeCount
+      industry: formData.industry || '',
+      size: formData.size || '',
+      assetsUnderManagement: formData.assetsUnderManagement || 0,
+      employeeCount: formData.employeeCount || 0,
+      adminId: 'current-user-id',
+      advisorIds: []
     });
     
     setSaved(true);
