@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
  */
 export const useSignInHandler = () => {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { signIn, setMockUser } = useAuth();
   const { 
     validateNetworkConnection, 
     handleAuthError 
@@ -60,14 +60,28 @@ export const useSignInHandler = () => {
         
         if (isTestAccount || true) { // Allow any login for easier testing
           console.log("[Sign In] Mock authentication successful");
-          toast.success("Successfully signed in!");
           
-          // Set a local storage item to simulate logged in state
-          localStorage.setItem('mock_auth_user', JSON.stringify({
+          // Create a mock user object that mimics Supabase user structure
+          const mockUser = {
             id: 'mock-user-id',
             email: email,
-            created_at: new Date().toISOString()
-          }));
+            created_at: new Date().toISOString(),
+            app_metadata: {},
+            user_metadata: {
+              name: email.split('@')[0],
+              avatar_url: '',
+            },
+            aud: 'authenticated',
+            role: 'authenticated'
+          };
+          
+          // Store mock user in localStorage with a different key to avoid conflicts
+          localStorage.setItem('mock_auth_user', JSON.stringify(mockUser));
+          
+          // Use the AuthProvider's setMockUser function to update the auth state
+          setMockUser(mockUser);
+          
+          toast.success("Successfully signed in!");
           
           // Redirect to homepage
           navigate('/');

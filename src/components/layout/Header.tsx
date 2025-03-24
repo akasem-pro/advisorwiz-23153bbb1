@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Info, LogIn } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
@@ -10,6 +10,7 @@ import MobileMenu from './MobileMenu';
 import ThemeToggleButton from './ThemeToggleButton';
 import UserMenu from './UserMenu';
 import AuthButtons from './AuthButtons';
+import SuccessMessage from '../ui/SuccessMessage';
 
 // Define the navigation links
 const navigationLinks = [
@@ -47,9 +48,23 @@ const Header: React.FC = () => {
   const { isAuthenticated, consumerProfile, advisorProfile, userType } = useUser();
   const { user, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   console.log('Current userType in Header:', userType);
   console.log('isAuthenticated:', isAuthenticated);
+  console.log('Current user in Header:', user);
+
+  // Show success message when user signs in
+  useEffect(() => {
+    if (user) {
+      setShowSuccessMessage(true);
+      // Auto-hide after 5 seconds
+      const timer = setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -102,7 +117,7 @@ const Header: React.FC = () => {
           <div className="flex items-center space-x-4">
             <ThemeToggleButton className="mr-2" />
             
-            {isAuthenticated ? (
+            {user ? (
               <UserMenu 
                 getUserName={getUserName}
                 getInitials={getInitials}
@@ -129,9 +144,16 @@ const Header: React.FC = () => {
         </div>
       </div>
       
+      {/* Success message toast */}
+      {showSuccessMessage && (
+        <div className="fixed top-20 right-4 z-50 animate-fade-in-down">
+          <SuccessMessage message="Successfully signed in!" />
+        </div>
+      )}
+      
       {mobileMenuOpen && (
         <MobileMenu
-          isAuthenticated={isAuthenticated}
+          isAuthenticated={!!user}
           onClose={toggleMobileMenu}
           onSignOut={signOut}
         />

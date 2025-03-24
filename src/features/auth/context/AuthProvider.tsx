@@ -18,6 +18,7 @@ type AuthContextType = {
   retryAttempts: number;
   incrementRetry: () => void;
   resetRetryAttempts: () => void;
+  setMockUser: (user: any) => void; // Added function to set mock user
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -31,7 +32,8 @@ const AuthContext = createContext<AuthContextType>({
   checkNetworkStatus: async () => false,
   retryAttempts: 0,
   incrementRetry: () => {},
-  resetRetryAttempts: () => {}
+  resetRetryAttempts: () => {},
+  setMockUser: () => {} // Default mock user setter
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -97,7 +99,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const mockAuthData = localStorage.getItem('mock_auth_user');
     if (mockAuthData) {
       try {
-        setMockUser(JSON.parse(mockAuthData));
+        const parsedUser = JSON.parse(mockAuthData);
+        console.log("[Auth Provider] Found mock auth user in localStorage:", parsedUser);
+        setMockUser(parsedUser);
       } catch (error) {
         console.error("[Auth Provider] Error parsing mock auth data:", error);
         localStorage.removeItem('mock_auth_user');
@@ -156,7 +160,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkNetworkStatus,
     retryAttempts,
     incrementRetry,
-    resetRetryAttempts
+    resetRetryAttempts,
+    setMockUser // Expose the setter function
   }), [
     session, 
     user, 
