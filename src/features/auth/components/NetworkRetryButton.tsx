@@ -37,17 +37,37 @@ const NetworkRetryButton: React.FC<NetworkRetryButtonProps> = ({
     }
   };
   
+  const [localIsConnecting, setLocalIsConnecting] = React.useState(isConnecting);
+  
+  // Reset local state when props change
+  React.useEffect(() => {
+    setLocalIsConnecting(isConnecting);
+  }, [isConnecting]);
+  
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("[Network Retry Button] Button clicked, isConnecting:", isConnecting);
     
-    // Disable multiple clicks when connecting
-    if (!isConnecting) {
-      console.log("[Network Retry Button] Calling onRetry function");
-      onRetry();
-    } else {
+    // Use local state to prevent multiple clicks
+    if (localIsConnecting) {
       console.log("[Network Retry Button] Ignoring click while connecting");
+      return;
+    }
+    
+    console.log("[Network Retry Button] Button clicked, calling onRetry function");
+    setLocalIsConnecting(true);
+    
+    // Call the retry function
+    try {
+      onRetry();
+      
+      // Reset local state after a timeout in case the callback doesn't update isConnecting
+      setTimeout(() => {
+        setLocalIsConnecting(false);
+      }, 5000);
+    } catch (error) {
+      console.error("[Network Retry Button] Error in retry function:", error);
+      setLocalIsConnecting(false);
     }
   };
   
@@ -56,11 +76,11 @@ const NetworkRetryButton: React.FC<NetworkRetryButtonProps> = ({
       variant={variant} 
       size={size} 
       onClick={handleClick} 
-      disabled={isConnecting}
+      disabled={localIsConnecting}
       className={`${getButtonStyles()} ${className}`}
       type="button" // Explicitly set type to button to prevent form submission
     >
-      {isConnecting ? (
+      {localIsConnecting ? (
         <>
           <span className="h-3 w-3 mr-2 animate-spin rounded-full border-b-2 border-current"></span>
           Checking...

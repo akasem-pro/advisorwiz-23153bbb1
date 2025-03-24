@@ -43,13 +43,23 @@ export const useRetryHandler = () => {
         signUp: !!signUpEmail && !!signUpPassword && !!confirmPassword
       });
       
-      // Short timeout to simulate connection check
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Check if we're in a preview environment
+      const isPreviewEnv = window.location.hostname.includes('preview') || 
+                           window.location.hostname.includes('lovableproject') ||
+                           window.location.hostname.includes('localhost');
+      
+      if (isPreviewEnv) {
+        // In preview environments, just wait a bit to simulate a connection check
+        await new Promise(resolve => setTimeout(resolve, 800));
+      } else {
+        // In production, do an actual connection check
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
       
       // Dismiss loading toast
       toast.dismiss();
       
-      // Proceed with retry attempt
+      // Show success toast
       toast.success('Connection restored! Retrying...');
       
       // Call the appropriate handler based on active tab

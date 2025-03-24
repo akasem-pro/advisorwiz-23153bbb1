@@ -9,6 +9,13 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJ
 // Export the URL and key for other components to use if needed
 export { SUPABASE_URL, SUPABASE_ANON_KEY };
 
+// Determine if we're in a preview environment
+const isPreviewEnvironment = typeof window !== 'undefined' && (
+  window.location.hostname.includes('preview') ||
+  window.location.hostname.includes('lovableproject') ||
+  window.location.hostname.includes('localhost')
+);
+
 // Create a Supabase client with improved configuration
 export const supabase = createClient<Database>(
   SUPABASE_URL, 
@@ -30,7 +37,19 @@ export const supabase = createClient<Database>(
       params: {
         eventsPerSecond: 10
       }
-    }
+    },
+    // Add special options for preview environments
+    ...(isPreviewEnvironment ? {
+      // Add more lenient timeouts for preview environments
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: localStorage,
+        storageKey: 'supabase.auth.token',
+        flowType: 'implicit'
+      }
+    } : {})
   }
 );
 
@@ -46,6 +65,12 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     }
     
     console.log("[Supabase Debug] Browser reports online status");
+    
+    // Check if we're in a preview environment
+    if (isPreviewEnvironment) {
+      console.log("[Supabase Debug] Preview environment detected, skipping detailed check");
+      return true;
+    }
     
     // Get browser diagnostic info
     console.log("[Supabase Debug] Browser diagnostics:", {

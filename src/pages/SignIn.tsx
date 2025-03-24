@@ -42,6 +42,7 @@ const SignIn: React.FC = () => {
     validateSignInForm,
     validateSignUpForm,
     handleTabChange,
+    resetFormErrors
   } = useSignInForm();
   
   const {
@@ -91,7 +92,14 @@ const SignIn: React.FC = () => {
   };
   
   const handleRetrySubmit = async () => {
+    // Reset form error before retrying
     setFormError('');
+    
+    // Display a toast to provide feedback
+    toast.loading('Preparing to retry...');
+    
+    // Simulate a short delay for UI feedback
+    await new Promise(resolve => setTimeout(resolve, 300));
     
     // Use the handleRetry function directly to ensure better handling
     await handleRetry(
@@ -105,6 +113,22 @@ const SignIn: React.FC = () => {
       handleSignUpSubmit,
       setFormError
     );
+  };
+  
+  // Improved connection retry that gives better feedback
+  const handleConnectionRetry = async () => {
+    try {
+      // First try our general connectivity check
+      const connected = await retryConnection();
+      
+      if (connected) {
+        // If connected, try to submit the form
+        await handleRetrySubmit();
+      }
+    } catch (error) {
+      console.error("Error during retry flow:", error);
+      setFormError('Connection check failed. Please try again.');
+    }
   };
   
   // Only disable buttons when actually loading
@@ -131,7 +155,7 @@ const SignIn: React.FC = () => {
               onTabChange={handleTabChange}
               formError={formError}
               networkStatus={networkStatus}
-              onRetry={handleRetrySubmit}
+              onRetry={handleConnectionRetry}
               onSignIn={handleSignInSubmit}
               onSignUp={handleSignUpSubmit}
               signInProps={{

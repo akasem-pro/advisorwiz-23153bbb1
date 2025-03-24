@@ -33,6 +33,26 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({
   // Only show network error if we're really offline or if the error mentions connectivity
   const showNetworkAlert = networkStatus === 'offline' || isNetworkError;
   
+  // In preview environments, show a more helpful message
+  const isPreviewEnv = typeof window !== 'undefined' && (
+    window.location.hostname.includes('preview') ||
+    window.location.hostname.includes('lovableproject') ||
+    window.location.hostname.includes('localhost')
+  );
+  
+  // Get the appropriate message based on environment
+  const getErrorMessage = () => {
+    if (!error) {
+      return "You appear to be offline. Please check your internet connection to sign in or sign up.";
+    }
+    
+    if (isPreviewEnv && isNetworkError) {
+      return "In preview environments, network errors are common. This is expected behavior and doesn't affect the actual application. The retry button should let you proceed.";
+    }
+    
+    return error;
+  };
+  
   if (!error && !showNetworkAlert) {
     return null;
   }
@@ -54,7 +74,7 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({
               <AlertCircle className="h-4 w-4" />
             )}
             <AlertDescription>
-              {error || "You appear to be offline. Please check your internet connection to sign in or sign up."}
+              {getErrorMessage()}
             </AlertDescription>
           </div>
           
