@@ -35,11 +35,36 @@ export const fetchUserProfile = async (userId: string, userType: UserType) => {
         console.error('[profileService] Error fetching consumer profile:', consumerError);
       }
       
-      // Combine profile and consumer data
-      return {
-        ...profileData,
-        ...consumerData
-      } as ConsumerProfile;
+      // Map database data to our ConsumerProfile type
+      const consumerProfile: ConsumerProfile = {
+        id: userId,
+        name: profileData?.first_name || 'User',
+        age: consumerData?.age || 30,
+        status: 'employed',
+        investableAssets: consumerData?.investable_assets || 0,
+        riskTolerance: (consumerData?.risk_tolerance as 'low' | 'medium' | 'high') || 'medium',
+        preferredCommunication: consumerData?.preferred_communication || ['email'],
+        preferredLanguage: consumerData?.preferred_language || ['english'],
+        serviceNeeds: consumerData?.service_needs || [],
+        investmentAmount: consumerData?.investment_amount || 0,
+        financialGoals: consumerData?.financial_goals || [],
+        incomeBracket: consumerData?.income_bracket || '',
+        preferredAdvisorSpecialties: consumerData?.preferred_advisor_specialties || [],
+        languages: profileData?.languages || [],
+        matches: [],
+        chats: [],
+        profilePicture: profileData?.avatar_url || '',
+        chatEnabled: profileData?.chat_enabled !== false,
+        appointments: [],
+        startTimeline: (consumerData?.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' | null) || 'not_sure',
+        onlineStatus: (profileData?.online_status as 'online' | 'offline' | 'away') || 'online',
+        lastOnline: profileData?.last_online || new Date().toISOString(),
+        showOnlineStatus: profileData?.show_online_status !== false,
+        email: profileData?.email || '',
+        phone: profileData?.phone || '',
+      };
+      
+      return consumerProfile;
     }
     
     // If user type is advisor, get advisor profile
@@ -54,14 +79,43 @@ export const fetchUserProfile = async (userId: string, userType: UserType) => {
         console.error('[profileService] Error fetching advisor profile:', advisorError);
       }
       
-      // Combine profile and advisor data
-      return {
-        ...profileData,
-        ...advisorData
-      } as AdvisorProfile;
+      // Map database data to our AdvisorProfile type
+      const advisorProfile: AdvisorProfile = {
+        id: userId,
+        name: profileData?.first_name ? `${profileData.first_name} ${profileData?.last_name || ''}`.trim() : 'Advisor',
+        organization: advisorData?.organization || 'Demo Financial',
+        isAccredited: advisorData?.is_accredited === true,
+        website: advisorData?.website || '',
+        testimonials: [],
+        languages: profileData?.languages || ['english'],
+        pricing: {
+          hourlyRate: advisorData?.hourly_rate,
+          portfolioFee: advisorData?.portfolio_fee
+        },
+        assetsUnderManagement: advisorData?.assets_under_management || 0,
+        expertise: advisorData?.expertise || ['investment', 'retirement'],
+        specializations: advisorData?.certifications || [],
+        yearsOfExperience: advisorData?.years_of_experience || 0,
+        averageRating: advisorData?.average_rating || 0,
+        ratingCount: advisorData?.rating_count || 0,
+        biography: advisorData?.biography || '',
+        certifications: advisorData?.certifications || [],
+        profilePicture: profileData?.avatar_url || '',
+        matches: [],
+        chats: [],
+        availability: [],
+        chatEnabled: profileData?.chat_enabled !== false,
+        appointmentCategories: [],
+        appointments: [],
+        onlineStatus: (profileData?.online_status as 'online' | 'offline' | 'away') || 'online',
+        lastOnline: profileData?.last_online || new Date().toISOString(),
+        showOnlineStatus: profileData?.show_online_status !== false
+      };
+      
+      return advisorProfile;
     }
     
-    return profileData;
+    return null;
   } catch (error) {
     console.error('[profileService] Unexpected error fetching profile:', error);
     return null;
@@ -79,15 +133,28 @@ export const updateUserProfile = async (
   try {
     console.log(`[profileService] Updating ${userType} profile for user ${user.id}`, profileData);
     
+    // Prepare base profile data
+    const baseProfileData: any = {
+      // Only include fields that are in the profiles table
+      first_name: profileData.name ? profileData.name.split(' ')[0] : undefined,
+      last_name: profileData.name ? profileData.name.split(' ').slice(1).join(' ') : undefined,
+      email: (profileData as any).email,
+      phone: (profileData as any).phone,
+      avatar_url: profileData.profilePicture,
+      chat_enabled: profileData.chatEnabled,
+      online_status: profileData.onlineStatus,
+      last_online: profileData.lastOnline,
+      show_online_status: profileData.showOnlineStatus,
+      updated_at: new Date().toISOString()
+    };
+    
     // First, ensure base profile exists
     const { error: profileUpsertError } = await supabase
       .from('profiles')
       .upsert({
         id: user.id,
-        email: user.email,
         user_type: userType,
-        updated_at: new Date().toISOString(),
-        ...profileData
+        ...baseProfileData
       }, {
         onConflict: 'id'
       });
@@ -100,12 +167,26 @@ export const updateUserProfile = async (
     
     // Then update the specific profile type
     if (userType === 'consumer') {
+      const consumerProfile = profileData as Partial<ConsumerProfile>;
+      const consumerData: any = {
+        id: user.id,
+        age: consumerProfile.age,
+        investable_assets: consumerProfile.investableAssets,
+        risk_tolerance: consumerProfile.riskTolerance,
+        preferred_communication: consumerProfile.preferredCommunication,
+        preferred_language: consumerProfile.preferredLanguage,
+        service_needs: consumerProfile.serviceNeeds,
+        investment_amount: consumerProfile.investmentAmount,
+        financial_goals: consumerProfile.financialGoals,
+        income_bracket: consumerProfile.incomeBracket,
+        preferred_advisor_specialties: consumerProfile.preferredAdvisorSpecialties,
+        start_timeline: consumerProfile.startTimeline,
+        updated_at: new Date().toISOString()
+      };
+      
       const { error: consumerUpsertError } = await supabase
         .from('consumer_profiles')
-        .upsert({
-          id: user.id,
-          ...profileData
-        }, {
+        .upsert(consumerData, {
           onConflict: 'id'
         });
       
@@ -115,12 +196,25 @@ export const updateUserProfile = async (
         return false;
       }
     } else if (userType === 'advisor') {
+      const advisorProfile = profileData as Partial<AdvisorProfile>;
+      const advisorData: any = {
+        id: user.id,
+        is_accredited: advisorProfile.isAccredited,
+        organization: advisorProfile.organization,
+        website: advisorProfile.website,
+        hourly_rate: advisorProfile.pricing?.hourlyRate,
+        portfolio_fee: advisorProfile.pricing?.portfolioFee,
+        assets_under_management: advisorProfile.assetsUnderManagement,
+        expertise: advisorProfile.expertise,
+        years_of_experience: advisorProfile.yearsOfExperience,
+        biography: advisorProfile.biography,
+        certifications: advisorProfile.certifications,
+        updated_at: new Date().toISOString()
+      };
+      
       const { error: advisorUpsertError } = await supabase
         .from('advisor_profiles')
-        .upsert({
-          id: user.id,
-          ...profileData
-        }, {
+        .upsert(advisorData, {
           onConflict: 'id'
         });
       
@@ -155,24 +249,26 @@ export const initializeUserProfile = async (
     
     if (existingProfile) {
       console.log('[profileService] Found existing profile', existingProfile);
-      return existingProfile as ConsumerProfile | AdvisorProfile;
+      return existingProfile;
     }
     
     // Profile doesn't exist, create one
     console.log('[profileService] No existing profile found, creating default profile');
     
     const email = user.email?.toLowerCase() || '';
+    let name = email.split('@')[0] || 'User';
     
-    let profileData: Partial<ConsumerProfile | AdvisorProfile> = {
-      id: user.id,
-      email: email,
-      user_type: userType,
-    };
+    // Try to capitalize the name
+    if (name) {
+      name = name.charAt(0).toUpperCase() + name.slice(1);
+    }
+    
+    let profileData: Partial<ConsumerProfile | AdvisorProfile>;
     
     if (userType === 'consumer') {
       profileData = {
-        ...profileData,
-        name: email.split('@')[0] || 'User',
+        id: user.id,
+        name,
         age: 30,
         status: 'employed',
         investableAssets: 100000,
@@ -186,12 +282,13 @@ export const initializeUserProfile = async (
         startTimeline: 'not_sure',
         onlineStatus: 'online',
         lastOnline: new Date().toISOString(),
-        showOnlineStatus: true
+        showOnlineStatus: true,
+        email: email
       };
     } else if (userType === 'advisor') {
       profileData = {
-        ...profileData,
-        name: email.split('@')[0],
+        id: user.id,
+        name,
         organization: 'Demo Financial',
         isAccredited: true,
         website: 'https://example.com',
@@ -207,8 +304,11 @@ export const initializeUserProfile = async (
         appointments: [],
         onlineStatus: 'online',
         lastOnline: new Date().toISOString(),
-        showOnlineStatus: true
+        showOnlineStatus: true,
+        email: email
       };
+    } else {
+      return null;
     }
     
     const success = await updateUserProfile(user, userType, profileData);
