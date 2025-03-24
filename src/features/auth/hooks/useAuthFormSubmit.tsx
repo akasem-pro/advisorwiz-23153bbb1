@@ -5,6 +5,7 @@ import { useSignUpHandler } from './useSignUpHandler';
 import { useRetryHandler } from './useRetryHandler';
 import { useAuth } from '../context/AuthProvider';
 import { toast } from 'sonner';
+import { supabase } from '../../../integrations/supabase/client';
 
 /**
  * Combined hook for handling authentication form submissions with improved error handling
@@ -26,18 +27,34 @@ export const useAuthFormSubmit = () => {
   const retryConnection = async () => {
     try {
       toast.loading('Checking connection...');
+      console.log("[Auth Form] Testing Supabase connection directly");
+      
+      // Test Supabase connection directly
+      const start = performance.now();
+      const { data, error } = await supabase.auth.getSession();
+      const end = performance.now();
+      
+      console.log("[Auth Form] Supabase connection test took", Math.round(end - start), "ms");
+      console.log("[Auth Form] Supabase response:", { data, error });
+      
+      if (error) {
+        console.error("[Auth Form] Supabase connection error:", error);
+        toast.dismiss();
+        toast.error('Connection failed: ' + error.message);
+        return false;
+      }
       
       // Short timeout to simulate connection check
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       // For better UX in preview environments, always assume connection is restored
       toast.dismiss();
-      toast.success('Connection restored!');
+      toast.success('Connection verified!');
       return true;
     } catch (error) {
+      console.error("[Auth Form] Connection retry error:", error);
       toast.dismiss();
       toast.error('Connection check failed');
-      console.error('Connection retry error:', error);
       return false;
     }
   };

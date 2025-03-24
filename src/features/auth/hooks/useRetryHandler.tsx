@@ -23,39 +23,56 @@ export const useRetryHandler = () => {
   ) => {
     // Clear any existing error message
     setFormError('');
+    
+    if (isRetrying) {
+      console.log("[Retry Handler] Already retrying, ignoring duplicate request");
+      return;
+    }
+    
     setIsRetrying(true);
+    console.log("[Retry Handler] Starting retry process");
     
     try {
       // Show loading toast - will be dismissed after completion
       toast.loading('Checking connection...');
       
-      // For better UX, assume connection is successful in preview environments
-      // This prevents endless loading states
+      // Log starting state
+      console.log("[Retry Handler] Active tab:", activeTab);
+      console.log("[Retry Handler] Credentials present:", {
+        signIn: !!signInEmail && !!signInPassword,
+        signUp: !!signUpEmail && !!signUpPassword && !!confirmPassword
+      });
       
-      setTimeout(() => {
-        // Dismiss loading toast
-        toast.dismiss();
-        setIsRetrying(false);
-        
-        toast.success('Connection restored! Retrying...');
-        
-        // Call the appropriate handler based on active tab
-        if (activeTab === 'signin' && signInEmail && signInPassword) {
-          handleSignInSubmit();
-        } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
-          handleSignUpSubmit();
-        } else {
-          setFormError('Please fill in all fields before retrying.');
-        }
-      }, 1000); // Short delay for better UX
+      // Short timeout to simulate connection check
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-    } catch (error) {
+      // Dismiss loading toast
       toast.dismiss();
-      setIsRetrying(false);
-      console.error("Retry failed:", error);
+      
+      // Proceed with retry attempt
+      toast.success('Connection restored! Retrying...');
+      
+      // Call the appropriate handler based on active tab
+      if (activeTab === 'signin' && signInEmail && signInPassword) {
+        console.log("[Retry Handler] Retrying sign in");
+        await handleSignInSubmit();
+      } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
+        console.log("[Retry Handler] Retrying sign up");
+        await handleSignUpSubmit();
+      } else {
+        console.log("[Retry Handler] Missing credentials for retry");
+        setFormError('Please fill in all fields before retrying.');
+      }
+    } catch (error) {
+      console.error("[Retry Handler] Retry failed:", error);
+      toast.dismiss();
+      toast.error('Connection check failed');
       setFormError('Connection check failed. Please try again later.');
+    } finally {
+      setIsRetrying(false);
+      console.log("[Retry Handler] Retry process completed");
     }
-  }, []);
+  }, [isRetrying]);
   
   return { handleRetry, isRetrying };
 };

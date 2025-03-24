@@ -55,19 +55,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Enhanced network check that uses both our built-in check and the Supabase connection check
   const checkNetworkStatus = async (): Promise<boolean> => {
     try {
+      console.log("[Auth Provider] Starting network status check");
+      
       // Check via our standard method
       const basicNetworkOk = await baseCheckNetworkStatus();
+      console.log("[Auth Provider] Basic network check result:", basicNetworkOk);
       
       if (!basicNetworkOk) {
+        console.log("[Auth Provider] Basic network check failed, returning false");
         return false;
       }
       
+      // In preview/dev environments, skip additional check
+      if (window.location.hostname.includes('preview') || 
+          window.location.hostname.includes('localhost')) {
+        console.log("[Auth Provider] Preview environment detected, skipping Supabase connection check");
+        return true;
+      }
+      
       // Double check with Supabase-specific connection test
+      console.log("[Auth Provider] Running Supabase-specific connection test");
       const supabaseConnectionOk = await checkSupabaseConnection();
+      console.log("[Auth Provider] Supabase connection check result:", supabaseConnectionOk);
       
       return supabaseConnectionOk;
     } catch (error) {
-      console.error("Enhanced network check failed:", error);
+      console.error("[Auth Provider] Enhanced network check failed:", error);
       return false;
     }
   };

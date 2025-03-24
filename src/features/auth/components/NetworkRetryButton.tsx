@@ -40,9 +40,14 @@ const NetworkRetryButton: React.FC<NetworkRetryButtonProps> = ({
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    console.log("[Network Retry Button] Button clicked, isConnecting:", isConnecting);
+    
     // Disable multiple clicks when connecting
     if (!isConnecting) {
+      console.log("[Network Retry Button] Calling onRetry function");
       onRetry();
+    } else {
+      console.log("[Network Retry Button] Ignoring click while connecting");
     }
   };
   
