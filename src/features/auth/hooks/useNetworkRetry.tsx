@@ -1,116 +1,87 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { toast } from 'sonner';
+import { useNetworkStatus } from '../../offline/useNetworkStatus';
+import { useRetryManager } from './core/useRetryManager';
+
+// Maximum number of retry attempts
+const MAX_RETRY_ATTEMPTS = 3;
+
+// Retry delay in ms (with exponential backoff)
+const getRetryDelay = (attempt: number) => Math.min(2000 * Math.pow(2, attempt), 30000);
+
+interface UseNetworkRetryResult {
+  /**
+   * Current network status
+   */
+  networkStatus: 'online' | 'offline' | 'checking';
+  
+  /**
+   * Number of retry attempts made
+   */
+  retryAttempts: number;
+  
+  /**
+   * Check network status
+   */
+  checkNetworkStatus: () => Promise<boolean>;
+  
+  /**
+   * Increment retry counter
+   */
+  incrementRetry: () => void;
+  
+  /**
+   * Reset retry counter
+   */
+  resetRetryAttempts: () => void;
+  
+  /**
+   * Whether max retries have been reached
+   */
+  maxRetriesReached: boolean;
+  
+  /**
+   * Time until next retry (ms)
+   */
+  retryDelay: number;
+}
 
 /**
- * Hook for managing network status and retry attempts with improved reliability
+ * Hook for managing network retries with improved error handling
  */
-export const useNetworkRetry = () => {
-  const [retryAttempts, setRetryAttempts] = useState(0);
-  const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>('checking');
-
-  // Perform full network check with multiple endpoints for better reliability
-  const checkNetworkStatus = useCallback(async (): Promise<boolean> => {
-    try {
-      setNetworkStatus('checking');
-      
-      // First check navigator.onLine
-      if (!navigator.onLine) {
-        setNetworkStatus('offline');
-        return false;
-      }
-      
-      // Try to ping multiple endpoints for better reliability
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-      
-      try {
-        // Use a more reliable endpoint than google.com which might be blocked in some environments
-        const endpoints = [
-          'https://gkymvotqrdecjjymmmef.supabase.co/auth/v1/',
-          'https://httpbin.org/status/200',
-          'https://www.cloudflare.com'
-        ];
-        
-        const results = await Promise.allSettled(
-          endpoints.map(endpoint => 
-            fetch(endpoint, { 
-              method: 'HEAD',
-              mode: 'no-cors',
-              signal: controller.signal,
-              headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache'
-              }
-            })
-          )
-        );
-        
-        clearTimeout(timeoutId);
-        
-        // Check if at least one endpoint is reachable
-        const isOnline = results.some(result => result.status === 'fulfilled');
-        
-        setNetworkStatus(isOnline ? 'online' : 'offline');
-        return isOnline;
-      } catch (error) {
-        clearTimeout(timeoutId);
-        console.error("Network connectivity check failed:", error);
-        setNetworkStatus('offline');
-        return false;
-      }
-    } catch (error) {
-      console.error("Network status check error:", error);
-      setNetworkStatus('offline');
-      return false;
-    }
-  }, []);
-
-  // Update network status based on browser's online/offline events
+export const useNetworkRetry = (): UseNetworkRetryResult => {
+  const { isOnline, isChecking, checkConnectionNow } = useNetworkStatus({
+    pollingInterval: 60000
+  });
+  
+  const { retryAttempts, incrementRetry, resetRetryAttempts } = useRetryManager();
+  const [retryDelay, setRetryDelay] = useState(getRetryDelay(0));
+  
+  // Update retry delay when attempts change
   useEffect(() => {
-    const handleOnline = () => {
-      setNetworkStatus('online');
-      // Reload the page when connection is restored to ensure fresh state
-      if (retryAttempts > 2) {
-        window.location.reload();
-      }
-    };
+    setRetryDelay(getRetryDelay(retryAttempts));
+  }, [retryAttempts]);
+  
+  // Get network status string
+  const networkStatus = isChecking 
+    ? 'checking' 
+    : isOnline ? 'online' : 'offline';
     
-    const handleOffline = () => setNetworkStatus('offline');
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    // Initial check
-    checkNetworkStatus();
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, [retryAttempts, checkNetworkStatus]);
-
-  // Monitor network changes and notify user
-  useEffect(() => {
-    // Only show online notifications if user had previously experienced offline issues
-    if (networkStatus === 'online' && retryAttempts > 0) {
-      toast.success("You're back online! You can now try again.");
-    }
-  }, [networkStatus, retryAttempts]);
-
-  const incrementRetry = useCallback(() => {
-    setRetryAttempts(prev => prev + 1);
-  }, []);
-
-  const resetRetryAttempts = useCallback(() => {
-    setRetryAttempts(0);
-  }, []);
-
+  // Check if max retries reached
+  const maxRetriesReached = retryAttempts >= MAX_RETRY_ATTEMPTS;
+  
+  // Check network status
+  const checkNetworkStatus = useCallback(async (): Promise<boolean> => {
+    return await checkConnectionNow();
+  }, [checkConnectionNow]);
+  
   return {
     networkStatus,
-    retryAttempts,
+    retryAttempts, 
     checkNetworkStatus,
     incrementRetry,
-    resetRetryAttempts
+    resetRetryAttempts,
+    maxRetriesReached,
+    retryDelay
   };
 };

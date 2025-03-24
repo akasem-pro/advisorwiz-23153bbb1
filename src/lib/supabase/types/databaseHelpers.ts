@@ -1,52 +1,60 @@
 
-import { PostgrestError, PostgrestSingleResponse } from '@supabase/supabase-js';
+import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import { Database } from '../../../integrations/supabase/types';
 
-// Type for table rows
-export type Tables = Database['public']['Tables'];
+// Type for table keys
+export type TableName = keyof Database['public']['Tables'];
 
-// Helper type to get Row type
-export type TableRow<T extends keyof Tables> = Tables[T]['Row'];
+// Generic type for table rows
+export type TableRow<T extends TableName> = Database['public']['Tables'][T]['Row'];
 
-// Helper type to get Insert type
-export type TableInsert<T extends keyof Tables> = Tables[T]['Insert'];
+// Generic type for table inserts
+export type TableInsert<T extends TableName> = Database['public']['Tables'][T]['Insert'];
 
-// Helper type to get Update type
-export type TableUpdate<T extends keyof Tables> = Tables[T]['Update'];
+// Generic type for table updates
+export type TableUpdate<T extends TableName> = Database['public']['Tables'][T]['Update'];
 
-// Helper function to handle Supabase response and extract data safely
+// Function to extract data from Supabase responses
 export function extractData<T>(response: PostgrestSingleResponse<T>): T | null {
   if (response.error) {
-    console.error('Supabase query error:', response.error.message);
+    console.error('Error in database response:', response.error);
     return null;
   }
   return response.data;
 }
 
-// Helper to safely access properties from potentially undefined objects
-export function safeGet<T, K extends keyof T>(obj: T | null | undefined, key: K): T[K] | undefined {
-  return obj ? obj[key] : undefined;
-}
-
-// Type guard to check if a response has an error
-export function hasError(response: { error: PostgrestError | null }): boolean {
-  return !!response.error;
-}
-
-// Helper function to process an array response safely
+// Process array responses with proper typing
 export function processArrayResponse<T>(
   response: PostgrestSingleResponse<T[]>
 ): T[] {
   if (response.error) {
-    console.error('Supabase query error:', response.error.message);
+    console.error('Error in database array response:', response.error);
     return [];
   }
   return response.data || [];
 }
 
-// Helper to ensure we have valid data before accessing properties
-export function ensureData<T>(data: T | null): asserts data is T {
-  if (!data) {
-    throw new Error('Data is null or undefined');
+// Helper to convert database date strings to Date objects
+export function dbDateToDate(dateString: string | null): Date | null {
+  if (!dateString) return null;
+  return new Date(dateString);
+}
+
+// Helper to format database values for display
+export function formatDatabaseValue(value: any, type: 'date' | 'currency' | 'percentage' | 'number' | 'text' = 'text'): string {
+  if (value === null || value === undefined) return '';
+  
+  switch (type) {
+    case 'date':
+      return new Date(value).toLocaleDateString();
+    case 'currency':
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value));
+    case 'percentage':
+      return new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 1 }).format(Number(value) / 100);
+    case 'number':
+      return new Intl.NumberFormat('en-US').format(Number(value));
+    case 'text':
+    default:
+      return String(value);
   }
 }

@@ -1,88 +1,200 @@
-
 import { toast } from 'sonner';
-import { supabase } from '../../../integrations/supabase/client';
+import { supabase, checkSupabaseConnection } from '../../../integrations/supabase/client';
+import { ErrorCategory, handleError } from '../../../utils/errorHandling/errorHandler';
 
-// Connection status management
-export const setupConnectionListener = () => {
-  const handleConnectionChange = () => {
-    if (navigator.onLine) {
-      toast.success('You are back online!');
-      // Could trigger sync of offline changes here
-    } else {
-      toast.warning('You are offline. Some features may be limited.');
-    }
+// Interface for offline change tracking
+interface OfflineChange {
+  id: string;
+  table: string;
+  operation: 'insert' | 'update' | 'delete';
+  data: any;
+  timestamp: number;
+  retryCount: number;
+}
+
+// Storage key for offline changes
+const OFFLINE_CHANGES_KEY = 'supabase_offline_changes';
+
+/**
+ * Set up connection listener for online/offline events
+ */
+export const setupConnectionListener = (
+  onOnline: () => void,
+  onOffline: () => void
+): () => void => {
+  const handleOnline = () => {
+    console.log('Connection restored');
+    onOnline();
   };
-
-  window.addEventListener('online', handleConnectionChange);
-  window.addEventListener('offline', handleConnectionChange);
-
+  
+  const handleOffline = () => {
+    console.log('Connection lost');
+    onOffline();
+  };
+  
+  window.addEventListener('online', handleOnline);
+  window.addEventListener('offline', handleOffline);
+  
+  // Return cleanup function
   return () => {
-    window.removeEventListener('online', handleConnectionChange);
-    window.removeEventListener('offline', handleConnectionChange);
+    window.removeEventListener('online', handleOnline);
+    window.removeEventListener('offline', handleOffline);
   };
 };
 
-// Sync offline changes when reconnecting
-export const syncOfflineChanges = async () => {
-  if (!navigator.onLine) return false;
-  
-  // This would sync any queued changes stored during offline mode
-  // Implementation depends on specific requirements
-  
-  return true;
-};
-
-// Enhanced connection checker with more diagnostic information
-export const checkSupabaseConnection = async (): Promise<boolean> => {
+/**
+ * Check Supabase connection status
+ */
+export const checkConnection = async (): Promise<boolean> => {
   try {
-    console.log("[Supabase Debug] Starting connection check");
-    
-    // Check if browser is online first
+    // First check browser online status
     if (!navigator.onLine) {
-      console.log("[Supabase Debug] Browser reports offline status");
       return false;
     }
     
-    console.log("[Supabase Debug] Browser reports online status");
-    
-    // Get browser diagnostic info
-    console.log("[Supabase Debug] Browser diagnostics:", {
-      userAgent: navigator.userAgent,
-      language: navigator.language,
-      cookiesEnabled: navigator.cookieEnabled,
-      doNotTrack: navigator.doNotTrack,
-      origin: window.location.origin,
-      href: window.location.href,
-      protocol: window.location.protocol,
-      viewport: `${window.innerWidth}x${window.innerHeight}`,
-    });
-    
-    // Try to ping Supabase
-    try {
-      console.log("[Supabase Debug] Making lightweight health check to Supabase");
-      const start = performance.now();
-      
-      // Perform a super lightweight check by getting session (cached)
-      const { data, error } = await supabase.auth.getSession();
-      
-      const end = performance.now();
-      console.log("[Supabase Debug] Health check response time:", Math.round(end - start), "ms");
-      
-      if (error) {
-        console.error("[Supabase Debug] Health check error:", error);
-        return false;
-      }
-      
-      console.log("[Supabase Debug] Health check successful, session exists:", !!data.session);
-      return true;
-    } catch (error) {
-      console.error("[Supabase Debug] Health check exception:", error);
-      // Default to true to avoid blocking auth functionality
-      return true;
-    }
+    // Then check actual Supabase connectivity
+    return await checkSupabaseConnection();
   } catch (error) {
-    console.error("[Supabase Debug] Connection check failed:", error);
-    // Default to true to prevent blocking auth functionality
+    handleError(
+      'Failed to check connection status',
+      ErrorCategory.NETWORK
+    );
+    return false;
+  }
+};
+
+/**
+ * Record a change to be synced later when back online
+ */
+export const recordOfflineChange = (
+  table: string,
+  operation: 'insert' | 'update' | 'delete',
+  data: any
+): void => {
+  try {
+    // Get existing offline changes
+    const existingChangesJson = localStorage.getItem(OFFLINE_CHANGES_KEY);
+    const existingChanges: OfflineChange[] = existingChangesJson 
+      ? JSON.parse(existingChangesJson) 
+      : [];
+    
+    // Add new change
+    const change: OfflineChange = {
+      id: crypto.randomUUID(),
+      table,
+      operation,
+      data,
+      timestamp: Date.now(),
+      retryCount: 0
+    };
+    
+    // Save updated changes
+    localStorage.setItem(
+      OFFLINE_CHANGES_KEY, 
+      JSON.stringify([...existingChanges, change])
+    );
+    
+    console.log(`Recorded offline ${operation} for ${table}`);
+  } catch (error) {
+    handleError(
+      'Failed to record offline change',
+      ErrorCategory.UNKNOWN
+    );
+  }
+};
+
+/**
+ * Sync all recorded offline changes when back online
+ */
+export const syncOfflineChanges = async (): Promise<boolean> => {
+  try {
+    const changesJson = localStorage.getItem(OFFLINE_CHANGES_KEY);
+    if (!changesJson) {
+      return true; // No changes to sync
+    }
+    
+    const changes: OfflineChange[] = JSON.parse(changesJson);
+    if (changes.length === 0) {
+      return true; // No changes to sync
+    }
+    
+    console.log(`Attempting to sync ${changes.length} offline changes`);
+    
+    // Track successful and failed changes
+    const successful: string[] = [];
+    const failed: OfflineChange[] = [];
+    
+    // Process each change
+    for (const change of changes) {
+      try {
+        let success = false;
+        
+        switch (change.operation) {
+          case 'insert':
+            const { error: insertError } = await supabase
+              .from(change.table)
+              .insert(change.data);
+            success = !insertError;
+            break;
+            
+          case 'update':
+            const { error: updateError } = await supabase
+              .from(change.table)
+              .update(change.data)
+              .eq('id', change.data.id);
+            success = !updateError;
+            break;
+            
+          case 'delete':
+            const { error: deleteError } = await supabase
+              .from(change.table)
+              .delete()
+              .eq('id', change.data.id);
+            success = !deleteError;
+            break;
+        }
+        
+        if (success) {
+          successful.push(change.id);
+        } else {
+          // Increment retry count and keep for later if under max retries
+          change.retryCount += 1;
+          if (change.retryCount < 3) {
+            failed.push(change);
+          }
+        }
+      } catch (error) {
+        // Keep failed changes with incremented retry count
+        change.retryCount += 1;
+        if (change.retryCount < 3) {
+          failed.push(change);
+        }
+      }
+    }
+    
+    // Update storage with remaining failed changes
+    if (failed.length > 0) {
+      localStorage.setItem(OFFLINE_CHANGES_KEY, JSON.stringify(failed));
+    } else {
+      localStorage.removeItem(OFFLINE_CHANGES_KEY);
+    }
+    
+    // Show appropriate message
+    if (successful.length > 0) {
+      console.log(`Successfully synced ${successful.length} offline changes`);
+    }
+    
+    if (failed.length > 0) {
+      console.warn(`Failed to sync ${failed.length} offline changes`);
+      return false;
+    }
+    
     return true;
+  } catch (error) {
+    handleError(
+      'Error syncing offline changes',
+      ErrorCategory.NETWORK
+    );
+    return false;
   }
 };
