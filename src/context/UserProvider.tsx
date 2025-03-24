@@ -1,152 +1,120 @@
+
 import React, { ReactNode, useEffect } from 'react';
-import UserContext, { MatchPreferences } from './UserContextDefinition';
-import { useUserState } from '../hooks/useUserState';
-import { useChatOperations } from '../hooks/useChatOperations';
-import { useAppointmentOperations } from '../hooks/useAppointmentOperations';
-import { useFirmOperations } from '../hooks/useFirmOperations';
-import { useMatchingAlgorithm } from '../hooks/useMatchingAlgorithm';
-import { useUserStatus } from '../hooks/useUserStatus';
-import { useFilterOperations } from '../hooks/useFilterOperations';
-import { useCallManager } from '../hooks/useCallManager';
-import { useLeadTracking } from '../hooks/useLeadTracking';
-import { CallMetrics } from '../types/callTypes';
+import UserContext from './UserContextDefinition';
+import { useUserProfiles } from '../hooks/user/useUserProfiles';
+import { useUserCommunication } from '../hooks/user/useUserCommunication';
+import { useUserOrganizations } from '../hooks/user/useUserOrganizations';
+import { useFilterOperations } from '../hooks/user/useFilterOperations';
+import { useUserMatching } from '../hooks/user/useUserMatching';
+import { useCallManagement } from '../hooks/user/useCallManagement';
+import { useLeadManagement } from '../hooks/user/useLeadManagement';
 import CallModal from '../components/call/CallModal';
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  // Core state management
+  // Core user profiles
   const {
     userType, setUserType,
     consumerProfile, setConsumerProfile,
     advisorProfile, setAdvisorProfile,
     isAuthenticated, setIsAuthenticated,
+    updateOnlineStatus
+  } = useUserProfiles();
+
+  // Communication (chats and appointments)
+  const {
     chats, setChats,
     appointments, setAppointments,
+    addMessage, markChatAsRead,
+    addAppointment, updateAppointmentStatus
+  } = useUserCommunication();
+
+  // Organizations (firms)
+  const {
     firms, setFirms,
-    matchPreferences, setMatchPreferences,
-    callSessions, setCallSessions
-  } = useUserState();
-
-  // Chat operations
-  const { addMessage, markChatAsRead } = useChatOperations(chats, setChats);
-
-  // Appointment operations
-  const { addAppointment, updateAppointmentStatus } = useAppointmentOperations(
-    appointments, 
-    setAppointments, 
-    consumerProfile, 
-    setConsumerProfile, 
-    advisorProfile, 
-    setAdvisorProfile
-  );
-
-  // User status operations
-  const { updateOnlineStatus } = useUserStatus(
-    consumerProfile, 
-    setConsumerProfile, 
-    advisorProfile, 
-    setAdvisorProfile
-  );
-
-  // Firm operations
-  const { addFirm, getFirmByAdmin } = useFirmOperations(firms, setFirms);
+    addFirm, getFirmByAdmin
+  } = useUserOrganizations();
 
   // Filtering operations
   const { getFilteredAdvisors, getFilteredConsumers } = useFilterOperations();
 
-  // Lead tracking operations
-  const { 
-    leads, 
-    addLead, 
-    updateLeadStatus, 
-    getLeadByConsumer,
-    getAdvisorLeads,
-    getLeadStats 
-  } = useLeadTracking();
-
-  // Call operations
-  const handleMetricsUpdate = (metrics: CallMetrics[]) => {
-    // This will be used by the matching algorithm
-    console.log("Updated call metrics:", metrics);
-  };
-
+  // Get the current user ID based on profile type
   const userId = userType === 'consumer' 
     ? consumerProfile?.id 
     : advisorProfile?.id;
 
+  // Call management
   const {
-    callSessions: managedCallSessions,
+    callSessions,
     activeCall,
     callMetrics,
     initiateCall,
-    updateCall: updateCallStatus,
+    updateCallStatus,
     isCallModalOpen,
     closeCallModal,
     endCall
-  } = useCallManager(
-    userId || '', 
-    userType as 'consumer' | 'advisor' | null,
-    handleMetricsUpdate
-  );
+  } = useCallManagement(userId, userType as 'consumer' | 'advisor' | null);
 
-  // Sync call sessions with state
-  useEffect(() => {
-    setCallSessions(managedCallSessions);
-  }, [managedCallSessions, setCallSessions]);
+  // Lead management
+  const {
+    leads,
+    addLead,
+    updateLeadStatus,
+    getLeadByConsumer,
+    getAdvisorLeads,
+    getLeadStats
+  } = useLeadManagement();
 
-  // Matching algorithm operations with call metrics integration
-  const matching = useMatchingAlgorithm(
+  // User matching
+  const {
+    matchPreferences,
+    updateMatchPreferences,
+    calculateCompatibilityScore,
+    getTopMatches,
+    getRecommendedMatches
+  } = useUserMatching(
     userType,
     consumerProfile,
     advisorProfile,
-    matchPreferences,
     chats,
     appointments,
-    callMetrics // Pass call metrics to matching algorithm
+    callMetrics
   );
-
-  // Enhanced with actual state update
-  const updateMatchPreferences = (preferences: MatchPreferences) => {
-    setMatchPreferences(prev => ({
-      ...prev,
-      ...preferences
-    }));
-  };
 
   const value = {
-    userType,
-    setUserType,
-    consumerProfile,
-    setConsumerProfile,
-    advisorProfile,
-    setAdvisorProfile,
-    isAuthenticated,
-    setIsAuthenticated,
-    chats,
-    setChats,
-    addMessage,
-    markChatAsRead,
-    appointments,
-    setAppointments,
-    addAppointment,
-    updateAppointmentStatus,
-    getFilteredAdvisors,
-    getFilteredConsumers,
+    // User profiles
+    userType, setUserType,
+    consumerProfile, setConsumerProfile,
+    advisorProfile, setAdvisorProfile,
+    isAuthenticated, setIsAuthenticated,
     updateOnlineStatus,
-    firms,
-    setFirms,
-    addFirm,
-    getFirmByAdmin,
-    calculateCompatibilityScore: matching.calculateCompatibilityScore,
+    
+    // Communication (chats and appointments)
+    chats, setChats,
+    addMessage, markChatAsRead,
+    appointments, setAppointments,
+    addAppointment, updateAppointmentStatus,
+    
+    // Filter operations
+    getFilteredAdvisors, getFilteredConsumers,
+    
+    // Organizations (firms)
+    firms, setFirms,
+    addFirm, getFirmByAdmin,
+    
+    // Matching
+    calculateCompatibilityScore,
     updateMatchPreferences,
     matchPreferences,
-    getTopMatches: matching.getTopMatches,
-    getRecommendedMatches: matching.getRecommendedMatches,
+    getTopMatches, 
+    getRecommendedMatches,
+    
     // Call functionality
-    callSessions: managedCallSessions,
+    callSessions,
     initiateCall,
     updateCallStatus,
     activeCall,
     callMetrics,
+    
     // Lead tracking functionality
     leads,
     addLead,
