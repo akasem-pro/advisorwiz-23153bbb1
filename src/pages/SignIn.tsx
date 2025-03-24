@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -65,7 +66,7 @@ const SignIn: React.FC = () => {
     }
     
     try {
-      const result = await handleSignIn(
+      const success = await handleSignIn(
         e, 
         signInEmail, 
         signInPassword, 
@@ -74,7 +75,7 @@ const SignIn: React.FC = () => {
         setIsLoading
       );
       
-      if (result === true) {
+      if (success) {
         console.log("[SignIn] Successfully signed in, redirecting to:", from);
         navigate(from);
       }
@@ -91,7 +92,7 @@ const SignIn: React.FC = () => {
     }
     
     try {
-      const result = await handleSignUp(
+      const success = await handleSignUp(
         e, 
         signUpEmail, 
         signUpPassword, 
@@ -107,7 +108,7 @@ const SignIn: React.FC = () => {
         }
       );
       
-      if (result === true) {
+      if (success) {
         console.log("[SignUp] Successfully signed up, redirecting to:", from);
         navigate(from);
       }

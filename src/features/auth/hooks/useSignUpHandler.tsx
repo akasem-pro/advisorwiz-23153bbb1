@@ -14,7 +14,7 @@ export const useSignUpHandler = () => {
   } = useAuthCore();
   
   const handleSignUp = async (
-    e: React.FormEvent<HTMLFormElement>,
+    e: React.FormEvent<HTMLFormElement> | undefined,
     email: string,
     password: string,
     validateForm: () => boolean,
@@ -23,12 +23,12 @@ export const useSignUpHandler = () => {
     setActiveTab: (tab: string) => void,
     setSignInEmail: (email: string) => void,
     resetFields: () => void
-  ) => {
+  ): Promise<boolean> => {
     if (e) {
       e.preventDefault();
     }
     
-    if (!validateForm()) return;
+    if (!validateForm()) return false;
     
     // Clear previous errors
     setFormError('');
@@ -40,8 +40,7 @@ export const useSignUpHandler = () => {
       
       if (!isOnline) {
         setFormError('Unable to connect to authentication service. Please check your connection and try again.');
-        setIsLoading(false);
-        return;
+        return false;
       }
       
       console.log('Attempting signup with:', { email });
@@ -54,17 +53,21 @@ export const useSignUpHandler = () => {
         setSignInEmail(email);
         
         toast.success("Registration successful! Please check your email to verify your account.");
+        return true;
       } else {
         // Handle unsuccessful sign-up
         setFormError('Registration failed. Please try again later.');
+        return false;
       }
     } catch (error: any) {
       if (error.message?.includes('already registered')) {
         setFormError('This email is already registered. Please sign in instead.');
         setActiveTab('signin');
         setSignInEmail(email);
+        return false;
       } else {
         handleAuthError(error, setFormError, false);
+        return false;
       }
     } finally {
       setIsLoading(false);
