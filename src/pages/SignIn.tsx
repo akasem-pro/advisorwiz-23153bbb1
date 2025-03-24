@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
@@ -9,18 +9,23 @@ import { useSignInForm } from '../features/auth/hooks/useSignInForm';
 import { useAuthFormSubmit } from '../features/auth/hooks/useAuthFormSubmit';
 import AuthFormContainer from '../features/auth/components/AuthFormContainer';
 import { useAuth } from '../features/auth/context/AuthProvider';
-import { toast } from 'sonner'; // Add this import for toast notifications
+import { toast } from 'sonner';
 
 const SignIn: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get the redirect path from location state, default to home or dashboard
+  const from = location.state?.from || '/';
   
   // Redirect if user is already authenticated
   useEffect(() => {
     if (user) {
-      navigate('/');
+      console.log("[SignIn] User already authenticated, redirecting to:", from);
+      navigate(from);
     }
-  }, [user, navigate]);
+  }, [user, navigate, from]);
   
   const {
     signInEmail,
@@ -60,7 +65,7 @@ const SignIn: React.FC = () => {
       e.preventDefault();
     }
     
-    await handleSignIn(
+    const success = await handleSignIn(
       e, 
       signInEmail, 
       signInPassword, 
@@ -68,6 +73,11 @@ const SignIn: React.FC = () => {
       setFormError, 
       setIsLoading
     );
+    
+    if (success) {
+      console.log("[SignIn] Successfully signed in, redirecting to:", from);
+      navigate(from);
+    }
   };
   
   const handleSignUpSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
@@ -75,7 +85,7 @@ const SignIn: React.FC = () => {
       e.preventDefault();
     }
     
-    await handleSignUp(
+    const success = await handleSignUp(
       e, 
       signUpEmail, 
       signUpPassword, 
@@ -90,6 +100,11 @@ const SignIn: React.FC = () => {
         setConfirmPassword('');
       }
     );
+    
+    if (success) {
+      console.log("[SignUp] Successfully signed up, redirecting to:", from);
+      navigate(from);
+    }
   };
   
   const handleRetrySubmit = async () => {

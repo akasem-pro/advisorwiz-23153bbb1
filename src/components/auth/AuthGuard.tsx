@@ -62,11 +62,14 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   }
 
   if (!isAuthenticated) {
+    // Store the intended destination for after login
+    const destination = location.pathname !== "/" ? location.pathname : undefined;
+    
     // Show toast to inform user
     toast.error("Please sign in to access this page");
     
     // Redirect to login if not authenticated
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/sign-in" state={{ from: destination }} replace />;
   }
 
   // If userTypes is provided, check if current user type is allowed

@@ -2,13 +2,14 @@
 import { useAuth } from '../context/AuthProvider';
 import { useAuthCore } from './useAuthCore';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 /**
  * Hook for handling sign in submissions with improved preview environment support
  */
 export const useSignInHandler = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { signIn, setMockUser } = useAuth();
   const { 
     validateNetworkConnection, 
@@ -28,12 +29,16 @@ export const useSignInHandler = () => {
       e.preventDefault();
     }
 
-    if (!validateForm()) return;
+    if (!validateForm()) return false;
 
     setFormError('');
     setIsLoading(true);
 
     try {
+      // Extract the redirect destination from location state
+      const from = location.state?.from || '/';
+      console.log("[SignInHandler] Sign in attempt, will redirect to:", from);
+      
       // Check if we're in a preview environment
       const isPreviewEnv = window.location.hostname.includes('preview') || 
                            window.location.hostname.includes('lovableproject') ||
@@ -82,14 +87,10 @@ export const useSignInHandler = () => {
           setMockUser(mockUser);
           
           toast.success("Successfully signed in!");
-          
-          // Redirect to homepage
-          navigate('/');
           return true;
         } else {
           console.log("[Sign In] Mock authentication failed");
           setFormError('Invalid email or password. Please try again.');
-          setIsLoading(false);
           return false;
         }
       }
@@ -100,7 +101,6 @@ export const useSignInHandler = () => {
       
       if (!isOnline) {
         setFormError('Unable to connect to authentication service. Please check your connection and try again.');
-        setIsLoading(false);
         return false;
       }
 
@@ -109,6 +109,7 @@ export const useSignInHandler = () => {
       
       if (!success) {
         setFormError('Authentication failed. Please check your credentials and try again.');
+        return false;
       }
       
       return success;
