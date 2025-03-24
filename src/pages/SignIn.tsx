@@ -9,6 +9,7 @@ import { useSignInForm } from '../features/auth/hooks/useSignInForm';
 import { useAuthFormSubmit } from '../features/auth/hooks/useAuthFormSubmit';
 import AuthFormContainer from '../features/auth/components/AuthFormContainer';
 import { useAuth } from '../features/auth/context/AuthProvider';
+import { toast } from 'sonner'; // Add this import for toast notifications
 
 const SignIn: React.FC = () => {
   const { user } = useAuth();
