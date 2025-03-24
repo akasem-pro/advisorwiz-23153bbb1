@@ -96,40 +96,43 @@ export const useRealtimeSubscriptions = () => {
         console.log('[Realtime] Appointment update:', payload);
         
         const { eventType } = payload;
-        // Create a safe reference to the payload.new
-        const appointmentData = payload.new || {};
+        // Safely access payload.new with proper type assertion
+        const payloadNew = payload.new as Record<string, any> | null;
         
+        // Handle different event types
         switch (eventType) {
           case 'INSERT': {
-            // Ensure we're creating an object that matches the Appointment type
+            if (!payloadNew) return;
+            
+            // Create a new appointment object with safe property access
             const newAppointment: Appointment = {
-              id: appointmentData.id || '',
+              id: payloadNew.id || '',
               categoryId: '', // Required field, providing a default empty string
-              title: appointmentData.title || 'Appointment',
-              date: appointmentData.scheduled_start || new Date().toISOString(),
-              startTime: appointmentData.scheduled_start 
-                ? new Date(appointmentData.scheduled_start).toLocaleTimeString() 
+              title: payloadNew.title || 'Appointment',
+              date: payloadNew.scheduled_start || new Date().toISOString(),
+              startTime: payloadNew.scheduled_start 
+                ? new Date(payloadNew.scheduled_start).toLocaleTimeString() 
                 : '',
-              endTime: appointmentData.scheduled_end 
-                ? new Date(appointmentData.scheduled_end).toLocaleTimeString() 
+              endTime: payloadNew.scheduled_end 
+                ? new Date(payloadNew.scheduled_end).toLocaleTimeString() 
                 : '',
-              advisorId: appointmentData.advisor_id || '',
-              consumerId: appointmentData.consumer_id || '',
-              status: (appointmentData.status as AppointmentStatus) || 'pending',
-              location: appointmentData.meeting_link || '',
-              notes: appointmentData.notes || '',
-              createdAt: appointmentData.created_at || new Date().toISOString(),
-              updatedAt: appointmentData.updated_at || new Date().toISOString()
+              advisorId: payloadNew.advisor_id || '',
+              consumerId: payloadNew.consumer_id || '',
+              status: (payloadNew.status as AppointmentStatus) || 'pending',
+              location: payloadNew.meeting_link || '',
+              notes: payloadNew.notes || '',
+              createdAt: payloadNew.created_at || new Date().toISOString(),
+              updatedAt: payloadNew.updated_at || new Date().toISOString()
             };
             
-            // Update state in a type-safe way
+            // Update state safely
             setAppointments((prevAppointments: Appointment[]) => [...prevAppointments, newAppointment]);
             
             // Show a notification about the new appointment
             toast('New Appointment', {
-              description: `${appointmentData.title || 'Appointment'} scheduled for ${
-                appointmentData.scheduled_start 
-                  ? new Date(appointmentData.scheduled_start).toLocaleString() 
+              description: `${payloadNew.title || 'Appointment'} scheduled for ${
+                payloadNew.scheduled_start 
+                  ? new Date(payloadNew.scheduled_start).toLocaleString() 
                   : 'unknown date'
               }`,
               action: {
@@ -141,24 +144,26 @@ export const useRealtimeSubscriptions = () => {
           }
             
           case 'UPDATE': {
+            if (!payloadNew) return;
+            
             // Update existing appointment in state
             setAppointments((prevAppointments: Appointment[]) => 
               prevAppointments.map(item => {
-                if (item.id === appointmentData.id) {
+                if (item.id === payloadNew.id) {
                   return {
                     ...item,
-                    title: appointmentData.title || item.title,
-                    date: appointmentData.scheduled_start || item.date,
-                    startTime: appointmentData.scheduled_start 
-                      ? new Date(appointmentData.scheduled_start).toLocaleTimeString() 
+                    title: payloadNew.title || item.title,
+                    date: payloadNew.scheduled_start || item.date,
+                    startTime: payloadNew.scheduled_start 
+                      ? new Date(payloadNew.scheduled_start).toLocaleTimeString() 
                       : item.startTime,
-                    endTime: appointmentData.scheduled_end 
-                      ? new Date(appointmentData.scheduled_end).toLocaleTimeString() 
+                    endTime: payloadNew.scheduled_end 
+                      ? new Date(payloadNew.scheduled_end).toLocaleTimeString() 
                       : item.endTime,
-                    status: (appointmentData.status as AppointmentStatus) || item.status,
-                    location: appointmentData.meeting_link || item.location,
-                    notes: appointmentData.notes || item.notes,
-                    updatedAt: appointmentData.updated_at || new Date().toISOString()
+                    status: (payloadNew.status as AppointmentStatus) || item.status,
+                    location: payloadNew.meeting_link || item.location,
+                    notes: payloadNew.notes || item.notes,
+                    updatedAt: payloadNew.updated_at || new Date().toISOString()
                   };
                 }
                 return item;
@@ -167,7 +172,7 @@ export const useRealtimeSubscriptions = () => {
             
             // Show update notification
             toast('Appointment Updated', {
-              description: `Status: ${(appointmentData.status || '').toUpperCase()}`,
+              description: `Status: ${(payloadNew.status || '').toUpperCase()}`,
               action: {
                 label: 'View',
                 onClick: () => window.location.href = '/schedule'
@@ -178,9 +183,10 @@ export const useRealtimeSubscriptions = () => {
             
           case 'DELETE': {
             // Remove deleted appointment from state
-            if (payload.old && payload.old.id) {
+            const payloadOld = payload.old as Record<string, any> | null;
+            if (payloadOld && payloadOld.id) {
               setAppointments((prevAppointments: Appointment[]) => 
-                prevAppointments.filter(item => item.id !== payload.old.id)
+                prevAppointments.filter(item => item.id !== payloadOld.id)
               );
               
               // Show cancellation notification
@@ -205,7 +211,7 @@ export const useRealtimeSubscriptions = () => {
         console.log('[Realtime] New notification:', payload);
         
         // Make sure notification exists, otherwise use empty object
-        const notification = payload.new || {};
+        const notification = payload.new as Record<string, any> | null || {};
         
         toast(notification.title || 'New Notification', {
           description: notification.message || '',
