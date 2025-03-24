@@ -7,6 +7,7 @@ export interface TooltipContent {
   section_key: string;
   title: string;
   content: string;
+  description: string; // Added to match database schema
   created_at?: string;
 }
 
@@ -46,7 +47,17 @@ export const useTooltipContent = ({
         return;
       }
       
-      setTooltipContent(data);
+      // Map the database fields to our interface
+      if (data) {
+        const mappedData: TooltipContent = {
+          ...data,
+          content: data.description // Use description as content for compatibility
+        };
+        setTooltipContent(mappedData);
+      } else {
+        setTooltipContent(null);
+      }
+      
       setError(null);
     } catch (err) {
       setError('Failed to fetch tooltip content');
@@ -64,7 +75,17 @@ export const useTooltipContent = ({
         return;
       }
       
-      setAllTooltips(data || []);
+      // Map the database fields to our interface
+      if (data) {
+        const mappedData: TooltipContent[] = data.map(item => ({
+          ...item,
+          content: item.description // Use description as content for compatibility
+        }));
+        setAllTooltips(mappedData);
+      } else {
+        setAllTooltips([]);
+      }
+      
       setError(null);
     } catch (err) {
       setError('Failed to fetch tooltips');

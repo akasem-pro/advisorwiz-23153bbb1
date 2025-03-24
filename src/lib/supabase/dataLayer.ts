@@ -1,3 +1,4 @@
+
 // This is the main entry point for the data layer, re-exporting all functionality from the modular files
 
 // Types
@@ -23,7 +24,10 @@ export { getAppointments } from './operations/appointmentOperations';
 export { getChatMessages, subscribeToChats, subscribeToAppointments } from './operations/chatOperations';
 
 // Connection utilities
-export { setupConnectionListener, syncOfflineChanges, checkSupabaseConnection } from './utils/connectionUtils';
+export { setupConnectionListener, syncOfflineChanges, checkConnection } from './utils/connectionUtils';
+
+// Export the connection check function from client.ts (re-exported through connectionUtils)
+export { checkSupabaseConnection } from './utils/connectionUtils';
 
 // Cache management utilities
 export { invalidateCache, invalidateAllCache } from './utils/cacheUtils';

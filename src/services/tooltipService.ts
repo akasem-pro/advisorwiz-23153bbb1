@@ -1,111 +1,91 @@
 
-import { supabase } from '../integrations/supabase/client';
+import { DataResult } from '../lib/supabase/types/dataTypes';
 import { TooltipContent } from '../hooks/useTooltipContent';
+import { getTooltips, getTooltipByKey } from '../lib/supabase/operations/tooltipOperations';
 
-export type CreateTooltipParams = {
-  section_key: string;
-  title: string;
-  description: string;
-};
+/**
+ * Interface for tooltip service result
+ */
+export interface TooltipServiceResult<T> {
+  data: T;
+  error: string | null;
+  isLoading: boolean;
+}
 
-export type UpdateTooltipParams = {
-  id: string;
-  title?: string;
-  description?: string;
+/**
+ * Get all tooltips
+ */
+export const getAllTooltips = async (
+  useCache = true
+): Promise<TooltipServiceResult<TooltipContent[]>> => {
+  try {
+    const result: DataResult<TooltipContent[]> = await getTooltips(useCache);
+    
+    if (result.error) {
+      return {
+        data: [],
+        error: result.error,
+        isLoading: false
+      };
+    }
+    
+    return {
+      data: result.data || [],
+      error: null,
+      isLoading: false
+    };
+  } catch (error: any) {
+    return {
+      data: [],
+      error: error.message || 'Failed to get tooltips',
+      isLoading: false
+    };
+  }
 };
 
 /**
- * Service for managing tooltip content in Supabase
+ * Get tooltip by section key
  */
-export const tooltipService = {
-  /**
-   * Fetch all tooltip content
-   */
-  async getAllTooltips(): Promise<TooltipContent[]> {
-    const { data, error } = await supabase
-      .from('tooltip_content')
-      .select('*');
+export const getTooltipContent = async (
+  sectionKey: string,
+  useCache = true
+): Promise<TooltipServiceResult<TooltipContent | null>> => {
+  try {
+    const result: DataResult<TooltipContent> = await getTooltipByKey(sectionKey, useCache);
     
-    if (error) {
-      console.error('Error fetching tooltips:', error);
-      throw new Error('Failed to fetch tooltip content');
+    if (result.error) {
+      return {
+        data: null,
+        error: result.error,
+        isLoading: false
+      };
     }
     
-    return data as TooltipContent[];
-  },
-  
-  /**
-   * Fetch a specific tooltip by section key
-   */
-  async getTooltipByKey(sectionKey: string): Promise<TooltipContent | null> {
-    const { data, error } = await supabase
-      .from('tooltip_content')
-      .select('*')
-      .eq('section_key', sectionKey)
-      .single();
-    
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return null; // Not found
-      }
-      console.error('Error fetching tooltip:', error);
-      throw new Error('Failed to fetch tooltip');
-    }
-    
-    return data as TooltipContent;
-  },
-  
-  /**
-   * Create a new tooltip
-   */
-  async createTooltip(params: CreateTooltipParams): Promise<TooltipContent> {
-    const { data, error } = await supabase
-      .from('tooltip_content')
-      .insert([params])
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Error creating tooltip:', error);
-      throw new Error('Failed to create tooltip');
-    }
-    
-    return data as TooltipContent;
-  },
-  
-  /**
-   * Update an existing tooltip
-   */
-  async updateTooltip(params: UpdateTooltipParams): Promise<TooltipContent> {
-    const { id, ...updateData } = params;
-    
-    const { data, error } = await supabase
-      .from('tooltip_content')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Error updating tooltip:', error);
-      throw new Error('Failed to update tooltip');
-    }
-    
-    return data as TooltipContent;
-  },
-  
-  /**
-   * Delete a tooltip
-   */
-  async deleteTooltip(id: string): Promise<void> {
-    const { error } = await supabase
-      .from('tooltip_content')
-      .delete()
-      .eq('id', id);
-    
-    if (error) {
-      console.error('Error deleting tooltip:', error);
-      throw new Error('Failed to delete tooltip');
-    }
+    return {
+      data: result.data,
+      error: null,
+      isLoading: false
+    };
+  } catch (error: any) {
+    return {
+      data: null,
+      error: error.message || `Failed to get tooltip for ${sectionKey}`,
+      isLoading: false
+    };
+  }
+};
+
+/**
+ * Check if a tooltip exists for a given section key
+ */
+export const checkTooltipExists = async (
+  sectionKey: string,
+  useCache = true
+): Promise<boolean> => {
+  try {
+    const result = await getTooltipContent(sectionKey, useCache);
+    return !!result.data;
+  } catch {
+    return false;
   }
 };

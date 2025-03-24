@@ -1,5 +1,6 @@
+
 import { toast } from 'sonner';
-import { supabase, checkSupabaseConnection } from '../../../integrations/supabase/client';
+import { supabase } from '../../../integrations/supabase/client';
 import { ErrorCategory, handleError } from '../../../utils/errorHandling/errorHandler';
 
 // Interface for offline change tracking
@@ -131,23 +132,26 @@ export const syncOfflineChanges = async (): Promise<boolean> => {
         
         switch (change.operation) {
           case 'insert':
+            // Type assertion to handle the dynamic table name
             const { error: insertError } = await supabase
-              .from(change.table)
+              .from(change.table as any)
               .insert(change.data);
             success = !insertError;
             break;
             
           case 'update':
+            // Type assertion to handle the dynamic table name
             const { error: updateError } = await supabase
-              .from(change.table)
+              .from(change.table as any)
               .update(change.data)
               .eq('id', change.data.id);
             success = !updateError;
             break;
             
           case 'delete':
+            // Type assertion to handle the dynamic table name
             const { error: deleteError } = await supabase
-              .from(change.table)
+              .from(change.table as any)
               .delete()
               .eq('id', change.data.id);
             success = !deleteError;
@@ -198,3 +202,8 @@ export const syncOfflineChanges = async (): Promise<boolean> => {
     return false;
   }
 };
+
+/**
+ * Export the checkSupabaseConnection function from client.ts
+ */
+export { checkSupabaseConnection } from '../../../integrations/supabase/client';
