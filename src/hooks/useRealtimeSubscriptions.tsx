@@ -96,7 +96,7 @@ export const useRealtimeSubscriptions = () => {
         console.log('[Realtime] Appointment update:', payload);
         
         const { eventType } = payload;
-        // Make sure payload.new exists, otherwise use empty object
+        // Create a safe reference to the payload.new
         const appointmentData = payload.new || {};
         
         switch (eventType) {
@@ -122,8 +122,8 @@ export const useRealtimeSubscriptions = () => {
               updatedAt: appointmentData.updated_at || new Date().toISOString()
             };
             
-            // Use proper type for the state update function
-            setAppointments(prevAppointments => [...prevAppointments, newAppointment]);
+            // Update state in a type-safe way
+            setAppointments((prevAppointments: Appointment[]) => [...prevAppointments, newAppointment]);
             
             // Show a notification about the new appointment
             toast('New Appointment', {
@@ -142,7 +142,7 @@ export const useRealtimeSubscriptions = () => {
             
           case 'UPDATE': {
             // Update existing appointment in state
-            setAppointments(prevAppointments => 
+            setAppointments((prevAppointments: Appointment[]) => 
               prevAppointments.map(item => {
                 if (item.id === appointmentData.id) {
                   return {
@@ -179,7 +179,7 @@ export const useRealtimeSubscriptions = () => {
           case 'DELETE': {
             // Remove deleted appointment from state
             if (payload.old && payload.old.id) {
-              setAppointments(prevAppointments => 
+              setAppointments((prevAppointments: Appointment[]) => 
                 prevAppointments.filter(item => item.id !== payload.old.id)
               );
               
