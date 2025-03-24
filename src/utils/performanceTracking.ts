@@ -1,13 +1,12 @@
-
 // Main exports file for performance tracking functionality
 // Re-exports functions from more focused modules
 
 // Import from core performance module
 import {
+  storeAnalyticsMetric,
   trackPerformance,
   getPerformanceData,
-  clearPerformanceData,
-  storeAnalyticsMetric
+  clearPerformanceData
 } from './performance/core';
 
 // Import from function tracking module
@@ -29,11 +28,13 @@ import { trackAIInteraction } from './analytics/aiTracking';
 import { recordMatchHistory } from './analytics/matchTracker';
 import { 
   trackUserBehavior, 
+  UserBehaviorEvent
+} from './analytics/eventTracker';
+import { 
   trackMatchingInteraction, 
   trackPageView,
-  trackPreferenceUpdate,
-  UserBehaviorEvent
-} from './analytics/userBehaviorTracker';
+  trackPreferenceUpdate 
+} from './analytics/matchTracker';
 import { trackFeatureEngagement } from './analytics/userEngagementTracker';
 import { trackMatchEngagement } from './analytics/matchEngagementTracker';
 import { 

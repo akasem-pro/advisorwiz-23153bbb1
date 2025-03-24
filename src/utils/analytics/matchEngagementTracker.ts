@@ -1,4 +1,3 @@
-
 import { supabase } from '../../integrations/supabase/client';
 import { trackEvent } from '../tagManager';
 import { ErrorCategory, handleError } from '../errorHandling/errorHandler';

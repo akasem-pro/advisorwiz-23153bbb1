@@ -1,4 +1,3 @@
-
 import { supabase } from '../../integrations/supabase/client';
 import { trackEvent } from '../tagManager';
 import { handleError, ErrorCategory } from '../errorHandling/errorHandler';
@@ -69,10 +68,7 @@ export const recordMatchHistory = async (
       notes: notes
     });
   } catch (error) {
-    handleError(
-      'Failed to record match history',
-      ErrorCategory.UNKNOWN
-    );
+    handleError('Failed to record match history', ErrorCategory.UNKNOWN);
   }
 };
 
