@@ -34,39 +34,36 @@ export const useUserProfiles = () => {
   // Save profile changes to Supabase
   const saveProfileChanges = async () => {
     try {
-      // Check if the user is authenticated in our state
-      if (!isAuthenticated) {
-        console.error("[useUserProfiles] Cannot save profile: Not authenticated in app state");
+      // Double-check authentication both in our state and with Supabase
+      const { data } = await supabase.auth.getUser();
+      const user = data?.user;
+      
+      if (!user) {
+        console.error("[useUserProfiles] Cannot save profile: Not authenticated with Supabase");
         toast.error("Please sign in to save your profile changes");
+        setIsAuthenticated(false); // Update our state to match reality
         return false;
       }
+
+      // Set authenticated if we have a user (in case our state was wrong)
+      setIsAuthenticated(true);
       
       let success = false;
       
       if (userType === 'consumer' && consumerProfile) {
         console.log("[useUserProfiles] Saving consumer profile to Supabase:", consumerProfile);
-        // Get current session to ensure we have user data
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          console.error("[useUserProfiles] Cannot save profile: No authenticated user from Supabase");
-          toast.error("Authentication error. Please sign in again");
-          return false;
-        }
-        
         success = await updateConsumerProfile(user, consumerProfile);
       } else if (userType === 'advisor' && advisorProfile) {
         console.log("[useUserProfiles] Saving advisor profile to Supabase:", advisorProfile);
-        // Get current session to ensure we have user data
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          console.error("[useUserProfiles] Cannot save profile: No authenticated user from Supabase");
-          toast.error("Authentication error. Please sign in again");
-          return false;
-        }
-        
         success = await updateAdvisorProfile(user, advisorProfile);
+      } else {
+        console.error("[useUserProfiles] Cannot save profile: Invalid user type or missing profile", {
+          userType,
+          hasConsumerProfile: !!consumerProfile,
+          hasAdvisorProfile: !!advisorProfile
+        });
+        toast.error("Unable to save profile: Profile data is incomplete");
+        return false;
       }
       
       if (success) {
@@ -78,22 +75,29 @@ export const useUserProfiles = () => {
       }
     } catch (error) {
       console.error("[useUserProfiles] Error saving profile:", error);
-      toast.error("An unexpected error occurred");
+      toast.error("An unexpected error occurred while saving your profile");
       return false;
     }
   };
 
   // Handle profile updates and sync with database
   const handleProfileUpdate = async (profileData: any) => {
-    if (userType === 'consumer') {
-      setConsumerProfile({ ...consumerProfile, ...profileData });
+    try {
+      if (userType === 'consumer') {
+        setConsumerProfile(prev => ({ ...prev, ...profileData }));
+      } else if (userType === 'advisor') {
+        setAdvisorProfile(prev => ({ ...prev, ...profileData }));
+      } else {
+        console.error("[useUserProfiles] Cannot update profile: Invalid user type", userType);
+        return false;
+      }
+      
       return await saveProfileChanges();
-    } else if (userType === 'advisor') {
-      setAdvisorProfile({ ...advisorProfile, ...profileData });
-      return await saveProfileChanges();
+    } catch (error) {
+      console.error("[useUserProfiles] Error updating profile:", error);
+      toast.error("Failed to update profile");
+      return false;
     }
-    
-    return false;
   };
 
   return {

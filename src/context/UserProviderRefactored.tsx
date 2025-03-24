@@ -37,18 +37,40 @@ export const UserProviderRefactored = ({ children }: { children: ReactNode }) =>
         console.log("[UserProvider] User authenticated from context:", user.email);
       } else {
         // Fallback to checking with supabase directly
-        const { data, error } = await supabase.auth.getSession();
-        if (data?.session?.user && !error) {
-          setIsAuthenticated(true);
-          console.log("[UserProvider] User authenticated from Supabase session:", data.session.user.email);
-        } else {
+        try {
+          const { data, error } = await supabase.auth.getSession();
+          
+          if (error) {
+            console.error("[UserProvider] Error checking session:", error);
+            setIsAuthenticated(false);
+            return;
+          }
+          
+          if (data?.session?.user) {
+            setIsAuthenticated(true);
+            console.log("[UserProvider] User authenticated from Supabase session:", data.session.user.email);
+          } else {
+            setIsAuthenticated(false);
+            console.log("[UserProvider] No authenticated user found");
+          }
+        } catch (err) {
+          console.error("[UserProvider] Exception checking auth state:", err);
           setIsAuthenticated(false);
-          console.log("[UserProvider] No authenticated user found");
         }
       }
     };
     
     updateAuthState();
+    
+    // Setup auth state change listener
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("[UserProvider] Auth state changed:", event, !!session);
+      setIsAuthenticated(!!session);
+    });
+    
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, [user, setIsAuthenticated]);
 
   // Initialize profiles based on authentication

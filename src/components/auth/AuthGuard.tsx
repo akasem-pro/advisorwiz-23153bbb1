@@ -1,7 +1,9 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
+import { supabase } from '../../integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -13,10 +15,50 @@ interface AuthGuardProps {
  * Optionally restrict access to specific user types
  */
 const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
-  const { isAuthenticated, userType } = useUser();
+  const { isAuthenticated, userType, setIsAuthenticated } = useUser();
   const location = useLocation();
+  const [checking, setChecking] = useState(true);
+  
+  // Double-check auth with Supabase directly
+  useEffect(() => {
+    const verifyAuth = async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        
+        if (error) {
+          console.error("[AuthGuard] Error checking authentication:", error);
+          setIsAuthenticated(false);
+        } else if (data?.user) {
+          console.log("[AuthGuard] User authenticated via Supabase:", data.user.email);
+          setIsAuthenticated(true);
+        } else {
+          console.log("[AuthGuard] No authenticated user found in Supabase");
+          setIsAuthenticated(false);
+        }
+      } catch (err) {
+        console.error("[AuthGuard] Exception during auth check:", err);
+        setIsAuthenticated(false);
+      } finally {
+        setChecking(false);
+      }
+    };
+    
+    verifyAuth();
+  }, [setIsAuthenticated]);
+  
+  // Show loading state while checking
+  if (checking) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-teal-500"></div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
+    // Show toast to inform user
+    toast.error("Please sign in to access this page");
+    
     // Redirect to login if not authenticated
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
