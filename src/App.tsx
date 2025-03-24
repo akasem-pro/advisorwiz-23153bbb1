@@ -14,6 +14,15 @@ import { UserProvider } from './context/UserProvider';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import Home from './pages/Home';
 import ForFirms from './pages/ForFirms';
+import Pricing from './pages/Pricing';
+import ContactUs from './pages/ContactUs';
+import Sitemap from './pages/Sitemap';
+import Blog from './pages/Blog';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import ForAdvisors from './pages/ForAdvisors';
+import ForConsumers from './pages/ForConsumers';
+import Careers from './pages/Careers';
 
 const App: React.FC = () => {
   return (
@@ -26,6 +35,16 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/for-firms" element={<ForFirms />} />
+          <Route path="/for-advisors" element={<ForAdvisors />} />
+          <Route path="/for-consumers" element={<ForConsumers />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/sitemap" element={<Sitemap />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<Blog />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
           
           {/* Protected Profile Routes */}
           <Route path="/consumer-profile" element={<ConsumerProfile />} />
