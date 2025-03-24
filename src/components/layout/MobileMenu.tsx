@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { LogOut, LogIn, Info } from 'lucide-react';
 import NavigationMenu from './NavigationMenu';
 
 interface MobileMenuProps {
@@ -24,6 +24,10 @@ const navigationLinks = [
     path: '/for-consumers',
   },
   {
+    name: 'About Us',
+    path: '/about',
+  },
+  {
     name: 'Pricing',
     path: '/pricing',
   },
@@ -42,7 +46,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isAuthenticated, onClose, onSig
         showGetStarted={false} 
       />
       
-      {isAuthenticated && (
+      {isAuthenticated ? (
         <button
           onClick={() => {
             onSignOut();
@@ -53,6 +57,15 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isAuthenticated, onClose, onSig
           <LogOut className="h-4 w-4 mr-2" />
           <span>Sign Out</span>
         </button>
+      ) : (
+        <Link
+          to="/sign-in"
+          onClick={onClose}
+          className="mt-4 w-full flex items-center justify-center px-4 py-2.5 text-navy-600 dark:text-slate-300 border border-navy-600 dark:border-slate-300 rounded-lg"
+        >
+          <LogIn className="h-4 w-4 mr-2" />
+          <span>Sign In</span>
+        </Link>
       )}
     </div>
   );

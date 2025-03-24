@@ -23,6 +23,7 @@ import Privacy from './pages/Privacy';
 import ForAdvisors from './pages/ForAdvisors';
 import ForConsumers from './pages/ForConsumers';
 import Careers from './pages/Careers';
+import AboutUs from './pages/AboutUs';
 
 const App: React.FC = () => {
   return (
@@ -37,6 +38,7 @@ const App: React.FC = () => {
           <Route path="/for-firms" element={<ForFirms />} />
           <Route path="/for-advisors" element={<ForAdvisors />} />
           <Route path="/for-consumers" element={<ForConsumers />} />
+          <Route path="/about" element={<AboutUs />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/sitemap" element={<Sitemap />} />

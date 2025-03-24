@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
@@ -48,6 +49,11 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/about" className="text-slate-300 hover:text-teal-400 transition-colors">
+                  About Us
+                </Link>
+              </li>
+              <li>
                 <Link to="/for-advisors" className="text-slate-300 hover:text-teal-400 transition-colors">
                   Advisors
                 </Link>
@@ -88,8 +94,8 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/onboarding" className="text-slate-300 hover:text-teal-400 transition-colors">
-                  Get Started
+                <Link to="/sign-in" className="text-slate-300 hover:text-teal-400 transition-colors">
+                  Sign In
                 </Link>
               </li>
             </ul>

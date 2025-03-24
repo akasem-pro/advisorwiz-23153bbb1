@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Info, LogIn } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 import Logo from './Logo';
@@ -24,6 +24,10 @@ const navigationLinks = [
   {
     name: 'For Consumers',
     path: '/for-consumers',
+  },
+  {
+    name: 'About Us',
+    path: '/about',
   },
   {
     name: 'Pricing',
@@ -101,7 +105,13 @@ const Header: React.FC = () => {
                 getProfileImage={getProfileImage}
               />
             ) : (
-              <AuthButtons />
+              <div className="flex items-center space-x-3">
+                <Link to="/sign-in" className="flex items-center text-navy-700 dark:text-slate-200 hover:text-teal-600 dark:hover:text-teal-400 font-medium">
+                  <LogIn className="h-4 w-4 mr-1" />
+                  <span>Sign In</span>
+                </Link>
+                <AuthButtons />
+              </div>
             )}
             
             <button
