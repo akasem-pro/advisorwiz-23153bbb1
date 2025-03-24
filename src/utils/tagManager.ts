@@ -1,4 +1,3 @@
-
 // Type definition for window with dataLayer
 interface WindowWithDataLayer extends Window {
   dataLayer: any[];
@@ -7,6 +6,15 @@ interface WindowWithDataLayer extends Window {
 
 // Access window with dataLayer type
 declare const window: WindowWithDataLayer;
+
+// Define the event parameter structure
+export interface TrackEventParams {
+  category: string;
+  action: string;
+  label?: string;
+  value?: number;
+  properties?: Record<string, any>;
+}
 
 /**
  * Initialize Google Tag Manager
@@ -19,22 +27,55 @@ export const initializeTagManager = () => {
 
 /**
  * Track a custom event in Google Tag Manager
- * @param eventName The name of the event to track
- * @param eventParams Additional parameters for the event
+ * @param eventNameOrParams The name of the event to track or an object containing event parameters
+ * @param eventParams Additional parameters for the event (when eventName is a string)
  */
-export const trackEvent = (eventName: string, eventParams?: Record<string, any>) => {
+export const trackEvent = (
+  eventNameOrParams: string | TrackEventParams,
+  eventParams?: Record<string, any>
+): void => {
   if (typeof window !== 'undefined' && window.dataLayer) {
-    window.dataLayer.push({
-      event: eventName,
-      ...(eventParams || {})
-    });
-    
-    // Also track with gtag if available (for GA4 compatibility)
-    if (window.gtag) {
-      window.gtag('event', eventName, eventParams || {});
+    // Handle both string and object parameters
+    if (typeof eventNameOrParams === 'string') {
+      // Original signature: trackEvent(eventName: string, eventParams?: Record<string, any>)
+      window.dataLayer.push({
+        event: eventNameOrParams,
+        ...(eventParams || {})
+      });
+      
+      // Also track with gtag if available (for GA4 compatibility)
+      if (window.gtag) {
+        window.gtag('event', eventNameOrParams, eventParams || {});
+      }
+      
+      console.log(`[GTM] Tracked event: ${eventNameOrParams}`, eventParams);
+    } else {
+      // New signature: trackEvent(params: TrackEventParams)
+      const { category, action, label, value, properties } = eventNameOrParams;
+      const eventName = `${category}_${action}`;
+      
+      window.dataLayer.push({
+        event: eventName,
+        event_category: category,
+        event_action: action,
+        event_label: label,
+        event_value: value,
+        ...(properties || {})
+      });
+      
+      // Also track with gtag if available (for GA4 compatibility)
+      if (window.gtag) {
+        window.gtag('event', eventName, {
+          event_category: category,
+          event_action: action,
+          event_label: label,
+          value: value,
+          ...(properties || {})
+        });
+      }
+      
+      console.log(`[GTM] Tracked event: ${eventName}`, { category, action, label, value, properties });
     }
-    
-    console.log(`[GTM] Tracked event: ${eventName}`, eventParams);
   }
 };
 

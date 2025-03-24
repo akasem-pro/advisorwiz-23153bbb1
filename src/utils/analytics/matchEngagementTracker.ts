@@ -57,15 +57,10 @@ export const trackMatchCardInteraction = async (
 ): Promise<void> => {
   try {
     // Track in tag manager
-    trackEvent({
-      category: 'match',
-      action: 'interaction',
-      label: action,
-      properties: {
-        action,
-        profile_id: profileId,
-        user_id: userId
-      }
+    trackEvent('match_interaction', {
+      action,
+      profile_id: profileId,
+      user_id: userId
     });
     
     // Mock database operation for profile interactions 

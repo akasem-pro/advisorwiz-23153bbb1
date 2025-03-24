@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -122,7 +121,7 @@ const ConsumerProfile: React.FC = () => {
   const [saved, setSaved] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
-  const { tooltipContent, isLoading: tooltipsLoading } = useTooltipContent();
+  const { tooltipContent: tooltips, isLoading: tooltipsLoading } = useTooltipContent();
   
   const [formData, setFormData] = useState({
     id: 'consumer-1',
@@ -553,7 +552,8 @@ const ConsumerProfile: React.FC = () => {
   };
 
   const renderFinancialGoals = () => {
-    const financialGoalsTooltip = tooltipContent.find(t => t.section_key === 'financial_goals');
+    const financialGoalsTooltip = tooltips && Array.isArray(tooltips) ? 
+      tooltips.find(t => t.section_key === 'financial_goals') : null;
     
     return (
       <div className="animate-fade-in">
@@ -601,8 +601,10 @@ const ConsumerProfile: React.FC = () => {
   };
 
   const renderFinancialProfile = () => {
-    const riskToleranceTooltip = tooltipContent.find(t => t.section_key === 'risk_tolerance');
-    const investableAssetsTooltip = tooltipContent.find(t => t.section_key === 'investable_assets');
+    const riskToleranceTooltip = tooltips && Array.isArray(tooltips) ? 
+      tooltips.find(t => t.section_key === 'risk_tolerance') : null;
+    const investableAssetsTooltip = tooltips && Array.isArray(tooltips) ? 
+      tooltips.find(t => t.section_key === 'investable_assets') : null;
     
     return (
       <div className="animate-fade-in">
@@ -750,7 +752,8 @@ const ConsumerProfile: React.FC = () => {
   };
 
   const renderServiceExpectations = () => {
-    const languageTooltip = tooltipContent.find(t => t.section_key === 'preferred_language');
+    const languageTooltip = tooltips && Array.isArray(tooltips) ? 
+      tooltips.find(t => t.section_key === 'preferred_language') : null;
     
     return (
       <div className="animate-fade-in">
@@ -921,7 +924,7 @@ const ConsumerProfile: React.FC = () => {
                     type="checkbox"
                     checked={formData.advisorContactConsent}
                     onChange={(e) => setFormData(prev => ({ ...prev, advisorContactConsent: e.target.checked }))}
-                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
                   />
                 </div>
                 <div className="ml-3 text-sm">

@@ -79,5 +79,7 @@ export function trackConversion(
   userId?: string,
   value?: number
 ): void {
-  trackVariantConversion(experimentId, variantId, conversionType, userId, value);
+  // Create additional data object if value is provided
+  const additionalData = value !== undefined ? { value } : undefined;
+  trackVariantConversion(experimentId, variantId, conversionType, userId, additionalData);
 }

@@ -1,4 +1,3 @@
-
 import { toast } from 'sonner';
 import { supabase } from '../../../integrations/supabase/client';
 import { ErrorCategory, handleError } from '../../../utils/errorHandling/errorHandler';
@@ -64,9 +63,7 @@ export const checkConnection = async (): Promise<boolean> => {
   } catch (error) {
     handleError(
       'Failed to check connection status',
-      ErrorCategory.NETWORK,
-      'medium',
-      error
+      ErrorCategory.NETWORK
     );
     return false;
   }
@@ -107,9 +104,7 @@ export const recordOfflineChange = (
   } catch (error) {
     handleError(
       'Failed to record offline change',
-      ErrorCategory.UNKNOWN,
-      'medium',
-      error
+      ErrorCategory.UNKNOWN
     );
   }
 };
@@ -207,9 +202,7 @@ export const syncOfflineChanges = async (): Promise<boolean> => {
   } catch (error) {
     handleError(
       'Error syncing offline changes',
-      ErrorCategory.NETWORK,
-      'medium',
-      error
+      ErrorCategory.NETWORK
     );
     return false;
   }

@@ -18,16 +18,13 @@ export const trackMatchingInteraction = async (
 ): Promise<void> => {
   try {
     // Track the event in our analytics system
-    trackEvent({
-      category: 'matching',
+    trackEvent('matching_interaction', {
       action: action,
-      properties: {
-        advisor_id: advisorId,
-        consumer_id: consumerId,
-        score: score,
-        match_id: matchId,
-        ...details
-      }
+      advisor_id: advisorId,
+      consumer_id: consumerId,
+      score: score,
+      match_id: matchId,
+      ...details
     });
     
     // Store in Supabase analytics metrics
@@ -46,9 +43,7 @@ export const trackMatchingInteraction = async (
   } catch (error) {
     handleError(
       `Failed to track matching interaction: ${action}`,
-      ErrorCategory.UNKNOWN,
-      'medium',
-      error
+      ErrorCategory.UNKNOWN
     );
   }
 };
@@ -67,21 +62,16 @@ export const recordMatchHistory = async (
     console.log(`[Match History] Recording ${action} between advisor ${advisorId} and consumer ${consumerId}`);
     
     // Track as an event for analytics
-    trackEvent({
-      category: 'match_history',
+    trackEvent('match_history', {
       action: action,
-      properties: {
-        advisor_id: advisorId,
-        consumer_id: consumerId,
-        notes: notes
-      }
+      advisor_id: advisorId,
+      consumer_id: consumerId,
+      notes: notes
     });
   } catch (error) {
     handleError(
       'Failed to record match history',
-      ErrorCategory.UNKNOWN,
-      'medium',
-      error
+      ErrorCategory.UNKNOWN
     );
   }
 };
@@ -127,13 +117,10 @@ export const trackUserBehavior = async (
   properties?: Record<string, any>
 ): Promise<void> => {
   try {
-    trackEvent({
-      category: 'user_behavior',
+    trackEvent('user_behavior', {
       action: event,
-      properties: {
-        user_id: userId,
-        ...properties
-      }
+      user_id: userId,
+      ...properties
     });
   } catch (error) {
     console.error('Failed to track user behavior:', error);

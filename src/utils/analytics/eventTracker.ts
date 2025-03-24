@@ -57,7 +57,7 @@ export const trackUserBehavior = async (
 };
 
 /**
- * Track a custom feature usage event using the record_metric function
+ * Track a custom feature usage event
  */
 export const trackFeatureUsage = async (
   featureName: string,
@@ -65,17 +65,12 @@ export const trackFeatureUsage = async (
 ): Promise<void> => {
   try {
     // Track in GTM
-    trackGTMEvent({
-      category: 'feature',
-      action: 'used',
-      label: featureName,
-      properties: {
-        feature_name: featureName,
-        user_id: userId
-      }
+    trackGTMEvent('feature_used', {
+      feature_name: featureName,
+      user_id: userId
     });
     
-    // Record the metric directly
+    // Record the metric directly with a simplified approach
     try {
       await supabase.rpc('record_metric', {
         p_metric_type: 'feature_usage',

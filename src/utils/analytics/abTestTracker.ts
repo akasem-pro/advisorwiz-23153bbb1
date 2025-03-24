@@ -32,15 +32,10 @@ export const trackABTestExposure = async (
 ): Promise<void> => {
   try {
     // Record in analytics system
-    trackEvent({
-      category: 'ab_test',
-      action: 'exposure',
-      label: `${testId}:${variantId}`,
-      properties: {
-        test_id: testId,
-        variant_id: variantId,
-        user_id: userId
-      }
+    trackEvent('ab_test_exposure', {
+      test_id: testId,
+      variant_id: variantId,
+      user_id: userId
     });
     
     // Log to console in development
@@ -63,16 +58,11 @@ export const trackABTestConversion = async (
 ): Promise<void> => {
   try {
     // Record in analytics system
-    trackEvent({
-      category: 'ab_test',
-      action: 'conversion',
-      label: `${testId}:${variantId}`,
-      properties: {
-        test_id: testId,
-        variant_id: variantId,
-        user_id: userId,
-        ...additionalData
-      }
+    trackEvent('ab_test_conversion', {
+      test_id: testId,
+      variant_id: variantId,
+      user_id: userId,
+      ...additionalData
     });
     
     // Log to console in development
@@ -86,21 +76,13 @@ export const trackABTestConversion = async (
 
 /**
  * Track variant impression for an A/B test
+ * Re-exported for the abTesting.ts utility
  */
-export const trackVariantImpression = async (
-  testId: string,
-  variantId: string,
-  userId?: string
-): Promise<void> => {
-  try {
-    await trackABTestExposure(testId, variantId, userId);
-  } catch (error) {
-    console.error('Failed to track variant impression:', error);
-  }
-};
+export const trackVariantImpression = trackABTestExposure;
 
 /**
  * Track variant conversion for an A/B test
+ * Re-exported for the abTesting.ts utility
  */
 export const trackVariantConversion = async (
   testId: string,
