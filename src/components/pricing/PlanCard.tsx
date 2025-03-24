@@ -50,7 +50,9 @@ const PlanCard: React.FC<PlanCardProps> = ({
           variant={billingPeriod === 'monthly' ? 'default' : 'outline'}
           size="sm"
           onClick={() => setBillingPeriod('monthly')}
-          className={billingPeriod === 'monthly' ? 'bg-navy-800 hover:bg-navy-900 dark:bg-navy-600 dark:hover:bg-navy-700' : 'dark:text-slate-200 dark:border-slate-600'}
+          className={billingPeriod === 'monthly' 
+            ? 'bg-navy-600 hover:bg-navy-700 text-white dark:bg-teal-600 dark:hover:bg-teal-700' 
+            : 'text-navy-600 dark:text-slate-200 dark:border-slate-600 hover:bg-navy-50 dark:hover:bg-navy-700/50'}
         >
           Monthly
         </Button>
@@ -58,7 +60,9 @@ const PlanCard: React.FC<PlanCardProps> = ({
           variant={billingPeriod === 'annually' ? 'default' : 'outline'}
           size="sm"
           onClick={() => setBillingPeriod('annually')}
-          className={billingPeriod === 'annually' ? 'bg-navy-800 hover:bg-navy-900 dark:bg-navy-600 dark:hover:bg-navy-700' : 'dark:text-slate-200 dark:border-slate-600'}
+          className={billingPeriod === 'annually' 
+            ? 'bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-600 dark:hover:bg-teal-700' 
+            : 'text-navy-600 dark:text-slate-200 dark:border-slate-600 hover:bg-navy-50 dark:hover:bg-navy-700/50'}
         >
           Annually
         </Button>

@@ -14,3 +14,12 @@
 .btn-outline {
   @apply border border-navy-600 dark:border-slate-300 text-navy-600 dark:text-slate-300 hover:bg-navy-50 dark:hover:bg-navy-800 font-medium py-3 px-6 rounded-lg transition-all duration-200 active:scale-95 active:translate-y-0.5;
 }
+
+/* Button toggle styles for pricing section */
+.pricing-toggle-active {
+  @apply bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-600 dark:hover:bg-teal-700;
+}
+
+.pricing-toggle-inactive {
+  @apply text-navy-600 dark:text-slate-200 border-navy-300 dark:border-slate-600 hover:bg-navy-50 dark:hover:bg-navy-700/50;
+}

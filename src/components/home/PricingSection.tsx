@@ -120,7 +120,7 @@ const PricingSection: React.FC = () => {
                   className={`w-full justify-center ${
                     tier.popular 
                       ? 'bg-teal-600 hover:bg-teal-700 text-white' 
-                      : 'bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700'
+                      : 'bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700 text-white'
                   }`}
                 >
                   <Link to={tier.id === 'firms' ? '/contact' : '/onboarding'}>
