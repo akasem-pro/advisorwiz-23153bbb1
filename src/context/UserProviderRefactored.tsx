@@ -11,6 +11,7 @@ import { useLeadManagement } from '../hooks/user/useLeadManagement';
 import { useProfileInitialization } from '../hooks/user/useProfileInitialization';
 import CallModal from '../components/call/CallModal';
 import { useAuth } from '../features/auth/context/AuthProvider';
+import { updateUserProfile } from '../services/profileService';
 
 export const UserProviderRefactored = ({ children }: { children: ReactNode }) => {
   // Auth context for user information
@@ -77,8 +78,8 @@ export const UserProviderRefactored = ({ children }: { children: ReactNode }) =>
     addLead,
     updateLeadStatus,
     getLeadByConsumer,
-    getAdvisorLeads,
-    getLeadStats
+    getLeadStats,
+    getAdvisorLeads
   } = useLeadManagement();
 
   // User matching
@@ -97,6 +98,19 @@ export const UserProviderRefactored = ({ children }: { children: ReactNode }) =>
     callMetrics
   );
 
+  // Handle profile updates and sync with database
+  const handleProfileUpdate = async (profileData: any) => {
+    if (!user) return;
+
+    if (userType === 'consumer') {
+      setConsumerProfile({ ...consumerProfile, ...profileData });
+      await updateUserProfile(user, userType, profileData);
+    } else if (userType === 'advisor') {
+      setAdvisorProfile({ ...advisorProfile, ...profileData });
+      await updateUserProfile(user, userType, profileData);
+    }
+  };
+
   const value = {
     // User profiles
     userType, setUserType,
@@ -104,6 +118,7 @@ export const UserProviderRefactored = ({ children }: { children: ReactNode }) =>
     advisorProfile, setAdvisorProfile,
     isAuthenticated, setIsAuthenticated,
     updateOnlineStatus,
+    handleProfileUpdate, // Add method to update profile and sync with database
     
     // Communication (chats and appointments)
     chats, setChats,

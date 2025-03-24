@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { UserType, ConsumerProfile, AdvisorProfile } from '../../types/profileTypes';
+import { initializeUserProfile } from '../../services/profileService';
 
 /**
  * Hook to handle initializing user profiles based on authentication
@@ -35,74 +36,30 @@ export const useProfileInitialization = (
   /**
    * Initialize user profiles based on email patterns for demo
    */
-  const initializeUserProfiles = (user: User) => {
+  const initializeUserProfiles = async (user: User) => {
     const email = user.email?.toLowerCase() || '';
     
+    let type: UserType = 'consumer';
     if (email.includes('consumer')) {
-      setUserType('consumer');
-      createConsumerProfile(user, email);
+      type = 'consumer';
     } else if (email.includes('advisor')) {
-      setUserType('advisor');
-      createAdvisorProfile(user, email);
+      type = 'advisor';
     } else {
       // Default to consumer
-      setUserType('consumer');
-      createConsumerProfile(user, email);
+      type = 'consumer';
     }
-  };
-
-  /**
-   * Create a consumer profile with default values
-   */
-  const createConsumerProfile = (user: User, email: string) => {
-    if (!consumerProfile) {
-      setConsumerProfile({
-        id: user.id,
-        name: email.split('@')[0] || 'User',
-        email: email,
-        age: 30,
-        status: 'employed',
-        investableAssets: 100000,
-        riskTolerance: 'medium',
-        preferredCommunication: ['email'],
-        preferredLanguage: ['english'],
-        matches: [],
-        chats: [],
-        chatEnabled: true,
-        appointments: [],
-        startTimeline: 'not_sure',
-        onlineStatus: 'online',
-        lastOnline: new Date().toISOString(),
-        showOnlineStatus: true
-      });
-    }
-  };
-
-  /**
-   * Create an advisor profile with default values
-   */
-  const createAdvisorProfile = (user: User, email: string) => {
-    if (!advisorProfile) {
-      setAdvisorProfile({
-        id: user.id,
-        name: email.split('@')[0],
-        organization: 'Demo Financial',
-        isAccredited: true,
-        website: 'https://example.com',
-        testimonials: [],
-        languages: ['english'],
-        pricing: {},
-        assetsUnderManagement: 5000000,
-        expertise: ['investment', 'retirement'],
-        matches: [],
-        chats: [],
-        chatEnabled: true,
-        appointmentCategories: [],
-        appointments: [],
-        onlineStatus: 'online',
-        lastOnline: new Date().toISOString(),
-        showOnlineStatus: true
-      });
+    
+    setUserType(type);
+    
+    // Initialize the profile using our service
+    const profile = await initializeUserProfile(user, type);
+    
+    if (profile) {
+      if (type === 'consumer') {
+        setConsumerProfile(profile as ConsumerProfile);
+      } else if (type === 'advisor') {
+        setAdvisorProfile(profile as AdvisorProfile);
+      }
     }
   };
 

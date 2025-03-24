@@ -1,4 +1,3 @@
-
 import { createContext } from 'react';
 import {
   UserType,
@@ -32,6 +31,7 @@ export type UserContextType = {
   setAdvisorProfile: (profile: AdvisorProfile | null) => void;
   isAuthenticated: boolean;
   setIsAuthenticated: (value: boolean) => void;
+  handleProfileUpdate: (profileData: any) => Promise<void>;
   chats: Chat[];
   setChats: (chats: Chat[]) => void;
   addMessage: (chatId: string, message: Omit<ChatMessage, 'id'>) => void;
@@ -103,6 +103,7 @@ const UserContext = createContext<UserContextType>({
   setAdvisorProfile: () => {},
   isAuthenticated: false,
   setIsAuthenticated: () => {},
+  handleProfileUpdate: async () => {},
   chats: [],
   setChats: () => {},
   addMessage: () => {},

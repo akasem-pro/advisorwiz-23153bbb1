@@ -25,7 +25,7 @@ import { useProfileSections } from '../hooks/useProfileSections';
 import { useAdvisorProfileForm } from '../hooks/useAdvisorProfileForm';
 
 const AdvisorProfile: React.FC = () => {
-  const { advisorProfile, setAdvisorProfile, updateOnlineStatus } = useUser();
+  const { advisorProfile, handleProfileUpdate, updateOnlineStatus } = useUser();
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
 
@@ -76,7 +76,8 @@ const AdvisorProfile: React.FC = () => {
       showOnlineStatus: formData.showOnlineStatus || false
     };
     
-    setAdvisorProfile(updatedProfile);
+    // Use our new handleProfileUpdate method to update and sync with the database
+    handleProfileUpdate(updatedProfile);
     updateOnlineStatus(updatedProfile.onlineStatus);
     setSaved(true);
     setTimeout(() => {
