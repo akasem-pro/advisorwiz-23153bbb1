@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '../integrations/supabase/client';
 import { useUser } from '../context/UserContext';
-import { Appointment } from '../types/timeTypes';
+import { Appointment, AppointmentStatus } from '../types/timeTypes';
 
 /**
  * Hook that handles all real-time subscriptions for the application
@@ -96,80 +96,100 @@ export const useRealtimeSubscriptions = () => {
         console.log('[Realtime] Appointment update:', payload);
         
         const { eventType } = payload;
-        const appointment = payload.new || {};
+        // Make sure payload.new exists, otherwise use empty object
+        const appointmentData = payload.new || {};
         
         switch (eventType) {
-          case 'INSERT':
-            // Safely convert Supabase appointment to our app's Appointment type
-            setAppointments((prev: Appointment[]) => {
-              const newAppointment: Appointment = {
-                id: appointment.id || '',
-                title: appointment.title || 'Appointment',
-                date: appointment.scheduled_start || new Date().toISOString(),
-                startTime: appointment.scheduled_start ? new Date(appointment.scheduled_start).toLocaleTimeString() : '',
-                endTime: appointment.scheduled_end ? new Date(appointment.scheduled_end).toLocaleTimeString() : '',
-                advisorId: appointment.advisor_id || '',
-                consumerId: appointment.consumer_id || '',
-                status: (appointment.status as Appointment['status']) || 'pending',
-                location: appointment.meeting_link || '',
-                notes: appointment.notes || '',
-                createdAt: appointment.created_at || new Date().toISOString(),
-                updatedAt: appointment.updated_at || new Date().toISOString()
-              };
-              return [...prev, newAppointment];
-            });
+          case 'INSERT': {
+            // Ensure we're creating an object that matches the Appointment type
+            const newAppointment: Appointment = {
+              id: appointmentData.id || '',
+              categoryId: '', // Required field, providing a default empty string
+              title: appointmentData.title || 'Appointment',
+              date: appointmentData.scheduled_start || new Date().toISOString(),
+              startTime: appointmentData.scheduled_start 
+                ? new Date(appointmentData.scheduled_start).toLocaleTimeString() 
+                : '',
+              endTime: appointmentData.scheduled_end 
+                ? new Date(appointmentData.scheduled_end).toLocaleTimeString() 
+                : '',
+              advisorId: appointmentData.advisor_id || '',
+              consumerId: appointmentData.consumer_id || '',
+              status: (appointmentData.status as AppointmentStatus) || 'pending',
+              location: appointmentData.meeting_link || '',
+              notes: appointmentData.notes || '',
+              createdAt: appointmentData.created_at || new Date().toISOString(),
+              updatedAt: appointmentData.updated_at || new Date().toISOString()
+            };
             
+            // Use proper type for the state update function
+            setAppointments(prevAppointments => [...prevAppointments, newAppointment]);
+            
+            // Show a notification about the new appointment
             toast('New Appointment', {
-              description: `${appointment.title || 'Appointment'} scheduled for ${appointment.scheduled_start ? new Date(appointment.scheduled_start).toLocaleString() : 'unknown date'}`,
+              description: `${appointmentData.title || 'Appointment'} scheduled for ${
+                appointmentData.scheduled_start 
+                  ? new Date(appointmentData.scheduled_start).toLocaleString() 
+                  : 'unknown date'
+              }`,
               action: {
                 label: 'View',
                 onClick: () => window.location.href = '/schedule'
               }
             });
             break;
+          }
             
-          case 'UPDATE':
-            // Type-safe conversion for UPDATE event
-            setAppointments((prev: Appointment[]) => 
-              prev.map(item => {
-                if (item.id === appointment.id) {
+          case 'UPDATE': {
+            // Update existing appointment in state
+            setAppointments(prevAppointments => 
+              prevAppointments.map(item => {
+                if (item.id === appointmentData.id) {
                   return {
                     ...item,
-                    title: appointment.title || item.title,
-                    date: appointment.scheduled_start || item.date,
-                    startTime: appointment.scheduled_start ? new Date(appointment.scheduled_start).toLocaleTimeString() : item.startTime,
-                    endTime: appointment.scheduled_end ? new Date(appointment.scheduled_end).toLocaleTimeString() : item.endTime,
-                    status: (appointment.status as Appointment['status']) || item.status,
-                    location: appointment.meeting_link || item.location,
-                    notes: appointment.notes || item.notes,
-                    updatedAt: appointment.updated_at || new Date().toISOString()
+                    title: appointmentData.title || item.title,
+                    date: appointmentData.scheduled_start || item.date,
+                    startTime: appointmentData.scheduled_start 
+                      ? new Date(appointmentData.scheduled_start).toLocaleTimeString() 
+                      : item.startTime,
+                    endTime: appointmentData.scheduled_end 
+                      ? new Date(appointmentData.scheduled_end).toLocaleTimeString() 
+                      : item.endTime,
+                    status: (appointmentData.status as AppointmentStatus) || item.status,
+                    location: appointmentData.meeting_link || item.location,
+                    notes: appointmentData.notes || item.notes,
+                    updatedAt: appointmentData.updated_at || new Date().toISOString()
                   };
                 }
                 return item;
               })
             );
             
+            // Show update notification
             toast('Appointment Updated', {
-              description: `Status: ${(appointment.status || '').toUpperCase()}`,
+              description: `Status: ${(appointmentData.status || '').toUpperCase()}`,
               action: {
                 label: 'View',
                 onClick: () => window.location.href = '/schedule'
               }
             });
             break;
+          }
             
-          case 'DELETE':
-            // Type-safe handling for DELETE event
+          case 'DELETE': {
+            // Remove deleted appointment from state
             if (payload.old && payload.old.id) {
-              setAppointments((prev: Appointment[]) => 
-                prev.filter(item => item.id !== payload.old.id)
+              setAppointments(prevAppointments => 
+                prevAppointments.filter(item => item.id !== payload.old.id)
               );
               
+              // Show cancellation notification
               toast('Appointment Canceled', {
                 description: `An appointment has been canceled`,
               });
             }
             break;
+          }
         }
       });
       
@@ -184,6 +204,7 @@ export const useRealtimeSubscriptions = () => {
       }, (payload) => {
         console.log('[Realtime] New notification:', payload);
         
+        // Make sure notification exists, otherwise use empty object
         const notification = payload.new || {};
         
         toast(notification.title || 'New Notification', {
