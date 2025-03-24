@@ -163,8 +163,7 @@ export const initializeAdvisorProfile = async (user: User): Promise<AdvisorProfi
       appointments: [],
       onlineStatus: 'online',
       lastOnline: new Date().toISOString(),
-      showOnlineStatus: true,
-      email: email
+      showOnlineStatus: true
     };
     
     const success = await updateAdvisorProfile(user, profileData);
