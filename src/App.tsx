@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import SignIn from './pages/SignIn';
 import Login from './pages/Login';
@@ -25,8 +24,14 @@ import ForConsumers from './pages/ForConsumers';
 import Careers from './pages/Careers';
 import AboutUs from './pages/AboutUs';
 import Resources from './pages/Resources';
+import { useRealtimeSubscriptions } from './hooks/useRealtimeSubscriptions';
 
 const App: React.FC = () => {
+  useEffect(() => {
+    // Initialize realtime subscriptions
+    useRealtimeSubscriptions();
+  }, []);
+
   return (
     <AuthProvider>
       <UserProvider>
