@@ -44,8 +44,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               id: user.id,
               name: email.split('@')[0],
               email: email,
+              age: 30, // Default age
+              status: 'employed', // Default status
+              investableAssets: 100000, // Default amount
+              riskTolerance: 'medium', // Default risk tolerance
+              preferredCommunication: ['email'], // Default communication preference
+              preferredLanguage: ['english'], // Default language
+              matches: [],
+              chats: [],
+              chatEnabled: true,
+              appointments: [],
+              startTimeline: 'not_sure',
               onlineStatus: 'online',
-              lastOnline: new Date().toISOString()
+              lastOnline: new Date().toISOString(),
+              showOnlineStatus: true
             });
           }
         } else if (email.includes('advisor')) {
@@ -56,9 +68,22 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             setAdvisorProfile({
               id: user.id,
               name: email.split('@')[0],
-              email: email,
+              organization: 'Demo Financial',
+              isAccredited: true,
+              website: 'https://example.com',
+              testimonials: [],
+              languages: ['english'],
+              pricing: {},
+              assetsUnderManagement: 5000000,
+              expertise: ['investment', 'retirement'],
+              matches: [],
+              chats: [],
+              chatEnabled: true,
+              appointmentCategories: [],
+              appointments: [],
               onlineStatus: 'online',
-              lastOnline: new Date().toISOString()
+              lastOnline: new Date().toISOString(),
+              showOnlineStatus: true
             });
           }
         } else {
@@ -71,8 +96,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               id: user.id,
               name: email.split('@')[0] || 'User',
               email: email,
+              age: 30, // Default age
+              status: 'employed', // Default status
+              investableAssets: 100000, // Default amount
+              riskTolerance: 'medium', // Default risk tolerance
+              preferredCommunication: ['email'], // Default communication preference
+              preferredLanguage: ['english'], // Default language
+              matches: [],
+              chats: [],
+              chatEnabled: true,
+              appointments: [],
+              startTimeline: 'not_sure',
               onlineStatus: 'online',
-              lastOnline: new Date().toISOString()
+              lastOnline: new Date().toISOString(),
+              showOnlineStatus: true
             });
           }
         }
