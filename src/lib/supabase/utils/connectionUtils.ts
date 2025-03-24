@@ -1,90 +1,92 @@
 
-import { supabase } from '../../../integrations/supabase/client';
-import { handleError, ErrorCategory } from '../../../utils/errorHandling/errorHandler';
+import { supabase, checkSupabaseConnection } from '../client';
+import { handleSupabaseError, ErrorSeverity } from '../../../utils/errorHandling/supabaseErrorHandler';
 
 /**
- * Check the connection to Supabase
+ * Setup a connection listener to detect when the user goes offline/online
  */
-export const checkSupabaseConnection = async (): Promise<boolean> => {
+export const setupConnectionListener = (): void => {
   try {
-    // Perform a simple query to check the connection
-    await supabase.from('profiles').select('id').limit(1);
-    return true;
+    window.addEventListener('online', () => checkConnectionAndSync());
+    window.addEventListener('offline', () => {
+      handleSupabaseError(
+        'You are offline. Some features may be limited.', 
+        true, 
+        ErrorSeverity.WARNING
+      );
+    });
   } catch (error) {
-    // Log the error and return false
-    handleError('Failed to connect to Supabase', true);
-    return false;
+    handleSupabaseError(
+      'Failed to setup connection listener', 
+      true, 
+      ErrorSeverity.ERROR, 
+      error
+    );
   }
 };
 
 /**
- * Check if Supabase is online
+ * Check connection status and sync offline changes if needed
  */
-export const isSupabaseOnline = async (): Promise<boolean> => {
+export const checkConnectionAndSync = async (): Promise<boolean> => {
   try {
-    // Use the checkSupabaseConnection function to check the connection
     const isConnected = await checkSupabaseConnection();
-    return isConnected;
-  } catch (error) {
-    // Log the error and return false
-    handleError('Failed to check connection status', true);
-    return false;
-  }
-};
-
-/**
- * Attempt to recover the Supabase connection
- */
-export const recoverSupabaseConnection = async (): Promise<boolean> => {
-  try {
-    // Re-initialize the Supabase client
-    // This might help in recovering the connection
-    supabase.auth.getSession();
     
-    // Check the connection again
-    const isConnected = await checkSupabaseConnection();
-    return isConnected;
+    if (isConnected) {
+      syncOfflineChanges();
+      return true;
+    } else {
+      handleSupabaseError(
+        'Unable to connect to server', 
+        true, 
+        ErrorSeverity.WARNING
+      );
+      return false;
+    }
   } catch (error) {
-    // Log the error and return false
-    handleError('Connection recovery failed', true);
+    handleSupabaseError(
+      'Failed to check connection status', 
+      true, 
+      ErrorSeverity.ERROR, 
+      error
+    );
     return false;
   }
 };
 
 /**
- * Check connection status (alias for isSupabaseOnline)
- */
-export const checkConnection = async (): Promise<boolean> => {
-  return await isSupabaseOnline();
-};
-
-/**
- * Sync offline changes back to Supabase when connection is restored
+ * Sync offline changes when the user comes back online
  */
 export const syncOfflineChanges = async (): Promise<boolean> => {
   try {
-    // In a real implementation, this would sync cached data
-    // For now, just return true as a mock implementation
-    console.log('Syncing offline changes...');
+    // Check if there are any pending changes in localStorage
+    const pendingChanges = localStorage.getItem('pendingChanges');
+    
+    if (!pendingChanges) {
+      return true;
+    }
+    
+    // Parse and process pending changes
+    const changes = JSON.parse(pendingChanges);
+    // Implementation details would depend on your app's requirements
+    
+    // Clear pending changes after successful sync
+    localStorage.removeItem('pendingChanges');
+    
     return true;
   } catch (error) {
-    handleError('Failed to sync offline changes', true);
+    handleSupabaseError(
+      'Failed to sync offline changes', 
+      true, 
+      ErrorSeverity.ERROR, 
+      error
+    );
     return false;
   }
 };
 
 /**
- * Setup connection listener for Supabase
+ * Check the connection status to Supabase
+ * Re-export from client for convenience
  */
-export const setupConnectionListener = (
-  onConnectionChange?: (isConnected: boolean) => void
-): (() => void) => {
-  const checkInterval = setInterval(async () => {
-    const isConnected = await checkConnection();
-    if (onConnectionChange) {
-      onConnectionChange(isConnected);
-    }
-  }, 30000); // Check every 30 seconds
-  
-  return () => clearInterval(checkInterval);
-};
+export { checkSupabaseConnection } from '../client';

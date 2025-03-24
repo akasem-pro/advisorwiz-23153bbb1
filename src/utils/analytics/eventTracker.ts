@@ -1,6 +1,6 @@
 
 import { trackEvent as dataLayerTrackEvent } from '../tagManager';
-import { ErrorCategory, handleError } from '../errorHandling/errorHandler';
+import { handleSupabaseError, ErrorSeverity } from '../errorHandling/supabaseErrorHandler';
 import { storeAnalyticsMetric } from '../performance/core';
 
 // Define common user behavior events
@@ -63,7 +63,12 @@ export const trackUserBehavior = (
     dataLayerTrackEvent(event.toString(), properties || {});
     
   } catch (error) {
-    handleError('Failed to track user behavior', true);
+    handleSupabaseError(
+      'Failed to track user behavior', 
+      true, 
+      ErrorSeverity.ERROR, 
+      error
+    );
   }
 };
 
@@ -87,6 +92,11 @@ export const trackFeatureUsage = (
     dataLayerTrackEvent('feature_usage', trackingProperties);
     
   } catch (error) {
-    handleError('Failed to track feature usage', true);
+    handleSupabaseError(
+      'Failed to track feature usage', 
+      true, 
+      ErrorSeverity.ERROR, 
+      error
+    );
   }
 };

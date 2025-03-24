@@ -1,7 +1,7 @@
 
 import { supabase } from '../../integrations/supabase/client';
 import { trackEvent } from '../tagManager';
-import { ErrorCategory, handleError } from '../errorHandling/errorHandler';
+import { handleSupabaseError, ErrorSeverity } from '../errorHandling/supabaseErrorHandler';
 
 /**
  * Track user engagement with a custom event
@@ -14,7 +14,12 @@ export const trackUserEngagement = (event: string, properties?: Record<string, a
       ...properties
     });
   } catch (error) {
-    handleError('Failed to track user engagement', true);
+    handleSupabaseError(
+      'Failed to track user engagement', 
+      true, 
+      ErrorSeverity.WARNING, 
+      error
+    );
   }
 };
 
@@ -29,7 +34,12 @@ export const trackSessionDuration = (durationMs: number, properties?: Record<str
       ...properties
     });
   } catch (error) {
-    handleError('Failed to track session duration', true);
+    handleSupabaseError(
+      'Failed to track session duration', 
+      true, 
+      ErrorSeverity.WARNING, 
+      error
+    );
   }
 };
 
@@ -54,7 +64,12 @@ export const trackFeatureEngagement = (
       ...properties
     });
   } catch (error) {
-    handleError('Failed to track feature engagement', true);
+    handleSupabaseError(
+      'Failed to track feature engagement', 
+      true, 
+      ErrorSeverity.WARNING, 
+      error
+    );
   }
 };
 
@@ -74,7 +89,12 @@ export const trackPageViewDuration = (
       ...properties
     });
   } catch (error) {
-    handleError('Failed to track page view duration', true);
+    handleSupabaseError(
+      'Failed to track page view duration', 
+      true, 
+      ErrorSeverity.WARNING, 
+      error
+    );
   }
 };
 
@@ -86,6 +106,11 @@ export const trackOnboardingCompletion = (properties?: Record<string, any>): voi
     // Track via tag manager
     trackEvent('onboarding_completed', properties || {});
   } catch (error) {
-    handleError('Failed to track onboarding completion', true);
+    handleSupabaseError(
+      'Failed to track onboarding completion', 
+      true, 
+      ErrorSeverity.WARNING, 
+      error
+    );
   }
 };

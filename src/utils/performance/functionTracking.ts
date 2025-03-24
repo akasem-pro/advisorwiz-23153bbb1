@@ -18,7 +18,10 @@ export function withPerformanceTracking<T extends (...args: any[]) => any>(
     performance.mark(`${fnName}-end`);
     performance.measure(fnName, `${fnName}-start`, `${fnName}-end`);
     
-    trackPerformance(fnName, endTime - startTime, { argCount: args.length.toString() });
+    // Convert to Record<string, string> format as required by trackPerformance
+    trackPerformance(fnName, endTime - startTime, { 
+      argCount: args.length.toString()
+    });
     
     return result;
   };
