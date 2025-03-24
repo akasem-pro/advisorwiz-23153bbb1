@@ -30,14 +30,6 @@ export const supabase = createClient<Database>(
       params: {
         eventsPerSecond: 10
       }
-    },
-    // Add fetch configuration to improve reliability
-    fetch: (url, options) => {
-      const fetchOptions = {
-        ...options,
-        timeout: 30000, // 30 second timeout
-      };
-      return fetch(url, fetchOptions);
     }
   }
 );

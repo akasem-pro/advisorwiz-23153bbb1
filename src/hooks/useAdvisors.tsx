@@ -4,6 +4,7 @@ import { supabase } from '../integrations/supabase/client';
 import { AdvisorProfile } from '../types/userTypes';
 import { useUser } from '../context/UserContext';
 import { toast } from 'sonner';
+import { extractData, processArrayResponse } from '../lib/supabase/types/databaseHelpers';
 
 export const useAdvisors = (limit: number = 10) => {
   const [advisors, setAdvisors] = useState<AdvisorProfile[]>([]);
@@ -18,7 +19,7 @@ export const useAdvisors = (limit: number = 10) => {
         setError(null);
 
         // Fetch advisor profiles
-        const { data: advisorProfiles, error: advisorError } = await supabase
+        const advisorResponse = await supabase
           .from('advisor_profiles')
           .select(`
             id,
@@ -38,13 +39,16 @@ export const useAdvisors = (limit: number = 10) => {
           `)
           .limit(limit);
 
-        if (advisorError) {
-          throw new Error('Failed to fetch advisor profiles');
+        if (advisorResponse.error) {
+          throw new Error('Failed to fetch advisor profiles: ' + advisorResponse.error.message);
         }
+
+        const advisorProfiles = advisorResponse.data || [];
 
         // Fetch profile data for these advisors
         const advisorIds = advisorProfiles.map(advisor => advisor.id);
-        const { data: profileData, error: profileError } = await supabase
+        
+        const profileResponse = await supabase
           .from('profiles')
           .select(`
             id,
@@ -61,9 +65,11 @@ export const useAdvisors = (limit: number = 10) => {
           `)
           .in('id', advisorIds);
 
-        if (profileError) {
-          throw new Error('Failed to fetch profile data');
+        if (profileResponse.error) {
+          throw new Error('Failed to fetch profile data: ' + profileResponse.error.message);
         }
+
+        const profileData = profileResponse.data || [];
 
         // Combine the data
         const combinedAdvisors = advisorProfiles.map(advisor => {

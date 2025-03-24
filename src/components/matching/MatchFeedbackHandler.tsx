@@ -3,6 +3,7 @@ import React from 'react';
 import { UserBehaviorEvent, trackUserBehavior } from '../../utils/analytics/userBehaviorTracker';
 import { supabase } from '../../integrations/supabase/client';
 import MatchFeedback from './MatchFeedback';
+import { TableInsert } from '../../lib/supabase/types/databaseHelpers';
 
 interface MatchFeedbackHandlerProps {
   userType: 'consumer' | 'advisor';
@@ -42,24 +43,31 @@ const MatchFeedbackHandler: React.FC<MatchFeedbackHandlerProps> = ({
     );
     
     // Store feedback in Supabase
+    const feedbackData: TableInsert<'match_feedback'> = {
+      id: undefined, // Let Supabase generate this
+      user_id: userId,
+      is_helpful: feedback.isHelpful,
+      comment: feedback.comment || null
+    };
+    
     await supabase
       .from('match_feedback')
-      .insert({
-        match_id: feedback.matchId,
-        user_id: userId,
-        comment: feedback.comment,
-        is_helpful: feedback.isHelpful
-      });
+      .insert(feedbackData);
     
     // If the user wants to adjust weights, we apply those changes
     if (feedback.adjustWeights && feedback.weightAdjustments) {
       // Get current preferences
-      const { data: prefsData } = await supabase
+      const { data: prefsData, error } = await supabase
         .from('user_preferences')
         .select('matching_preferences')
         .eq('user_id', userId)
         .single();
         
+      if (error) {
+        console.error("Error fetching user preferences:", error);
+        return;
+      }
+      
       const currentPrefs = prefsData?.matching_preferences || {};
       
       // Type guard to ensure currentPrefs is an object
@@ -85,15 +93,17 @@ const MatchFeedbackHandler: React.FC<MatchFeedbackHandlerProps> = ({
         }
         
         // Update preferences in database with proper type handling
+        const preferenceData: TableInsert<'user_preferences'> = {
+          user_id: userId,
+          matching_preferences: {
+            ...prefsObject,
+            weightFactors: newWeights
+          }
+        };
+        
         await supabase
           .from('user_preferences')
-          .upsert({
-            user_id: userId,
-            matching_preferences: {
-              ...prefsObject,
-              weightFactors: newWeights
-            }
-          });
+          .upsert(preferenceData);
       }
     }
   };
