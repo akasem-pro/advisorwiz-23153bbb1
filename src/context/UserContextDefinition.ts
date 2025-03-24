@@ -3,14 +3,22 @@ import { createContext } from 'react';
 import {
   UserType,
   ConsumerProfile,
-  AdvisorProfile,
+  AdvisorProfile
+} from '../types/profileTypes';
+import {
   Chat,
-  ChatMessage,
+  ChatMessage
+} from '../types/chatTypes';
+import {
   Appointment,
-  AppointmentStatus,
-  ServiceCategory,
+  AppointmentStatus
+} from '../types/timeTypes';
+import {
+  ServiceCategory
+} from '../types/serviceTypes';
+import {
   FinancialFirm
-} from '../types/userTypes';
+} from '../types/firmTypes';
 import { CallSession, CallStatus, CallType, CallMetrics } from '../types/callTypes';
 import { Lead, LeadStatus, LeadStats, LeadSource } from '../types/leadTypes';
 

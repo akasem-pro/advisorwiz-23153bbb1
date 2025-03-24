@@ -10,7 +10,7 @@ import { VerificationSection } from './VerificationSection';
 import { SubscriptionSection } from './SubscriptionSection';
 import { ConsentSection } from './ConsentSection';
 import { ProfileSection } from './ProfileSection';
-import { ServiceCategory } from '../../context/UserContext';
+import { ServiceCategory } from '../../types/serviceTypes';
 
 // Types for licenses, experiences, etc.
 interface ProfileSectionManagerProps {
