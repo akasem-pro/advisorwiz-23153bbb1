@@ -9,6 +9,7 @@ import type { SEOProps } from './SEO';
 export interface PageSEOProps extends SEOProps {
   structuredData?: Record<string, any> | Array<Record<string, any>>;
   breadcrumbs?: Array<{ name: string; url: string }>;
+  children?: React.ReactNode;
 }
 
 /**
@@ -20,6 +21,7 @@ export interface PageSEOProps extends SEOProps {
 const PageSEO: React.FC<PageSEOProps> = ({ 
   structuredData,
   breadcrumbs,
+  children,
   ...seoProps 
 }) => {
   // Generate breadcrumb schema if breadcrumbs are provided
@@ -50,6 +52,7 @@ const PageSEO: React.FC<PageSEOProps> = ({
     <>
       <SEO {...seoProps} />
       {combinedStructuredData && <StructuredData data={combinedStructuredData} />}
+      {children}
     </>
   );
 };

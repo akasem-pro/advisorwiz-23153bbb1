@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import PageSEO from '../components/seo/PageSEO';
@@ -87,17 +88,19 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <PageSEO 
-      title="Find Your Perfect Financial Advisor Match"
-      description="AdvisorWiz connects you with experienced financial advisors who match your specific needs and preferences. Our proprietary algorithm ensures you find your ideal financial match. Free for consumers."
-      keywords="financial advisor, advisor matching, financial planning, investment advisor, retirement planning, wealth management, CFP, certified financial planner"
-      canonicalUrl="https://advisorwiz.com/"
-      structuredData={[
-        generateFAQSchema(faqData),
-        generateWebsiteSchema(),
-        generateOrganizationSchema()
-      ]}
-    >
+    <>
+      <PageSEO 
+        title="Find Your Perfect Financial Advisor Match"
+        description="AdvisorWiz connects you with experienced financial advisors who match your specific needs and preferences. Our proprietary algorithm ensures you find your ideal financial match. Free for consumers."
+        keywords="financial advisor, advisor matching, financial planning, investment advisor, retirement planning, wealth management, CFP, certified financial planner"
+        canonicalUrl="https://advisorwiz.com/"
+        structuredData={[
+          generateFAQSchema(faqData),
+          generateWebsiteSchema(),
+          generateOrganizationSchema()
+        ]}
+      />
+      
       <Preload 
         resources={criticalResources}
         preconnect={['https://fonts.googleapis.com', 'https://fonts.gstatic.com']}
@@ -119,7 +122,7 @@ const Home: React.FC = () => {
         <NewsletterSection />
         <MainCTASection />
       </AppLayout>
-    </PageSEO>
+    </>
   );
 };
 
