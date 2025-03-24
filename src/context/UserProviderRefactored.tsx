@@ -1,4 +1,3 @@
-
 import React, { ReactNode } from 'react';
 import UserContext from './UserContextDefinition';
 import { useUserProfiles } from '../hooks/user/useUserProfiles';
@@ -11,7 +10,6 @@ import { useLeadManagement } from '../hooks/user/useLeadManagement';
 import { useProfileInitialization } from '../hooks/user/useProfileInitialization';
 import CallModal from '../components/call/CallModal';
 import { useAuth } from '../features/auth/context/AuthProvider';
-import { updateUserProfile } from '../services/profileService';
 
 export const UserProviderRefactored = ({ children }: { children: ReactNode }) => {
   // Auth context for user information
@@ -23,7 +21,8 @@ export const UserProviderRefactored = ({ children }: { children: ReactNode }) =>
     consumerProfile, setConsumerProfile,
     advisorProfile, setAdvisorProfile,
     isAuthenticated, setIsAuthenticated,
-    updateOnlineStatus
+    updateOnlineStatus,
+    saveProfileChanges
   } = useUserProfiles();
 
   // Initialize profiles based on authentication
@@ -100,15 +99,17 @@ export const UserProviderRefactored = ({ children }: { children: ReactNode }) =>
 
   // Handle profile updates and sync with database
   const handleProfileUpdate = async (profileData: any) => {
-    if (!user) return;
+    if (!user) return false;
 
     if (userType === 'consumer') {
       setConsumerProfile({ ...consumerProfile, ...profileData });
-      await updateUserProfile(user, userType, profileData);
+      return await saveProfileChanges();
     } else if (userType === 'advisor') {
       setAdvisorProfile({ ...advisorProfile, ...profileData });
-      await updateUserProfile(user, userType, profileData);
+      return await saveProfileChanges();
     }
+    
+    return false;
   };
 
   const value = {
@@ -118,7 +119,8 @@ export const UserProviderRefactored = ({ children }: { children: ReactNode }) =>
     advisorProfile, setAdvisorProfile,
     isAuthenticated, setIsAuthenticated,
     updateOnlineStatus,
-    handleProfileUpdate, // Add method to update profile and sync with database
+    handleProfileUpdate,
+    saveProfileChanges,
     
     // Communication (chats and appointments)
     chats, setChats,

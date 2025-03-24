@@ -116,7 +116,7 @@ const investableAssetsOptions = [
 ];
 
 const ConsumerProfile: React.FC = () => {
-  const { consumerProfile, setConsumerProfile, updateOnlineStatus } = useUser();
+  const { consumerProfile, setConsumerProfile, updateOnlineStatus, saveProfileChanges } = useUser();
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -238,7 +238,7 @@ const ConsumerProfile: React.FC = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.termsConsent) {
       toast.error("You must agree to the Terms & Conditions to continue");
       return;
@@ -287,12 +287,20 @@ const ConsumerProfile: React.FC = () => {
     updateOnlineStatus(updatedProfile.onlineStatus);
     
     setSaved(true);
-    toast.success("Profile successfully created!");
     
-    setTimeout(() => {
+    const success = await saveProfileChanges();
+    
+    if (success) {
+      toast.success("Profile successfully created and saved!");
+      
+      setTimeout(() => {
+        setSaved(false);
+        navigate('/matches');
+      }, 2000);
+    } else {
       setSaved(false);
-      navigate('/matches');
-    }, 2000);
+      toast.error("Profile was created but could not be saved to the server. Please try again later.");
+    }
   };
 
   const mapRiskToleranceValue = (value: string): 'low' | 'medium' | 'high' => {
