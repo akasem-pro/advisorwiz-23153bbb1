@@ -37,14 +37,6 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({
     return null;
   }
   
-  const handleRetry = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (onRetry) {
-      onRetry();
-    }
-  };
-  
   return (
     <div className="px-4 pt-4">
       <Alert 

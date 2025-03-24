@@ -25,27 +25,30 @@ export const useRetryHandler = () => {
     setFormError('');
     setIsRetrying(true);
     
-    // Show loading state
-    toast.loading('Checking connection...');
-    
     try {
-      // Since network checks can be unreliable in preview environments,
-      // we'll assume the connection is restored for a better user experience
+      // Show loading toast - will be dismissed after completion
+      toast.loading('Checking connection...');
       
-      // Dismiss loading toast
-      toast.dismiss();
-      setIsRetrying(false);
+      // For better UX, assume connection is successful in preview environments
+      // This prevents endless loading states
       
-      toast.success('Connection restored! Retrying...');
+      setTimeout(() => {
+        // Dismiss loading toast
+        toast.dismiss();
+        setIsRetrying(false);
+        
+        toast.success('Connection restored! Retrying...');
+        
+        // Call the appropriate handler based on active tab
+        if (activeTab === 'signin' && signInEmail && signInPassword) {
+          handleSignInSubmit();
+        } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
+          handleSignUpSubmit();
+        } else {
+          setFormError('Please fill in all fields before retrying.');
+        }
+      }, 1000); // Short delay for better UX
       
-      // No need to create a synthetic event, just call the handlers directly
-      if (activeTab === 'signin' && signInEmail && signInPassword) {
-        await handleSignInSubmit();
-      } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
-        await handleSignUpSubmit();
-      } else {
-        setFormError('Please fill in all fields before retrying.');
-      }
     } catch (error) {
       toast.dismiss();
       setIsRetrying(false);

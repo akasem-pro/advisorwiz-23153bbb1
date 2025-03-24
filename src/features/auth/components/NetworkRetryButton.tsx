@@ -40,7 +40,10 @@ const NetworkRetryButton: React.FC<NetworkRetryButtonProps> = ({
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    onRetry();
+    // Disable multiple clicks when connecting
+    if (!isConnecting) {
+      onRetry();
+    }
   };
   
   return (
@@ -50,6 +53,7 @@ const NetworkRetryButton: React.FC<NetworkRetryButtonProps> = ({
       onClick={handleClick} 
       disabled={isConnecting}
       className={`${getButtonStyles()} ${className}`}
+      type="button" // Explicitly set type to button to prevent form submission
     >
       {isConnecting ? (
         <>

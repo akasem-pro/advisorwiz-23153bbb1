@@ -11,18 +11,12 @@ export const useNetworkValidation = () => {
    */
   const checkNetworkStatus = async (): Promise<boolean> => {
     try {
-      // First check navigator.onLine
-      if (!navigator.onLine) {
-        return false;
-      }
-      
-      // For the browser environment, navigator.onLine is actually sufficient
-      // External fetch requests often fail in preview environments due to CORS
-      // So we'll consider the user online if navigator.onLine is true
-      return true;
+      // In browser environments, navigator.onLine is sufficient
+      return navigator.onLine;
     } catch (error) {
       console.error("Error checking network status:", error);
-      return false;
+      // Default to online to prevent blocking the UI
+      return true;
     }
   };
 
@@ -31,6 +25,7 @@ export const useNetworkValidation = () => {
    */
   const validateNetworkConnection = async (setFormError: (error: string) => void): Promise<boolean> => {
     try {
+      // In browser environments, navigator.onLine is sufficient
       const isOnline = navigator.onLine;
       
       if (!isOnline) {
@@ -38,12 +33,12 @@ export const useNetworkValidation = () => {
         return false;
       }
       
+      // Default to online to prevent blocking the UI
       return true;
     } catch (error) {
       console.error("Failed to validate network connection:", error);
-      setFormError('Connection check failed. Please try again.');
-      // Default to offline to trigger retry logic
-      return false;
+      // Default to online to prevent blocking the UI
+      return true;
     }
   };
   

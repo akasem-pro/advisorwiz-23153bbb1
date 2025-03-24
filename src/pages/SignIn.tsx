@@ -49,7 +49,8 @@ const SignIn: React.FC = () => {
     handleSignIn,
     handleSignUp,
     handleRetry,
-    retryConnection
+    retryConnection,
+    isRetrying
   } = useAuthFormSubmit();
   
   const handleSignInSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
@@ -91,15 +92,19 @@ const SignIn: React.FC = () => {
   
   const handleRetrySubmit = async () => {
     setFormError('');
-    const isOnline = await retryConnection();
     
-    if (isOnline) {
-      if (activeTab === 'signin' && signInEmail && signInPassword) {
-        await handleSignInSubmit();
-      } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
-        await handleSignUpSubmit();
-      }
-    }
+    // Use the handleRetry function directly to ensure better handling
+    await handleRetry(
+      activeTab,
+      signInEmail,
+      signInPassword,
+      signUpEmail,
+      signUpPassword,
+      confirmPassword,
+      handleSignInSubmit,
+      handleSignUpSubmit,
+      setFormError
+    );
   };
   
   // Only disable buttons when actually loading
