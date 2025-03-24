@@ -4,13 +4,14 @@ import { useSignInHandler } from './useSignInHandler';
 import { useSignUpHandler } from './useSignUpHandler';
 import { useRetryHandler } from './useRetryHandler';
 import { useAuth } from '../context/AuthProvider';
+import { toast } from 'sonner';
 
 /**
  * Combined hook for handling authentication form submissions with improved error handling
  */
 export const useAuthFormSubmit = () => {
   // Get the necessary auth context
-  const { loading: authLoading, networkStatus } = useAuth();
+  const { loading: authLoading, networkStatus, checkNetworkStatus } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Import the individual handlers
@@ -21,6 +22,29 @@ export const useAuthFormSubmit = () => {
   // Combined loading state
   const isLoading = authLoading || isSubmitting || isRetrying;
   
+  // Enhanced retry function with better error feedback
+  const retryConnection = async () => {
+    toast.loading('Checking connection...');
+    
+    try {
+      const isOnline = await checkNetworkStatus();
+      toast.dismiss();
+      
+      if (isOnline) {
+        toast.success('Connection restored!');
+        return true;
+      } else {
+        toast.error('Still unable to connect. Please check your internet connection.');
+        return false;
+      }
+    } catch (error) {
+      toast.dismiss();
+      toast.error('Connection check failed');
+      console.error('Connection retry error:', error);
+      return false;
+    }
+  };
+  
   return {
     authLoading,
     networkStatus,
@@ -30,6 +54,7 @@ export const useAuthFormSubmit = () => {
     isLoading,
     handleSignIn,
     handleSignUp,
-    handleRetry
+    handleRetry,
+    retryConnection
   };
 };

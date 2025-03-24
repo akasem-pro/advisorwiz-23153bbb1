@@ -9,7 +9,7 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJ
 // Export the URL and key for other components to use if needed
 export { SUPABASE_URL, SUPABASE_ANON_KEY };
 
-// Create a Supabase client with proper configuration
+// Create a Supabase client with improved configuration
 export const supabase = createClient<Database>(
   SUPABASE_URL, 
   SUPABASE_ANON_KEY,
@@ -34,7 +34,7 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Updated connection checker with better diagnostics and reliability
+// Improved connection checker with better diagnostics and reliability
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
     console.log("[Supabase Debug] Starting connection check");
