@@ -34,11 +34,9 @@ export const useUserProfiles = () => {
   // Save profile changes to Supabase
   const saveProfileChanges = async () => {
     try {
-      // Get current authenticated user
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        console.error("[useUserProfiles] Cannot save profile: No authenticated user");
+      // Check if the user is authenticated in our state
+      if (!isAuthenticated) {
+        console.error("[useUserProfiles] Cannot save profile: Not authenticated in app state");
         toast.error("Please sign in to save your profile changes");
         return false;
       }
@@ -47,9 +45,27 @@ export const useUserProfiles = () => {
       
       if (userType === 'consumer' && consumerProfile) {
         console.log("[useUserProfiles] Saving consumer profile to Supabase:", consumerProfile);
+        // Get current session to ensure we have user data
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          console.error("[useUserProfiles] Cannot save profile: No authenticated user from Supabase");
+          toast.error("Authentication error. Please sign in again");
+          return false;
+        }
+        
         success = await updateConsumerProfile(user, consumerProfile);
       } else if (userType === 'advisor' && advisorProfile) {
         console.log("[useUserProfiles] Saving advisor profile to Supabase:", advisorProfile);
+        // Get current session to ensure we have user data
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          console.error("[useUserProfiles] Cannot save profile: No authenticated user from Supabase");
+          toast.error("Authentication error. Please sign in again");
+          return false;
+        }
+        
         success = await updateAdvisorProfile(user, advisorProfile);
       }
       

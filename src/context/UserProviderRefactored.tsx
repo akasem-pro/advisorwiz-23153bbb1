@@ -1,5 +1,5 @@
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import UserContext from './UserContextDefinition';
 import { useUserProfiles } from '../hooks/user/useUserProfiles';
 import { useUserCommunication } from '../hooks/user/useUserCommunication';
@@ -11,6 +11,7 @@ import { useLeadManagement } from '../hooks/user/useLeadManagement';
 import { useProfileInitialization } from '../hooks/user/useProfileInitialization';
 import CallModal from '../components/call/CallModal';
 import { useAuth } from '../features/auth/context/AuthProvider';
+import { supabase } from '../integrations/supabase/client';
 
 export const UserProviderRefactored = ({ children }: { children: ReactNode }) => {
   // Auth context for user information
@@ -26,6 +27,29 @@ export const UserProviderRefactored = ({ children }: { children: ReactNode }) =>
     saveProfileChanges,
     handleProfileUpdate
   } = useUserProfiles();
+
+  // Effect to set the authenticated state based on user existence
+  useEffect(() => {
+    const updateAuthState = async () => {
+      // Check if we have a user from the auth context
+      if (user) {
+        setIsAuthenticated(true);
+        console.log("[UserProvider] User authenticated from context:", user.email);
+      } else {
+        // Fallback to checking with supabase directly
+        const { data, error } = await supabase.auth.getSession();
+        if (data?.session?.user && !error) {
+          setIsAuthenticated(true);
+          console.log("[UserProvider] User authenticated from Supabase session:", data.session.user.email);
+        } else {
+          setIsAuthenticated(false);
+          console.log("[UserProvider] No authenticated user found");
+        }
+      }
+    };
+    
+    updateAuthState();
+  }, [user, setIsAuthenticated]);
 
   // Initialize profiles based on authentication
   useProfileInitialization(

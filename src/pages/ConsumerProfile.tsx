@@ -116,7 +116,7 @@ const investableAssetsOptions = [
 ];
 
 const ConsumerProfile: React.FC = () => {
-  const { consumerProfile, setConsumerProfile, updateOnlineStatus, saveProfileChanges } = useUser();
+  const { consumerProfile, setConsumerProfile, updateOnlineStatus, saveProfileChanges, isAuthenticated, handleProfileUpdate } = useUser();
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -244,8 +244,13 @@ const ConsumerProfile: React.FC = () => {
       return;
     }
     
+    if (!isAuthenticated) {
+      toast.error("You must be signed in to save your profile");
+      return;
+    }
+    
     const updatedProfile: ConsumerProfileType = {
-      id: formData.id,
+      id: consumerProfile?.id || 'consumer-1',
       name: `${formData.firstName} ${formData.lastName}`,
       age: calculateAge(formData.dateOfBirth),
       status: formData.employmentStatus,
@@ -288,18 +293,25 @@ const ConsumerProfile: React.FC = () => {
     
     setSaved(true);
     
-    const success = await saveProfileChanges();
-    
-    if (success) {
-      toast.success("Profile successfully created and saved!");
+    try {
+      console.log("[ConsumerProfile] Saving profile:", updatedProfile);
+      const success = await saveProfileChanges();
       
-      setTimeout(() => {
+      if (success) {
+        toast.success("Profile successfully created and saved!");
+        
+        setTimeout(() => {
+          setSaved(false);
+          navigate('/matches');
+        }, 2000);
+      } else {
         setSaved(false);
-        navigate('/matches');
-      }, 2000);
-    } else {
+        toast.error("Profile was created but could not be saved to the server. Please try again later.");
+      }
+    } catch (error) {
+      console.error("[ConsumerProfile] Error saving profile:", error);
       setSaved(false);
-      toast.error("Profile was created but could not be saved to the server. Please try again later.");
+      toast.error("An unexpected error occurred while saving your profile.");
     }
   };
 
@@ -913,7 +925,7 @@ const ConsumerProfile: React.FC = () => {
                     type="checkbox"
                     checked={formData.termsConsent}
                     onChange={(e) => setFormData(prev => ({ ...prev, termsConsent: e.target.checked }))}
-                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
                     required
                   />
                 </div>
