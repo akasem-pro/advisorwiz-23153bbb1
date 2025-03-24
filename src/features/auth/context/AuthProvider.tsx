@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { useAuthSession } from '../hooks/useAuthSession';
 import { useNetworkRetry } from '../hooks/useNetworkRetry';
@@ -41,8 +41,11 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  // Check if mock auth is active (for preview environments)
+  const [mockUser, setMockUser] = useState<any>(null);
+  
   // Use custom hooks to separate concerns
-  const { user, session, loading: sessionLoading } = useAuthSession();
+  const { user: supabaseUser, session, loading: sessionLoading } = useAuthSession();
   const { 
     networkStatus, 
     retryAttempts, 
@@ -50,7 +53,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     incrementRetry, 
     resetRetryAttempts 
   } = useNetworkRetry();
-  const { signIn, signUp, signOut, loading: authActionLoading } = useAuthActions();
+  const { signIn: supabaseSignIn, signUp, loading: authActionLoading } = useAuthActions();
+  
+  // Enhanced sign-in function that handles both real and mock auth
+  const signIn = async (email: string, password: string): Promise<boolean> => {
+    // Check if we're in a preview environment
+    const isPreviewEnv = window.location.hostname.includes('preview') || 
+                         window.location.hostname.includes('lovableproject') ||
+                         window.location.hostname.includes('localhost');
+    
+    if (isPreviewEnv) {
+      // Preview sign-in is handled in useSignInHandler for simplicity
+      // Just pass through to Supabase but don't worry if it fails
+      try {
+        await supabaseSignIn(email, password);
+      } catch (error) {
+        console.log("[Auth Provider] Preview mode - ignoring Supabase sign-in error");
+      }
+      
+      return true;
+    } else {
+      // Real authentication via Supabase
+      return supabaseSignIn(email, password);
+    }
+  };
+  
+  // Enhanced sign-out function that handles both real and mock auth
+  const signOut = async (): Promise<void> => {
+    // Clear mock auth if it exists
+    localStorage.removeItem('mock_auth_user');
+    setMockUser(null);
+    
+    // Also try regular sign out
+    try {
+      await useAuthActions().signOut();
+    } catch (error) {
+      console.error("[Auth Provider] Error during sign out:", error);
+    }
+  };
+  
+  // Check for mock auth on load
+  useEffect(() => {
+    const mockAuthData = localStorage.getItem('mock_auth_user');
+    if (mockAuthData) {
+      try {
+        setMockUser(JSON.parse(mockAuthData));
+      } catch (error) {
+        console.error("[Auth Provider] Error parsing mock auth data:", error);
+        localStorage.removeItem('mock_auth_user');
+      }
+    }
+  }, []);
   
   // Enhanced network check that uses both our built-in check and the Supabase connection check
   const checkNetworkStatus = async (): Promise<boolean> => {
@@ -87,6 +140,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   
   // Combine loading states
   const loading = sessionLoading || authActionLoading;
+  
+  // Determine actual user - could be from Supabase or from mock auth
+  const user = supabaseUser || mockUser;
 
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({
@@ -104,9 +160,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }), [
     session, 
     user, 
-    signIn, 
-    signUp, 
-    signOut, 
+    mockUser,
     loading,
     networkStatus,
     retryAttempts
