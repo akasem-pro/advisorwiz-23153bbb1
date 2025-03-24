@@ -8,19 +8,14 @@ import { UserBehaviorEvent } from './types';
 export const trackLandingPageInteraction = async (
   feature: string,
   action: string,
-  userId?: string,
   properties?: Record<string, any>
 ): Promise<void> => {
-  await trackUserBehavior(
-    UserBehaviorEvent.FEATURE_USED, // Changed from FEATURE_INTERACTION to FEATURE_USED
-    userId,
-    {
-      feature,
-      action,
-      page: 'landing',
-      ...properties
-    }
-  );
+  trackUserBehavior(UserBehaviorEvent.FEATURE_USED, { 
+    feature,
+    action,
+    page: 'landing',
+    ...properties
+  });
 };
 
 /**
@@ -29,17 +24,14 @@ export const trackLandingPageInteraction = async (
 export const trackLandingPageCTA = async (
   ctaLocation: string,
   ctaText: string,
-  userId?: string
+  properties?: Record<string, any>
 ): Promise<void> => {
-  await trackUserBehavior(
-    UserBehaviorEvent.FEATURE_USED, // Changed from CTA_CLICK to FEATURE_USED
-    userId,
-    {
-      location: ctaLocation,
-      text: ctaText,
-      page: 'landing'
-    }
-  );
+  trackUserBehavior(UserBehaviorEvent.FEATURE_USED, {
+    location: ctaLocation,
+    text: ctaText,
+    page: 'landing',
+    ...properties
+  });
 };
 
 /**
@@ -52,16 +44,12 @@ export const createSectionViewTracker = (
   return (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        trackUserBehavior(
-          UserBehaviorEvent.PAGE_VIEW, // Changed from SECTION_VIEW to PAGE_VIEW
-          undefined,
-          {
-            section_id: sectionId,
-            section_name: sectionName,
-            page: 'landing',
-            visible_percentage: Math.round(entry.intersectionRatio * 100)
-          }
-        );
+        trackUserBehavior(UserBehaviorEvent.PAGE_VIEW, {
+          section_id: sectionId,
+          section_name: sectionName,
+          page: 'landing',
+          visible_percentage: Math.round(entry.intersectionRatio * 100)
+        });
         // Optionally unobserve after first view
         // observer.unobserve(entry.target);
       }

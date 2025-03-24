@@ -24,10 +24,10 @@ export const trackPreferenceUpdate = async (
   }
   
   // Track the preference update event
-  await trackUserBehavior(
+  trackUserBehavior(
     UserBehaviorEvent.PREFERENCE_UPDATED,
-    userId,
     {
+      user_id: userId,
       changes: changedPrefs,
       timestamp: new Date().toISOString()
     }

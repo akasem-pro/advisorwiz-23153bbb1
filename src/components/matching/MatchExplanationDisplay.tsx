@@ -2,7 +2,7 @@
 import React from 'react';
 import MatchExplanation from './MatchExplanation';
 import { calculateMatchScore, getMatchExplanations } from '../../utils/matchingAlgorithm';
-import { trackUserBehavior, UserBehaviorEvent } from '../../utils/analytics/userBehaviorTracker';
+import { trackUserBehavior, UserBehaviorEvent } from '../../utils/analytics/eventTracker';
 import { convertToMatchExplanations } from './utils/matchExplanationUtils';
 
 interface MatchExplanationDisplayProps {
@@ -43,8 +43,8 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
     // Track this match view event
     trackUserBehavior(
       UserBehaviorEvent.MATCH_VIEW,
-      advisorProfile.id,
       {
+        advisor_id: advisorProfile.id,
         consumer_id: consumerProfile.id,
         score: score,
         explanations: explanationStrings
@@ -88,9 +88,9 @@ const MatchExplanationDisplay: React.FC<MatchExplanationDisplayProps> = ({
     // Track this match view event
     trackUserBehavior(
       UserBehaviorEvent.MATCH_VIEW,
-      consumerProfile.id,
       {
         advisor_id: item.id,
+        consumer_id: consumerProfile.id,
         score: score,
         explanations: explanationStrings
       }

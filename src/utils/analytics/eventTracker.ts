@@ -46,6 +46,8 @@ export enum UserBehaviorEvent {
 
 /**
  * Track user behavior events
+ * @param event The event to track
+ * @param properties Optional properties to include with the event
  */
 export const trackUserBehavior = (
   event: UserBehaviorEvent | string,
@@ -61,25 +63,30 @@ export const trackUserBehavior = (
     dataLayerTrackEvent(event.toString(), properties || {});
     
   } catch (error) {
-    handleError('Failed to track user behavior', ErrorCategory.UNKNOWN, true);
+    handleError('Failed to track user behavior', true);
   }
 };
 
 /**
  * Track feature usage
+ * @param featureName The name of the feature being used
+ * @param properties Optional additional properties
  */
 export const trackFeatureUsage = (
   featureName: string,
-  userId?: string
+  properties?: Record<string, any>
 ): void => {
   try {
-    // Track via tag manager
-    dataLayerTrackEvent('feature_usage', {
+    // Build properties object
+    const trackingProperties = {
       feature_name: featureName,
-      user_id: userId
-    });
+      ...properties
+    };
+    
+    // Track via tag manager
+    dataLayerTrackEvent('feature_usage', trackingProperties);
     
   } catch (error) {
-    handleError('Failed to track feature usage', ErrorCategory.UNKNOWN, true);
+    handleError('Failed to track feature usage', true);
   }
 };

@@ -1,6 +1,6 @@
-
 import React from 'react';
-import { UserBehaviorEvent, trackUserBehavior } from '../../utils/analytics/userBehaviorTracker';
+import { UserBehaviorEvent } from '../../utils/analytics/types';
+import { trackUserBehavior } from '../../utils/analytics/eventTracker';
 import { supabase } from '../../integrations/supabase/client';
 import MatchFeedback from './MatchFeedback';
 import { TableInsert } from '../../lib/supabase/types/databaseHelpers';
@@ -32,10 +32,10 @@ const MatchFeedbackHandler: React.FC<MatchFeedbackHandlerProps> = ({
     if (!userId) return;
       
     // Log this feedback event for analytics
-    await trackUserBehavior(
+    trackUserBehavior(
       UserBehaviorEvent.FEEDBACK_SUBMITTED,
-      userId,
       {
+        user_id: userId,
         match_id: feedback.matchId,
         is_helpful: feedback.isHelpful,
         adjustments: feedback.weightAdjustments

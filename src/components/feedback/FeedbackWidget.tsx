@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X, MessageSquare, ThumbsUp, ThumbsDown, Bug } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -47,7 +46,8 @@ const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({
 
     try {
       // Track the feedback submission using the analytics system
-      await trackUserBehavior(UserBehaviorEvent.FEEDBACK_SUBMITTED, userId, {
+      trackUserBehavior(UserBehaviorEvent.FEEDBACK_SUBMITTED, {
+        user_id: userId,
         feedback_type: feedbackType,
         page_url: currentPageUrl,
         has_comment: comment.length > 0

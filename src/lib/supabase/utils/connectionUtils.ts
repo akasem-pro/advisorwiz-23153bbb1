@@ -12,7 +12,7 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     return true;
   } catch (error) {
     // Log the error and return false
-    handleError('Failed to connect to Supabase', ErrorCategory.NETWORK, true);
+    handleError('Failed to connect to Supabase', true);
     return false;
   }
 };
@@ -27,7 +27,7 @@ export const isSupabaseOnline = async (): Promise<boolean> => {
     return isConnected;
   } catch (error) {
     // Log the error and return false
-    handleError('Failed to check connection status', ErrorCategory.NETWORK, true);
+    handleError('Failed to check connection status', true);
     return false;
   }
 };
@@ -46,7 +46,7 @@ export const recoverSupabaseConnection = async (): Promise<boolean> => {
     return isConnected;
   } catch (error) {
     // Log the error and return false
-    handleError('Connection recovery failed', ErrorCategory.NETWORK, true);
+    handleError('Connection recovery failed', true);
     return false;
   }
 };
@@ -68,7 +68,7 @@ export const syncOfflineChanges = async (): Promise<boolean> => {
     console.log('Syncing offline changes...');
     return true;
   } catch (error) {
-    handleError('Failed to sync offline changes', ErrorCategory.NETWORK, true);
+    handleError('Failed to sync offline changes', true);
     return false;
   }
 };
@@ -78,7 +78,7 @@ export const syncOfflineChanges = async (): Promise<boolean> => {
  */
 export const setupConnectionListener = (
   onConnectionChange?: (isConnected: boolean) => void
-): () => void => {
+): (() => void) => {
   const checkInterval = setInterval(async () => {
     const isConnected = await checkConnection();
     if (onConnectionChange) {

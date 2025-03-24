@@ -21,7 +21,7 @@ export const trackMatchEngagement = async (
     storeAnalyticsMetric('match_engagement', action);
     
     // Also track as general feature engagement
-    trackFeatureEngagement(`match_${action}`, 'interact', userId);
+    trackFeatureEngagement(`match_${action}`, 'interact', { user_id: userId });
     
     // Extract advisor and consumer IDs from the match ID if available
     // Format is typically: "match-{advisorId}-{consumerId}"
@@ -68,6 +68,6 @@ export const trackMatchCardInteraction = async (
     console.log(`[Match Interaction] Recording ${action} for profile ${profileId} by user ${userId || 'anonymous'}`);
     
   } catch (error) {
-    handleError('Failed to track match card interaction', ErrorCategory.UNKNOWN, true);
+    handleError('Failed to track match card interaction', true);
   }
 };

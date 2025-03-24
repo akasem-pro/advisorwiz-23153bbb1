@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Link } from 'react-router-dom';
-import { trackUserBehavior } from '../../utils/analytics/userBehaviorTracker';
+import { trackUserBehavior } from '../../utils/analytics/eventTracker';
 
 interface PromotionalBannerProps {
   id: string;
@@ -57,10 +56,11 @@ const PromotionalBanner: React.FC<PromotionalBannerProps> = ({
   
   // Track banner events
   const trackBannerEvent = (action: 'view' | 'click' | 'dismiss' | 'auto_hide') => {
-    trackUserBehavior(`promo_banner_${action}`, userId, {
+    trackUserBehavior(`promo_banner_${action}`, {
       banner_id: id,
       message,
-      variant
+      variant,
+      user_id: userId
     });
   };
   

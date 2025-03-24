@@ -38,7 +38,7 @@ export const trackMatchingInteraction = async (
       details 
     });
   } catch (error) {
-    handleError(`Failed to track matching interaction: ${action}`, ErrorCategory.UNKNOWN, true);
+    handleError(`Failed to track matching interaction: ${action}`, true);
   }
 };
 
@@ -61,7 +61,7 @@ export const recordMatchHistory = async (
     // Logging for development
     console.log('Match history recorded', { advisorId, consumerId, notes });
   } catch (error) {
-    handleError('Failed to record match history', ErrorCategory.UNKNOWN, true);
+    handleError('Failed to record match history', true);
   }
 };
 

@@ -6,7 +6,6 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { toast } from 'sonner';
 import { trackUserBehavior } from '../../utils/analytics/eventTracker';
-import { UserBehaviorEvent } from '../../utils/analytics/types';
 
 interface BetaTesterInvitationProps {
   userId?: string;
@@ -26,7 +25,8 @@ const BetaTesterInvitation: React.FC<BetaTesterInvitationProps> = ({
     
     try {
       // Track the beta program opt-in
-      await trackUserBehavior('beta_program_opt_in', userId, {
+      trackUserBehavior('beta_program_opt_in', {
+        user_id: userId,
         email: email
       });
       
