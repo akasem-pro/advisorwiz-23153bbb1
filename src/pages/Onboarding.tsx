@@ -4,30 +4,75 @@ import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import { ArrowRight, ArrowLeft, User, Briefcase, Building } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import PageSEO from '../components/seo/PageSEO';
+import OnboardingUserType from '../components/onboarding/OnboardingUserType';
+import { useAuth } from '../features/auth/context/AuthProvider';
 
 const Onboarding: React.FC = () => {
   const [step, setStep] = useState(1);
   const [selectedUserType, setSelectedUserType] = useState<'consumer' | 'advisor' | 'firm_admin' | null>(null);
   const { setUserType, setIsAuthenticated } = useUser();
+  const { signUp } = useAuth();
   const navigate = useNavigate();
+  
+  // Form state for registration
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [termsAgreed, setTermsAgreed] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const handleContinue = () => {
     if (step === 1 && selectedUserType) {
       setStep(2);
     } else if (step === 2) {
-      setUserType(selectedUserType);
-      setIsAuthenticated(true);
+      handleCreateAccount();
+    }
+  };
+
+  const handleCreateAccount = async () => {
+    if (!email || !password || !confirmPassword) {
+      // Show error - all fields required
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      // Show error - passwords don't match
+      return;
+    }
+    
+    if (!termsAgreed) {
+      // Show error - must agree to terms
+      return;
+    }
+    
+    setIsRegistering(true);
+    
+    try {
+      // Perform registration with Supabase
+      const success = await signUp(email, password);
       
-      if (selectedUserType === 'consumer') {
-        navigate('/consumer-profile');
-      } else if (selectedUserType === 'advisor') {
-        navigate('/advisor-profile');
-      } else if (selectedUserType === 'firm_admin') {
-        navigate('/firm-profile');
+      if (success) {
+        // Set user type and authentication state
+        setUserType(selectedUserType);
+        setIsAuthenticated(true);
+        
+        // Redirect based on user type
+        if (selectedUserType === 'consumer') {
+          navigate('/consumer-profile');
+        } else if (selectedUserType === 'advisor') {
+          navigate('/advisor-profile');
+        } else if (selectedUserType === 'firm_admin') {
+          navigate('/firm-profile');
+        }
       }
+    } catch (error) {
+      console.error('Registration error:', error);
+      // Show error toast
+    } finally {
+      setIsRegistering(false);
     }
   };
 
@@ -38,7 +83,7 @@ const Onboarding: React.FC = () => {
   };
 
   const handleSignIn = () => {
-    navigate('/sign-in');
+    navigate('/login');
   };
 
   return (
@@ -67,91 +112,11 @@ const Onboarding: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-10">
-                      <button
-                        className={`relative p-8 rounded-xl border-2 transition-all duration-300 text-left ${
-                          selectedUserType === 'consumer'
-                            ? 'border-teal-500 bg-teal-50'
-                            : 'border-slate-200 hover:border-teal-200 hover:bg-slate-50'
-                        }`}
-                        onClick={() => setSelectedUserType('consumer')}
-                      >
-                        <div className="flex items-center space-x-4 mb-4">
-                          <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
-                            <User className="w-6 h-6 text-teal-600" />
-                          </div>
-                          <h3 className="text-xl font-serif font-semibold text-navy-900">
-                            I'm a Consumer
-                          </h3>
-                        </div>
-                        <p className="text-slate-600">
-                          I'm looking for a financial advisor who can help me with my financial goals and planning.
-                        </p>
-                        {selectedUserType === 'consumer' && (
-                          <div className="absolute top-4 right-4 w-5 h-5 bg-teal-500 rounded-full flex items-center justify-center">
-                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                        )}
-                      </button>
-
-                      <button
-                        className={`relative p-8 rounded-xl border-2 transition-all duration-300 text-left ${
-                          selectedUserType === 'advisor'
-                            ? 'border-navy-500 bg-navy-50'
-                            : 'border-slate-200 hover:border-navy-200 hover:bg-slate-50'
-                        }`}
-                        onClick={() => setSelectedUserType('advisor')}
-                      >
-                        <div className="flex items-center space-x-4 mb-4">
-                          <div className="w-12 h-12 bg-navy-100 rounded-full flex items-center justify-center">
-                            <Briefcase className="w-6 h-6 text-navy-600" />
-                          </div>
-                          <h3 className="text-xl font-serif font-semibold text-navy-900">
-                            I'm an Advisor
-                          </h3>
-                        </div>
-                        <p className="text-slate-600">
-                          I'm a financial professional looking to connect with potential clients who match my expertise.
-                        </p>
-                        {selectedUserType === 'advisor' && (
-                          <div className="absolute top-4 right-4 w-5 h-5 bg-navy-500 rounded-full flex items-center justify-center">
-                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                        )}
-                      </button>
-
-                      <button
-                        className={`relative p-8 rounded-xl border-2 transition-all duration-300 text-left ${
-                          selectedUserType === 'firm_admin'
-                            ? 'border-purple-500 bg-purple-50'
-                            : 'border-slate-200 hover:border-purple-200 hover:bg-slate-50'
-                        }`}
-                        onClick={() => setSelectedUserType('firm_admin')}
-                      >
-                        <div className="flex items-center space-x-4 mb-4">
-                          <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                            <Building className="w-6 h-6 text-purple-600" />
-                          </div>
-                          <h3 className="text-xl font-serif font-semibold text-navy-900">
-                            I'm a Financial Firm
-                          </h3>
-                        </div>
-                        <p className="text-slate-600">
-                          I represent a financial firm and want to manage multiple advisor profiles for our organization.
-                        </p>
-                        {selectedUserType === 'firm_admin' && (
-                          <div className="absolute top-4 right-4 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
-                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                        )}
-                      </button>
-                    </div>
+                    {/* Use our extracted component */}
+                    <OnboardingUserType
+                      selectedUserType={selectedUserType}
+                      onSelect={setSelectedUserType}
+                    />
                   </div>
                 ) : (
                   <div className="animate-fade-in">
@@ -179,6 +144,9 @@ const Onboarding: React.FC = () => {
                             id="email"
                             className="input-field"
                             placeholder="Your email address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
                           />
                         </div>
                         <div>
@@ -190,6 +158,9 @@ const Onboarding: React.FC = () => {
                             id="password"
                             className="input-field"
                             placeholder="Create a password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
                           />
                         </div>
                         <div>
@@ -201,6 +172,9 @@ const Onboarding: React.FC = () => {
                             id="confirmPassword"
                             className="input-field"
                             placeholder="Confirm your password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
                           />
                         </div>
                         <div className="pt-2">
@@ -209,6 +183,9 @@ const Onboarding: React.FC = () => {
                               id="terms"
                               type="checkbox"
                               className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-slate-300 rounded"
+                              checked={termsAgreed}
+                              onChange={(e) => setTermsAgreed(e.target.checked)}
+                              required
                             />
                             <label htmlFor="terms" className="ml-2 block text-sm text-slate-600">
                               I agree to the <a href="/terms" className="text-teal-600 hover:underline">Terms of Service</a> and <a href="/privacy" className="text-teal-600 hover:underline">Privacy Policy</a>
@@ -242,13 +219,25 @@ const Onboarding: React.FC = () => {
 
                   <button
                     onClick={handleContinue}
-                    disabled={step === 1 && !selectedUserType}
+                    disabled={(step === 1 && !selectedUserType) || isRegistering}
                     className={`btn-primary inline-flex items-center ${
-                      step === 1 && !selectedUserType ? 'opacity-50 cursor-not-allowed' : ''
+                      (step === 1 && !selectedUserType) || isRegistering ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                   >
-                    {step === 2 ? 'Create Account' : 'Continue'}
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    {isRegistering ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Creating Account...
+                      </>
+                    ) : (
+                      <>
+                        {step === 2 ? 'Create Account' : 'Continue'}
+                        <ArrowRight className="ml-2 w-5 h-5" />
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
