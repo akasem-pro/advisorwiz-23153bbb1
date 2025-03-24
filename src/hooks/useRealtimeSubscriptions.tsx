@@ -96,8 +96,8 @@ export const useRealtimeSubscriptions = () => {
         console.log('[Realtime] Appointment update:', payload);
         
         const { eventType } = payload;
-        // Safely access payload.new with proper type assertion
         const payloadNew = payload.new as Record<string, any> | null;
+        const payloadOld = payload.old as Record<string, any> | null;
         
         // Handle different event types
         switch (eventType) {
@@ -125,8 +125,9 @@ export const useRealtimeSubscriptions = () => {
               updatedAt: payloadNew.updated_at || new Date().toISOString()
             };
             
-            // Update state safely
-            setAppointments((prevAppointments: Appointment[]) => [...prevAppointments, newAppointment]);
+            // Update state with the new appointment
+            const updatedAppointments = [...appointments, newAppointment];
+            setAppointments(updatedAppointments);
             
             // Show a notification about the new appointment
             toast('New Appointment', {
@@ -147,28 +148,28 @@ export const useRealtimeSubscriptions = () => {
             if (!payloadNew) return;
             
             // Update existing appointment in state
-            setAppointments((prevAppointments: Appointment[]) => 
-              prevAppointments.map(item => {
-                if (item.id === payloadNew.id) {
-                  return {
-                    ...item,
-                    title: payloadNew.title || item.title,
-                    date: payloadNew.scheduled_start || item.date,
-                    startTime: payloadNew.scheduled_start 
-                      ? new Date(payloadNew.scheduled_start).toLocaleTimeString() 
-                      : item.startTime,
-                    endTime: payloadNew.scheduled_end 
-                      ? new Date(payloadNew.scheduled_end).toLocaleTimeString() 
-                      : item.endTime,
-                    status: (payloadNew.status as AppointmentStatus) || item.status,
-                    location: payloadNew.meeting_link || item.location,
-                    notes: payloadNew.notes || item.notes,
-                    updatedAt: payloadNew.updated_at || new Date().toISOString()
-                  };
-                }
-                return item;
-              })
-            );
+            const updatedAppointments = appointments.map(item => {
+              if (item.id === payloadNew.id) {
+                return {
+                  ...item,
+                  title: payloadNew.title || item.title,
+                  date: payloadNew.scheduled_start || item.date,
+                  startTime: payloadNew.scheduled_start 
+                    ? new Date(payloadNew.scheduled_start).toLocaleTimeString() 
+                    : item.startTime,
+                  endTime: payloadNew.scheduled_end 
+                    ? new Date(payloadNew.scheduled_end).toLocaleTimeString() 
+                    : item.endTime,
+                  status: (payloadNew.status as AppointmentStatus) || item.status,
+                  location: payloadNew.meeting_link || item.location,
+                  notes: payloadNew.notes || item.notes,
+                  updatedAt: payloadNew.updated_at || new Date().toISOString()
+                };
+              }
+              return item;
+            });
+            
+            setAppointments(updatedAppointments);
             
             // Show update notification
             toast('Appointment Updated', {
@@ -183,11 +184,12 @@ export const useRealtimeSubscriptions = () => {
             
           case 'DELETE': {
             // Remove deleted appointment from state
-            const payloadOld = payload.old as Record<string, any> | null;
             if (payloadOld && payloadOld.id) {
-              setAppointments((prevAppointments: Appointment[]) => 
-                prevAppointments.filter(item => item.id !== payloadOld.id)
+              const filteredAppointments = appointments.filter(item => 
+                item.id !== payloadOld.id
               );
+              
+              setAppointments(filteredAppointments);
               
               // Show cancellation notification
               toast('Appointment Canceled', {
