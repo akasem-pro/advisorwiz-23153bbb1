@@ -93,9 +93,9 @@ describe('Matching and Analytics Integration', () => {
     // Clear mocks to start fresh
     jest.clearAllMocks();
     
-    // Simulate user viewing match explanation
+    // Simulate user viewing match explanation - change "view_explanation" to a valid action type
     await trackMatchingInteraction(
-      'view_explanation',
+      'view', // Changed from 'view_explanation' to 'view' which is a valid action type
       advisorId,
       consumerId,
       85, // Sample score
@@ -105,7 +105,7 @@ describe('Matching and Analytics Integration', () => {
     
     // Verify tracking occurred with correct action type
     expect(trackMatchingInteraction).toHaveBeenCalledWith(
-      'view_explanation',
+      'view',
       advisorId,
       consumerId,
       85,

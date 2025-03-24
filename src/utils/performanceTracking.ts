@@ -26,7 +26,7 @@ import { implementResourceHints } from './performance/resourceHints';
 import { trackVisitorActivity } from './analytics/visitorTracking';
 import { trackFeatureUsage, UserBehaviorEvent, trackUserBehavior } from './analytics/eventTracker';
 import { trackAIInteraction } from './analytics/aiTracking';
-import { recordMatchHistory } from './analytics/matchTracker';
+import { trackMatchingInteraction } from './analytics/matchTracker';
 import { trackFeatureEngagement } from './analytics/userEngagementTracker';
 import { trackMatchEngagement } from './analytics/matchEngagementTracker';
 import { 
@@ -70,7 +70,7 @@ export {
   trackAIInteraction,
   
   // Match history tracking
-  recordMatchHistory,
+  trackMatchingInteraction,
   
   // User behavior tracking
   trackUserBehavior,

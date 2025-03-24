@@ -1,5 +1,5 @@
 
-import { supabase, checkSupabaseConnection } from '../client';
+import { supabase, checkSupabaseConnection } from '../../../integrations/supabase/client';
 import { handleSupabaseError, ErrorSeverity } from '../../../utils/errorHandling/supabaseErrorHandler';
 
 /**
@@ -87,6 +87,11 @@ export const syncOfflineChanges = async (): Promise<boolean> => {
 
 /**
  * Check the connection status to Supabase
+ * This is an alias for checkSupabaseConnection for better naming consistency
+ */
+export const checkConnection = checkSupabaseConnection;
+
+/**
  * Re-export from client for convenience
  */
-export { checkSupabaseConnection } from '../client';
+export { checkSupabaseConnection } from '../../../integrations/supabase/client';
