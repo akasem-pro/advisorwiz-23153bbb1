@@ -23,7 +23,7 @@ export const useSignInHandler = () => {
     validateForm: () => boolean,
     setFormError: (error: string) => void,
     setIsLoading: (loading: boolean) => void
-  ) => {
+  ): Promise<boolean> => {
     // Only call preventDefault if e is a valid event
     if (e && typeof e.preventDefault === 'function') {
       e.preventDefault();

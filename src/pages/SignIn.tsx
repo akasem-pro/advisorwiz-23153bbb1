@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -65,18 +64,24 @@ const SignIn: React.FC = () => {
       e.preventDefault();
     }
     
-    const success = await handleSignIn(
-      e, 
-      signInEmail, 
-      signInPassword, 
-      validateSignInForm, 
-      setFormError, 
-      setIsLoading
-    );
-    
-    if (success) {
-      console.log("[SignIn] Successfully signed in, redirecting to:", from);
-      navigate(from);
+    try {
+      const result = await handleSignIn(
+        e, 
+        signInEmail, 
+        signInPassword, 
+        validateSignInForm, 
+        setFormError, 
+        setIsLoading
+      );
+      
+      if (result === true) {
+        console.log("[SignIn] Successfully signed in, redirecting to:", from);
+        navigate(from);
+      }
+    } catch (error) {
+      console.error("[SignIn] Error during sign in:", error);
+      setFormError('An unexpected error occurred during sign in.');
+      setIsLoading(false);
     }
   };
   
@@ -85,39 +90,41 @@ const SignIn: React.FC = () => {
       e.preventDefault();
     }
     
-    const success = await handleSignUp(
-      e, 
-      signUpEmail, 
-      signUpPassword, 
-      validateSignUpForm, 
-      setFormError, 
-      setIsLoading, 
-      setActiveTab, 
-      setSignInEmail, 
-      () => {
-        setSignUpEmail('');
-        setSignUpPassword('');
-        setConfirmPassword('');
+    try {
+      const result = await handleSignUp(
+        e, 
+        signUpEmail, 
+        signUpPassword, 
+        validateSignUpForm, 
+        setFormError, 
+        setIsLoading, 
+        setActiveTab, 
+        setSignInEmail, 
+        () => {
+          setSignUpEmail('');
+          setSignUpPassword('');
+          setConfirmPassword('');
+        }
+      );
+      
+      if (result === true) {
+        console.log("[SignUp] Successfully signed up, redirecting to:", from);
+        navigate(from);
       }
-    );
-    
-    if (success) {
-      console.log("[SignUp] Successfully signed up, redirecting to:", from);
-      navigate(from);
+    } catch (error) {
+      console.error("[SignUp] Error during sign up:", error);
+      setFormError('An unexpected error occurred during sign up.');
+      setIsLoading(false);
     }
   };
   
   const handleRetrySubmit = async () => {
-    // Reset form error before retrying
     setFormError('');
     
-    // Display a toast to provide feedback
     toast.loading('Preparing to retry...');
     
-    // Simulate a short delay for UI feedback
     await new Promise(resolve => setTimeout(resolve, 300));
     
-    // Use the handleRetry function directly to ensure better handling
     await handleRetry(
       activeTab,
       signInEmail,
@@ -131,14 +138,11 @@ const SignIn: React.FC = () => {
     );
   };
   
-  // Improved connection retry that gives better feedback
   const handleConnectionRetry = async () => {
     try {
-      // First try our general connectivity check
       const connected = await retryConnection();
       
       if (connected) {
-        // If connected, try to submit the form
         await handleRetrySubmit();
       }
     } catch (error) {
@@ -147,7 +151,6 @@ const SignIn: React.FC = () => {
     }
   };
   
-  // Only disable buttons when actually loading
   const isSignInDisabled = isLoading;
   const isSignUpDisabled = isLoading;
   
