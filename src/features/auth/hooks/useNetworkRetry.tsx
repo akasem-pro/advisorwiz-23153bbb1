@@ -1,16 +1,16 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 
 /**
- * Hook for managing network status and retry attempts
+ * Hook for managing network status and retry attempts with improved reliability
  */
 export const useNetworkRetry = () => {
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>('checking');
 
-  // Perform full network check
-  const checkNetworkStatus = async (): Promise<boolean> => {
+  // Perform full network check with multiple endpoints for better reliability
+  const checkNetworkStatus = useCallback(async (): Promise<boolean> => {
     try {
       setNetworkStatus('checking');
       
@@ -20,53 +20,51 @@ export const useNetworkRetry = () => {
         return false;
       }
       
-      // Try to ping Supabase directly to check actual connectivity
+      // Try to ping multiple endpoints for better reliability
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       
       try {
         // Use a more reliable endpoint than google.com which might be blocked in some environments
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://gkymvotqrdecjjymmmef.supabase.co";
-        const response = await fetch(`${supabaseUrl}/auth/v1/`, { 
-          method: 'HEAD',
-          mode: 'cors',
-          signal: controller.signal,
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache'
-          }
-        });
+        const endpoints = [
+          'https://gkymvotqrdecjjymmmef.supabase.co/auth/v1/',
+          'https://httpbin.org/status/200',
+          'https://www.cloudflare.com'
+        ];
+        
+        const results = await Promise.allSettled(
+          endpoints.map(endpoint => 
+            fetch(endpoint, { 
+              method: 'HEAD',
+              mode: 'no-cors',
+              signal: controller.signal,
+              headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+              }
+            })
+          )
+        );
         
         clearTimeout(timeoutId);
         
-        setNetworkStatus('online');
-        return true;
+        // Check if at least one endpoint is reachable
+        const isOnline = results.some(result => result.status === 'fulfilled');
+        
+        setNetworkStatus(isOnline ? 'online' : 'offline');
+        return isOnline;
       } catch (error) {
         clearTimeout(timeoutId);
-        console.error("Supabase connectivity check failed:", error);
-        
-        // Fallback to checking another reliable endpoint if Supabase check fails
-        try {
-          const response = await fetch('https://httpbin.org/status/200', { 
-            method: 'HEAD',
-            mode: 'no-cors',
-            signal: controller.signal
-          });
-          
-          setNetworkStatus('online');
-          return true;
-        } catch (secondError) {
-          console.error("Backup network check failed:", secondError);
-          setNetworkStatus('offline');
-          return false;
-        }
+        console.error("Network connectivity check failed:", error);
+        setNetworkStatus('offline');
+        return false;
       }
     } catch (error) {
       console.error("Network status check error:", error);
       setNetworkStatus('offline');
       return false;
     }
-  };
+  }, []);
 
   // Update network status based on browser's online/offline events
   useEffect(() => {
@@ -90,7 +88,7 @@ export const useNetworkRetry = () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [retryAttempts]);
+  }, [retryAttempts, checkNetworkStatus]);
 
   // Monitor network changes and notify user
   useEffect(() => {
@@ -100,13 +98,13 @@ export const useNetworkRetry = () => {
     }
   }, [networkStatus, retryAttempts]);
 
-  const incrementRetry = () => {
+  const incrementRetry = useCallback(() => {
     setRetryAttempts(prev => prev + 1);
-  };
+  }, []);
 
-  const resetRetryAttempts = () => {
+  const resetRetryAttempts = useCallback(() => {
     setRetryAttempts(0);
-  };
+  }, []);
 
   return {
     networkStatus,

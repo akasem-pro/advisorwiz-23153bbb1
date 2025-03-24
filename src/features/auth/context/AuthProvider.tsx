@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { useAuthSession } from '../hooks/useAuthSession';
 import { useNetworkRetry } from '../hooks/useNetworkRetry';
@@ -75,20 +75,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Combine loading states
   const loading = sessionLoading || authActionLoading;
 
+  // Memoize the context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({
+    session, 
+    user, 
+    signIn, 
+    signUp, 
+    signOut, 
+    loading,
+    networkStatus,
+    checkNetworkStatus,
+    retryAttempts,
+    incrementRetry,
+    resetRetryAttempts
+  }), [
+    session, 
+    user, 
+    signIn, 
+    signUp, 
+    signOut, 
+    loading,
+    networkStatus,
+    retryAttempts
+  ]);
+
   return (
-    <AuthContext.Provider value={{ 
-      session, 
-      user, 
-      signIn, 
-      signUp, 
-      signOut, 
-      loading,
-      networkStatus,
-      checkNetworkStatus,
-      retryAttempts,
-      incrementRetry,
-      resetRetryAttempts
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

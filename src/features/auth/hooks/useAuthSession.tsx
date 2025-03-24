@@ -1,11 +1,11 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../../../integrations/supabase/client';
 import { useSupabase } from '../../../hooks/useSupabase';
 
 /**
- * Hook for managing authentication session state
+ * Hook for managing authentication session state with improved error handling
  */
 export const useAuthSession = () => {
   const { getCurrentSession } = useSupabase();
@@ -13,10 +13,11 @@ export const useAuthSession = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Get the initial session and set up auth listener
   useEffect(() => {
     setLoading(true);
     
-    // Set up subscription to auth changes
+    // We'll set up the subscription FIRST to not miss any auth events
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         console.log("Auth state changed:", event, !!currentSession);
@@ -26,7 +27,7 @@ export const useAuthSession = () => {
       }
     );
     
-    // Get initial session
+    // THEN check for existing session
     getCurrentSession().then(({ data, error }) => {
       if (!error && data) {
         setSession(data.session);

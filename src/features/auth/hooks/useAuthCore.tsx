@@ -1,25 +1,69 @@
 
-import { useAuth } from '../context/AuthProvider';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
+type NetworkStatus = 'online' | 'offline' | 'checking';
+
 /**
- * Core hook for handling auth operations with network checking
+ * Core hook for handling auth operations with improved error handling
  */
 export const useAuthCore = () => {
-  const { 
-    networkStatus, 
-    checkNetworkStatus,
-    retryAttempts,
-    incrementRetry,
-    resetRetryAttempts
-  } = useAuth();
+  const [retryAttempts, setRetryAttempts] = useState(0);
   
+  /**
+   * Checks network status with improved reliability
+   */
+  const checkNetworkStatus = async (): Promise<boolean> => {
+    try {
+      // First check navigator.onLine
+      if (!navigator.onLine) {
+        return false;
+      }
+      
+      // Try multiple endpoints for better reliability
+      const endpoints = [
+        'https://www.google.com',
+        'https://www.cloudflare.com',
+        'https://httpbin.org/status/200'
+      ];
+      
+      // We'll consider online if at least one endpoint responds
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      try {
+        // Try to reach any of the endpoints
+        const results = await Promise.allSettled(
+          endpoints.map(endpoint => 
+            fetch(endpoint, { 
+              method: 'HEAD',
+              mode: 'no-cors',
+              signal: controller.signal 
+            })
+          )
+        );
+        
+        clearTimeout(timeoutId);
+        
+        // Check if at least one request succeeded
+        const isOnline = results.some(result => result.status === 'fulfilled');
+        return isOnline;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        console.error("Network check failed:", error);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error checking network status:", error);
+      return false;
+    }
+  };
+
   /**
    * Checks network status and handles retry attempts
    */
   const validateNetworkConnection = async (setFormError: (error: string) => void): Promise<boolean> => {
     try {
-      // First check network status
       const isOnline = await Promise.race([
         checkNetworkStatus(),
         // Add timeout to ensure we don't wait too long
@@ -43,7 +87,7 @@ export const useAuthCore = () => {
   };
   
   /**
-   * Generic form submission error handler
+   * Generic form submission error handler with improved error categorization
    */
   const handleAuthError = (
     error: any, 
@@ -82,11 +126,20 @@ export const useAuthCore = () => {
     }
   };
   
+  const incrementRetry = () => {
+    setRetryAttempts(prev => prev + 1);
+  };
+
+  const resetRetryAttempts = () => {
+    setRetryAttempts(0);
+  };
+  
   return {
-    networkStatus,
+    retryAttempts,
     validateNetworkConnection,
     handleAuthError,
     incrementRetry,
-    resetRetryAttempts
+    resetRetryAttempts,
+    checkNetworkStatus
   };
 };
