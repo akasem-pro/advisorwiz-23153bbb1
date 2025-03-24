@@ -22,7 +22,7 @@ const Logo: React.FC<LogoProps> = ({ className = '' }) => {
         alt="AdvisorWiz Logo" 
         className={`h-12 w-auto ${className}`}
         loading="eager" 
-        fetchpriority="high"
+        fetchPriority="high"
       />
     </Link>
   );
