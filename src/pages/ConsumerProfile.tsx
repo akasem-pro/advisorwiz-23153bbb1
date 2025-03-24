@@ -245,7 +245,6 @@ const ConsumerProfile: React.FC = () => {
       return;
     }
     
-    // Double check authentication with Supabase to guarantee we have a valid user session
     const { data } = await supabase.auth.getUser();
     if (!data?.user) {
       toast.error("You must be signed in to save your profile");
@@ -830,4 +829,252 @@ const ConsumerProfile: React.FC = () => {
                     className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
                   />
                   <label htmlFor={`time-${option.value}`} className="ml-2 block text-sm text-gray-700">
-                    {option.
+                    {option.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <ConsumerProfileTooltip
+              title={languageTooltip?.title || "Language Preferences"}
+              description={languageTooltip?.description || "These are the languages you'd prefer your advisor to speak. This helps us match you with advisors who can communicate effectively with you."}
+            >
+              <label className="block text-sm font-medium text-navy-800 mb-3">
+                Preferred language
+                <span className="text-xs text-gray-500 ml-2">(Select all that apply)</span>
+              </label>
+            </ConsumerProfileTooltip>
+            <div className="grid grid-cols-2 gap-2">
+              {languageOptions.map(option => (
+                <div key={option.value} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`lang-${option.value}`}
+                    checked={formData.preferredLanguage.includes(option.value)}
+                    onChange={() => handleMultiSelectChange('preferredLanguage', option.value)}
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor={`lang-${option.value}`} className="ml-2 block text-sm text-gray-700">
+                    {option.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-navy-800 mb-3">
+              Preferred advisor involvement level
+            </label>
+            <div className="space-y-2">
+              {advisorInvolvementOptions.map(option => (
+                <div key={option.value} className="flex items-center">
+                  <input
+                    type="radio"
+                    id={`involvement-${option.value}`}
+                    name="advisorInvolvement"
+                    value={option.value}
+                    checked={formData.advisorInvolvement === option.value}
+                    onChange={handleChange}
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
+                  />
+                  <label htmlFor={`involvement-${option.value}`} className="ml-2 block text-sm text-gray-700">
+                    {option.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-navy-800 mb-3">
+              Do you want your advisor to explain concepts and educate you?
+            </label>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="education-yes"
+                  name="wantsEducation"
+                  value="true"
+                  checked={formData.wantsEducation === true}
+                  onChange={() => setFormData(prev => ({ ...prev, wantsEducation: true }))}
+                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
+                />
+                <label htmlFor="education-yes" className="ml-2 block text-sm text-gray-700">Yes</label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="education-no"
+                  name="wantsEducation"
+                  value="false"
+                  checked={formData.wantsEducation === false}
+                  onChange={() => setFormData(prev => ({ ...prev, wantsEducation: false }))}
+                  className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300"
+                />
+                <label htmlFor="education-no" className="ml-2 block text-sm text-gray-700">No</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderConsent = () => {
+    return (
+      <div className="animate-fade-in">
+        <div className="flex items-center mb-6">
+          <ShieldCheck className="w-6 h-6 text-teal-600 mr-2" />
+          <h2 className="text-2xl font-serif font-semibold text-navy-900">
+            Consent & Preferences
+          </h2>
+        </div>
+        
+        <div className="space-y-6">
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <p className="text-sm text-gray-700 mb-4">
+              To provide you with the best service and match you with the right financial advisor, we need your consent for the following:
+            </p>
+            
+            <div className="space-y-4">
+              <div className="flex items-start">
+                <div className="flex items-center h-5">
+                  <input
+                    id="terms"
+                    name="termsConsent"
+                    type="checkbox"
+                    checked={formData.termsConsent}
+                    onChange={(e) => setFormData(prev => ({ ...prev, termsConsent: e.target.checked }))}
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                    required
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label htmlFor="terms" className="font-medium text-gray-700">
+                    I agree to the Terms & Conditions*
+                  </label>
+                  <p className="text-gray-500">
+                    By checking this box, you agree to our{" "}
+                    <a href="/terms" className="text-teal-600 hover:text-teal-700" target="_blank">
+                      Terms of Service
+                    </a>
+                    {" "}and{" "}
+                    <a href="/privacy" className="text-teal-600 hover:text-teal-700" target="_blank">
+                      Privacy Policy
+                    </a>.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className="flex items-center h-5">
+                  <input
+                    id="advisorContact"
+                    name="advisorContactConsent"
+                    type="checkbox"
+                    checked={formData.advisorContactConsent}
+                    onChange={(e) => setFormData(prev => ({ ...prev, advisorContactConsent: e.target.checked }))}
+                    className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label htmlFor="advisorContact" className="font-medium text-gray-700">
+                    I consent to being contacted by advisors
+                  </label>
+                  <p className="text-gray-500">
+                    Allow financial advisors to contact you directly via email or phone about potential services.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 1:
+        return renderPersonalInformation();
+      case 2:
+        return renderFinancialGoals();
+      case 3:
+        return renderFinancialProfile();
+      case 4:
+        return renderServiceExpectations();
+      case 5:
+        return renderConsent();
+      default:
+        return renderPersonalInformation();
+    }
+  };
+
+  return (
+    <AnimatedRoute>
+      <Header />
+      <main className="max-w-4xl mx-auto px-4 py-12">
+        <h1 className="text-3xl font-serif font-bold text-navy-900 mb-2">
+          Create Your Profile
+        </h1>
+        <p className="text-gray-600 mb-10">
+          Help us match you with the right financial advisor by telling us about yourself and your financial goals.
+        </p>
+        
+        {renderStepIndicator()}
+        
+        <div className="bg-white shadow-lg rounded-xl p-6 mb-8">
+          {renderCurrentStep()}
+          
+          <div className="mt-8 flex justify-between">
+            {currentStep > 1 ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handlePreviousStep}
+                className="px-4 py-2"
+              >
+                Back
+              </Button>
+            ) : (
+              <div></div>
+            )}
+            
+            <Button
+              type="button"
+              onClick={handleNextStep}
+              className="px-6 py-2"
+              disabled={saved}
+            >
+              {currentStep === totalSteps ? (
+                saved ? (
+                  <span className="flex items-center">
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Saved!
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+                    <Save className="w-4 h-4 mr-2" />
+                    Submit Profile
+                  </span>
+                )
+              ) : (
+                <span className="flex items-center">
+                  Next
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </span>
+              )}
+            </Button>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </AnimatedRoute>
+  );
+};
+
+export default ConsumerProfile;
