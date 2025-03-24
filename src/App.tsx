@@ -13,6 +13,7 @@ import FirmDashboard from './pages/FirmDashboard';
 import { UserProvider } from './context/UserProvider';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import Home from './pages/Home';
+import ForFirms from './pages/ForFirms';
 
 const App: React.FC = () => {
   return (
@@ -24,6 +25,7 @@ const App: React.FC = () => {
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/login" element={<Login />} />
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/for-firms" element={<ForFirms />} />
           
           {/* Protected Profile Routes */}
           <Route path="/consumer-profile" element={<ConsumerProfile />} />

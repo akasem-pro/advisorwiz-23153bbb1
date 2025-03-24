@@ -3,66 +3,54 @@ import React from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import PageSEO from '../components/seo/PageSEO';
-import { generateServiceSchema, generateFAQSchema, generateBreadcrumbSchema } from '../utils/schemas';
-
-// Import our new components
-import BreadcrumbNav from '../components/firms/BreadcrumbNav';
 import HeroSection from '../components/firms/HeroSection';
 import BenefitsSection from '../components/firms/BenefitsSection';
 import HowItWorksSection from '../components/firms/HowItWorksSection';
-import FAQSection from '../components/firms/FAQSection';
 import CTASection from '../components/firms/CTASection';
+import FAQSection from '../components/firms/FAQSection';
+import BreadcrumbNav from '../components/firms/BreadcrumbNav';
 
 const ForFirms: React.FC = () => {
-  // FAQs for this page
-  const faqs = [
-    {
-      question: "How does AdvisorWiz help financial firms manage their advisors?",
-      answer: "AdvisorWiz provides a centralized dashboard where firms can manage multiple advisor profiles, assign clients based on expertise, and track performance metrics for their entire team."
-    },
-    {
-      question: "What features does AdvisorWiz offer specifically for financial firms?",
-      answer: "AdvisorWiz offers firms features like team collaboration tools, client allocation systems, centralized profile management, performance analytics, and compliance monitoring for their advisory teams."
-    },
-    {
-      question: "Is there special pricing for firms with multiple advisors?",
-      answer: "Yes, AdvisorWiz offers special enterprise pricing for firms with multiple advisors. Contact our sales team for customized solutions based on your firm's specific needs and team size."
-    }
-  ];
-  
-  // Breadcrumb data
-  const breadcrumbs = [
-    { name: "Home", url: "https://advisorwiz.com/" },
-    { name: "For Firms", url: "https://advisorwiz.com/for-firms" }
-  ];
-  
-  // Combined structured data
-  const structuredData = [
-    generateServiceSchema(),
-    generateFAQSchema(faqs),
-    generateBreadcrumbSchema(breadcrumbs)
-  ];
-  
   return (
     <AnimatedRoute animation="fade">
-      <PageSEO 
-        title="Financial Advisory Firm Solutions | AdvisorWiz"
-        description="Empower your financial advisory firm with tools to manage multiple advisors, streamline client matching, and grow your business with our comprehensive platform."
-        keywords="financial advisory firm, wealth management firm, advisory firm solutions, financial practice management, advisor team management"
-        canonicalUrl="https://advisorwiz.com/for-firms"
-        structuredData={structuredData}
-      />
-      
       <div className="min-h-screen flex flex-col">
         <Header />
         
         <main className="flex-grow pt-20">
-          <BreadcrumbNav items={breadcrumbs} />
+          <BreadcrumbNav 
+            items={[
+              { name: 'Home', url: '/' },
+              { name: 'For Financial Firms', url: '/for-firms' }
+            ]} 
+          />
+          
           <HeroSection />
           <BenefitsSection />
           <HowItWorksSection />
-          <FAQSection faqs={faqs} />
+          <FAQSection 
+            faqs={[
+              {
+                question: "How does AdvisorWiz help my firm manage advisors?",
+                answer: "AdvisorWiz provides a central dashboard for firm administrators to manage all advisor profiles, monitor client interactions, and track performance metrics. Our platform makes it easy to assign leads to the right advisors and maintain regulatory compliance."
+              },
+              {
+                question: "Can I customize the platform to match my firm's branding?",
+                answer: "Yes, enterprise accounts include white-labeling options that allow you to customize the interface with your firm's logo, colors, and branding elements. This creates a seamless experience for both your advisors and clients."
+              },
+              {
+                question: "How secure is my firm's and clients' data on AdvisorWiz?",
+                answer: "We implement bank-level security measures including end-to-end encryption, regular security audits, and strict access controls. We're compliant with financial industry regulations and never share your data with third parties without explicit permission."
+              },
+              {
+                question: "Can I integrate AdvisorWiz with our existing CRM or financial planning software?",
+                answer: "Yes, AdvisorWiz offers API integrations with popular CRM platforms, financial planning software, and portfolio management tools. Our team can work with you to ensure smooth data flow between all your systems."
+              },
+              {
+                question: "How does pricing work for firms with multiple advisors?",
+                answer: "We offer tiered pricing for firms based on the number of advisors. Enterprise plans include volume discounts, dedicated support, and additional features like advanced analytics and compliance tools. Contact us for a custom quote."
+              }
+            ]} 
+          />
           <CTASection />
         </main>
         
