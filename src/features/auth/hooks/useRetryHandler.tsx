@@ -47,13 +47,11 @@ export const useRetryHandler = () => {
       
       toast.success('Connection restored! Retrying...');
       
-      // Create a synthetic event to pass to the form handlers
-      const syntheticEvent = {} as React.FormEvent<HTMLFormElement>;
-      
+      // No need to create a synthetic event, just call the handlers directly
       if (activeTab === 'signin' && signInEmail && signInPassword) {
-        await handleSignInSubmit(syntheticEvent);
+        await handleSignInSubmit();
       } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
-        await handleSignUpSubmit(syntheticEvent);
+        await handleSignUpSubmit();
       } else {
         setFormError('Please fill in all fields before retrying.');
       }

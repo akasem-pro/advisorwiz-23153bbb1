@@ -14,14 +14,17 @@ export const useSignInHandler = () => {
   } = useAuthCore();
   
   const handleSignIn = async (
-    e: React.FormEvent<HTMLFormElement>,
+    e: React.FormEvent<HTMLFormElement> | undefined,
     email: string,
     password: string,
     validateForm: () => boolean,
     setFormError: (error: string) => void,
     setIsLoading: (loading: boolean) => void
   ) => {
-    e?.preventDefault();
+    // Only call preventDefault if e is a valid event
+    if (e && typeof e.preventDefault === 'function') {
+      e.preventDefault();
+    }
 
     if (!validateForm()) return;
 
