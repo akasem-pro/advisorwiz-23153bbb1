@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '../integrations/supabase/client';
 import { useUser } from '../context/UserContext';
+import { Appointment } from '../types/timeTypes';
 
 /**
  * Hook that handles all real-time subscriptions for the application
@@ -97,7 +98,26 @@ export const useRealtimeSubscriptions = () => {
         
         switch (eventType) {
           case 'INSERT':
-            setAppointments(prev => [...prev, appointment]);
+            // Type-safe conversion for INSERT event
+            setAppointments(prev => {
+              const newAppointment: Appointment = {
+                id: appointment.id,
+                title: appointment.title || 'Appointment',
+                date: appointment.scheduled_start || new Date().toISOString(),
+                startTime: new Date(appointment.scheduled_start).toLocaleTimeString(),
+                endTime: new Date(appointment.scheduled_end).toLocaleTimeString(),
+                advisorId: appointment.advisor_id,
+                consumerId: appointment.consumer_id,
+                status: appointment.status || 'pending',
+                location: appointment.meeting_link,
+                notes: appointment.notes,
+                description: appointment.description,
+                createdAt: appointment.created_at || new Date().toISOString(),
+                updatedAt: appointment.updated_at || new Date().toISOString()
+              };
+              return [...prev, newAppointment];
+            });
+            
             toast('New Appointment', {
               description: `${appointment.title || 'Appointment'} scheduled for ${new Date(appointment.scheduled_start).toLocaleString()}`,
               action: {
@@ -108,12 +128,29 @@ export const useRealtimeSubscriptions = () => {
             break;
             
           case 'UPDATE':
+            // Type-safe conversion for UPDATE event
             setAppointments(prev => 
-              prev.map(item => item.id === appointment.id ? appointment : item)
+              prev.map(item => {
+                if (item.id === appointment.id) {
+                  return {
+                    ...item,
+                    title: appointment.title || item.title,
+                    date: appointment.scheduled_start || item.date,
+                    startTime: appointment.scheduled_start ? new Date(appointment.scheduled_start).toLocaleTimeString() : item.startTime,
+                    endTime: appointment.scheduled_end ? new Date(appointment.scheduled_end).toLocaleTimeString() : item.endTime,
+                    status: appointment.status || item.status,
+                    location: appointment.meeting_link || item.location,
+                    notes: appointment.notes || item.notes,
+                    description: appointment.description || item.description,
+                    updatedAt: appointment.updated_at || new Date().toISOString()
+                  };
+                }
+                return item;
+              })
             );
             
             toast('Appointment Updated', {
-              description: `Status: ${appointment.status.toUpperCase()}`,
+              description: `Status: ${(appointment.status || '').toUpperCase()}`,
               action: {
                 label: 'View',
                 onClick: () => window.location.href = '/schedule'
@@ -122,13 +159,16 @@ export const useRealtimeSubscriptions = () => {
             break;
             
           case 'DELETE':
-            setAppointments(prev => 
-              prev.filter(item => item.id !== payload.old.id)
-            );
-            
-            toast('Appointment Canceled', {
-              description: `An appointment has been canceled`,
-            });
+            // Type-safe handling for DELETE event
+            if (payload.old && payload.old.id) {
+              setAppointments(prev => 
+                prev.filter(item => item.id !== payload.old.id)
+              );
+              
+              toast('Appointment Canceled', {
+                description: `An appointment has been canceled`,
+              });
+            }
             break;
         }
       });
