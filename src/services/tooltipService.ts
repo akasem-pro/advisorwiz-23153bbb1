@@ -1,7 +1,7 @@
 
 import { DataResult } from '../lib/supabase/types/dataTypes';
 import { TooltipContent } from '../hooks/useTooltipContent';
-import { getTooltips, getTooltipByKey } from '../lib/supabase/operations/tooltipOperations';
+import * as tooltipOperations from '../lib/supabase/operations/tooltipOperations';
 
 /**
  * Interface for tooltip service result
@@ -19,7 +19,7 @@ export const getAllTooltips = async (
   useCache = true
 ): Promise<TooltipServiceResult<TooltipContent[]>> => {
   try {
-    const result: DataResult<TooltipContent[]> = await getTooltips(useCache);
+    const result: DataResult<TooltipContent[]> = await tooltipOperations.getTooltips(useCache);
     
     if (result.error) {
       return {
@@ -51,7 +51,7 @@ export const getTooltipContent = async (
   useCache = true
 ): Promise<TooltipServiceResult<TooltipContent | null>> => {
   try {
-    const result: DataResult<TooltipContent> = await getTooltipByKey(sectionKey, useCache);
+    const result: DataResult<TooltipContent> = await tooltipOperations.getTooltipByKey(sectionKey, useCache);
     
     if (result.error) {
       return {

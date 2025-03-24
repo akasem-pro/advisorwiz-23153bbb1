@@ -1,3 +1,4 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { trackEvent as trackGTMEvent } from '../tagManager';
 import { ErrorCategory, handleError } from '../errorHandling/errorHandler';
@@ -14,13 +15,7 @@ export const trackUserBehavior = async (
 ): Promise<void> => {
   try {
     // Store the main event metric
-    await storeAnalyticsMetric(
-      'user_behavior',
-      event,
-      1,
-      'user_id',
-      userId
-    );
+    storeAnalyticsMetric('user_behavior', event);
     
     // Store in the user_interactions table for more detailed analysis
     if (userId) {
@@ -62,7 +57,7 @@ export const trackUserBehavior = async (
 };
 
 /**
- * Track a custom feature usage event
+ * Track a custom feature usage event using the record_metric function
  */
 export const trackFeatureUsage = async (
   featureName: string,
@@ -70,23 +65,29 @@ export const trackFeatureUsage = async (
 ): Promise<void> => {
   try {
     // Track in GTM
-    trackGTMEvent('feature_used', {
-      feature_name: featureName,
-      user_id: userId
+    trackGTMEvent({
+      category: 'feature',
+      action: 'used',
+      label: featureName,
+      properties: {
+        feature_name: featureName,
+        user_id: userId
+      }
     });
     
-    // Also track in Supabase for analytics
-    if (userId) {
-      const { error } = await supabase.rpc('upsert_feature_usage', {
-        p_user_id: userId,
-        p_feature_name: featureName
+    // Record the metric directly
+    try {
+      await supabase.rpc('record_metric', {
+        p_metric_type: 'feature_usage',
+        p_metric_name: featureName,
+        p_metric_value: 1,
+        p_dimension_name: 'user_id',
+        p_dimension_value: userId || 'anonymous'
       });
-      
-      if (error) {
-        console.error('Failed to record feature usage in database:', error);
-      }
+    } catch (error) {
+      console.error('Failed to record feature usage in database:', error);
     }
   } catch (error) {
-    handleError('Failed to track feature usage', ErrorCategory.ANALYTICS);
+    handleError('Failed to track feature usage', ErrorCategory.UNKNOWN);
   }
 };

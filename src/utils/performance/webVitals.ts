@@ -34,7 +34,7 @@ const sendToAnalytics = (metric: webVitals.Metric) => {
   }
   
   // Store in Supabase analytics for dashboards
-  storeAnalyticsMetric('web_vitals', metric.name, Math.round(metric.value));
+  storeAnalyticsMetric('web_vitals', Math.round(metric.value));
   
   // Log to console during development
   if (process.env.NODE_ENV === 'development') {

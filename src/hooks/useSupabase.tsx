@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import * as dataLayer from '../lib/supabase/dataLayer';
@@ -148,11 +149,11 @@ export const useSupabase = () => {
 
   // Add tooltips functions
   const getTooltips = useCallback((useCache: boolean = true) => {
-    return fetchData(() => dataLayer.getTooltips(useCache));
+    return fetchData(() => Promise.resolve(dataLayer.getTooltips(useCache)));
   }, [fetchData]);
   
   const getTooltipByKey = useCallback((sectionKey: string, useCache: boolean = true) => {
-    return fetchData(() => dataLayer.getTooltipByKey(sectionKey, useCache));
+    return fetchData(() => Promise.resolve(dataLayer.getTooltipByKey(sectionKey, useCache)));
   }, [fetchData]);
 
   return {

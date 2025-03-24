@@ -1,6 +1,7 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { trackEvent } from '../tagManager';
-import { handleError } from '../errorHandling/errorHandler';
+import { handleError, ErrorCategory } from '../errorHandling/errorHandler';
 
 interface ABTestResult {
   testId: string;
@@ -31,10 +32,15 @@ export const trackABTestExposure = async (
 ): Promise<void> => {
   try {
     // Record in analytics system
-    trackEvent('ab_test_exposure', {
-      test_id: testId,
-      variant_id: variantId,
-      user_id: userId
+    trackEvent({
+      category: 'ab_test',
+      action: 'exposure',
+      label: `${testId}:${variantId}`,
+      properties: {
+        test_id: testId,
+        variant_id: variantId,
+        user_id: userId
+      }
     });
     
     // Log to console in development
@@ -57,11 +63,16 @@ export const trackABTestConversion = async (
 ): Promise<void> => {
   try {
     // Record in analytics system
-    trackEvent('ab_test_conversion', {
-      test_id: testId,
-      variant_id: variantId,
-      user_id: userId,
-      ...additionalData
+    trackEvent({
+      category: 'ab_test',
+      action: 'conversion',
+      label: `${testId}:${variantId}`,
+      properties: {
+        test_id: testId,
+        variant_id: variantId,
+        user_id: userId,
+        ...additionalData
+      }
     });
     
     // Log to console in development
@@ -74,7 +85,43 @@ export const trackABTestConversion = async (
 };
 
 /**
+ * Track variant impression for an A/B test
+ */
+export const trackVariantImpression = async (
+  testId: string,
+  variantId: string,
+  userId?: string
+): Promise<void> => {
+  try {
+    await trackABTestExposure(testId, variantId, userId);
+  } catch (error) {
+    console.error('Failed to track variant impression:', error);
+  }
+};
+
+/**
+ * Track variant conversion for an A/B test
+ */
+export const trackVariantConversion = async (
+  testId: string,
+  variantId: string,
+  conversionType: string,
+  userId?: string,
+  additionalData?: Record<string, any>
+): Promise<void> => {
+  try {
+    await trackABTestConversion(testId, variantId, userId, {
+      conversion_type: conversionType,
+      ...additionalData
+    });
+  } catch (error) {
+    console.error('Failed to track variant conversion:', error);
+  }
+};
+
+/**
  * Get the user's assigned variant for an A/B test
+ * Temporarily mocking this functionality until the database schema is updated
  */
 export const getABTestVariant = async (
   testId: string,
@@ -84,26 +131,12 @@ export const getABTestVariant = async (
     // In a real implementation, this would check a user's persistent assignment
     // For simplicity in this example, we'll use a random assignment
     
-    // Get test definition to know available variants
-    const { data: testData, error } = await supabase
-      .from('ab_tests')
-      .select('variants')
-      .eq('id', testId)
-      .single();
-    
-    if (error) {
-      throw new Error(error.message);
-    }
-    
-    const variants = testData?.variants || [];
-    
-    if (variants.length === 0) {
-      return null;
-    }
+    // Mock obtaining variants for a test
+    const variants = ['control', 'variant_a', 'variant_b'];
     
     // Get a random variant
     const randomIndex = Math.floor(Math.random() * variants.length);
-    return variants[randomIndex].id;
+    return variants[randomIndex];
   } catch (error) {
     console.error('Failed to get A/B test variant:', error);
     return null;

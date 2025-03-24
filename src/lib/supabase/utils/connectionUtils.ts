@@ -64,7 +64,9 @@ export const checkConnection = async (): Promise<boolean> => {
   } catch (error) {
     handleError(
       'Failed to check connection status',
-      ErrorCategory.NETWORK
+      ErrorCategory.NETWORK,
+      'medium',
+      error
     );
     return false;
   }
@@ -105,7 +107,9 @@ export const recordOfflineChange = (
   } catch (error) {
     handleError(
       'Failed to record offline change',
-      ErrorCategory.UNKNOWN
+      ErrorCategory.UNKNOWN,
+      'medium',
+      error
     );
   }
 };
@@ -203,7 +207,9 @@ export const syncOfflineChanges = async (): Promise<boolean> => {
   } catch (error) {
     handleError(
       'Error syncing offline changes',
-      ErrorCategory.NETWORK
+      ErrorCategory.NETWORK,
+      'medium',
+      error
     );
     return false;
   }

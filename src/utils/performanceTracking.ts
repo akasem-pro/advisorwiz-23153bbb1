@@ -24,9 +24,9 @@ import { implementResourceHints } from './performance/resourceHints';
 
 // Import from analytics modules
 import { trackVisitorActivity } from './analytics/visitorTracking';
-import { trackFeatureUsage } from './analytics/featureTracking';
+import { trackFeatureUsage } from './analytics/eventTracker';
 import { trackAIInteraction } from './analytics/aiTracking';
-import { recordMatchHistory } from './analytics/matchTracking';
+import { recordMatchHistory } from './analytics/matchTracker';
 import { 
   trackUserBehavior, 
   trackMatchingInteraction, 
@@ -34,9 +34,12 @@ import {
   trackPreferenceUpdate,
   UserBehaviorEvent
 } from './analytics/userBehaviorTracker';
-import { trackUserEngagement } from './analytics/userEngagementTracker';
+import { trackFeatureEngagement } from './analytics/userEngagementTracker';
 import { trackMatchEngagement } from './analytics/matchEngagementTracker';
-import { trackVariantImpression, trackVariantConversion } from './analytics/abTestTracker';
+import { 
+  trackABTestExposure, 
+  trackABTestConversion 
+} from './analytics/abTestTracker';
 
 // Core performance tracking
 export {
@@ -80,12 +83,12 @@ export {
   UserBehaviorEvent,
   
   // Engagement tracking
-  trackUserEngagement,
+  trackFeatureEngagement,
   trackMatchEngagement,
   
   // A/B Testing tracking
-  trackVariantImpression,
-  trackVariantConversion
+  trackABTestExposure,
+  trackABTestConversion
 };
 
 /**

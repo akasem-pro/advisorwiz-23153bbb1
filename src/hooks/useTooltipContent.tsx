@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react';
 import { useSupabase } from './useSupabase';
 
 export interface TooltipContent {
-  id: string; // Changed from number to string to match database
+  id: string;
   section_key: string;
   title: string;
   content: string;
-  description: string; // Added to match database schema
+  description: string;
   created_at?: string;
 }
 
@@ -50,8 +50,12 @@ export const useTooltipContent = ({
       // Map the database fields to our interface
       if (data) {
         const mappedData: TooltipContent = {
-          ...data,
-          content: data.description // Use description as content for compatibility
+          id: data.id.toString(),
+          section_key: data.section_key,
+          title: data.title,
+          content: data.description || '',
+          description: data.description || '',
+          created_at: data.created_at
         };
         setTooltipContent(mappedData);
       } else {
@@ -78,8 +82,12 @@ export const useTooltipContent = ({
       // Map the database fields to our interface
       if (data && Array.isArray(data)) {
         const mappedData: TooltipContent[] = data.map(item => ({
-          ...item,
-          content: item.description // Use description as content for compatibility
+          id: item.id.toString(),
+          section_key: item.section_key,
+          title: item.title,
+          content: item.description || '',
+          description: item.description || '',
+          created_at: item.created_at
         }));
         setAllTooltips(mappedData);
       } else {

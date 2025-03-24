@@ -1,6 +1,26 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { trackEvent } from '../tagManager';
 import { ErrorCategory, handleError } from '../errorHandling/errorHandler';
+
+/**
+ * Track user engagement with a custom event
+ */
+export const trackUserEngagement = (event: string, userId?: string, properties?: Record<string, any>): void => {
+  try {
+    // Track via tag manager
+    trackEvent({
+      category: 'engagement',
+      action: event,
+      properties: {
+        user_id: userId,
+        ...properties
+      }
+    });
+  } catch (error) {
+    handleError('Failed to track user engagement', ErrorCategory.UNKNOWN);
+  }
+};
 
 /**
  * Track user session duration
@@ -8,12 +28,16 @@ import { ErrorCategory, handleError } from '../errorHandling/errorHandler';
 export const trackSessionDuration = (durationMs: number, userId?: string): void => {
   try {
     // Track via tag manager
-    trackEvent('session_duration', {
-      duration_ms: durationMs,
-      user_id: userId
+    trackEvent({
+      category: 'session',
+      action: 'duration',
+      value: durationMs,
+      properties: {
+        user_id: userId
+      }
     });
   } catch (error) {
-    handleError('Failed to track session duration', ErrorCategory.ANALYTICS);
+    handleError('Failed to track session duration', ErrorCategory.UNKNOWN);
   }
 };
 
@@ -32,13 +56,18 @@ export const trackFeatureEngagement = (
     }
     
     // Track via tag manager
-    trackEvent('feature_engagement', {
-      feature,
-      action,
-      user_id: userId
+    trackEvent({
+      category: 'feature',
+      action: 'engagement',
+      label: `${feature}:${action}`,
+      properties: {
+        feature,
+        action,
+        user_id: userId
+      }
     });
   } catch (error) {
-    handleError('Failed to track feature engagement', ErrorCategory.ANALYTICS);
+    handleError('Failed to track feature engagement', ErrorCategory.UNKNOWN);
   }
 };
 
@@ -52,13 +81,18 @@ export const trackPageViewDuration = (
 ): void => {
   try {
     // Track via tag manager
-    trackEvent('page_view_duration', {
-      page_path: pagePath,
-      duration_ms: durationMs,
-      user_id: userId
+    trackEvent({
+      category: 'page_view',
+      action: 'duration',
+      label: pagePath,
+      value: durationMs,
+      properties: {
+        page_path: pagePath,
+        user_id: userId
+      }
     });
   } catch (error) {
-    handleError('Failed to track page view duration', ErrorCategory.ANALYTICS);
+    handleError('Failed to track page view duration', ErrorCategory.UNKNOWN);
   }
 };
 
@@ -68,10 +102,14 @@ export const trackPageViewDuration = (
 export const trackOnboardingCompletion = (userId?: string): void => {
   try {
     // Track via tag manager
-    trackEvent('onboarding_completed', {
-      user_id: userId
+    trackEvent({
+      category: 'onboarding',
+      action: 'completed',
+      properties: {
+        user_id: userId
+      }
     });
   } catch (error) {
-    handleError('Failed to track onboarding completion', ErrorCategory.ANALYTICS);
+    handleError('Failed to track onboarding completion', ErrorCategory.UNKNOWN);
   }
 };
