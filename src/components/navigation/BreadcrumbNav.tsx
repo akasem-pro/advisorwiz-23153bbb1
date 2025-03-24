@@ -1,57 +1,48 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { ChevronRight } from 'lucide-react';
 
-export interface BreadcrumbItem {
+interface BreadcrumbItem {
   name: string;
   url: string;
 }
 
 interface BreadcrumbNavProps {
   items: BreadcrumbItem[];
-  className?: string;
 }
 
-const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({ items, className = "" }) => {
+const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({ items }) => {
   return (
-    <div className={`bg-slate-50 dark:bg-navy-900/50 py-3 ${className}`}>
+    <nav className="bg-slate-50 dark:bg-navy-900/50 py-3 border-b border-slate-200 dark:border-navy-800">
       <div className="container mx-auto px-4">
-        <Breadcrumb>
-          <BreadcrumbList>
-            {items.map((item, index) => {
-              const isLast = index === items.length - 1;
-              return (
-                <React.Fragment key={item.url}>
-                  <BreadcrumbItem>
-                    {isLast ? (
-                      <BreadcrumbPage className="text-teal-600 dark:text-teal-400">
-                        {item.name}
-                      </BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink asChild>
-                        <Link to={item.url.replace("https://advisorwiz.com", "")} className="text-slate-600 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400">
-                          {item.name}
-                        </Link>
-                      </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                  {!isLast && <BreadcrumbSeparator />}
-                </React.Fragment>
-              );
-            })}
-          </BreadcrumbList>
-        </Breadcrumb>
+        <ol className="flex flex-wrap items-center space-x-2 text-sm">
+          {items.map((item, index) => (
+            <React.Fragment key={item.url}>
+              {index > 0 && (
+                <li className="text-slate-400">
+                  <ChevronRight className="w-4 h-4" />
+                </li>
+              )}
+              <li>
+                {index === items.length - 1 ? (
+                  <span className="text-slate-700 dark:text-slate-200 font-medium">
+                    {item.name}
+                  </span>
+                ) : (
+                  <Link
+                    to={item.url}
+                    className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300"
+                  >
+                    {item.name}
+                  </Link>
+                )}
+              </li>
+            </React.Fragment>
+          ))}
+        </ol>
       </div>
-    </div>
+    </nav>
   );
 };
 

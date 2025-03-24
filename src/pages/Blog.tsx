@@ -2,49 +2,44 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import AppLayout from '../components/layout/AppLayout';
-import PageSEO from '../components/seo/PageSEO';
-import { BlogList } from '../components/blog/BlogList';
-import { BlogPost } from '../components/blog/BlogPost';
-import { generateBlogListingSchema } from '../utils/schemas/blogSchema';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 
 const Blog: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug } = useParams<{ slug?: string }>();
   
-  // If we have a slug, show a single blog post, otherwise show the blog listing
-  const isSinglePost = !!slug;
-  
-  // Generate structured data for the blog listing
-  const structuredData = !isSinglePost ? generateBlogListingSchema() : undefined;
-
-  const breadcrumbs = isSinglePost 
+  const breadcrumbs = slug 
     ? [
-        { name: "Home", url: "/" },
-        { name: "Blog", url: "/blog" },
-        { name: slug || "", url: `/blog/${slug}` }
+        { name: 'Home', url: '/' },
+        { name: 'Blog', url: '/blog' },
+        { name: slug, url: `/blog/${slug}` }
       ]
     : [
-        { name: "Home", url: "/" },
-        { name: "Blog", url: "/blog" }
+        { name: 'Home', url: '/' },
+        { name: 'Blog', url: '/blog' }
       ];
-  
+
   return (
     <AppLayout>
-      <PageSEO
-        title={isSinglePost ? undefined : "Financial Advisor Blog"}
-        description={isSinglePost ? undefined : "Expert financial advice, industry insights, and resources to help you make informed financial decisions. Regular updates from certified financial advisors."}
-        keywords="financial blog, financial advice, financial planning blog, advisor blog, retirement planning, investment strategies, wealth management blog"
-        structuredData={structuredData}
-      />
-      
       <BreadcrumbNav items={breadcrumbs} />
       
-      <div className="container mx-auto px-4 py-8 md:py-12">
-        {isSinglePost ? (
-          <BlogPost slug={slug} />
-        ) : (
-          <BlogList />
-        )}
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="section-title">
+            {slug ? `Blog Post: ${slug}` : 'Financial Insights Blog'}
+          </h1>
+          <p className="section-description">
+            {slug 
+              ? 'Detailed information about this specific financial topic.' 
+              : 'Stay informed with our latest articles and insights on personal finance and investing.'}
+          </p>
+          
+          {/* Content will be added in future updates */}
+          <div className="mt-8 p-8 bg-slate-50 dark:bg-navy-800/50 rounded-lg text-center">
+            <p className="text-lg text-navy-700 dark:text-slate-300">
+              This page is under construction. Check back soon for more blog content.
+            </p>
+          </div>
+        </div>
       </div>
     </AppLayout>
   );

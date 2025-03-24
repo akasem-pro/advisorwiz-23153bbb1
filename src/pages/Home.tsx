@@ -1,10 +1,8 @@
-
 import React, { useEffect } from 'react';
-import AnimatedRoute from '../components/ui/AnimatedRoute';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import AppLayout from '../components/layout/AppLayout';
 import PageSEO from '../components/seo/PageSEO';
 import Preload from '../components/seo/Preload';
+import SocialShare from '../components/ui/SocialShare';
 import { generateFAQSchema, generateWebsiteSchema, generateOrganizationSchema } from '../utils/schemas';
 import { initPerformanceOptimizations } from '../utils/performanceTracking';
 
@@ -17,7 +15,6 @@ import FAQSection from '../components/home/FAQSection';
 import PricingSection from '../components/home/PricingSection';
 import NewsletterSection from '../components/home/NewsletterSection';
 import MainCTASection from '../components/home/MainCTASection';
-import SocialShare from '../components/ui/SocialShare';
 
 // FAQ data for structured data
 const faqData = [
@@ -72,7 +69,7 @@ const likelyNavigation = [
   '/pricing'
 ];
 
-const Index: React.FC = () => {
+const Home: React.FC = () => {
   // Track page view on mount and initialize performance optimizations
   useEffect(() => {
     // Initialize performance tracking
@@ -90,18 +87,17 @@ const Index: React.FC = () => {
   }, []);
 
   return (
-    <AnimatedRoute animation="fade">
-      <PageSEO 
-        title="Find Your Perfect Financial Advisor Match"
-        description="AdvisorWiz connects you with experienced financial advisors who match your specific needs and preferences. Our proprietary algorithm ensures you find your ideal financial match. Free for consumers."
-        keywords="financial advisor, advisor matching, financial planning, investment advisor, retirement planning, wealth management, CFP, certified financial planner"
-        canonicalUrl="https://advisorwiz.com/"
-        structuredData={[
-          generateFAQSchema(faqData),
-          generateWebsiteSchema(),
-          generateOrganizationSchema()
-        ]}
-      />
+    <PageSEO 
+      title="Find Your Perfect Financial Advisor Match"
+      description="AdvisorWiz connects you with experienced financial advisors who match your specific needs and preferences. Our proprietary algorithm ensures you find your ideal financial match. Free for consumers."
+      keywords="financial advisor, advisor matching, financial planning, investment advisor, retirement planning, wealth management, CFP, certified financial planner"
+      canonicalUrl="https://advisorwiz.com/"
+      structuredData={[
+        generateFAQSchema(faqData),
+        generateWebsiteSchema(),
+        generateOrganizationSchema()
+      ]}
+    >
       <Preload 
         resources={criticalResources}
         preconnect={['https://fonts.googleapis.com', 'https://fonts.gstatic.com']}
@@ -109,28 +105,22 @@ const Index: React.FC = () => {
         dnsPrefetch={['https://www.google-analytics.com']}
       />
       
-      <div className="min-h-screen flex flex-col">
-        <Header />
+      <AppLayout>
+        <div className="fixed bottom-6 right-6 z-10">
+          <SocialShare />
+        </div>
         
-        <main className="flex-grow pt-20">
-          <div className="fixed bottom-6 right-6 z-10">
-            <SocialShare />
-          </div>
-          
-          <HeroSection />
-          <HowItWorksSection />
-          <BenefitsSection />
-          <TestimonialsSection />
-          <PricingSection />
-          <FAQSection />
-          <NewsletterSection />
-          <MainCTASection />
-        </main>
-
-        <Footer />
-      </div>
-    </AnimatedRoute>
+        <HeroSection />
+        <HowItWorksSection />
+        <BenefitsSection />
+        <TestimonialsSection />
+        <PricingSection />
+        <FAQSection />
+        <NewsletterSection />
+        <MainCTASection />
+      </AppLayout>
+    </PageSEO>
   );
 };
 
-export default Index;
+export default Home;

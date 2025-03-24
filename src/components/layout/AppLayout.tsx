@@ -1,24 +1,24 @@
+
 import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import AnimatedRoute from '../ui/AnimatedRoute';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
-import OfflineIndicator from '../ui/OfflineIndicator';
-
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-navy-900">
-      <Header />
-      <main className="flex-1">
-        {children}
-      </main>
-      <Footer />
-      <OfflineIndicator />
-    </div>
+    <AnimatedRoute animation="fade">
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-grow pt-20">
+          {children}
+        </main>
+        <Footer />
+      </div>
+    </AnimatedRoute>
   );
 };
 
