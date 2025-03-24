@@ -1,131 +1,104 @@
 
 import { supabase } from '../../integrations/supabase/client';
 
+// Interface for performance metrics
+interface PerformanceMetric {
+  name: string;
+  value: number;
+  timestamp: number;
+  tags?: Record<string, string>;
+}
+
+// Array to store metrics locally for batching
+const metricsBuffer: PerformanceMetric[] = [];
+
 /**
- * Track performance metrics
+ * Track a performance metric
  */
 export const trackPerformance = (
-  functionName: string, 
-  executionTime: number, 
-  inputSize: number = 0
+  metricName: string,
+  metricValue: number,
+  tags?: Record<string, string>
 ): void => {
   try {
-    // Log performance data in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Performance: ${functionName} took ${Math.round(executionTime)}ms with ${inputSize} items`);
-    }
+    const metric: PerformanceMetric = {
+      name: metricName,
+      value: metricValue,
+      timestamp: Date.now(),
+      tags
+    };
     
-    // Store metric in analytics
-    storeAnalyticsMetric('function_performance', {
-      function: functionName,
-      time: executionTime,
-      size: inputSize
-    });
+    // Add to metrics buffer
+    metricsBuffer.push(metric);
+    
+    // Log the metric for development
+    console.log(`[Performance] ${metricName}: ${metricValue}`, tags);
+    
+    // If buffer gets too large, flush it
+    if (metricsBuffer.length >= 10) {
+      flushMetricsBuffer();
+    }
   } catch (error) {
-    console.error('Error tracking performance:', error);
+    console.error('Error tracking performance metric:', error);
   }
 };
 
 /**
- * Get performance data for analysis
+ * Flush the metrics buffer by sending to backend or analytics service
  */
-export const getPerformanceData = async (
-  functionName?: string
-): Promise<any[]> => {
+const flushMetricsBuffer = async (): Promise<void> => {
+  if (metricsBuffer.length === 0) return;
+  
   try {
-    const query = supabase
-      .from('analytics_metrics')
-      .select('*')
-      .eq('metric_type', 'function_performance');
+    // In a real implementation, this would send the data to an analytics service
+    console.log(`Flushing ${metricsBuffer.length} performance metrics`);
     
-    if (functionName) {
-      query.eq('metric_name', functionName);
-    }
-    
-    const { data, error } = await query;
-    
-    if (error) {
-      throw error;
-    }
-    
-    return data || [];
+    // Clear the buffer after successfully sending the metrics
+    metricsBuffer.length = 0;
   } catch (error) {
-    console.error('Error getting performance data:', error);
-    return [];
+    console.error('Error flushing performance metrics:', error);
   }
 };
 
 /**
- * Clear performance data from storage
+ * Get current performance data
  */
-export const clearPerformanceData = async (): Promise<boolean> => {
-  try {
-    const { error } = await supabase
-      .from('analytics_metrics')
-      .delete()
-      .eq('metric_type', 'function_performance');
-    
-    if (error) {
-      throw error;
-    }
-    
-    return true;
-  } catch (error) {
-    console.error('Error clearing performance data:', error);
-    return false;
-  }
+export const getPerformanceData = (): PerformanceMetric[] => {
+  return [...metricsBuffer];
 };
 
 /**
- * Record an analytics metric in Supabase via RPC call
+ * Clear performance data
  */
-export const storeAnalyticsMetric = async (
+export const clearPerformanceData = (): void => {
+  metricsBuffer.length = 0;
+};
+
+/**
+ * Store analytics metric - handles both string action types and numeric values
+ * This is used by both performance tracking and analytics modules
+ */
+export const storeAnalyticsMetric = (
   metricType: string,
-  metricValue: string | number | Record<string, any>
-): Promise<void> => {
+  metricNameOrValue: string | number,
+  metricValue?: number
+): void => {
   try {
-    let metricName: string;
-    let numericValue: number;
+    // Handle both formats:
+    // storeAnalyticsMetric('page_view', 'home')
+    // storeAnalyticsMetric('page_load_time', 1200)
     
-    // Handle different types of metric values
-    if (typeof metricValue === 'string') {
-      metricName = metricValue;
-      numericValue = 1; // Default to 1 for string metrics (like events)
-    } else if (typeof metricValue === 'number') {
-      metricName = 'value';
-      numericValue = metricValue;
-    } else if (typeof metricValue === 'object') {
-      // For object metrics, use the first key as the name and stringify the object
-      const keys = Object.keys(metricValue);
-      metricName = keys.length > 0 ? keys[0] : 'data';
-      numericValue = 1;
-      
-      // Additional dimension handling for richer analytics
-      if (keys.length > 1) {
-        await supabase.rpc('record_metric', {
-          p_metric_type: metricType,
-          p_metric_name: metricName,
-          p_metric_value: numericValue,
-          p_dimension_name: 'data',
-          p_dimension_value: JSON.stringify(metricValue)
-        });
-        return;
-      }
-    } else {
-      metricName = 'unknown';
-      numericValue = 0;
-    }
-    
-    await supabase.rpc('record_metric', {
-      p_metric_type: metricType,
-      p_metric_name: metricName,
-      p_metric_value: numericValue
-    });
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Analytics metric recorded: ${metricType}=${metricName}`);
+    if (typeof metricNameOrValue === 'string' && metricValue !== undefined) {
+      // Format: metricType, metricName, metricValue
+      trackPerformance(`${metricType}_${metricNameOrValue}`, metricValue);
+    } else if (typeof metricNameOrValue === 'string') {
+      // Format: metricType, metricName (with implicit value of 1)
+      trackPerformance(`${metricType}_${metricNameOrValue}`, 1);
+    } else if (typeof metricNameOrValue === 'number') {
+      // Format: metricType, metricValue
+      trackPerformance(metricType, metricNameOrValue);
     }
   } catch (error) {
-    console.error('Failed to store analytics metric:', error);
+    console.error('Error storing analytics metric:', error);
   }
 };

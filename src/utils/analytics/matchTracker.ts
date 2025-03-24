@@ -2,150 +2,105 @@
 import { supabase } from '../../integrations/supabase/client';
 import { trackEvent } from '../tagManager';
 import { ErrorCategory, handleError } from '../errorHandling/errorHandler';
-import { storeAnalyticsMetric } from '../performance/core';
 import { MatchAction } from './types';
+import { storeAnalyticsMetric } from '../performance/core';
 
 /**
- * Record a match interaction for analytics
+ * Track matching interactions between users
  */
 export const trackMatchingInteraction = async (
   action: MatchAction,
   advisorId: string,
   consumerId: string,
   score: number,
-  matchId?: string,
+  matchId: string,
   details?: Record<string, any>
 ): Promise<void> => {
   try {
-    // Track the event in our analytics system
-    trackEvent('matching_interaction', {
-      action: action,
+    // Create the event object for tag manager
+    trackEvent('match_action', {
+      action,
       advisor_id: advisorId,
       consumer_id: consumerId,
-      score: score,
+      score,
       match_id: matchId,
       ...details
     });
     
-    // Store in Supabase analytics metrics
-    storeAnalyticsMetric('matching_interaction', action);
+    // Record interaction metrics
+    storeAnalyticsMetric('match_action', action);
     
-    // Log detail in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Match Interaction: ${action}`, {
-        advisorId,
-        consumerId,
-        score,
-        matchId,
-        details
-      });
-    }
+    console.log(`Matching interaction tracked: ${action}`, { 
+      advisorId, 
+      consumerId, 
+      score, 
+      matchId, 
+      details 
+    });
   } catch (error) {
-    handleError(
-      `Failed to track matching interaction: ${action}`,
-      ErrorCategory.UNKNOWN,
-      true
-    );
+    handleError(`Failed to track matching interaction: ${action}`, ErrorCategory.UNKNOWN, true);
   }
 };
 
 /**
- * Track match history for a specific match
+ * Record match history in the database
  */
 export const recordMatchHistory = async (
   advisorId: string,
-  consumerId: string,
-  action: string,
-  notes?: string
+  consumerId: string, 
+  notes: string
 ): Promise<void> => {
   try {
-    // Create record of this match history in our database
-    console.log(`[Match History] Recording ${action} between advisor ${advisorId} and consumer ${consumerId}`);
-    
-    // Track as an event for analytics
-    trackEvent('match_history', {
-      action: action,
+    // Create the event object for tag manager
+    trackEvent('match_record', {
       advisor_id: advisorId,
       consumer_id: consumerId,
-      notes: notes
+      notes
     });
+    
+    // Logging for development
+    console.log('Match history recorded', { advisorId, consumerId, notes });
   } catch (error) {
     handleError('Failed to record match history', ErrorCategory.UNKNOWN, true);
   }
 };
 
 /**
- * Track match interaction for a specific action
+ * Track user viewing a match explanation
  */
-export const trackMatchAction = async (
-  action: MatchAction,
-  matchId: string,
-  userId?: string,
-  details?: Record<string, any>
-): Promise<void> => {
-  try {
-    // Extract IDs from match ID
-    const parts = matchId.split('-');
-    const advisorId = parts[1];
-    const consumerId = parts[2];
-    
-    // Track as a user behavior
-    trackUserBehavior(`match_${action}`, userId, {
-      match_id: matchId,
-      advisor_id: advisorId,
-      consumer_id: consumerId,
-      ...details
-    });
-    
-    // Track a metric
-    storeAnalyticsMetric(`match_${action}`, 1);
-    
-    console.log(`Match action tracked: ${action}`, { matchId, userId, details });
-  } catch (error) {
-    console.error(`Failed to track match action ${action}:`, error);
-  }
-};
-
-/**
- * Helper function for trackUserBehavior since it's used in multiple places
- */
-export const trackUserBehavior = async (
-  event: string,
-  userId?: string,
-  properties?: Record<string, any>
-): Promise<void> => {
-  try {
-    trackEvent('user_behavior', {
-      action: event,
-      user_id: userId,
-      ...properties
-    });
-  } catch (error) {
-    console.error('Failed to track user behavior:', error);
-  }
-};
-
-/**
- * Track page view for analytics
- */
-export const trackPageView = async (
-  pageTitle: string,
-  pagePath: string,
-  userId?: string,
-  properties?: Record<string, any>
-): Promise<void> => {
-  // Implementation to be added
-  console.log(`Page view tracked: ${pageTitle} - ${pagePath}`);
-};
-
-/**
- * Track preference updates
- */
-export const trackPreferenceUpdate = async (
+export const trackMatchExplanationView = async (
+  matchId: string, 
   userId: string,
-  prevPreferences: Record<string, any>,
-  newPreferences: Record<string, any>
+  explanationId: string
 ): Promise<void> => {
-  // Implementation to be added
-  console.log(`Preference update tracked for user: ${userId}`);
+  try {
+    // This would record when a user views the detailed explanation of why
+    // they were matched with a specific advisor
+    console.log(`User ${userId} viewed explanation ${explanationId} for match ${matchId}`);
+    
+    // Create the event object for tag manager
+    trackEvent('match_explanation_view', {
+      user_id: userId
+    });
+  } catch (error) {
+    console.error('Failed to track match explanation view:', error);
+  }
+};
+
+// Export the trackPageView for performanceTracking.ts
+export const trackPageView = (path: string): void => {
+  try {
+    console.log(`Page view tracked: ${path}`);
+  } catch (error) {
+    console.error('Failed to track page view:', error);
+  }
+};
+
+// Export the trackPreferenceUpdate for performanceTracking.ts
+export const trackPreferenceUpdate = (preference: string, value: any): void => {
+  try {
+    console.log(`Preference updated: ${preference} = ${value}`);
+  } catch (error) {
+    console.error('Failed to track preference update:', error);
+  }
 };

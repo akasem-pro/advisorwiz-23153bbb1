@@ -12,7 +12,7 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     return true;
   } catch (error) {
     // Log the error and return false
-    handleError('Failed to connect to Supabase', ErrorCategory.NETWORK);
+    handleError('Failed to connect to Supabase', ErrorCategory.NETWORK, true);
     return false;
   }
 };
@@ -27,7 +27,7 @@ export const isSupabaseOnline = async (): Promise<boolean> => {
     return isConnected;
   } catch (error) {
     // Log the error and return false
-    handleError('Failed to check connection status', ErrorCategory.NETWORK);
+    handleError('Failed to check connection status', ErrorCategory.NETWORK, true);
     return false;
   }
 };
@@ -46,7 +46,7 @@ export const recoverSupabaseConnection = async (): Promise<boolean> => {
     return isConnected;
   } catch (error) {
     // Log the error and return false
-    handleError('Connection recovery failed', ErrorCategory.NETWORK);
+    handleError('Connection recovery failed', ErrorCategory.NETWORK, true);
     return false;
   }
 };
@@ -68,7 +68,7 @@ export const syncOfflineChanges = async (): Promise<boolean> => {
     console.log('Syncing offline changes...');
     return true;
   } catch (error) {
-    handleError('Failed to sync offline changes', ErrorCategory.NETWORK);
+    handleError('Failed to sync offline changes', ErrorCategory.NETWORK, true);
     return false;
   }
 };
