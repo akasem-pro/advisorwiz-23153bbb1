@@ -12,8 +12,7 @@ export const useUserOrganizations = () => {
     const newFirm: FinancialFirm = {
       ...firm,
       id: `firm-${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      createdAt: new Date().toISOString()
     };
     
     setFirms(prevFirms => [...prevFirms, newFirm]);
