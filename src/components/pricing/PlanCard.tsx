@@ -50,9 +50,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
           variant={billingPeriod === 'monthly' ? 'default' : 'outline'}
           size="sm"
           onClick={() => setBillingPeriod('monthly')}
-          className={billingPeriod === 'monthly' 
-            ? 'bg-navy-600 hover:bg-navy-700 text-white dark:bg-teal-600 dark:hover:bg-teal-700' 
-            : 'text-navy-600 dark:text-slate-200 dark:border-slate-600 hover:bg-navy-50 dark:hover:bg-navy-700/50'}
+          className={`${billingPeriod === 'monthly' ? 'pricing-toggle-active' : 'pricing-toggle-inactive'}`}
         >
           Monthly
         </Button>
@@ -60,9 +58,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
           variant={billingPeriod === 'annually' ? 'default' : 'outline'}
           size="sm"
           onClick={() => setBillingPeriod('annually')}
-          className={billingPeriod === 'annually' 
-            ? 'bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-600 dark:hover:bg-teal-700' 
-            : 'text-navy-600 dark:text-slate-200 dark:border-slate-600 hover:bg-navy-50 dark:hover:bg-navy-700/50'}
+          className={`${billingPeriod === 'annually' ? 'pricing-toggle-active' : 'pricing-toggle-inactive'}`}
         >
           Annually
         </Button>
@@ -92,7 +88,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </div>
       
       <Button 
-        className={`w-full ${recommended ? 'bg-teal-600 hover:bg-teal-700' : 'bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700 text-white'}`}
+        className={`w-full ${recommended ? 'btn-secondary' : 'btn-primary'}`}
         onClick={() => navigate('/onboarding')}
       >
         {ctaText} <ArrowRight className="ml-2 h-4 w-4" />

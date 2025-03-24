@@ -117,11 +117,7 @@ const PricingSection: React.FC = () => {
                 
                 <Button 
                   asChild
-                  className={`w-full justify-center ${
-                    tier.popular 
-                      ? 'bg-teal-600 hover:bg-teal-700 text-white' 
-                      : 'bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700 text-white'
-                  }`}
+                  className={`w-full justify-center ${tier.popular ? 'btn-secondary' : 'btn-primary'}`}
                 >
                   <Link to={tier.id === 'firms' ? '/contact' : '/onboarding'}>
                     {tier.cta}
