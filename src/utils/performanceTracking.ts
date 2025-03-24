@@ -74,7 +74,7 @@ export {
   
   // User behavior tracking
   trackUserBehavior,
-  trackUserBehavior as trackMatchingInteraction, 
+  // Removed duplicate export of trackMatchingInteraction
   trackPageView,
   trackPreferenceUpdate,
   UserBehaviorEvent,
