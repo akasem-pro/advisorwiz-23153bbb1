@@ -1,5 +1,6 @@
-
 import { supabase } from '../../integrations/supabase/client';
+import { trackEvent as trackGTMEvent } from '../tagManager';
+import { ErrorCategory, handleError } from '../errorHandling/errorHandler';
 import { storeAnalyticsMetric } from '../performance/core';
 import { UserBehaviorEvent } from './types';
 
@@ -57,5 +58,35 @@ export const trackUserBehavior = async (
     }
   } catch (error) {
     console.error('Failed to track user behavior:', error);
+  }
+};
+
+/**
+ * Track a custom feature usage event
+ */
+export const trackFeatureUsage = async (
+  featureName: string,
+  userId?: string
+): Promise<void> => {
+  try {
+    // Track in GTM
+    trackGTMEvent('feature_used', {
+      feature_name: featureName,
+      user_id: userId
+    });
+    
+    // Also track in Supabase for analytics
+    if (userId) {
+      const { error } = await supabase.rpc('upsert_feature_usage', {
+        p_user_id: userId,
+        p_feature_name: featureName
+      });
+      
+      if (error) {
+        console.error('Failed to record feature usage in database:', error);
+      }
+    }
+  } catch (error) {
+    handleError('Failed to track feature usage', ErrorCategory.ANALYTICS);
   }
 };

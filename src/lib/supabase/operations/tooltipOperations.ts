@@ -46,6 +46,7 @@ export const getTooltips = trackPerformance(
       // Map the database fields to our interface
       const mappedData: TooltipContent[] = data.map(item => ({
         ...item,
+        id: item.id.toString(), // Ensure ID is a string to match our interface
         content: item.description // Use description as content for compatibility
       }));
       
@@ -89,6 +90,7 @@ export const getTooltipByKey = trackPerformance(
               return {
                 data: {
                   ...parsed.data,
+                  id: parsed.data.id.toString(), // Ensure ID is a string
                   content: parsed.data.description // Map description to content for compatibility
                 },
                 error: null,
@@ -119,6 +121,7 @@ export const getTooltipByKey = trackPerformance(
       // Map the database fields to our interface
       const mappedData: TooltipContent = {
         ...data,
+        id: data.id.toString(), // Ensure ID is a string
         content: data.description // Use description as content for compatibility
       };
       

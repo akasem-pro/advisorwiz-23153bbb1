@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSupabase } from './useSupabase';
 
 export interface TooltipContent {
-  id: number;
+  id: string; // Changed from number to string to match database
   section_key: string;
   title: string;
   content: string;
@@ -59,7 +59,7 @@ export const useTooltipContent = ({
       }
       
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
       setError('Failed to fetch tooltip content');
       console.error('Error fetching tooltip:', err);
     }
@@ -76,7 +76,7 @@ export const useTooltipContent = ({
       }
       
       // Map the database fields to our interface
-      if (data) {
+      if (data && Array.isArray(data)) {
         const mappedData: TooltipContent[] = data.map(item => ({
           ...item,
           content: item.description // Use description as content for compatibility
@@ -87,7 +87,7 @@ export const useTooltipContent = ({
       }
       
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
       setError('Failed to fetch tooltips');
       console.error('Error fetching tooltips:', err);
     }

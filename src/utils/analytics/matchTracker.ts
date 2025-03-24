@@ -1,8 +1,115 @@
-
 import { supabase } from '../../integrations/supabase/client';
-import { storeAnalyticsMetric } from '../performance/core';
-import { MatchAction } from './types';
-import { trackUserBehavior } from './eventTracker';
+import { trackEvent } from '../tagManager';
+import { ErrorCategory, handleError } from '../errorHandling/errorHandler';
+
+interface MatchEvent {
+  advisorId?: string;
+  consumerId?: string;
+  score?: number;
+  factors?: Record<string, any>;
+}
+
+/**
+ * Track when a match is presented to a user
+ */
+export const trackMatchPresented = (
+  matchId: string,
+  userId: string,
+  data?: MatchEvent
+): void => {
+  try {
+    trackEvent('match_presented', {
+      match_id: matchId,
+      user_id: userId,
+      ...data
+    });
+  } catch (error) {
+    console.error('Failed to track match presented:', error);
+  }
+};
+
+/**
+ * Track when a match is selected for viewing
+ */
+export const trackMatchSelected = (
+  matchId: string,
+  userId: string,
+  data?: MatchEvent
+): void => {
+  try {
+    trackEvent('match_selected', {
+      match_id: matchId,
+      user_id: userId,
+      ...data
+    });
+  } catch (error) {
+    console.error('Failed to track match selected:', error);
+  }
+};
+
+/**
+ * Track when a match results in contact
+ */
+export const trackMatchContact = (
+  matchId: string,
+  userId: string,
+  contactMethod: 'message' | 'appointment' | 'call' | 'email',
+  data?: MatchEvent
+): void => {
+  try {
+    trackEvent('match_contact', {
+      match_id: matchId,
+      user_id: userId,
+      contact_method: contactMethod,
+      ...data
+    });
+  } catch (error) {
+    console.error('Failed to track match contact:', error);
+  }
+};
+
+/**
+ * Record a new match in the database with explanations
+ */
+export const recordMatch = async (
+  advisorId: string,
+  consumerId: string,
+  score: number,
+  explanations: string[]
+): Promise<string | null> => {
+  try {
+    // Save the match result
+    const { data, error } = await supabase
+      .from('match_history')
+      .insert({
+        advisor_id: advisorId,
+        consumer_id: consumerId,
+        score: score,
+        factors: { explanations },
+        algorithm_version: '1.0'
+      })
+      .select('id')
+      .single();
+    
+    if (error) {
+      handleError('Failed to record match', ErrorCategory.DATABASE);
+      return null;
+    }
+    
+    // Also track the event
+    trackEvent('match_recorded', {
+      match_id: data.id,
+      advisor_id: advisorId,
+      consumer_id: consumerId,
+      score: score
+    });
+    
+    return data.id;
+  } catch (error) {
+    handleError('Failed to record match', ErrorCategory.DATABASE);
+    return null;
+  }
+};
 
 /**
  * Track detailed information about a matching interaction

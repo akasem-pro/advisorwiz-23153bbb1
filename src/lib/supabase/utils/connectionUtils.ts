@@ -3,6 +3,12 @@ import { toast } from 'sonner';
 import { supabase } from '../../../integrations/supabase/client';
 import { ErrorCategory, handleError } from '../../../utils/errorHandling/errorHandler';
 
+// Import the checkSupabaseConnection function
+import { checkSupabaseConnection as checkSupabaseConn } from '../../../integrations/supabase/client';
+
+// Re-export the function
+export const checkSupabaseConnection = checkSupabaseConn;
+
 // Interface for offline change tracking
 interface OfflineChange {
   id: string;
@@ -202,8 +208,3 @@ export const syncOfflineChanges = async (): Promise<boolean> => {
     return false;
   }
 };
-
-/**
- * Export the checkSupabaseConnection function from client.ts
- */
-export { checkSupabaseConnection } from '../../../integrations/supabase/client';

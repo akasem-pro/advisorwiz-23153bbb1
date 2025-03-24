@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import * as dataLayer from '../lib/supabase/dataLayer';
@@ -147,6 +146,15 @@ export const useSupabase = () => {
     dataLayer.invalidateAllCache();
   }, []);
 
+  // Add tooltips functions
+  const getTooltips = useCallback((useCache: boolean = true) => {
+    return fetchData(() => dataLayer.getTooltips(useCache));
+  }, [fetchData]);
+  
+  const getTooltipByKey = useCallback((sectionKey: string, useCache: boolean = true) => {
+    return fetchData(() => dataLayer.getTooltipByKey(sectionKey, useCache));
+  }, [fetchData]);
+
   return {
     isOnline,
     isLoading,
@@ -170,12 +178,7 @@ export const useSupabase = () => {
     invalidateCache,
     invalidateAllCache,
     // Add tooltips functions
-    getTooltips: useCallback((useCache: boolean = true) => {
-      return fetchData(() => dataLayer.getTooltips(useCache));
-    }, [fetchData]),
-    
-    getTooltipByKey: useCallback((sectionKey: string, useCache: boolean = true) => {
-      return fetchData(() => dataLayer.getTooltipByKey(sectionKey, useCache));
-    }, [fetchData])
+    getTooltips,
+    getTooltipByKey
   };
 };

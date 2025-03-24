@@ -1,114 +1,111 @@
+import { supabase } from '../../integrations/supabase/client';
+import { trackEvent } from '../tagManager';
+import { handleError } from '../errorHandling/errorHandler';
 
-import { trackUserBehavior } from './eventTracker';
-import { storeAnalyticsMetric } from '../performance/core';
-import { Variant } from '../abTesting';
+interface ABTestResult {
+  testId: string;
+  variantId: string;
+  userId?: string;
+  converted: boolean;
+  exposureTimestamp: string;
+  conversionTimestamp?: string;
+}
+
+interface ABTestDefinition {
+  id: string;
+  name: string;
+  description: string;
+  variants: { id: string; name: string }[];
+  startDate: string;
+  endDate: string;
+  status: 'active' | 'paused' | 'completed';
+}
 
 /**
- * Track which variant a user was shown in an A/B test
- * 
- * @param experimentId Unique identifier for the experiment
- * @param variantId The variant identifier that was shown
- * @param userId Optional user ID
+ * Record when a user is exposed to an A/B test variant
  */
-export const trackVariantImpression = async (
-  experimentId: string,
+export const trackABTestExposure = async (
+  testId: string,
   variantId: string,
   userId?: string
 ): Promise<void> => {
   try {
-    // Track as user behavior
-    await trackUserBehavior('experiment_impression', userId, {
-      experiment_id: experimentId,
+    // Record in analytics system
+    trackEvent('ab_test_exposure', {
+      test_id: testId,
       variant_id: variantId,
-      timestamp: new Date().toISOString()
+      user_id: userId
     });
     
-    // Store metrics for analysis
-    await storeAnalyticsMetric(
-      'ab_test',
-      `${experimentId}_impression`,
-      1,
-      'variant_id',
-      variantId
-    );
+    // Log to console in development
+    if (process.env.NODE_ENV === 'development') {
+      console.info(`A/B Test Exposure: ${testId} / ${variantId}`);
+    }
   } catch (error) {
-    console.error('Failed to track variant impression:', error);
+    console.error('Failed to track A/B test exposure:', error);
   }
 };
 
 /**
- * Track a conversion event for an A/B test
- * 
- * @param experimentId Unique identifier for the experiment
- * @param variantId Variant identifier that was shown to the user
- * @param conversionType Type of conversion (e.g., 'click', 'signup', 'purchase')
- * @param userId Optional user ID
- * @param value Optional conversion value (e.g., purchase amount)
+ * Record when a user converts on an A/B test variant
  */
-export const trackVariantConversion = async (
-  experimentId: string,
+export const trackABTestConversion = async (
+  testId: string,
   variantId: string,
-  conversionType: string,
   userId?: string,
-  value?: number
+  additionalData?: Record<string, any>
 ): Promise<void> => {
   try {
-    // Track as user behavior
-    await trackUserBehavior('experiment_conversion', userId, {
-      experiment_id: experimentId,
+    // Record in analytics system
+    trackEvent('ab_test_conversion', {
+      test_id: testId,
       variant_id: variantId,
-      conversion_type: conversionType,
-      value: value,
-      timestamp: new Date().toISOString()
+      user_id: userId,
+      ...additionalData
     });
     
-    // Store metrics for analysis
-    await storeAnalyticsMetric(
-      'ab_test',
-      `${experimentId}_conversion_${conversionType}`,
-      value || 1,
-      'variant_id',
-      variantId
-    );
-    
-    // Store conversion rate data (can be used for calculating rates)
-    await storeAnalyticsMetric(
-      'ab_test_conversion',
-      experimentId,
-      1,
-      'variant_id',
-      variantId
-    );
+    // Log to console in development
+    if (process.env.NODE_ENV === 'development') {
+      console.info(`A/B Test Conversion: ${testId} / ${variantId}`);
+    }
   } catch (error) {
-    console.error('Failed to track variant conversion:', error);
+    console.error('Failed to track A/B test conversion:', error);
   }
 };
 
 /**
- * Calculate conversion rate for an experiment variant
- * This would typically be called from an admin dashboard
- * 
- * @param experimentId Unique identifier for the experiment
- * @param variantId Variant identifier
- * @returns Promise resolving to the conversion rate as a percentage
+ * Get the user's assigned variant for an A/B test
  */
-export const getVariantConversionRate = async (
-  experimentId: string,
-  variantId: string
-): Promise<number> => {
+export const getABTestVariant = async (
+  testId: string,
+  userId?: string
+): Promise<string | null> => {
   try {
-    // This is a placeholder for a database query that would:
-    // 1. Count impressions for this variant
-    // 2. Count conversions for this variant
-    // 3. Calculate the rate
+    // In a real implementation, this would check a user's persistent assignment
+    // For simplicity in this example, we'll use a random assignment
     
-    // In a real implementation, this would query your analytics tables
-    console.log(`Calculating conversion rate for ${experimentId}/${variantId}`);
+    // Get test definition to know available variants
+    const { data: testData, error } = await supabase
+      .from('ab_tests')
+      .select('variants')
+      .eq('id', testId)
+      .single();
     
-    // Placeholder implementation
-    return 0;
+    if (error) {
+      throw new Error(error.message);
+    }
+    
+    const variants = testData?.variants || [];
+    
+    if (variants.length === 0) {
+      return null;
+    }
+    
+    // Get a random variant
+    const randomIndex = Math.floor(Math.random() * variants.length);
+    return variants[randomIndex].id;
   } catch (error) {
-    console.error('Failed to get variant conversion rate:', error);
-    return 0;
+    console.error('Failed to get A/B test variant:', error);
+    return null;
   }
 };
