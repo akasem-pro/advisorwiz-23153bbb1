@@ -1,6 +1,6 @@
 
 import UserContext from './UserContextDefinition';
-import { UserProvider } from './UserProvider';
+import { UserProviderRefactored as UserProvider } from './UserProviderRefactored';
 import { useContext } from 'react';
 
 // Re-export all the types

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -15,6 +14,7 @@ import { CallSession, CallStatus } from '../../types/callTypes';
 import { AdvisorProfile, ConsumerProfile } from '../../types/userTypes';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatDuration } from '../../utils/formatters';
+import { useUser } from '../../context/UserContext';
 
 interface CallInterfaceProps {
   callSession: CallSession | null;
@@ -45,7 +45,6 @@ const CallInterface: React.FC<CallInterfaceProps> = ({
   const isConnected = callSession?.status === 'connected';
   const isIncoming = callSession?.recipientId === localUser?.id;
   
-  // Start call timer when connected
   useEffect(() => {
     if (isConnected && !timerRef.current) {
       const startTime = new Date().getTime();
@@ -64,7 +63,6 @@ const CallInterface: React.FC<CallInterfaceProps> = ({
     };
   }, [isConnected]);
   
-  // Handle call end
   const endCall = () => {
     if (callSession) {
       onStatusChange(callSession.id, 'completed');
@@ -72,14 +70,12 @@ const CallInterface: React.FC<CallInterfaceProps> = ({
     onClose();
   };
   
-  // Handle answer call
   const answerCall = () => {
     if (callSession) {
       onStatusChange(callSession.id, 'connected');
     }
   };
   
-  // Handle decline call
   const declineCall = () => {
     if (callSession) {
       onStatusChange(callSession.id, 'declined');
@@ -87,12 +83,10 @@ const CallInterface: React.FC<CallInterfaceProps> = ({
     onClose();
   };
   
-  // Toggle mute
   const toggleMute = () => {
     setIsMuted(!isMuted);
   };
   
-  // Toggle video
   const toggleVideo = () => {
     setIsVideoEnabled(!isVideoEnabled);
   };
@@ -101,7 +95,6 @@ const CallInterface: React.FC<CallInterfaceProps> = ({
     <Dialog open={isOpen} onOpenChange={(open) => !open && endCall()}>
       <DialogContent className="sm:max-w-md">
         <div className="flex flex-col items-center space-y-4">
-          {/* Call header */}
           <div className="text-center">
             <h3 className="font-semibold text-lg">
               {isConnected ? 'Call in progress' : isIncoming ? 'Incoming Call' : 'Calling...'}
@@ -116,7 +109,6 @@ const CallInterface: React.FC<CallInterfaceProps> = ({
             )}
           </div>
           
-          {/* User display */}
           <div className={`relative ${isVideoCall && isVideoEnabled ? 'w-full h-64' : 'w-24 h-24'}`}>
             {isVideoCall && isVideoEnabled ? (
               <div className="w-full h-full bg-slate-900 rounded-lg overflow-hidden relative">
@@ -127,7 +119,6 @@ const CallInterface: React.FC<CallInterfaceProps> = ({
                   muted={false}
                 />
                 
-                {/* PIP local video */}
                 <div className="absolute bottom-2 right-2 w-1/4 h-1/4 rounded overflow-hidden border-2 border-background">
                   <video
                     ref={localVideoRef}
@@ -147,7 +138,6 @@ const CallInterface: React.FC<CallInterfaceProps> = ({
             )}
           </div>
           
-          {/* Call controls */}
           <div className="flex space-x-4 pt-4">
             {isConnected ? (
               <>

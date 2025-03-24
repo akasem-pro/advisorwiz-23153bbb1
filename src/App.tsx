@@ -10,7 +10,7 @@ import FirmProfile from './pages/FirmProfile';
 import ConsumerDashboard from './pages/ConsumerDashboard';
 import AdvisorDashboard from './pages/AdvisorDashboard';
 import FirmDashboard from './pages/FirmDashboard';
-import { UserProvider } from './context/UserProvider';
+import { UserProvider } from './context/UserContext';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import Home from './pages/Home';
 import ForFirms from './pages/ForFirms';
