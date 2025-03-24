@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -17,7 +17,10 @@ import {
   LineChart,
   MessageSquare,
   ShieldCheck,
-  Percent
+  Percent,
+  Wifi,
+  WifiOff,
+  Coffee
 } from 'lucide-react';
 import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
 import { Input } from '../components/ui/input';
@@ -166,6 +169,25 @@ const ConsumerProfile: React.FC = () => {
     appointments: [] as string[]
   });
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (!data?.user) {
+          toast.error("You must be signed in to update your profile");
+          setTimeout(() => {
+            navigate('/sign-in', { state: { returnUrl: '/consumer-profile' } });
+          }, 1500);
+        }
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+        toast.error("Authentication error occurred");
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
     
@@ -212,6 +234,27 @@ const ConsumerProfile: React.FC = () => {
     }));
   };
 
+  const handleOnlineStatusChange = (status: 'online' | 'offline' | 'away') => {
+    setFormData(prev => ({
+      ...prev,
+      onlineStatus: status
+    }));
+  };
+
+  const handleToggleOnlineStatus = () => {
+    setFormData(prev => ({
+      ...prev,
+      showOnlineStatus: !prev.showOnlineStatus
+    }));
+  };
+
+  const handleToggleChat = () => {
+    setFormData(prev => ({
+      ...prev,
+      chatEnabled: !prev.chatEnabled
+    }));
+  };
+
   const handleNextStep = () => {
     if (currentStep === 1) {
       if (!formData.firstName || !formData.lastName || !formData.email) {
@@ -250,7 +293,7 @@ const ConsumerProfile: React.FC = () => {
       toast.error("You must be signed in to save your profile");
       setTimeout(() => {
         navigate('/sign-in', { state: { returnUrl: '/consumer-profile' } });
-      }, 2000);
+      }, 1500);
       return;
     }
     
@@ -918,6 +961,91 @@ const ConsumerProfile: React.FC = () => {
                 <label htmlFor="education-no" className="ml-2 block text-sm text-gray-700">No</label>
               </div>
             </div>
+          </div>
+          
+          {renderChatPreferences()}
+        </div>
+      </div>
+    );
+  };
+
+  const renderChatPreferences = () => {
+    return (
+      <div className="mt-6 border-t pt-6 border-gray-200">
+        <div className="flex items-center mb-4">
+          <MessageCircle className="w-5 h-5 text-teal-600 mr-2" />
+          <h3 className="text-lg font-medium text-navy-800">Chat Preferences</h3>
+        </div>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-navy-800 mb-3">
+              Online Status
+            </label>
+            <div className="flex space-x-3">
+              <button
+                type="button"
+                onClick={() => handleOnlineStatusChange('online')}
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  formData.onlineStatus === 'online'
+                    ? 'bg-teal-100 text-teal-700 border border-teal-300'
+                    : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
+                }`}
+              >
+                <Wifi className="w-4 h-4 mr-2" />
+                Online
+              </button>
+              <button
+                type="button"
+                onClick={() => handleOnlineStatusChange('away')}
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  formData.onlineStatus === 'away'
+                    ? 'bg-amber-100 text-amber-700 border border-amber-300'
+                    : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
+                }`}
+              >
+                <Coffee className="w-4 h-4 mr-2" />
+                Away
+              </button>
+              <button
+                type="button"
+                onClick={() => handleOnlineStatusChange('offline')}
+                className={`flex items-center px-3 py-2 rounded-md ${
+                  formData.onlineStatus === 'offline'
+                    ? 'bg-gray-200 text-gray-700 border border-gray-300'
+                    : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
+                }`}
+              >
+                <WifiOff className="w-4 h-4 mr-2" />
+                Offline
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="showOnlineStatus"
+              checked={formData.showOnlineStatus}
+              onChange={handleToggleOnlineStatus}
+              className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+            />
+            <label htmlFor="showOnlineStatus" className="ml-2 block text-sm text-gray-700">
+              Show my online status to matched advisors
+            </label>
+          </div>
+          
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="chatEnabled"
+              checked={formData.chatEnabled}
+              onChange={handleToggleChat}
+              className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+            />
+            <label htmlFor="chatEnabled" className="ml-2 block text-sm text-gray-700">
+              Enable in-app chat messaging
+            </label>
           </div>
         </div>
       </div>

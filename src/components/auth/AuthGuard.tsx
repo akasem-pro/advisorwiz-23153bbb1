@@ -31,6 +31,12 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
         } else if (data?.user) {
           console.log("[AuthGuard] User authenticated via Supabase:", data.user.email);
           setIsAuthenticated(true);
+          
+          // Support for development with mock user
+          if (process.env.NODE_ENV === 'development' && data.user.id === 'mock-user-id') {
+            console.log("[AuthGuard] Using mock authentication in development");
+            setIsAuthenticated(true);
+          }
         } else {
           console.log("[AuthGuard] No authenticated user found in Supabase");
           setIsAuthenticated(false);
@@ -44,7 +50,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
     };
     
     verifyAuth();
-  }, [setIsAuthenticated]);
+  }, [setIsAuthenticated, location.pathname]);
   
   // Show loading state while checking
   if (checking) {

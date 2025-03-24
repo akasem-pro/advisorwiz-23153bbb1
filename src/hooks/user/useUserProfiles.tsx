@@ -35,7 +35,15 @@ export const useUserProfiles = () => {
   const saveProfileChanges = async () => {
     try {
       // Double-check authentication both in our state and with Supabase
-      const { data } = await supabase.auth.getUser();
+      const { data, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error("[useUserProfiles] Auth error when checking user:", authError);
+        toast.error("Authentication error. Please sign in again.");
+        setIsAuthenticated(false);
+        return false;
+      }
+      
       const user = data?.user;
       
       if (!user) {
@@ -47,6 +55,17 @@ export const useUserProfiles = () => {
 
       // Set authenticated if we have a user (in case our state was wrong)
       setIsAuthenticated(true);
+      
+      // For development and testing with mock data
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      const mockUserIdMatch = user.id === 'mock-user-id';
+      
+      if (isDevelopment && mockUserIdMatch) {
+        console.log("[useUserProfiles] Using mock user ID in development environment");
+        // For mock users in development, simulate a successful save
+        toast.success("Profile saved successfully (development mode)");
+        return true;
+      }
       
       let success = false;
       
