@@ -37,11 +37,17 @@ const NetworkRetryButton: React.FC<NetworkRetryButtonProps> = ({
     }
   };
   
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onRetry();
+  };
+  
   return (
     <Button 
       variant={variant} 
       size={size} 
-      onClick={onRetry} 
+      onClick={handleClick} 
       disabled={isConnecting}
       className={`${getButtonStyles()} ${className}`}
     >

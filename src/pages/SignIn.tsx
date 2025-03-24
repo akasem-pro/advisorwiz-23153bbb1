@@ -52,7 +52,11 @@ const SignIn: React.FC = () => {
     retryConnection
   } = useAuthFormSubmit();
   
-  const handleSignInSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignInSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+    if (e) {
+      e.preventDefault();
+    }
+    
     await handleSignIn(
       e, 
       signInEmail, 
@@ -63,7 +67,11 @@ const SignIn: React.FC = () => {
     );
   };
   
-  const handleSignUpSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignUpSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+    if (e) {
+      e.preventDefault();
+    }
+    
     await handleSignUp(
       e, 
       signUpEmail, 
@@ -87,11 +95,9 @@ const SignIn: React.FC = () => {
     
     if (isOnline) {
       if (activeTab === 'signin' && signInEmail && signInPassword) {
-        const syntheticEvent = {} as React.FormEvent<HTMLFormElement>;
-        await handleSignInSubmit(syntheticEvent);
+        await handleSignInSubmit();
       } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
-        const syntheticEvent = {} as React.FormEvent<HTMLFormElement>;
-        await handleSignUpSubmit(syntheticEvent);
+        await handleSignUpSubmit();
       }
     }
   };
