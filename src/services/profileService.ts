@@ -50,7 +50,8 @@ export const fetchUserProfile = async (userId: string, userType: UserType) => {
         financialGoals: consumerData?.financial_goals || [],
         incomeBracket: consumerData?.income_bracket || '',
         preferredAdvisorSpecialties: consumerData?.preferred_advisor_specialties || [],
-        languages: profileData?.languages || [],
+        // Check if languages exists on profileData, if not use an empty array
+        languages: (profileData as any)?.languages || [],
         matches: [],
         chats: [],
         profilePicture: profileData?.avatar_url || '',
@@ -87,7 +88,8 @@ export const fetchUserProfile = async (userId: string, userType: UserType) => {
         isAccredited: advisorData?.is_accredited === true,
         website: advisorData?.website || '',
         testimonials: [],
-        languages: profileData?.languages || ['english'],
+        // Check if languages exists in advisorData first, fall back to profileData, then empty array
+        languages: advisorData?.languages || (profileData as any)?.languages || ['english'],
         pricing: {
           hourlyRate: advisorData?.hourly_rate,
           portfolioFee: advisorData?.portfolio_fee
@@ -145,6 +147,7 @@ export const updateUserProfile = async (
       online_status: profileData.onlineStatus,
       last_online: profileData.lastOnline,
       show_online_status: profileData.showOnlineStatus,
+      user_type: userType,
       updated_at: new Date().toISOString()
     };
     
@@ -153,7 +156,6 @@ export const updateUserProfile = async (
       .from('profiles')
       .upsert({
         id: user.id,
-        user_type: userType,
         ...baseProfileData
       }, {
         onConflict: 'id'
@@ -209,6 +211,8 @@ export const updateUserProfile = async (
         years_of_experience: advisorProfile.yearsOfExperience,
         biography: advisorProfile.biography,
         certifications: advisorProfile.certifications,
+        // Update the languages field if it exists
+        languages: advisorProfile.languages,
         updated_at: new Date().toISOString()
       };
       
