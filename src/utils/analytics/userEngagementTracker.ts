@@ -1,3 +1,4 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { trackEvent } from '../tagManager';
 import { ErrorCategory, handleError } from '../errorHandling/errorHandler';
@@ -14,7 +15,7 @@ export const trackUserEngagement = (event: string, userId?: string, properties?:
       ...properties
     });
   } catch (error) {
-    handleError('Failed to track user engagement', ErrorCategory.UNKNOWN);
+    handleError('Failed to track user engagement', ErrorCategory.UNKNOWN, true);
   }
 };
 
@@ -29,7 +30,7 @@ export const trackSessionDuration = (durationMs: number, userId?: string): void 
       user_id: userId
     });
   } catch (error) {
-    handleError('Failed to track session duration', ErrorCategory.UNKNOWN);
+    handleError('Failed to track session duration', ErrorCategory.UNKNOWN, true);
   }
 };
 
@@ -54,7 +55,7 @@ export const trackFeatureEngagement = (
       user_id: userId
     });
   } catch (error) {
-    handleError('Failed to track feature engagement', ErrorCategory.UNKNOWN);
+    handleError('Failed to track feature engagement', ErrorCategory.UNKNOWN, true);
   }
 };
 
@@ -74,7 +75,7 @@ export const trackPageViewDuration = (
       user_id: userId
     });
   } catch (error) {
-    handleError('Failed to track page view duration', ErrorCategory.UNKNOWN);
+    handleError('Failed to track page view duration', ErrorCategory.UNKNOWN, true);
   }
 };
 
@@ -88,6 +89,6 @@ export const trackOnboardingCompletion = (userId?: string): void => {
       user_id: userId
     });
   } catch (error) {
-    handleError('Failed to track onboarding completion', ErrorCategory.UNKNOWN);
+    handleError('Failed to track onboarding completion', ErrorCategory.UNKNOWN, true);
   }
 };

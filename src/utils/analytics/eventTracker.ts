@@ -1,8 +1,49 @@
+
 import { supabase } from '../../integrations/supabase/client';
-import { trackEvent as trackGTMEvent } from '../tagManager';
+import { trackEvent } from '../tagManager';
 import { ErrorCategory, handleError } from '../errorHandling/errorHandler';
 import { storeAnalyticsMetric } from '../performance/core';
-import { UserBehaviorEvent } from './types';
+
+// Define common user behavior events for consistent tracking
+export enum UserBehaviorEvent {
+  // Page interaction events
+  PAGE_VIEW = 'page_view',
+  
+  // Authentication events
+  SIGN_UP = 'sign_up',
+  LOGIN = 'login',
+  
+  // Profile events
+  PROFILE_VIEW = 'profile_view',
+  PROFILE_EDIT = 'profile_edit',
+  
+  // Matching events
+  MATCH_VIEW = 'match_view',
+  MATCH_CLICK = 'match_click',
+  MATCH_FEEDBACK = 'match_feedback',
+  
+  // Advisor interaction events
+  ADVISOR_CONTACT = 'advisor_contact',
+  
+  // Appointment events
+  APPOINTMENT_SCHEDULED = 'appointment_scheduled',
+  APPOINTMENT_COMPLETED = 'appointment_completed',
+  APPOINTMENT_CANCELED = 'appointment_canceled',
+  
+  // Feedback events
+  FEEDBACK_SUBMITTED = 'feedback_submitted',
+  
+  // Feature usage events
+  FEATURE_USED = 'feature_used',
+  
+  // Search events
+  SEARCH_PERFORMED = 'search_performed',
+  FILTER_APPLIED = 'filter_applied',
+  SORT_APPLIED = 'sort_applied',
+  
+  // Preference events
+  PREFERENCE_UPDATED = 'preference_updated'
+}
 
 /**
  * Track a user behavior event with detailed analytics
@@ -64,7 +105,7 @@ export const trackFeatureUsage = async (
 ): Promise<void> => {
   try {
     // Track in GTM
-    trackGTMEvent('feature_used', {
+    trackEvent('feature_used', {
       feature_name: featureName,
       user_id: userId
     });
@@ -82,6 +123,6 @@ export const trackFeatureUsage = async (
       console.error('Failed to record feature usage in database:', error);
     }
   } catch (error) {
-    handleError('Failed to track feature usage', ErrorCategory.UNKNOWN);
+    handleError('Failed to track feature usage', ErrorCategory.UNKNOWN, true);
   }
 };

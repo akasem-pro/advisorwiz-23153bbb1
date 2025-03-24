@@ -77,3 +77,12 @@ export interface ABTestMetric {
   metricName: string;
   metricValue: number;
 }
+
+// Tooltip content interface
+export interface TooltipContent {
+  id: string;
+  title: string;
+  description: string;
+  section_key: string;
+  created_at?: string;
+}

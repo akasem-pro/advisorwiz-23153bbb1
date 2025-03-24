@@ -1,3 +1,4 @@
+
 // Main exports file for performance tracking functionality
 // Re-exports functions from more focused modules
 
@@ -23,24 +24,19 @@ import { implementResourceHints } from './performance/resourceHints';
 
 // Import from analytics modules
 import { trackVisitorActivity } from './analytics/visitorTracking';
-import { trackFeatureUsage } from './analytics/eventTracker';
+import { trackFeatureUsage, UserBehaviorEvent, trackUserBehavior } from './analytics/eventTracker';
 import { trackAIInteraction } from './analytics/aiTracking';
 import { recordMatchHistory } from './analytics/matchTracker';
-import { 
-  trackUserBehavior, 
-  UserBehaviorEvent
-} from './analytics/eventTracker';
-import { 
-  trackMatchingInteraction, 
-  trackPageView,
-  trackPreferenceUpdate 
-} from './analytics/matchTracker';
 import { trackFeatureEngagement } from './analytics/userEngagementTracker';
 import { trackMatchEngagement } from './analytics/matchEngagementTracker';
 import { 
   trackABTestExposure, 
   trackABTestConversion 
 } from './analytics/abTestTracker';
+
+// Import directly from relevant files
+import { trackPageView } from './analytics/pageTracker';
+import { trackPreferenceUpdate } from './analytics/preferenceTracker';
 
 // Core performance tracking
 export {
@@ -78,7 +74,7 @@ export {
   
   // User behavior tracking
   trackUserBehavior,
-  trackMatchingInteraction, 
+  trackUserBehavior as trackMatchingInteraction, 
   trackPageView,
   trackPreferenceUpdate,
   UserBehaviorEvent,

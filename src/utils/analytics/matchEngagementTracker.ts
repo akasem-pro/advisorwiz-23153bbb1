@@ -1,3 +1,4 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { trackEvent } from '../tagManager';
 import { ErrorCategory, handleError } from '../errorHandling/errorHandler';
@@ -67,6 +68,6 @@ export const trackMatchCardInteraction = async (
     console.log(`[Match Interaction] Recording ${action} for profile ${profileId} by user ${userId || 'anonymous'}`);
     
   } catch (error) {
-    handleError('Failed to track match card interaction', ErrorCategory.UNKNOWN);
+    handleError('Failed to track match card interaction', ErrorCategory.UNKNOWN, true);
   }
 };

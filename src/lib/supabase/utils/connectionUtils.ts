@@ -1,3 +1,4 @@
+
 import { supabase } from '../../../integrations/supabase/client';
 import { handleError, ErrorCategory } from '../../../utils/errorHandling/errorHandler';
 
@@ -11,7 +12,7 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     return true;
   } catch (error) {
     // Log the error and return false
-    handleError('Failed to connect to Supabase', ErrorCategory.CONNECTION);
+    handleError('Failed to connect to Supabase', ErrorCategory.NETWORK);
     return false;
   }
 };
@@ -26,7 +27,7 @@ export const isSupabaseOnline = async (): Promise<boolean> => {
     return isConnected;
   } catch (error) {
     // Log the error and return false
-    handleError('Failed to check connection status', ErrorCategory.CONNECTION);
+    handleError('Failed to check connection status', ErrorCategory.NETWORK);
     return false;
   }
 };
@@ -45,7 +46,45 @@ export const recoverSupabaseConnection = async (): Promise<boolean> => {
     return isConnected;
   } catch (error) {
     // Log the error and return false
-    handleError('Connection recovery failed', ErrorCategory.CONNECTION);
+    handleError('Connection recovery failed', ErrorCategory.NETWORK);
     return false;
   }
+};
+
+/**
+ * Check connection status (alias for isSupabaseOnline)
+ */
+export const checkConnection = async (): Promise<boolean> => {
+  return await isSupabaseOnline();
+};
+
+/**
+ * Sync offline changes back to Supabase when connection is restored
+ */
+export const syncOfflineChanges = async (): Promise<boolean> => {
+  try {
+    // In a real implementation, this would sync cached data
+    // For now, just return true as a mock implementation
+    console.log('Syncing offline changes...');
+    return true;
+  } catch (error) {
+    handleError('Failed to sync offline changes', ErrorCategory.NETWORK);
+    return false;
+  }
+};
+
+/**
+ * Setup connection listener for Supabase
+ */
+export const setupConnectionListener = (
+  onConnectionChange?: (isConnected: boolean) => void
+): () => void => {
+  const checkInterval = setInterval(async () => {
+    const isConnected = await checkConnection();
+    if (onConnectionChange) {
+      onConnectionChange(isConnected);
+    }
+  }, 30000); // Check every 30 seconds
+  
+  return () => clearInterval(checkInterval);
 };

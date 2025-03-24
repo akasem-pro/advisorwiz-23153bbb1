@@ -1,6 +1,7 @@
+
 import { supabase } from '../../integrations/supabase/client';
 import { trackEvent } from '../tagManager';
-import { handleError, ErrorCategory } from '../errorHandling/errorHandler';
+import { ErrorCategory, handleError } from '../errorHandling/errorHandler';
 import { storeAnalyticsMetric } from '../performance/core';
 import { MatchAction } from './types';
 
@@ -42,7 +43,8 @@ export const trackMatchingInteraction = async (
   } catch (error) {
     handleError(
       `Failed to track matching interaction: ${action}`,
-      ErrorCategory.UNKNOWN
+      ErrorCategory.UNKNOWN,
+      true
     );
   }
 };
@@ -68,7 +70,7 @@ export const recordMatchHistory = async (
       notes: notes
     });
   } catch (error) {
-    handleError('Failed to record match history', ErrorCategory.UNKNOWN);
+    handleError('Failed to record match history', ErrorCategory.UNKNOWN, true);
   }
 };
 
@@ -121,4 +123,29 @@ export const trackUserBehavior = async (
   } catch (error) {
     console.error('Failed to track user behavior:', error);
   }
+};
+
+/**
+ * Track page view for analytics
+ */
+export const trackPageView = async (
+  pageTitle: string,
+  pagePath: string,
+  userId?: string,
+  properties?: Record<string, any>
+): Promise<void> => {
+  // Implementation to be added
+  console.log(`Page view tracked: ${pageTitle} - ${pagePath}`);
+};
+
+/**
+ * Track preference updates
+ */
+export const trackPreferenceUpdate = async (
+  userId: string,
+  prevPreferences: Record<string, any>,
+  newPreferences: Record<string, any>
+): Promise<void> => {
+  // Implementation to be added
+  console.log(`Preference update tracked for user: ${userId}`);
 };
