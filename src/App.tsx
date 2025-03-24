@@ -24,6 +24,7 @@ import ForAdvisors from './pages/ForAdvisors';
 import ForConsumers from './pages/ForConsumers';
 import Careers from './pages/Careers';
 import AboutUs from './pages/AboutUs';
+import Resources from './pages/Resources';
 
 const App: React.FC = () => {
   return (
@@ -47,6 +48,7 @@ const App: React.FC = () => {
           <Route path="/careers" element={<Careers />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/resources" element={<Resources />} />
           
           {/* Protected Profile Routes */}
           <Route path="/consumer-profile" element={<ConsumerProfile />} />

@@ -26,6 +26,10 @@ const navigationLinks = [
     path: '/for-consumers',
   },
   {
+    name: 'Resources',
+    path: '/resources',
+  },
+  {
     name: 'About Us',
     path: '/about',
   },
