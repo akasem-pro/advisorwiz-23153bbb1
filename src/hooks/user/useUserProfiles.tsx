@@ -6,7 +6,8 @@ import {
 } from '../../types/profileTypes';
 import { useUserProfileState } from './useUserProfileState';
 import { useProfileStatusUpdater } from './useProfileStatusUpdater';
-import { updateConsumerProfile, updateAdvisorProfile } from '../../services/profiles/consumerProfileService';
+import { updateConsumerProfile } from '../../services/profiles/consumerProfileService';
+import { updateAdvisorProfile } from '../../services/profiles/advisorProfileService';
 import { supabase } from '../../integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -66,12 +67,26 @@ export const useUserProfiles = () => {
     }
   };
 
+  // Handle profile updates and sync with database
+  const handleProfileUpdate = async (profileData: any) => {
+    if (userType === 'consumer') {
+      setConsumerProfile({ ...consumerProfile, ...profileData });
+      return await saveProfileChanges();
+    } else if (userType === 'advisor') {
+      setAdvisorProfile({ ...advisorProfile, ...profileData });
+      return await saveProfileChanges();
+    }
+    
+    return false;
+  };
+
   return {
     userType, setUserType,
     consumerProfile, setConsumerProfile,
     advisorProfile, setAdvisorProfile,
     isAuthenticated, setIsAuthenticated,
     updateOnlineStatus,
-    saveProfileChanges
+    saveProfileChanges,
+    handleProfileUpdate
   };
 };

@@ -31,7 +31,8 @@ export type UserContextType = {
   setAdvisorProfile: (profile: AdvisorProfile | null) => void;
   isAuthenticated: boolean;
   setIsAuthenticated: (value: boolean) => void;
-  handleProfileUpdate: (profileData: any) => Promise<void>;
+  handleProfileUpdate: (profileData: any) => Promise<boolean>;
+  saveProfileChanges: () => Promise<boolean>;
   chats: Chat[];
   setChats: (chats: Chat[]) => void;
   addMessage: (chatId: string, message: Omit<ChatMessage, 'id'>) => void;
@@ -81,9 +82,7 @@ export type MatchPreferences = {
   prioritizeLocation?: boolean;
   minimumMatchScore?: number;
   excludedCategories?: ServiceCategory[];
-  // Consider call interaction data
   considerInteractionData?: boolean;
-  // Dynamic weight factors (0-100)
   weightFactors?: {
     language?: number;
     expertise?: number;
@@ -103,7 +102,8 @@ const UserContext = createContext<UserContextType>({
   setAdvisorProfile: () => {},
   isAuthenticated: false,
   setIsAuthenticated: () => {},
-  handleProfileUpdate: async () => {},
+  handleProfileUpdate: async () => false,
+  saveProfileChanges: async () => false,
   chats: [],
   setChats: () => {},
   addMessage: () => {},
@@ -138,13 +138,11 @@ const UserContext = createContext<UserContextType>({
   },
   getTopMatches: () => [],
   getRecommendedMatches: () => [],
-  // New call functionality
   callSessions: [],
   initiateCall: () => null,
   updateCallStatus: () => {},
   activeCall: null,
   callMetrics: [],
-  // New lead tracking functionality
   leads: [],
   addLead: () => "",
   updateLeadStatus: () => {},

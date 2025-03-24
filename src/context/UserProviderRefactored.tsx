@@ -1,3 +1,4 @@
+
 import React, { ReactNode } from 'react';
 import UserContext from './UserContextDefinition';
 import { useUserProfiles } from '../hooks/user/useUserProfiles';
@@ -22,7 +23,8 @@ export const UserProviderRefactored = ({ children }: { children: ReactNode }) =>
     advisorProfile, setAdvisorProfile,
     isAuthenticated, setIsAuthenticated,
     updateOnlineStatus,
-    saveProfileChanges
+    saveProfileChanges,
+    handleProfileUpdate
   } = useUserProfiles();
 
   // Initialize profiles based on authentication
@@ -96,21 +98,6 @@ export const UserProviderRefactored = ({ children }: { children: ReactNode }) =>
     appointments,
     callMetrics
   );
-
-  // Handle profile updates and sync with database
-  const handleProfileUpdate = async (profileData: any) => {
-    if (!user) return false;
-
-    if (userType === 'consumer') {
-      setConsumerProfile({ ...consumerProfile, ...profileData });
-      return await saveProfileChanges();
-    } else if (userType === 'advisor') {
-      setAdvisorProfile({ ...advisorProfile, ...profileData });
-      return await saveProfileChanges();
-    }
-    
-    return false;
-  };
 
   const value = {
     // User profiles
