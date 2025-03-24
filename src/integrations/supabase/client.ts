@@ -30,11 +30,19 @@ export const supabase = createClient<Database>(
       params: {
         eventsPerSecond: 10
       }
+    },
+    // Add fetch configuration to improve reliability
+    fetch: (url, options) => {
+      const fetchOptions = {
+        ...options,
+        timeout: 30000, // 30 second timeout
+      };
+      return fetch(url, fetchOptions);
     }
   }
 );
 
-// Enhanced connection checker with more diagnostic information
+// Updated connection checker with better diagnostics and reliability
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
     console.log("[Supabase Debug] Starting connection check");
@@ -59,12 +67,12 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
       viewport: `${window.innerWidth}x${window.innerHeight}`,
     });
     
-    // Try to ping Supabase
+    // Try multiple endpoints for more reliable connection testing
     try {
       console.log("[Supabase Debug] Making lightweight health check to Supabase");
       const start = performance.now();
       
-      // Perform a super lightweight check by getting session (cached)
+      // Make a lightweight request to check Supabase connectivity
       const { data, error } = await supabase.auth.getSession();
       
       const end = performance.now();
@@ -72,19 +80,38 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
       
       if (error) {
         console.error("[Supabase Debug] Health check error:", error);
-        return false;
+        
+        // Try a fallback check with a direct fetch
+        try {
+          const response = await fetch(`${SUPABASE_URL}/auth/v1/`, {
+            method: 'HEAD',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (response.ok) {
+            console.log("[Supabase Debug] Fallback direct fetch successful");
+            return true;
+          }
+          
+          console.error("[Supabase Debug] Fallback direct fetch failed:", response.status);
+          return false;
+        } catch (fetchError) {
+          console.error("[Supabase Debug] Fallback fetch error:", fetchError);
+          return false;
+        }
       }
       
       console.log("[Supabase Debug] Health check successful, session exists:", !!data.session);
       return true;
     } catch (error) {
       console.error("[Supabase Debug] Health check exception:", error);
-      // Default to true to avoid blocking auth functionality
-      return true;
+      return false;
     }
   } catch (error) {
     console.error("[Supabase Debug] Connection check failed:", error);
-    // Default to true to prevent blocking auth functionality
-    return true;
+    return false;
   }
 };

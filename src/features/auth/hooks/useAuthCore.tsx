@@ -1,5 +1,4 @@
 
-import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthProvider';
 import { toast } from 'sonner';
 
@@ -8,7 +7,6 @@ import { toast } from 'sonner';
  */
 export const useAuthCore = () => {
   const { 
-    loading: authLoading, 
     networkStatus, 
     checkNetworkStatus,
     retryAttempts,
@@ -16,20 +14,18 @@ export const useAuthCore = () => {
     resetRetryAttempts
   } = useAuth();
   
-  // Watch for network status changes
-  useEffect(() => {
-    if (networkStatus === 'online' && retryAttempts > 0) {
-      toast.success("Connection restored! You can now try again.");
-    }
-  }, [networkStatus, retryAttempts]);
-  
   /**
    * Checks network status and handles retry attempts
    */
   const validateNetworkConnection = async (setFormError: (error: string) => void): Promise<boolean> => {
     try {
       // First check network status
-      const isOnline = await checkNetworkStatus();
+      const isOnline = await Promise.race([
+        checkNetworkStatus(),
+        // Add timeout to ensure we don't wait too long
+        new Promise<boolean>(resolve => setTimeout(() => resolve(false), 8000))
+      ]);
+      
       if (!isOnline) {
         setFormError('Unable to connect to authentication service. Please check your connection and try again.');
         incrementRetry();
@@ -40,8 +36,9 @@ export const useAuthCore = () => {
       return true;
     } catch (error) {
       console.error("Failed to validate network connection:", error);
-      // Default to online if checking fails to prevent blocking the form
-      return true;
+      setFormError('Connection check failed. Please try again.');
+      // Default to offline to trigger retry logic
+      return false;
     }
   };
   
@@ -57,20 +54,12 @@ export const useAuthCore = () => {
     console.error(`Failed to ${isSignIn ? 'sign in' : 'sign up'}:`, errorMessage);
     
     // Handle network and timeout errors
-    if (error.message?.includes('timeout') || 
+    if (!navigator.onLine || 
+        error.message?.includes('timeout') || 
         error.message?.includes('timed out') || 
         error.message?.includes('fetch failed') ||
-        error.message?.includes('Failed to fetch')) {
-      setFormError('Authentication request timed out. Please try again.');
-      incrementRetry();
-      return;
-    }
-    
-    // Handle offline errors
-    if (!navigator.onLine || 
-        error.message?.includes('network') || 
-        error.message?.includes('connection') || 
-        error.message?.includes('Unable to connect')) {
+        error.message?.includes('Failed to fetch') ||
+        error.message?.includes('network request failed')) {
       setFormError('Unable to connect to authentication service. Please check your connection and try again.');
       incrementRetry();
       return;
@@ -94,7 +83,6 @@ export const useAuthCore = () => {
   };
   
   return {
-    authLoading,
     networkStatus,
     validateNetworkConnection,
     handleAuthError,

@@ -21,8 +21,8 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
     error.toLowerCase().includes('timeout')
   );
   
-  // Only show network error if we're really offline
-  const showNetworkAlert = networkStatus === 'offline';
+  // Only show network error if we're really offline or if the error mentions connectivity
+  const showNetworkAlert = networkStatus === 'offline' || isNetworkError;
   
   return (
     <>
@@ -91,8 +91,6 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({ error, networkStatus, o
           </Alert>
         </div>
       )}
-      
-      {/* Don't show checking status alert as it might flicker */}
     </>
   );
 };

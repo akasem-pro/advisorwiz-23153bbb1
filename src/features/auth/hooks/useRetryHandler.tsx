@@ -25,33 +25,40 @@ export const useRetryHandler = () => {
     // Show loading state
     toast.loading('Checking connection...');
     
-    // Check network status with a timeout
-    const isOnline = await Promise.race([
-      checkNetworkStatus(),
-      new Promise<boolean>(resolve => setTimeout(() => resolve(false), 5000))
-    ]);
-    
-    console.log("Retry network check result:", isOnline ? "online" : "offline");
-    
-    // Dismiss loading toast
-    toast.dismiss();
-    
-    if (!isOnline) {
-      setFormError('Still unable to connect to authentication service. Please check your connection and try again.');
-      return;
-    }
-    
-    toast.success('Connection restored! Retrying...');
-    
-    // Create a synthetic event to pass to the form handlers
-    const syntheticEvent = {} as React.FormEvent<HTMLFormElement>;
-    
-    if (activeTab === 'signin' && signInEmail && signInPassword) {
-      await handleSignInSubmit(syntheticEvent);
-    } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
-      await handleSignUpSubmit(syntheticEvent);
-    } else {
-      setFormError('Please fill in all fields before retrying.');
+    // Try multiple endpoints to verify connection
+    try {
+      const isOnline = await Promise.race([
+        checkNetworkStatus(),
+        // Add timeout to ensure we don't wait too long
+        new Promise<boolean>(resolve => setTimeout(() => resolve(false), 7000))
+      ]);
+      
+      console.log("Retry network check result:", isOnline ? "online" : "offline");
+      
+      // Dismiss loading toast
+      toast.dismiss();
+      
+      if (!isOnline) {
+        setFormError('Still unable to connect to authentication service. Please check your connection and try again.');
+        return;
+      }
+      
+      toast.success('Connection restored! Retrying...');
+      
+      // Create a synthetic event to pass to the form handlers
+      const syntheticEvent = {} as React.FormEvent<HTMLFormElement>;
+      
+      if (activeTab === 'signin' && signInEmail && signInPassword) {
+        await handleSignInSubmit(syntheticEvent);
+      } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
+        await handleSignUpSubmit(syntheticEvent);
+      } else {
+        setFormError('Please fill in all fields before retrying.');
+      }
+    } catch (error) {
+      toast.dismiss();
+      console.error("Retry failed:", error);
+      setFormError('Connection check failed. Please try again later.');
     }
   };
   
