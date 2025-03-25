@@ -66,12 +66,12 @@ const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => 
         ...commonSteps,
         {
           target: '.advisors-section',
-          content: 'Manage your firm's advisors and their profiles.',
+          content: "Manage your firm's advisors and their profiles.",
           placement: 'bottom',
         },
         {
           target: '.analytics-section',
-          content: 'View analytics about your firm's performance and client engagement.',
+          content: "View analytics about your firm's performance and client engagement.",
           placement: 'bottom',
         },
       ];
