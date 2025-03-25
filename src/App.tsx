@@ -26,6 +26,7 @@ import Careers from './pages/Careers';
 import AboutUs from './pages/AboutUs';
 import Resources from './pages/Resources';
 import RealtimeSubscriptionProvider from './components/providers/RealtimeSubscriptionProvider';
+import Settings from './pages/Settings';
 
 const App: React.FC = () => {
   return (
@@ -61,6 +62,9 @@ const App: React.FC = () => {
             <Route path="/consumer-dashboard" element={<ConsumerDashboard />} />
             <Route path="/advisor-dashboard" element={<AdvisorDashboard />} />
             <Route path="/firm-dashboard" element={<FirmDashboard />} />
+            
+            {/* Settings Route */}
+            <Route path="/settings" element={<Settings />} />
             
             {/* Fallback Route */}
             <Route path="*" element={<Home />} />
