@@ -22,7 +22,7 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfileImage }) => {
   const navigate = useNavigate();
-  const { userType } = useUser();
+  const { userType, isAuthenticated } = useUser();
   const { signOut, user } = useAuth();
 
   const handleSignOut = async () => {
@@ -39,6 +39,13 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
   const handleProfileClick = () => {
     console.log('Profile clicked, navigating to profile for userType:', userType);
     
+    // Make sure we're authenticated first
+    if (!user && !isAuthenticated) {
+      toast.error('Please sign in to access your profile');
+      navigate('/sign-in');
+      return;
+    }
+    
     // Default to consumer profile if userType is not set
     if (!userType || userType === 'consumer') {
       navigate('/consumer-profile');
@@ -51,6 +58,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
 
   const handleSettingsClick = () => {
     console.log('Settings clicked, navigating to settings');
+    
+    // Make sure we're authenticated first
+    if (!user && !isAuthenticated) {
+      toast.error('Please sign in to access settings');
+      navigate('/sign-in');
+      return;
+    }
+    
     navigate('/settings');
   };
 

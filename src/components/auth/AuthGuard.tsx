@@ -4,6 +4,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { supabase } from '../../integrations/supabase/client';
 import { toast } from 'sonner';
+import { useAuth } from '../../features/auth/context/AuthProvider';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -16,13 +17,23 @@ interface AuthGuardProps {
  */
 const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   const { isAuthenticated, userType, setIsAuthenticated } = useUser();
+  const { user } = useAuth();
   const location = useLocation();
   const [checking, setChecking] = useState(true);
   
-  // Double-check auth with Supabase directly
+  // Check auth status from multiple sources
   useEffect(() => {
     const verifyAuth = async () => {
       try {
+        // First check if we have a user from Auth context
+        if (user) {
+          console.log("[AuthGuard] User authenticated via Auth context:", user.email);
+          setIsAuthenticated(true);
+          setChecking(false);
+          return;
+        }
+        
+        // If not, check with Supabase directly
         const { data, error } = await supabase.auth.getUser();
         
         if (error) {
@@ -49,8 +60,19 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
       }
     };
     
-    verifyAuth();
-  }, [setIsAuthenticated, location.pathname]);
+    // Check for preview or local environment
+    const isPreviewEnv = window.location.hostname.includes('preview') || 
+                          window.location.hostname.includes('lovableproject') ||
+                          window.location.hostname.includes('localhost');
+    
+    if (isPreviewEnv && localStorage.getItem('mock_auth_user')) {
+      console.log("[AuthGuard] Preview environment with mock user detected");
+      setIsAuthenticated(true);
+      setChecking(false);
+    } else {
+      verifyAuth();
+    }
+  }, [setIsAuthenticated, location.pathname, user]);
   
   // Show loading state while checking
   if (checking) {
@@ -61,7 +83,8 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
     );
   }
 
-  if (!isAuthenticated) {
+  // Check if authenticated
+  if (!isAuthenticated && !user) {
     // Store the intended destination for after login
     const destination = location.pathname !== "/" ? location.pathname : undefined;
     

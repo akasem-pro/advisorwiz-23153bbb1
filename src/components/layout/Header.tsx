@@ -56,6 +56,11 @@ const Header: React.FC = () => {
   console.log('isAuthenticated:', isAuthenticated);
   console.log('Current user in Header:', user);
 
+  // Check if this is a preview environment
+  const isPreviewEnv = window.location.hostname.includes('preview') || 
+                       window.location.hostname.includes('lovableproject') ||
+                       window.location.hostname.includes('localhost');
+  
   // Show success message when user signs in
   useEffect(() => {
     if (user) {
@@ -116,6 +121,10 @@ const Header: React.FC = () => {
   const isSettingsPage = location.pathname === '/settings';
   const isProfilePage = location.pathname.includes('profile');
   const needsAuth = isSettingsPage || isProfilePage;
+  
+  // In preview environment with mock user, we should consider auth valid
+  const effectiveIsAuthenticated = isAuthenticated || 
+    (isPreviewEnv && !!localStorage.getItem('mock_auth_user'));
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white dark:bg-navy-900 shadow-sm z-50">
@@ -133,7 +142,7 @@ const Header: React.FC = () => {
           <div className="flex items-center space-x-4">
             <ThemeToggleButton className="mr-2" />
             
-            {(user || isAuthenticated) ? (
+            {(user || effectiveIsAuthenticated) ? (
               <UserMenu 
                 getUserName={getUserName}
                 getInitials={getInitials}
@@ -161,7 +170,7 @@ const Header: React.FC = () => {
       </div>
       
       {/* Auth warning message for protected pages */}
-      {needsAuth && isAuthLoaded && !user && !isAuthenticated && (
+      {needsAuth && isAuthLoaded && !user && !effectiveIsAuthenticated && (
         <div className="fixed top-16 left-0 right-0 z-50 bg-red-100 text-red-800 px-4 py-2 text-center shadow-md">
           <div className="flex items-center justify-center gap-2">
             <AlertCircle className="h-4 w-4" />
@@ -182,7 +191,7 @@ const Header: React.FC = () => {
       
       {mobileMenuOpen && (
         <MobileMenu
-          isAuthenticated={!!(user || isAuthenticated)}
+          isAuthenticated={!!(user || effectiveIsAuthenticated)}
           onClose={toggleMobileMenu}
           onSignOut={signOut}
         />

@@ -27,6 +27,7 @@ import AboutUs from './pages/AboutUs';
 import Resources from './pages/Resources';
 import RealtimeSubscriptionProvider from './components/providers/RealtimeSubscriptionProvider';
 import Settings from './pages/Settings';
+import AuthGuard from './components/auth/AuthGuard';
 
 const App: React.FC = () => {
   return (
@@ -54,17 +55,45 @@ const App: React.FC = () => {
             <Route path="/resources" element={<Resources />} />
             
             {/* Protected Profile Routes */}
-            <Route path="/consumer-profile" element={<ConsumerProfile />} />
-            <Route path="/advisor-profile" element={<AdvisorProfile />} />
-            <Route path="/firm-profile" element={<FirmProfile />} />
+            <Route path="/consumer-profile" element={
+              <AuthGuard>
+                <ConsumerProfile />
+              </AuthGuard>
+            } />
+            <Route path="/advisor-profile" element={
+              <AuthGuard>
+                <AdvisorProfile />
+              </AuthGuard>
+            } />
+            <Route path="/firm-profile" element={
+              <AuthGuard>
+                <FirmProfile />
+              </AuthGuard>
+            } />
             
             {/* Protected Dashboard Routes */}
-            <Route path="/consumer-dashboard" element={<ConsumerDashboard />} />
-            <Route path="/advisor-dashboard" element={<AdvisorDashboard />} />
-            <Route path="/firm-dashboard" element={<FirmDashboard />} />
+            <Route path="/consumer-dashboard" element={
+              <AuthGuard>
+                <ConsumerDashboard />
+              </AuthGuard>
+            } />
+            <Route path="/advisor-dashboard" element={
+              <AuthGuard>
+                <AdvisorDashboard />
+              </AuthGuard>
+            } />
+            <Route path="/firm-dashboard" element={
+              <AuthGuard>
+                <FirmDashboard />
+              </AuthGuard>
+            } />
             
             {/* Settings Route */}
-            <Route path="/settings" element={<Settings />} />
+            <Route path="/settings" element={
+              <AuthGuard>
+                <Settings />
+              </AuthGuard>
+            } />
             
             {/* Fallback Route */}
             <Route path="*" element={<Home />} />
