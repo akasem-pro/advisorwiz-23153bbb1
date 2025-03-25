@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import Joyride, { CallBackProps, Status, Step } from 'react-joyride';
+import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 import { useUser } from '../../context/UserContext';
 
 interface UserOnboardingTourProps {
@@ -97,7 +97,7 @@ const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => 
   const handleJoyrideCallback = (data: CallBackProps) => {
     const { status } = data;
     
-    if ([Status.FINISHED, Status.SKIPPED].includes(status)) {
+    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
       // Mark the tour as completed
       localStorage.setItem('hasSeenOnboardingTour', 'true');
       setRun(false);

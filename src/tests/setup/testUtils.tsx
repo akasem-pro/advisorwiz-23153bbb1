@@ -1,10 +1,11 @@
 
-import { render, RenderOptions } from '@testing-library/react';
+import { render, RenderOptions, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import React, { ReactElement } from 'react';
 import { ThemeProvider } from '../../context/ThemeContext';
 import { UserProvider } from '../../context/UserContext';
 import { AuthProvider } from '../../features/auth/context/AuthProvider';
+import '@testing-library/jest-dom';
 
 /**
  * Custom render function that wraps components with necessary providers

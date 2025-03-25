@@ -60,10 +60,13 @@ const deferNonCriticalScripts = () => {
   
   scripts.forEach(script => {
     // Skip if it's an inline script without src
-    if (!script.src) return;
+    if (!script.hasAttribute('src')) return;
+    
+    // Get the src attribute value
+    const scriptSrc = script.getAttribute('src');
     
     // Skip if it's a critical script
-    if (script.src.includes('main.js') || script.src.includes('vendor.js')) return;
+    if (scriptSrc && (scriptSrc.includes('main.js') || scriptSrc.includes('vendor.js'))) return;
     
     // Add defer attribute
     script.setAttribute('defer', '');
