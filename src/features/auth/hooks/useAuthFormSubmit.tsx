@@ -24,7 +24,7 @@ export const useAuthFormSubmit = () => {
   const isLoading = authLoading || isSubmitting || isRetrying;
   
   // Enhanced retry function with better error feedback and preview environment handling
-  const retryConnection = async () => {
+  const retryConnection = async (): Promise<boolean> => {
     try {
       toast.loading('Checking connection...');
       console.log("[Auth Form] Testing connection");
