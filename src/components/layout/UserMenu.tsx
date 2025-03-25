@@ -32,6 +32,15 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
 
   const handleSignOut = async () => {
     try {
+      // For preview environment with mock user
+      if (isPreviewEnv && localStorage.getItem('mock_auth_user')) {
+        console.log("[UserMenu] Removing mock auth user from localStorage");
+        localStorage.removeItem('mock_auth_user');
+        toast.success('You have been signed out successfully');
+        navigate('/');
+        return;
+      }
+      
       await signOut();
       toast.success('You have been signed out successfully');
       navigate('/');
@@ -42,7 +51,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
   };
 
   const handleProfileClick = () => {
-    console.log('Profile clicked, navigating to profile for userType:', userType);
+    console.log('[UserMenu] Profile clicked, userType:', userType);
     
     // In preview environments, treat mock users as authenticated
     const effectiveIsAuthenticated = isAuthenticated || 
@@ -55,14 +64,22 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
       return;
     }
     
-    // For preview environment with mock data, default to consumer profile
+    // For preview environment with mock data, default to consumer profile if no userType
+    const mockUserType = localStorage.getItem('mock_user_type');
+    
     if (isPreviewEnv && !userType && localStorage.getItem('mock_auth_user')) {
-      console.log('Preview environment detected with mock user, defaulting to consumer profile');
-      navigate('/consumer-profile');
-      return;
+      if (mockUserType === 'advisor') {
+        console.log('[UserMenu] Preview environment detected with mock advisor, navigating to advisor profile');
+        navigate('/advisor-profile');
+        return;
+      } else {
+        console.log('[UserMenu] Preview environment detected with mock user, defaulting to consumer profile');
+        navigate('/consumer-profile');
+        return;
+      }
     }
     
-    // Default to consumer profile if userType is not set
+    // Default based on userType
     if (!userType || userType === 'consumer') {
       navigate('/consumer-profile');
     } else if (userType === 'advisor') {
@@ -73,7 +90,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
   };
 
   const handleSettingsClick = () => {
-    console.log('Settings clicked, navigating to settings');
+    console.log('[UserMenu] Settings clicked');
     
     // In preview environments, treat mock users as authenticated
     const effectiveIsAuthenticated = isAuthenticated || 

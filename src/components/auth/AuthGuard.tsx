@@ -31,6 +31,8 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   useEffect(() => {
     const verifyAuth = async () => {
       try {
+        console.log("[AuthGuard] Starting auth verification...");
+        
         // For preview environment with mock auth, skip checks
         if (isPreviewEnv && localStorage.getItem('mock_auth_user')) {
           console.log("[AuthGuard] Preview environment with mock user detected");
@@ -84,6 +86,14 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   const effectiveIsAuthenticated = isAuthenticated || 
     (isPreviewEnv && !!localStorage.getItem('mock_auth_user'));
 
+  console.log("[AuthGuard] Auth decision:", { 
+    effectiveIsAuthenticated, 
+    isAuthenticated, 
+    isPreviewEnv, 
+    hasMockUser: !!localStorage.getItem('mock_auth_user'),
+    path: location.pathname
+  });
+
   if (!effectiveIsAuthenticated) {
     // Store the intended destination for after login
     const destination = location.pathname !== "/" ? location.pathname : undefined;
@@ -97,6 +107,8 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
 
   // If userTypes is provided, check if current user type is allowed
   if (userTypes && userTypes.length > 0 && userType && !userTypes.includes(userType)) {
+    console.log("[AuthGuard] User type not allowed:", { userType, allowedTypes: userTypes });
+    
     // Redirect to appropriate dashboard based on user type
     if (userType === 'consumer') {
       return <Navigate to="/consumer-dashboard" replace />;

@@ -1,5 +1,6 @@
 
 import { useState, useCallback, useEffect } from 'react';
+import { isPreviewEnvironment } from '../../../utils/mockAuthUtils';
 
 export const useNetworkRetry = () => {
   const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>('checking');
@@ -43,12 +44,7 @@ export const useNetworkRetry = () => {
   // Function to check network status
   const checkNetworkStatus = useCallback(async (): Promise<boolean> => {
     // Check if we're in a preview environment
-    const isPreviewEnv = window.location.hostname.includes('preview') || 
-                         window.location.hostname.includes('lovableproject') ||
-                         window.location.hostname.includes('localhost');
-    
-    // For preview environments, always return true to simulate success
-    if (isPreviewEnv) {
+    if (isPreviewEnvironment()) {
       console.log("[Network Check] Preview environment detected, simulating online status");
       setNetworkStatus('online');
       return true;
@@ -66,7 +62,6 @@ export const useNetworkRetry = () => {
       }
       
       // For more reliable check, ping a known endpoint
-      // This endpoint should exist and return a successful response
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -90,11 +85,27 @@ export const useNetworkRetry = () => {
         }
       } catch (error) {
         console.error("[Network Check] Error checking endpoint:", error);
+        
+        // In preview environments, consider network as online even if check fails
+        if (isPreviewEnvironment()) {
+          console.log("[Network Check] Overriding for preview environment");
+          setNetworkStatus('online');
+          return true;
+        }
+        
         setNetworkStatus('offline');
         return false;
       }
     } catch (error) {
       console.error("[Network Check] Unexpected error during network check:", error);
+      
+      // In preview environments, consider network as online even if check fails
+      if (isPreviewEnvironment()) {
+        console.log("[Network Check] Overriding for preview environment");
+        setNetworkStatus('online');
+        return true;
+      }
+      
       setNetworkStatus('offline');
       return false;
     }
