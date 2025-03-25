@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -9,10 +8,11 @@ import { useUser } from '../context/UserContext';
 import PageSEO from '../components/seo/PageSEO';
 import OnboardingUserType from '../components/onboarding/OnboardingUserType';
 import { useAuth } from '../features/auth/context/AuthProvider';
+import { UserType } from '../types/profileTypes';
 
 const Onboarding: React.FC = () => {
   const [step, setStep] = useState(1);
-  const [selectedUserType, setSelectedUserType] = useState<'consumer' | 'advisor' | 'firm_admin' | null>(null);
+  const [selectedUserType, setSelectedUserType] = useState<UserType>(null);
   const { setUserType, setIsAuthenticated } = useUser();
   const { signUp } = useAuth();
   const navigate = useNavigate();
@@ -23,6 +23,7 @@ const Onboarding: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [formError, setFormError] = useState('');
 
   const handleContinue = () => {
     if (step === 1 && selectedUserType) {
@@ -32,19 +33,44 @@ const Onboarding: React.FC = () => {
     }
   };
 
-  const handleCreateAccount = async () => {
-    if (!email || !password || !confirmPassword) {
-      // Show error - all fields required
-      return;
+  const validateForm = () => {
+    setFormError('');
+    
+    if (!email) {
+      setFormError('Email is required');
+      return false;
+    }
+    
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setFormError('Please enter a valid email address');
+      return false;
+    }
+    
+    if (!password) {
+      setFormError('Password is required');
+      return false;
+    }
+    
+    if (password.length < 6) {
+      setFormError('Password must be at least 6 characters');
+      return false;
     }
     
     if (password !== confirmPassword) {
-      // Show error - passwords don't match
-      return;
+      setFormError('Passwords do not match');
+      return false;
     }
     
     if (!termsAgreed) {
-      // Show error - must agree to terms
+      setFormError('You must agree to the Terms of Service and Privacy Policy');
+      return false;
+    }
+    
+    return true;
+  };
+
+  const handleCreateAccount = async () => {
+    if (!validateForm()) {
       return;
     }
     
@@ -52,7 +78,7 @@ const Onboarding: React.FC = () => {
     
     try {
       // Perform registration with Supabase
-      const success = await signUp(email, password);
+      const success = await signUp(email, password, selectedUserType as UserType);
       
       if (success) {
         // Set user type and authentication state
@@ -68,9 +94,9 @@ const Onboarding: React.FC = () => {
           navigate('/firm-profile');
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
-      // Show error toast
+      setFormError(error.message || 'Failed to create account. Please try again.');
     } finally {
       setIsRegistering(false);
     }
@@ -134,6 +160,11 @@ const Onboarding: React.FC = () => {
                     </div>
 
                     <div className="max-w-md mx-auto">
+                      {formError && (
+                        <div className="bg-red-50 text-red-600 p-3 rounded-md mb-4 text-sm">
+                          {formError}
+                        </div>
+                      )}
                       <div className="space-y-4">
                         <div>
                           <label htmlFor="email" className="block text-sm font-medium text-navy-800 mb-1">

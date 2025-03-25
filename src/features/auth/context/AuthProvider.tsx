@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { useAuthSession } from '../hooks/useAuthSession';
@@ -10,7 +9,7 @@ type AuthContextType = {
   session: Session | null;
   user: User | null;
   signIn: (email: string, password: string) => Promise<boolean>;
-  signUp: (email: string, password: string) => Promise<boolean>;
+  signUp: (email: string, password: string, userType?: UserType) => Promise<boolean>;
   signOut: () => Promise<void>;
   loading: boolean;
   networkStatus: 'online' | 'offline' | 'checking';
@@ -55,7 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     incrementRetry, 
     resetRetryAttempts 
   } = useNetworkRetry();
-  const { signIn: supabaseSignIn, signUp, signOut: supabaseSignOut, loading: authActionLoading } = useAuthActions();
+  const { signIn: supabaseSignIn, signUp: supabaseSignUp, signOut: supabaseSignOut, loading: authActionLoading } = useAuthActions();
 
   // Effect to sync mockUser to localStorage
   React.useEffect(() => {
@@ -117,6 +116,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } else {
       // Real authentication via Supabase
       return supabaseSignIn(email, password);
+    }
+  };
+  
+  // Enhanced sign-up function that handles both real and mock auth
+  const signUp = async (email: string, password: string, userType: UserType = 'consumer'): Promise<boolean> => {
+    // Check if we're in a preview environment
+    const isPreviewEnv = window.location.hostname.includes('preview') || 
+                         window.location.hostname.includes('lovableproject') ||
+                         window.location.hostname.includes('localhost');
+    
+    if (isPreviewEnv) {
+      try {
+        // First try real authentication
+        const success = await supabaseSignUp(email, password, userType);
+        if (success) {
+          return true;
+        }
+      } catch (error) {
+        console.log("[Auth Provider] Preview mode - ignoring Supabase sign-up error");
+      }
+      
+      // In preview mode, create a mock user if Supabase auth fails
+      const mockUserData = {
+        id: 'mock-user-id',
+        email: email,
+        created_at: new Date().toISOString(),
+        app_metadata: {},
+        user_metadata: {
+          name: email.split('@')[0],
+          avatar_url: '',
+          user_type: userType
+        },
+        aud: 'authenticated',
+        role: 'authenticated'
+      };
+      
+      setMockUser(mockUserData);
+      return true;
+    } else {
+      // Real authentication via Supabase
+      return supabaseSignUp(email, password, userType);
     }
   };
   

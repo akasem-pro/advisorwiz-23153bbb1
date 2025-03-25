@@ -2,6 +2,8 @@
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../../integrations/supabase/client';
+import { useProfileCreation } from '../useProfileCreation';
+import { UserType } from '../../../../types/profileTypes';
 
 /**
  * Custom hook for sign-up operation with improved error handling
@@ -11,8 +13,13 @@ export const useSignUpOperation = (
   setLoading: (loading: boolean) => void
 ) => {
   const navigate = useNavigate();
+  const { createUserProfile } = useProfileCreation();
 
-  const signUp = async (email: string, password: string): Promise<boolean> => {
+  const signUp = async (
+    email: string, 
+    password: string, 
+    userType: UserType = 'consumer'
+  ): Promise<boolean> => {
     if (networkStatus === 'offline') {
       toast.error('You appear to be offline. Please check your internet connection.');
       return false;
@@ -35,6 +42,17 @@ export const useSignUpOperation = (
         // Add a small delay to simulate network request
         await new Promise(resolve => setTimeout(resolve, 800));
         
+        // Create a mock user for preview environments
+        const mockUser = {
+          id: `mock-${Date.now()}`,
+          email: email,
+          user_metadata: {},
+          app_metadata: {}
+        };
+        
+        // Create profile for the mock user
+        await createUserProfile(mockUser as any, userType);
+        
         toast.success("Account created successfully! In a production environment, you would receive an email verification link.");
         return true;
       }
@@ -45,6 +63,9 @@ export const useSignUpOperation = (
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            user_type: userType
+          }
         }
       });
       
@@ -55,15 +76,20 @@ export const useSignUpOperation = (
       
       console.log("[Auth Debug] Sign up response:", data);
       
-      if (data.user && data.session) {
-        // User was immediately signed in
-        toast.success("Account created successfully!");
-        navigate('/');
-        return true;
-      } else if (data.user) {
-        // Email confirmation is required
-        toast.success("Sign up successful! Please check your email to verify your account.");
-        return true;
+      if (data.user) {
+        // Create profile for the new user
+        await createUserProfile(data.user, userType);
+        
+        if (data.session) {
+          // User was immediately signed in
+          toast.success("Account created successfully!");
+          navigate('/');
+          return true;
+        } else {
+          // Email confirmation is required
+          toast.success("Sign up successful! Please check your email to verify your account.");
+          return true;
+        }
       } else {
         throw new Error("Unknown error occurred during sign up");
       }
