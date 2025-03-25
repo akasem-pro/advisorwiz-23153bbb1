@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Info, LogIn } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 import { useAuth } from '../../features/auth/context/AuthProvider';
@@ -45,10 +45,12 @@ const navigationLinks = [
 ];
 
 const Header: React.FC = () => {
+  const location = useLocation();
   const { isAuthenticated, consumerProfile, advisorProfile, userType } = useUser();
   const { user, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [isAuthLoaded, setIsAuthLoaded] = useState(false);
 
   console.log('Current userType in Header:', userType);
   console.log('isAuthenticated:', isAuthenticated);
@@ -65,6 +67,14 @@ const Header: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [user]);
+
+  // Track when auth state is fully loaded
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsAuthLoaded(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -101,6 +111,12 @@ const Header: React.FC = () => {
     return 'User';
   };
 
+  // Determine if the user needs to see authentication state
+  const isAuthPage = location.pathname === '/sign-in' || location.pathname === '/login';
+  const isSettingsPage = location.pathname === '/settings';
+  const isProfilePage = location.pathname.includes('profile');
+  const needsAuth = isSettingsPage || isProfilePage;
+
   return (
     <header className="fixed top-0 left-0 w-full bg-white dark:bg-navy-900 shadow-sm z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -117,7 +133,7 @@ const Header: React.FC = () => {
           <div className="flex items-center space-x-4">
             <ThemeToggleButton className="mr-2" />
             
-            {user ? (
+            {(user || isAuthenticated) ? (
               <UserMenu 
                 getUserName={getUserName}
                 getInitials={getInitials}
@@ -144,6 +160,19 @@ const Header: React.FC = () => {
         </div>
       </div>
       
+      {/* Auth warning message for protected pages */}
+      {needsAuth && isAuthLoaded && !user && !isAuthenticated && (
+        <div className="fixed top-16 left-0 right-0 z-50 bg-red-100 text-red-800 px-4 py-2 text-center shadow-md">
+          <div className="flex items-center justify-center gap-2">
+            <AlertCircle className="h-4 w-4" />
+            <span>You must be signed in to access this page</span>
+            <Link to="/sign-in" className="ml-2 bg-red-700 text-white px-2 py-1 rounded text-xs font-medium hover:bg-red-800">
+              Sign In
+            </Link>
+          </div>
+        </div>
+      )}
+      
       {/* Success message toast */}
       {showSuccessMessage && (
         <div className="fixed top-20 right-4 z-50 animate-fade-in-down">
@@ -153,7 +182,7 @@ const Header: React.FC = () => {
       
       {mobileMenuOpen && (
         <MobileMenu
-          isAuthenticated={!!user}
+          isAuthenticated={!!(user || isAuthenticated)}
           onClose={toggleMobileMenu}
           onSignOut={signOut}
         />

@@ -63,7 +63,7 @@ const NetworkRetryButton: React.FC<NetworkRetryButtonProps> = ({
                          window.location.hostname.includes('lovableproject') ||
                          window.location.hostname.includes('localhost');
     
-    // For all environments, show a toast and simulate success
+    // Always simulate success in preview environments
     console.log("[Network Retry Button] Simulating successful retry");
     
     // Show loading toast

@@ -48,25 +48,39 @@ export const useRetryHandler = () => {
                            window.location.hostname.includes('lovableproject') ||
                            window.location.hostname.includes('localhost');
       
-      // In all environments, simulate a connection check but always succeed in preview
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Attempt to check network status
+      let networkOk = true;
+      
+      if (!isPreviewEnv) {
+        // Only check real network in non-preview environments
+        networkOk = await checkNetworkStatus();
+      } else {
+        // In preview, simulate a network check with a delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
       
       // Dismiss loading toast
       toast.dismiss();
       
-      // Show success toast
-      toast.success('Connection ready! Retrying...');
-      
-      // Call the appropriate handler based on active tab
-      if (activeTab === 'signin' && signInEmail && signInPassword) {
-        console.log("[Retry Handler] Retrying sign in");
-        await handleSignInSubmit();
-      } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
-        console.log("[Retry Handler] Retrying sign up");
-        await handleSignUpSubmit();
+      if (networkOk) {
+        // Show success toast
+        toast.success('Connection ready! Retrying...');
+        
+        // Call the appropriate handler based on active tab
+        if (activeTab === 'signin' && signInEmail && signInPassword) {
+          console.log("[Retry Handler] Retrying sign in");
+          await handleSignInSubmit();
+        } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
+          console.log("[Retry Handler] Retrying sign up");
+          await handleSignUpSubmit();
+        } else {
+          console.log("[Retry Handler] Missing credentials for retry");
+          setFormError('Please fill in all fields before retrying.');
+        }
       } else {
-        console.log("[Retry Handler] Missing credentials for retry");
-        setFormError('Please fill in all fields before retrying.');
+        // If network check failed, show error
+        toast.error('Connection check failed');
+        setFormError('Unable to connect to the server. Please check your internet connection and try again.');
       }
     } catch (error) {
       console.error("[Retry Handler] Retry failed:", error);
@@ -77,7 +91,7 @@ export const useRetryHandler = () => {
       setIsRetrying(false);
       console.log("[Retry Handler] Retry process completed");
     }
-  }, [isRetrying]);
+  }, [isRetrying, checkNetworkStatus]);
   
   return { handleRetry, isRetrying };
 };
