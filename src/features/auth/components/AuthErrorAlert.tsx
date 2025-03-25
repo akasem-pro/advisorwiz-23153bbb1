@@ -57,11 +57,11 @@ const AuthErrorAlert: React.FC<AuthErrorAlertProps> = ({
     
     if (isPreviewEnv) {
       if (isNetworkError) {
-        return "In preview environments, network errors are common. This is expected behavior and doesn't affect the actual application. The retry button should let you proceed.";
+        return "In preview environments, network errors are expected. Click the retry button to proceed with a simulated connection. Your account will be created locally.";
       }
       
       if (isAuthError) {
-        return "For testing in preview environments, you can use consumer@gmail.com or advisor@gmail.com with password123, or just retry with any credentials.";
+        return "For testing in preview environments, you can use any email and password, then click retry to proceed.";
       }
     }
     

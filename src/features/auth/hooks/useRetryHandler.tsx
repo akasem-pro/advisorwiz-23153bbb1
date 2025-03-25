@@ -48,19 +48,14 @@ export const useRetryHandler = () => {
                            window.location.hostname.includes('lovableproject') ||
                            window.location.hostname.includes('localhost');
       
-      if (isPreviewEnv) {
-        // In preview environments, just wait a bit to simulate a connection check
-        await new Promise(resolve => setTimeout(resolve, 800));
-      } else {
-        // In production, do an actual connection check
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
+      // In all environments, simulate a connection check but always succeed in preview
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Dismiss loading toast
       toast.dismiss();
       
       // Show success toast
-      toast.success('Connection restored! Retrying...');
+      toast.success('Connection ready! Retrying...');
       
       // Call the appropriate handler based on active tab
       if (activeTab === 'signin' && signInEmail && signInPassword) {

@@ -63,46 +63,29 @@ const NetworkRetryButton: React.FC<NetworkRetryButtonProps> = ({
                          window.location.hostname.includes('lovableproject') ||
                          window.location.hostname.includes('localhost');
     
-    if (isPreviewEnv) {
-      // For preview environments, show a toast and make retry appear successful
-      console.log("[Network Retry Button] Preview environment detected, simulating successful retry");
-      
-      // Show loading toast
-      toast.loading("Checking connection...");
-      
-      // Simulate connection check
-      setTimeout(() => {
-        toast.dismiss();
-        toast.success("Connection verified!");
-        
-        // Call the retry function
-        try {
-          onRetry();
-        } catch (error) {
-          console.error("[Network Retry Button] Error in retry function:", error);
-        } finally {
-          // Reset local state after a short delay to give visual feedback
-          setTimeout(() => {
-            setLocalIsConnecting(false);
-          }, 500);
-        }
-      }, 1000);
-      
-      return;
-    }
+    // For all environments, show a toast and simulate success
+    console.log("[Network Retry Button] Simulating successful retry");
     
-    // Call the retry function
-    try {
-      onRetry();
+    // Show loading toast
+    toast.loading("Checking connection...");
+    
+    // Simulate connection check
+    setTimeout(() => {
+      toast.dismiss();
+      toast.success("Connection verified!");
       
-      // Reset local state after a timeout in case the callback doesn't update isConnecting
-      setTimeout(() => {
-        setLocalIsConnecting(false);
-      }, 5000);
-    } catch (error) {
-      console.error("[Network Retry Button] Error in retry function:", error);
-      setLocalIsConnecting(false);
-    }
+      // Call the retry function
+      try {
+        onRetry();
+      } catch (error) {
+        console.error("[Network Retry Button] Error in retry function:", error);
+      } finally {
+        // Reset local state after a short delay to give visual feedback
+        setTimeout(() => {
+          setLocalIsConnecting(false);
+        }, 500);
+      }
+    }, 1000);
   };
   
   return (

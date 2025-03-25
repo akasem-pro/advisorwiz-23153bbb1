@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../../integrations/supabase/client';
 import { useProfileCreation } from '../useProfileCreation';
 import { UserType } from '../../../../types/profileTypes';
+import { useAuth } from '../../context/AuthProvider';
 
 /**
  * Custom hook for sign-up operation with improved error handling
@@ -14,6 +15,7 @@ export const useSignUpOperation = (
 ) => {
   const navigate = useNavigate();
   const { createUserProfile } = useProfileCreation();
+  const { setMockUser } = useAuth();
 
   const signUp = async (
     email: string, 
@@ -29,6 +31,8 @@ export const useSignUpOperation = (
       setLoading(true);
       
       console.log("[Auth Debug] Starting sign up process with email:", email);
+      console.log("[Auth Debug] Network status:", networkStatus);
+      console.log("[Auth Debug] Redirect URL will be:", `${window.location.origin}`);
       
       // Check for preview environments
       const isPreviewEnv = window.location.hostname.includes('preview') || 
@@ -46,12 +50,25 @@ export const useSignUpOperation = (
         const mockUser = {
           id: `mock-${Date.now()}`,
           email: email,
-          user_metadata: {},
-          app_metadata: {}
+          created_at: new Date().toISOString(),
+          app_metadata: {},
+          user_metadata: {
+            name: email.split('@')[0],
+            avatar_url: '',
+            user_type: userType
+          },
+          aud: 'authenticated',
+          role: 'authenticated'
         };
         
         // Create profile for the mock user
         await createUserProfile(mockUser as any, userType);
+        
+        // Update the AuthProvider's mock user state
+        setMockUser(mockUser);
+        
+        // Store mock user in localStorage
+        localStorage.setItem('mock_auth_user', JSON.stringify(mockUser));
         
         toast.success("Account created successfully! In a production environment, you would receive an email verification link.");
         return true;
@@ -99,7 +116,7 @@ export const useSignUpOperation = (
       if (error.message?.includes('already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
       } else if (!navigator.onLine || error.message?.includes('network') || 
-                 error.message?.includes('connection')) {
+                 error.message?.includes('connection') || error.message?.includes('fetch')) {
         throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
       } else {
         throw error;
