@@ -10,6 +10,13 @@ import {
   clearPerformanceData
 } from './performance/core';
 
+// Import from enhanced performance tracking
+import {
+  trackEnhancedPerformance,
+  flushMetricsBuffer,
+  initEnhancedPerformanceTracking
+} from './performance/enhancedPerformanceTracking';
+
 // Import from function tracking module
 import { withPerformanceTracking } from './performance/functionTracking';
 
@@ -44,6 +51,13 @@ export {
   getPerformanceData,
   clearPerformanceData,
   storeAnalyticsMetric
+};
+
+// Enhanced performance tracking
+export {
+  trackEnhancedPerformance,
+  flushMetricsBuffer,
+  initEnhancedPerformanceTracking
 };
 
 // Web Vitals tracking
@@ -90,24 +104,33 @@ export {
 
 /**
  * Initialize all performance optimizations
+ * Enhanced with better error handling and features
  */
 export const initPerformanceOptimizations = () => {
   if (typeof window !== 'undefined') {
-    // Track web vitals
-    trackWebVitalsFunc();
-    
-    // Optimize images for Core Web Vitals
-    optimizeImagesForCWV();
-    
-    // Setup lazy loading for images
-    setupLazyLoading();
-    
-    // Add resource hints
-    implementResourceHints();
-    
-    // Track initial page view for analytics
-    trackVisitorActivity(window.location.href);
-    
-    console.log('Performance optimizations initialized');
+    try {
+      // Initialize enhanced performance tracking
+      initEnhancedPerformanceTracking();
+      
+      // Track web vitals
+      trackWebVitalsFunc();
+      
+      // Optimize images for Core Web Vitals
+      optimizeImagesForCWV();
+      
+      // Setup lazy loading for images
+      setupLazyLoading();
+      
+      // Add resource hints
+      implementResourceHints();
+      
+      // Track initial page view for analytics
+      trackVisitorActivity(window.location.href);
+      
+      console.log('Performance optimizations initialized');
+    } catch (error) {
+      console.error('Error initializing performance optimizations:', error);
+      // Continue execution even if optimizations fail
+    }
   }
 };

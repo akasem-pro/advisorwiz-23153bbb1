@@ -7,7 +7,7 @@ import { ThemeProvider } from './context/ThemeContext'
 import { initPerformanceOptimizations } from './utils/performanceTracking'
 import { Toaster } from 'sonner'
 
-// Initialize performance optimizations
+// Initialize performance optimizations with enhanced features
 initPerformanceOptimizations();
 
 createRoot(document.getElementById("root")!).render(
