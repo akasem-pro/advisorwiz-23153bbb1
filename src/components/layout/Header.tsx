@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Info, LogIn } from 'lucide-react';
+import { Menu, X, Info, LogIn, AlertCircle } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 import Logo from './Logo';
