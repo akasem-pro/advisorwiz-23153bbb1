@@ -17,8 +17,8 @@ export const useRetryHandler = () => {
     signUpEmail: string,
     signUpPassword: string,
     confirmPassword: string,
-    handleSignInSubmit: (e?: React.FormEvent<HTMLFormElement>) => Promise<void>,
-    handleSignUpSubmit: (e?: React.FormEvent<HTMLFormElement>) => Promise<void>,
+    handleSignInSubmit: (e?: React.FormEvent<HTMLFormElement>) => Promise<boolean | void>,
+    handleSignUpSubmit: (e?: React.FormEvent<HTMLFormElement>) => Promise<boolean | void>,
     setFormError: (error: string) => void
   ) => {
     // Clear any existing error message

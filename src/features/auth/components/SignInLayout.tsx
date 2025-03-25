@@ -12,8 +12,8 @@ interface SignInLayoutProps {
   formError: string;
   networkStatus: 'online' | 'offline' | 'checking';
   onRetry: () => void;
-  onSignIn: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
-  onSignUp: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  onSignIn: (e: React.FormEvent<HTMLFormElement>) => Promise<boolean | void>;
+  onSignUp: (e: React.FormEvent<HTMLFormElement>) => Promise<boolean | void>;
   signInProps: {
     email: string;
     setEmail: (email: string) => void;

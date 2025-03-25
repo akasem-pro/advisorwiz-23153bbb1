@@ -6,7 +6,7 @@ import { Input } from '../../../components/ui/input';
 import { Label } from '../../../components/ui/label';
 
 interface SignUpFormProps {
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<boolean | void>;
   email: string;
   setEmail: (email: string) => void;
   password: string;
