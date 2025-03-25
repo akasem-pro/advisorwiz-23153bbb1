@@ -25,6 +25,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
   const { userType, isAuthenticated } = useUser();
   const { signOut, user } = useAuth();
 
+  // Check if we're in a preview environment
+  const isPreviewEnv = window.location.hostname.includes('preview') || 
+                       window.location.hostname.includes('lovableproject') ||
+                       window.location.hostname.includes('localhost');
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -39,10 +44,21 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
   const handleProfileClick = () => {
     console.log('Profile clicked, navigating to profile for userType:', userType);
     
+    // In preview environments, treat mock users as authenticated
+    const effectiveIsAuthenticated = isAuthenticated || 
+      (isPreviewEnv && !!localStorage.getItem('mock_auth_user'));
+    
     // Make sure we're authenticated first
-    if (!user && !isAuthenticated) {
+    if (!effectiveIsAuthenticated) {
       toast.error('Please sign in to access your profile');
       navigate('/sign-in');
+      return;
+    }
+    
+    // For preview environment with mock data, default to consumer profile
+    if (isPreviewEnv && !userType && localStorage.getItem('mock_auth_user')) {
+      console.log('Preview environment detected with mock user, defaulting to consumer profile');
+      navigate('/consumer-profile');
       return;
     }
     
@@ -59,8 +75,12 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
   const handleSettingsClick = () => {
     console.log('Settings clicked, navigating to settings');
     
+    // In preview environments, treat mock users as authenticated
+    const effectiveIsAuthenticated = isAuthenticated || 
+      (isPreviewEnv && !!localStorage.getItem('mock_auth_user'));
+    
     // Make sure we're authenticated first
-    if (!user && !isAuthenticated) {
+    if (!effectiveIsAuthenticated) {
       toast.error('Please sign in to access settings');
       navigate('/sign-in');
       return;
