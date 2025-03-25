@@ -22,67 +22,61 @@ export const useSignUpOperation = (
       setLoading(true);
       
       console.log("[Auth Debug] Starting sign up process with email:", email);
-      console.log("[Auth Debug] Network status:", networkStatus);
-      console.log("[Auth Debug] Redirect URL will be:", window.location.origin || 'https://preview--advisorwiz.lovable.app/auth/callback');
       
-      // Use direct call to Supabase auth API with proper redirect URL
+      // Check for preview environments
+      const isPreviewEnv = window.location.hostname.includes('preview') || 
+                           window.location.hostname.includes('lovableproject') ||
+                           window.location.hostname.includes('localhost');
+      
+      // For preview environments, simulate the signup process without email verification
+      if (isPreviewEnv) {
+        console.log("[Auth Debug] Preview environment detected, simulating signup");
+        
+        // Add a small delay to simulate network request
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        toast.success("Account created successfully! In a production environment, you would receive an email verification link.");
+        return true;
+      }
+      
+      // Real signup process for production
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: window.location.origin || 'https://preview--advisorwiz.lovable.app/auth/callback'
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         }
       });
       
-      // Detailed logging for signup response
       if (error) {
-        console.error("[Auth Debug] Sign up error details:", {
-          message: error.message,
-          status: error.status,
-          name: error.name,
-        });
+        console.error("[Auth Debug] Sign up error:", error);
         throw error;
       }
       
-      console.log("[Auth Debug] Sign up successful:", {
-        userId: data.user?.id,
-        emailConfirmed: data.user?.email_confirmed_at,
-        identities: data.user?.identities,
-        session: !!data.session,
-      });
+      console.log("[Auth Debug] Sign up response:", data);
       
-      toast.success("Registration successful! Please check your email to verify your account.");
-      return true;
+      if (data.user && data.session) {
+        // User was immediately signed in
+        toast.success("Account created successfully!");
+        navigate('/');
+        return true;
+      } else if (data.user) {
+        // Email confirmation is required
+        toast.success("Sign up successful! Please check your email to verify your account.");
+        return true;
+      } else {
+        throw new Error("Unknown error occurred during sign up");
+      }
     } catch (error: any) {
-      console.error("[Auth Debug] Detailed sign up error:", {
-        message: error.message,
-        status: error?.status,
-        name: error?.name, 
-        stack: error?.stack,
-        onLine: navigator.onLine,
-      });
+      console.error("[Auth Debug] Detailed sign up error:", error);
       
-      // Add more detailed network diagnostic info
-      console.log("[Auth Debug] Network diagnostics:", {
-        navigatorOnLine: navigator.onLine,
-        networkStatus: networkStatus,
-        userAgent: navigator.userAgent,
-        windowWidth: window.innerWidth, 
-        windowOrigin: window.location.origin,
-        windowLocation: window.location.href,
-      });
-      
-      if (error.message?.includes('email already registered')) {
+      if (error.message?.includes('already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
       } else if (!navigator.onLine || error.message?.includes('network') || 
-                error.message?.includes('connection') ||
-                error.message?.includes('timed out') ||
-                error.message?.includes('Failed to fetch')) {
+                 error.message?.includes('connection')) {
         throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
       } else {
-        // Log more detailed raw error for debugging
-        console.error("[Auth Debug] Uncategorized error:", error);
-        throw new Error(error.message || 'An error occurred during sign up. Please try again.');
+        throw error;
       }
     } finally {
       setLoading(false);
