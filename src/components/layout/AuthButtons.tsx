@@ -4,6 +4,8 @@ import { Button } from '../ui/button';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 import { LogOut, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
+import { getEffectiveAuthStatus } from '../../utils/mockAuthUtils';
 
 interface AuthButtonsProps {
   className?: string;
@@ -11,6 +13,15 @@ interface AuthButtonsProps {
 
 const AuthButtons: React.FC<AuthButtonsProps> = ({ className = '' }) => {
   const { user, signOut, loading } = useAuth();
+  const { isAuthenticated } = useUser();
+  
+  // Check if this is a preview environment with mock auth
+  const isPreviewEnv = window.location.hostname.includes('preview') || 
+                       window.location.hostname.includes('lovableproject') ||
+                       window.location.hostname.includes('localhost');
+  
+  // Use effective authentication status
+  const effectiveIsAuthenticated = getEffectiveAuthStatus(isAuthenticated);
   
   // Show loading state
   if (loading) {
@@ -25,11 +36,11 @@ const AuthButtons: React.FC<AuthButtonsProps> = ({ className = '' }) => {
   }
   
   // Show sign out button if user is authenticated
-  if (user) {
+  if (user || effectiveIsAuthenticated) {
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
         <span className="text-sm text-navy-600 dark:text-slate-300 mr-2 hidden md:inline-block">
-          {user.email}
+          {user?.email || 'Authenticated User'}
         </span>
         <Button 
           variant="outline" 

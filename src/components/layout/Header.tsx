@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Info, LogIn, AlertCircle } from 'lucide-react';
+import { Menu, X, AlertCircle } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 import Logo from './Logo';
@@ -149,13 +149,7 @@ const Header: React.FC = () => {
                 getProfileImage={getProfileImage}
               />
             ) : (
-              <div className="flex items-center space-x-3">
-                <Link to="/sign-in" className="flex items-center text-navy-700 dark:text-slate-200 hover:text-teal-600 dark:hover:text-teal-400 font-medium">
-                  <LogIn className="h-4 w-4 mr-1" />
-                  <span>Sign In</span>
-                </Link>
-                <AuthButtons />
-              </div>
+              <AuthButtons />
             )}
             
             <button
