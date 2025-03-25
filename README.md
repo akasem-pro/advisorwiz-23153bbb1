@@ -1,69 +1,107 @@
-# Welcome to your Lovable project
 
-## Project info
+# AdvisorWiz - Financial Advisory Matching Platform
 
 **URL**: https://lovable.dev/projects/334c9e1d-ba1e-49f0-af2e-dc72ededf4c4
 
-## How can I edit this code?
+## About AdvisorWiz
 
-There are several ways of editing your application.
+AdvisorWiz is a comprehensive platform designed to connect consumers with financial advisors through intelligent matching algorithms. The platform serves three main user types:
 
-**Use Lovable**
+- **Consumers** seeking financial advice tailored to their unique needs
+- **Advisors** looking to connect with ideal clients
+- **Financial Firms** managing advisors and scaling their business
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/334c9e1d-ba1e-49f0-af2e-dc72ededf4c4) and start prompting.
+## Key Features
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Smart Matching**: Proprietary algorithm to connect clients with the right advisors
+- **Profile Management**: Comprehensive profiles for advisors and consumers
+- **Appointment Scheduling**: Built-in scheduling system
+- **Secure Messaging**: In-app communication
+- **Dashboard Analytics**: Performance tracking and insights
+- **Accessibility**: WCAG compliant design
 
-**Use your preferred IDE**
+## Technology Stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Frontend**: React, TypeScript, Tailwind CSS, shadcn/ui
+- **Backend**: Supabase (PostgreSQL, Authentication, Storage)
+- **State Management**: React Context API, Tanstack Query
+- **Testing**: Jest, React Testing Library
+- **Accessibility**: Custom audit tools, WCAG compliance
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Getting Started
 
-Follow these steps:
+### Prerequisites
+
+- Node.js & npm - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+### Installation
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Step 1: Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Step 2: Navigate to the project directory
+cd advisorwiz
 
-# Step 3: Install the necessary dependencies.
+# Step 3: Install dependencies
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Testing
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+# Run tests
+npm test
 
-**Use GitHub Codespaces**
+# Run tests with coverage
+npm test -- --coverage
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Development Guidelines
 
-## What technologies are used for this project?
+### Code Structure
 
-This project is built with .
+- **Components**: Reusable UI elements
+- **Pages**: Top-level components that represent routes
+- **Hooks**: Custom React hooks for business logic
+- **Context**: Application state management
+- **Services**: API and external service integrations
+- **Utils**: Helper functions and utilities
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Accessibility
 
-## How can I deploy this project?
+The project includes comprehensive accessibility tools:
+- Runtime accessibility audit in `/admin/accessibility`
+- WCAG AA compliance checks
+- Screen reader compatibility
+- Keyboard navigation support
 
-Simply open [Lovable](https://lovable.dev/projects/334c9e1d-ba1e-49f0-af2e-dc72ededf4c4) and click on Share -> Publish.
+### Performance Optimization
 
-## I want to use a custom domain - is that possible?
+- Lazy loading of components and images
+- Memoization for expensive operations
+- Bundle size optimization
+- Core Web Vitals monitoring
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## Deployment
+
+Open [Lovable](https://lovable.dev/projects/334c9e1d-ba1e-49f0-af2e-dc72ededf4c4) and click on Share -> Publish.
+
+## Custom Domain Setup
+
+For custom domain deployment, we recommend using Netlify:
+1. Export your build from Lovable
+2. Create a Netlify account and new site
+3. Upload your build or connect to your GitHub repository
+4. Configure your custom domain in Netlify settings
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed information on contributing to this project.
+
+## License
+
+This project is proprietary and confidential. All rights reserved.

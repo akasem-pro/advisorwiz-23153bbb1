@@ -1,136 +1,74 @@
 
-// Main exports file for performance tracking functionality
-// Re-exports functions from more focused modules
-
-// Import from core performance module
-import {
-  storeAnalyticsMetric,
-  trackPerformance,
-  getPerformanceData,
-  clearPerformanceData
-} from './performance/core';
-
-// Import from enhanced performance tracking
-import {
-  trackEnhancedPerformance,
-  flushMetricsBuffer,
-  initEnhancedPerformanceTracking
-} from './performance/enhancedPerformanceTracking';
-
-// Import from function tracking module
-import { withPerformanceTracking } from './performance/functionTracking';
-
-// Import from web vitals module
-import { trackWebVitals as trackWebVitalsFunc } from './performance/webVitals';
-
-// Import from image optimization module
-import { setupLazyLoading, optimizeImagesForCWV } from './performance/imageOptimization';
-
-// Import from resource hints module
+import { trackWebVitals } from './performance/webVitals';
 import { implementResourceHints } from './performance/resourceHints';
-
-// Import from analytics modules
-import { trackVisitorActivity } from './analytics/visitorTracking';
-import { trackFeatureUsage, UserBehaviorEvent, trackUserBehavior } from './analytics/eventTracker';
-import { trackAIInteraction } from './analytics/aiTracking';
-import { trackMatchingInteraction } from './analytics/matchTracker';
-import { trackFeatureEngagement } from './analytics/userEngagementTracker';
-import { trackMatchEngagement } from './analytics/matchEngagementTracker';
-import { 
-  trackABTestExposure, 
-  trackABTestConversion 
-} from './analytics/abTestTracker';
-
-// Import directly from relevant files
-import { trackPageView } from './analytics/pageTracker';
-import { trackPreferenceUpdate } from './analytics/preferenceTracker';
-
-// Core performance tracking
-export {
-  trackPerformance,
-  getPerformanceData,
-  clearPerformanceData,
-  storeAnalyticsMetric
-};
-
-// Enhanced performance tracking
-export {
-  trackEnhancedPerformance,
-  flushMetricsBuffer,
-  initEnhancedPerformanceTracking
-};
-
-// Web Vitals tracking
-export { trackWebVitalsFunc as trackWebVitals };
-
-// Function performance tracking
-export { withPerformanceTracking };
-
-// Image optimization
-export { setupLazyLoading, optimizeImagesForCWV };
-
-// Resource hints
-export { implementResourceHints };
-
-// Analytics exports
-export { 
-  // Visitor tracking
-  trackVisitorActivity,
-  
-  // Feature usage tracking
-  trackFeatureUsage,
-  
-  // AI interaction tracking
-  trackAIInteraction,
-  
-  // Match history tracking
-  trackMatchingInteraction,
-  
-  // User behavior tracking
-  trackUserBehavior,
-  // Removed duplicate export of trackMatchingInteraction
-  trackPageView,
-  trackPreferenceUpdate,
-  UserBehaviorEvent,
-  
-  // Engagement tracking
-  trackFeatureEngagement,
-  trackMatchEngagement,
-  
-  // A/B Testing tracking
-  trackABTestExposure,
-  trackABTestConversion
-};
+import { setupLazyLoading, optimizeImagesForCWV } from './performance/imageOptimization';
+import { initEnhancedPerformanceTracking } from './performance/enhancedPerformanceTracking';
+import { withPerformanceTracking } from './performance/functionTracking';
 
 /**
  * Initialize all performance optimizations
- * Enhanced with better error handling and features
  */
 export const initPerformanceOptimizations = () => {
-  if (typeof window !== 'undefined') {
-    try {
-      // Initialize enhanced performance tracking
-      initEnhancedPerformanceTracking();
-      
-      // Track web vitals
-      trackWebVitalsFunc();
-      
-      // Optimize images for Core Web Vitals
-      optimizeImagesForCWV();
-      
-      // Setup lazy loading for images
-      setupLazyLoading();
-      
-      // Add resource hints
-      implementResourceHints();
-      
-      // Track initial page view for analytics
-      trackVisitorActivity(window.location.href);
-      
-      console.log('Performance optimizations initialized');
-    } catch (error) {
-      console.error('Error initializing performance optimizations:', error);
-      // Continue execution even if optimizations fail
-    }
-  }
+  // Track Web Vitals metrics
+  trackWebVitals();
+  
+  // Implement resource hints (preconnect, etc.)
+  implementResourceHints();
+  
+  // Setup lazy loading and image optimizations
+  setupLazyLoading();
+  optimizeImagesForCWV();
+  
+  // Initialize enhanced tracking system
+  initEnhancedPerformanceTracking();
+  
+  // Log initialization
+  console.log('[Performance] Performance optimizations initialized');
+  
+  // Run optimization on DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', optimizeOnDOMContentLoaded);
+  
+  // Run optimization when navigating to new pages
+  window.addEventListener('popstate', optimizeOnNavigation);
 };
+
+/**
+ * Optimize performance when DOM is fully loaded
+ */
+const optimizeOnDOMContentLoaded = () => {
+  // Defer non-critical scripts
+  deferNonCriticalScripts();
+  
+  // Re-run image optimizations (for dynamically loaded content)
+  optimizeImagesForCWV();
+};
+
+/**
+ * Optimize performance when navigating to new pages
+ */
+const optimizeOnNavigation = () => {
+  // Re-run optimizations when navigating
+  optimizeImagesForCWV();
+};
+
+/**
+ * Defer loading of non-critical scripts
+ */
+const deferNonCriticalScripts = () => {
+  // Find all script tags
+  const scripts = document.querySelectorAll('script:not([defer]):not([async])');
+  
+  scripts.forEach(script => {
+    // Skip if it's an inline script without src
+    if (!script.src) return;
+    
+    // Skip if it's a critical script
+    if (script.src.includes('main.js') || script.src.includes('vendor.js')) return;
+    
+    // Add defer attribute
+    script.setAttribute('defer', '');
+  });
+};
+
+// Export the performance wrapper for functions
+export { withPerformanceTracking };

@@ -28,12 +28,17 @@ import Resources from './pages/Resources';
 import RealtimeSubscriptionProvider from './components/providers/RealtimeSubscriptionProvider';
 import Settings from './pages/Settings';
 import AuthGuard from './components/auth/AuthGuard';
+import UserOnboardingTour from './components/onboarding/UserOnboardingTour';
+import AccessibilityTestPage from './pages/AccessibilityTestPage';
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <UserProvider>
         <RealtimeSubscriptionProvider>
+          {/* Add the UserOnboardingTour component */}
+          <UserOnboardingTour />
+          
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
@@ -53,6 +58,13 @@ const App: React.FC = () => {
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/resources" element={<Resources />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin/accessibility" element={
+              <AuthGuard>
+                <AccessibilityTestPage />
+              </AuthGuard>
+            } />
             
             {/* Protected Profile Routes */}
             <Route path="/consumer-profile" element={
