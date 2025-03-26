@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'outline' | 'ghost' | 'link' | 'danger';
 type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
-interface ConsistentButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+type ConsistentButtonBaseProps = {
   children: React.ReactNode;
   variant?: ButtonVariant;
   size?: ButtonSize;
@@ -15,27 +15,45 @@ interface ConsistentButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEle
   loading?: boolean;
   icon?: React.ReactNode;
   iconPosition?: 'left' | 'right';
-  href?: string;
-  isExternal?: boolean;
   className?: string;
   rounded?: 'full' | 'lg' | 'md' | 'sm';
+};
+
+// Props for button element
+interface ButtonElementProps extends ConsistentButtonBaseProps, Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, keyof ConsistentButtonBaseProps> {
+  href?: undefined;
+  isExternal?: undefined;
 }
 
-const ConsistentButton: React.FC<ConsistentButtonProps> = ({
-  children,
-  variant = 'primary',
-  size = 'md',
-  fullWidth = false,
-  loading = false,
-  icon,
-  iconPosition = 'left',
-  className = '',
-  disabled,
-  href,
-  isExternal = false,
-  rounded = 'lg',
-  ...props
-}) => {
+// Props for anchor element
+interface AnchorElementProps extends ConsistentButtonBaseProps, Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof ConsistentButtonBaseProps> {
+  href: string;
+  isExternal?: boolean;
+}
+
+// Union type for all possible props
+type ConsistentButtonProps = ButtonElementProps | AnchorElementProps;
+
+// Type guard to check if the props are for an anchor element
+const isAnchorProps = (props: ConsistentButtonProps): props is AnchorElementProps => {
+  return props.href !== undefined;
+};
+
+const ConsistentButton = (props: ConsistentButtonProps) => {
+  const {
+    children,
+    variant = 'primary',
+    size = 'md',
+    fullWidth = false,
+    loading = false,
+    icon,
+    iconPosition = 'left',
+    className = '',
+    disabled,
+    rounded = 'lg',
+    ...rest
+  } = props;
+
   const baseStyles = "inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
   
   const variantStyles = {
@@ -77,8 +95,20 @@ const ConsistentButton: React.FC<ConsistentButtonProps> = ({
     className
   );
 
+  // Common content elements
+  const contentElements = (
+    <>
+      {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+      {!loading && icon && iconPosition === 'left' && icon}
+      {children}
+      {!loading && icon && iconPosition === 'right' && icon}
+    </>
+  );
+
   // Render link if href is provided
-  if (href) {
+  if (isAnchorProps(props)) {
+    const { href, isExternal, ...anchorRest } = props;
+    
     if (isExternal) {
       return (
         <a
@@ -86,12 +116,9 @@ const ConsistentButton: React.FC<ConsistentButtonProps> = ({
           className={buttonClasses}
           target="_blank"
           rel="noopener noreferrer"
-          {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+          {...anchorRest}
         >
-          {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-          {!loading && icon && iconPosition === 'left' && icon}
-          {children}
-          {!loading && icon && iconPosition === 'right' && icon}
+          {contentElements}
         </a>
       );
     }
@@ -100,12 +127,9 @@ const ConsistentButton: React.FC<ConsistentButtonProps> = ({
       <Link
         to={href}
         className={buttonClasses}
-        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+        {...anchorRest}
       >
-        {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-        {!loading && icon && iconPosition === 'left' && icon}
-        {children}
-        {!loading && icon && iconPosition === 'right' && icon}
+        {contentElements}
       </Link>
     );
   }
@@ -115,12 +139,9 @@ const ConsistentButton: React.FC<ConsistentButtonProps> = ({
     <button
       className={buttonClasses}
       disabled={disabled || loading}
-      {...props}
+      {...rest}
     >
-      {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-      {!loading && icon && iconPosition === 'left' && icon}
-      {children}
-      {!loading && icon && iconPosition === 'right' && icon}
+      {contentElements}
     </button>
   );
 };
