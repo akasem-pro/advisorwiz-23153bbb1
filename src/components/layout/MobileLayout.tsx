@@ -11,7 +11,9 @@ interface MobileLayoutProps {
   showSocialProof?: boolean;
   showTrustBadges?: boolean;
   withoutPadding?: boolean;
-  animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale';
+  animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale' | 'none';
+  animationDuration?: 'fast' | 'normal' | 'slow';
+  skipToContentId?: string;
 }
 
 const MobileLayout: React.FC<MobileLayoutProps> = ({ 
@@ -20,7 +22,9 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
   showSocialProof = true,
   showTrustBadges = true,
   withoutPadding = false,
-  animation = 'fade'
+  animation = 'fade',
+  animationDuration = 'normal',
+  skipToContentId = 'mobile-content'
 }) => {
   return (
     <BaseLayout
@@ -31,6 +35,8 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
       showTrustBadges={showTrustBadges}
       withoutPadding={withoutPadding}
       animation={animation}
+      animationDuration={animationDuration}
+      skipToContentId={skipToContentId}
     >
       {children}
     </BaseLayout>

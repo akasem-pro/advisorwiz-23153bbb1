@@ -5,9 +5,14 @@ import { motion } from 'framer-motion';
 interface AnimatedRouteProps {
   children: ReactNode;
   animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale';
+  className?: string;
 }
 
-export const AnimatedRoute: React.FC<AnimatedRouteProps> = ({ children, animation = 'fade' }) => {
+export const AnimatedRoute: React.FC<AnimatedRouteProps> = ({ 
+  children, 
+  animation = 'fade',
+  className = ''
+}) => {
   const animations = {
     fade: {
       initial: { opacity: 0 },
@@ -47,11 +52,16 @@ export const AnimatedRoute: React.FC<AnimatedRouteProps> = ({ children, animatio
       animate={animations[animation].animate}
       exit={animations[animation].exit}
       transition={{ duration: 0.3 }}
-      className="w-full"
+      className={cn("w-full", className)}
     >
       {children}
     </motion.div>
   );
+};
+
+// Add cn utility if not imported
+const cn = (...classes: any[]) => {
+  return classes.filter(Boolean).join(' ');
 };
 
 export default AnimatedRoute;

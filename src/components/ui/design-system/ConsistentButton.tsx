@@ -3,6 +3,7 @@ import React from 'react';
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { Link } from 'react-router-dom';
+import { getComponentSize, getAnimationDuration, a11y } from '@/utils/designSystem';
 
 type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'outline' | 'ghost' | 'link' | 'danger';
 type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -18,6 +19,8 @@ type ConsistentButtonBaseProps = {
   className?: string;
   rounded?: 'full' | 'lg' | 'md' | 'sm';
   disabled?: boolean;
+  animationSpeed?: 'fast' | 'normal' | 'slow';
+  ariaLabel?: string;
 };
 
 // Props for button element
@@ -52,10 +55,12 @@ const ConsistentButton = (props: ConsistentButtonProps) => {
     className = '',
     disabled,
     rounded = 'lg',
+    animationSpeed = 'normal',
+    ariaLabel,
     ...rest
   } = props;
 
-  const baseStyles = "inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const baseStyles = "inline-flex items-center justify-center font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2";
   
   const variantStyles = {
     primary: "bg-navy-600 hover:bg-navy-700 dark:bg-teal-600 dark:hover:bg-teal-700 text-white focus:ring-navy-500 dark:focus:ring-teal-500",
@@ -67,14 +72,8 @@ const ConsistentButton = (props: ConsistentButtonProps) => {
     danger: "bg-red-600 hover:bg-red-700 text-white focus:ring-red-500"
   };
   
-  const sizeStyles = {
-    xs: "text-xs py-1 px-2",
-    sm: "text-sm py-1.5 px-3",
-    md: "text-base py-2 px-4",
-    lg: "text-lg py-2.5 px-5",
-    xl: "text-xl py-3 px-6"
-  };
-
+  const sizeStyles = getComponentSize(size, 'button');
+  
   const roundedStyles = {
     full: "rounded-full",
     lg: "rounded-lg",
@@ -84,27 +83,37 @@ const ConsistentButton = (props: ConsistentButtonProps) => {
   
   const widthStyles = fullWidth ? "w-full" : "";
   const disabledStyles = (disabled || loading) ? "opacity-70 cursor-not-allowed" : "active:scale-95";
+  const animationStyles = getAnimationDuration(animationSpeed);
   
   const buttonClasses = cn(
     baseStyles,
     variantStyles[variant],
-    sizeStyles[size],
+    sizeStyles,
     roundedStyles[rounded],
     widthStyles,
     disabledStyles,
+    animationStyles,
     "gap-2",
+    a11y.keyboardFocusable,
     className
   );
 
   // Common content elements
   const contentElements = (
     <>
-      {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-      {!loading && icon && iconPosition === 'left' && icon}
-      {children}
-      {!loading && icon && iconPosition === 'right' && icon}
+      {loading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+      {!loading && icon && iconPosition === 'left' && <span aria-hidden="true">{icon}</span>}
+      <span>{children}</span>
+      {!loading && icon && iconPosition === 'right' && <span aria-hidden="true">{icon}</span>}
     </>
   );
+
+  // Common accessibility props
+  const accessibilityProps = {
+    'aria-busy': loading,
+    'aria-disabled': disabled || loading,
+    'aria-label': ariaLabel
+  };
 
   // Render link if href is provided
   if (isAnchorProps(props)) {
@@ -117,7 +126,8 @@ const ConsistentButton = (props: ConsistentButtonProps) => {
           className={buttonClasses}
           target="_blank"
           rel="noopener noreferrer"
-          {...anchorRest}
+          {...accessibilityProps}
+          {...anchorRest as React.AnchorHTMLAttributes<HTMLAnchorElement>}
         >
           {contentElements}
         </a>
@@ -128,7 +138,8 @@ const ConsistentButton = (props: ConsistentButtonProps) => {
       <Link
         to={href}
         className={buttonClasses}
-        {...anchorRest}
+        {...accessibilityProps}
+        {...anchorRest as React.AnchorHTMLAttributes<HTMLAnchorElement>}
       >
         {contentElements}
       </Link>
@@ -140,6 +151,7 @@ const ConsistentButton = (props: ConsistentButtonProps) => {
     <button
       className={buttonClasses}
       disabled={disabled || loading}
+      {...accessibilityProps}
       {...rest as React.ButtonHTMLAttributes<HTMLButtonElement>}
     >
       {contentElements}

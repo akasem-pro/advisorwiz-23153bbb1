@@ -18,10 +18,12 @@ export interface BaseLayoutProps {
   className?: string;
   contentClassName?: string;
   mobileNavbar?: ReactNode;
-  animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale';
+  animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale' | 'none';
+  animationDuration?: 'fast' | 'normal' | 'slow';
   headerClassName?: string;
   mainClassName?: string;
   withoutPadding?: boolean;
+  skipToContentId?: string;
 }
 
 const BaseLayout: React.FC<BaseLayoutProps> = ({
@@ -35,9 +37,11 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   contentClassName = '',
   mobileNavbar,
   animation = 'fade',
+  animationDuration = 'normal',
   headerClassName = '',
   mainClassName = '',
-  withoutPadding = false
+  withoutPadding = false,
+  skipToContentId
 }) => {
   const location = useLocation();
   
@@ -50,43 +54,69 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
     trackPageView(pageTitle, location.pathname);
   }, [location]);
 
-  return (
-    <AnimatedRoute animation={animation}>
-      <div className={cn(
-        "min-h-screen flex flex-col bg-slate-50 dark:bg-navy-950 text-navy-900 dark:text-slate-100",
-        className
-      )}>
-        <header className={cn("z-50", headerClassName)}>
-          {header}
-        </header>
-        
-        {showSocialProof && <SocialProofBar />}
-        
-        <main className={cn(
-          "flex-grow",
-          !withoutPadding && contentClassName,
-          mainClassName
+  const getAnimationDurationClass = () => {
+    switch (animationDuration) {
+      case 'fast': return 'duration-200';
+      case 'slow': return 'duration-500';
+      default: return 'duration-300';
+    }
+  };
+
+  const renderContent = () => (
+    <div className={cn(
+      "min-h-screen flex flex-col bg-slate-50 dark:bg-navy-950 text-navy-900 dark:text-slate-100",
+      className
+    )}>
+      {skipToContentId && (
+        <a href={`#${skipToContentId}`} className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:p-4 focus:bg-white focus:text-navy-900 focus:border focus:border-navy-600">
+          Skip to content
+        </a>
+      )}
+      
+      <header className={cn("z-50", headerClassName)}>
+        {header}
+      </header>
+      
+      {showSocialProof && <SocialProofBar />}
+      
+      <main className={cn(
+        "flex-grow",
+        !withoutPadding && contentClassName,
+        mainClassName
+      )} id={skipToContentId}>
+        <div className={cn(
+          withoutPadding ? '' : contentClassName
         )}>
-          <div className={cn(
-            withoutPadding ? '' : contentClassName
-          )}>
-            {children}
-          </div>
-          
-          {showTrustBadges && (
-            <div className={cn(
-              fullWidth ? 'w-full px-4' : 'container mx-auto px-4',
-              'my-8'
-            )}>
-              <TrustBadges className="justify-center" />
-            </div>
-          )}
-        </main>
+          {children}
+        </div>
         
-        <FloatingSupportButton />
-        {footer}
-        {mobileNavbar}
-      </div>
+        {showTrustBadges && (
+          <div className={cn(
+            fullWidth ? 'w-full px-4' : 'container mx-auto px-4',
+            'my-8'
+          )}>
+            <TrustBadges className="justify-center" />
+          </div>
+        )}
+      </main>
+      
+      <FloatingSupportButton />
+      {footer}
+      {mobileNavbar}
+    </div>
+  );
+
+  // If animation is none, don't wrap in AnimatedRoute
+  if (animation === 'none') {
+    return renderContent();
+  }
+
+  return (
+    <AnimatedRoute 
+      animation={animation} 
+      className={getAnimationDurationClass()}
+    >
+      {renderContent()}
     </AnimatedRoute>
   );
 };

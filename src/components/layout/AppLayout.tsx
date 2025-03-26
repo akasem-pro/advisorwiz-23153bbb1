@@ -13,7 +13,9 @@ interface AppLayoutProps {
   showTrustBadges?: boolean;
   contentClassName?: string;
   withoutPadding?: boolean;
-  animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale';
+  animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale' | 'none';
+  animationDuration?: 'fast' | 'normal' | 'slow';
+  skipToContentId?: string;
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ 
@@ -24,7 +26,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   showTrustBadges = true,
   contentClassName,
   withoutPadding = false,
-  animation = 'fade'
+  animation = 'fade',
+  animationDuration = 'normal',
+  skipToContentId = 'main-content'
 }) => {
   return (
     <BaseLayout
@@ -37,6 +41,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       contentClassName={cn("pt-32 md:pt-36", contentClassName)}
       withoutPadding={withoutPadding}
       animation={animation}
+      animationDuration={animationDuration}
+      skipToContentId={skipToContentId}
     >
       {children}
     </BaseLayout>

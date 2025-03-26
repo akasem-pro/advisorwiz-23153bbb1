@@ -1,10 +1,12 @@
 
 import React from 'react';
 import { cn } from "@/lib/utils";
+import { getResponsiveText } from '@/utils/designSystem';
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 type HeadingVariant = 'default' | 'serif' | 'gradient' | 'subtle' | 'accent';
 type HeadingSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl';
+type HeadingAlign = 'left' | 'center' | 'right';
 
 interface HeadingProps {
   level: HeadingLevel;
@@ -12,7 +14,9 @@ interface HeadingProps {
   className?: string;
   variant?: HeadingVariant;
   size?: HeadingSize;
+  align?: HeadingAlign;
   id?: string;
+  withMargin?: boolean;
 }
 
 const Heading: React.FC<HeadingProps> = ({
@@ -21,7 +25,9 @@ const Heading: React.FC<HeadingProps> = ({
   className = '',
   variant = 'default',
   size,
-  id
+  align = 'left',
+  id,
+  withMargin = true
 }) => {
   // Default size mappings based on heading level
   const defaultSizes: Record<HeadingLevel, HeadingSize> = {
@@ -47,6 +53,13 @@ const Heading: React.FC<HeadingProps> = ({
     '4xl': 'text-4xl md:text-5xl'
   };
   
+  // Alignment classes
+  const alignClasses: Record<HeadingAlign, string> = {
+    'left': 'text-left',
+    'center': 'text-center',
+    'right': 'text-right'
+  };
+  
   // Variant styles
   const variantClasses: Record<HeadingVariant, string> = {
     'default': 'text-navy-900 dark:text-white font-semibold',
@@ -55,11 +68,16 @@ const Heading: React.FC<HeadingProps> = ({
     'subtle': 'text-slate-600 dark:text-slate-300 font-medium',
     'accent': 'text-teal-600 dark:text-teal-400 font-semibold'
   };
+
+  // Use the design system's responsive text or fallback to manual classes
+  const responsiveClasses = getResponsiveText('heading', level);
   
   const headingClasses = cn(
-    sizeClasses[headingSize],
+    responsiveClasses || sizeClasses[headingSize],
     variantClasses[variant],
-    'tracking-tight leading-tight mb-4',
+    alignClasses[align],
+    withMargin && 'mb-4',
+    'tracking-tight leading-tight',
     className
   );
   
