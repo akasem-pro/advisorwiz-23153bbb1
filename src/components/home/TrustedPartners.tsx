@@ -1,16 +1,12 @@
 
 import React from 'react';
-import { Shield } from 'lucide-react';
 
 const TrustedPartners: React.FC = () => {
-  // Companies that trust AdvisorWiz - we'll use placeholder names but in a real app you'd use actual logos
   const partners = [
-    { name: 'Morgan Financial', logo: '/lovable-uploads/182395d5-e6d3-41ac-a0d8-349a9c33bdc5.png' },
-    { name: 'Fidelity', logo: '/placeholder.svg' },
-    { name: 'Capital One', logo: '/placeholder.svg' },
-    { name: 'Vanguard', logo: '/placeholder.svg' },
-    { name: 'BlackRock', logo: '/placeholder.svg' },
-    { name: 'JP Morgan', logo: '/placeholder.svg' },
+    { id: 1, name: 'Financial Planning Association', logo: '/lovable-uploads/b3a65a71-f4f7-40ae-b3ef-dcc1ce0725c1.png' },
+    { id: 2, name: 'Investment Management Consultants Association', logo: '/lovable-uploads/6212697e-73f6-458d-a12d-296c66576ee5.png' },
+    { id: 3, name: 'National Association of Personal Financial Advisors', logo: '/lovable-uploads/d66162b8-d098-4ffe-a300-d14aa6ffe38e.png' },
+    { id: 4, name: 'Certified Financial Planner Board', logo: '/lovable-uploads/baef6309-ad9b-4df1-8768-ca1e2df1f72c.png' },
   ];
 
   return (
@@ -19,24 +15,14 @@ const TrustedPartners: React.FC = () => {
         <h2 className="text-2xl font-serif font-bold text-center text-navy-900 dark:text-white mb-8">
           Trusted by Industry Leaders
         </h2>
-        
         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-          {partners.map((partner, index) => (
-            <div key={index} className="text-center">
-              <div className="w-32 h-16 flex items-center justify-center grayscale hover:grayscale-0 transition-all">
-                {partner.logo === '/placeholder.svg' ? (
-                  <div className="bg-slate-100 dark:bg-navy-700 w-full h-full rounded-md flex items-center justify-center">
-                    <Shield className="text-slate-400 h-8 w-8" />
-                    <span className="text-xs font-medium text-slate-500 ml-1">{partner.name}</span>
-                  </div>
-                ) : (
-                  <img 
-                    src={partner.logo} 
-                    alt={`${partner.name} logo`} 
-                    className="max-h-full max-w-full object-contain" 
-                  />
-                )}
-              </div>
+          {partners.map((partner) => (
+            <div key={partner.id} className="w-1/2 md:w-auto flex justify-center">
+              <img 
+                src={partner.logo} 
+                alt={partner.name} 
+                className="h-12 md:h-16 opacity-80 dark:opacity-70 hover:opacity-100 transition-opacity"
+              />
             </div>
           ))}
         </div>
