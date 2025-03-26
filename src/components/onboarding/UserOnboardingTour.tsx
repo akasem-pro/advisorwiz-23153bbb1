@@ -97,7 +97,8 @@ const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => 
   const handleJoyrideCallback = (data: CallBackProps) => {
     const { status } = data;
     
-    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+    // Fix: Use string literals for the status values as defined in react-joyride
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       // Mark the tour as completed
       localStorage.setItem('hasSeenOnboardingTour', 'true');
       setRun(false);
