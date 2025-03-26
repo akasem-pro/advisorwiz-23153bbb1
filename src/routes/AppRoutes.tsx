@@ -28,6 +28,7 @@ const Onboarding = lazy(() => import('../pages/Onboarding'));
 const Resources = lazy(() => import('../pages/Resources'));
 const Sitemap = lazy(() => import('../pages/Sitemap'));
 const Careers = lazy(() => import('../pages/Careers'));
+const DownloadApp = lazy(() => import('../pages/DownloadApp'));
 
 // Lazy loaded dashboard pages
 const AdvisorDashboard = lazy(() => import('../pages/AdvisorDashboard'));
@@ -138,6 +139,11 @@ const AppRoutes = () => {
         <Route path="careers" element={
           <Suspense fallback={<PageLoadingFallback />}>
             <Careers />
+          </Suspense>
+        } />
+        <Route path="download" element={
+          <Suspense fallback={<PageLoadingFallback />}>
+            <DownloadApp />
           </Suspense>
         } />
         
