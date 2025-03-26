@@ -28,14 +28,14 @@ export const ComponentLoadingFallback = () => (
 );
 
 // Improved withLazyLoading HOC with better TypeScript support
-export function withLazyLoading<P>(
+export function withLazyLoading<P extends Record<string, unknown>>(
   importFn: () => Promise<{ default: React.ComponentType<P> }>,
   LoadingComponent: React.ComponentType = ComponentLoadingFallback
 ) {
   const LazyComponent = React.lazy(importFn);
   
   // Create a functional component to wrap the lazy component
-  const WithLazyLoadingComponent = (props: P) => (
+  const WithLazyLoadingComponent = (props: P & JSX.IntrinsicAttributes) => (
     <Suspense fallback={<LoadingComponent />}>
       <LazyComponent {...props} />
     </Suspense>
