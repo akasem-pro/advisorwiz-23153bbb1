@@ -6,7 +6,7 @@ import MobileLayout from '../components/layout/MobileLayout';
 import NotFound from '../pages/NotFound';
 import MainRoutes from './MainRoutes';
 import DashboardRoutes from './DashboardRoutes';
-import AuthRoutes from './AuthRoutes';
+import SignIn from '../pages/SignIn';
 import { lazy, Suspense } from 'react';
 import { PageLoadingFallback } from '../components/LazyComponents';
 
@@ -27,7 +27,8 @@ const AppRoutes = () => {
       </Route>
       
       {/* Authentication Routes (no layout) */}
-      <AuthRoutes />
+      <Route path="/login" element={<SignIn />} />
+      <Route path="/signin" element={<SignIn />} />
       
       {/* Main Web Routes */}
       <Route path="/" element={<AppLayout><Outlet /></AppLayout>}>
