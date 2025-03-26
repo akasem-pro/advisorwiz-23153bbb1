@@ -2,6 +2,7 @@
 import { lazy, Suspense } from 'react';
 import { Route } from 'react-router-dom';
 import { PageLoadingFallback } from '../components/LazyComponents';
+import AuthGuard from '../components/auth/AuthGuard';
 
 // Lazy loaded dashboard pages
 const AdvisorDashboard = lazy(() => import('../pages/AdvisorDashboard'));
@@ -21,79 +22,109 @@ const Team = lazy(() => import('../pages/Team'));
 const DashboardRoutes = [
   // Support for both dashboard path patterns
   <Route key="advisor-dashboard" path="dashboard/advisor" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <AdvisorDashboard />
-    </Suspense>
+    <AuthGuard userTypes={['advisor', 'firm_admin']}>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <AdvisorDashboard />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="advisor-dashboard-alt" path="advisor-dashboard" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <AdvisorDashboard />
-    </Suspense>
+    <AuthGuard userTypes={['advisor', 'firm_admin']}>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <AdvisorDashboard />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="consumer-dashboard" path="dashboard/consumer" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <ConsumerDashboard />
-    </Suspense>
+    <AuthGuard userTypes={['consumer']}>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <ConsumerDashboard />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="consumer-dashboard-alt" path="consumer-dashboard" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <ConsumerDashboard />
-    </Suspense>
+    <AuthGuard userTypes={['consumer']}>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <ConsumerDashboard />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="firm-dashboard" path="dashboard/firm" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <FirmDashboard />
-    </Suspense>
+    <AuthGuard userTypes={['firm_admin']}>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <FirmDashboard />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="firm-dashboard-alt" path="firm-dashboard" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <FirmDashboard />
-    </Suspense>
+    <AuthGuard userTypes={['firm_admin']}>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <FirmDashboard />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="schedule" path="schedule" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <Schedule />
-    </Suspense>
+    <AuthGuard>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <Schedule />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="chat" path="chat" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <Chat />
-    </Suspense>
+    <AuthGuard>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <Chat />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="consumer-profile" path="consumer-profile" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <ConsumerProfile />
-    </Suspense>
+    <AuthGuard>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <ConsumerProfile />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="advisor-profile-dashboard" path="advisor-profile" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <AdvisorProfile />
-    </Suspense>
+    <AuthGuard>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <AdvisorProfile />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="firm-profile" path="firm-profile" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <FirmProfile />
-    </Suspense>
+    <AuthGuard>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <FirmProfile />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="settings" path="settings" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <Settings />
-    </Suspense>
+    <AuthGuard>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <Settings />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="leads" path="leads" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <LeadManagementPage />
-    </Suspense>
+    <AuthGuard>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <LeadManagementPage />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="analytics" path="analytics" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <Analytics />
-    </Suspense>
+    <AuthGuard>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <Analytics />
+      </Suspense>
+    </AuthGuard>
   } />,
   <Route key="team" path="team" element={
-    <Suspense fallback={<PageLoadingFallback />}>
-      <Team />
-    </Suspense>
+    <AuthGuard>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <Team />
+      </Suspense>
+    </AuthGuard>
   } />
 ];
 

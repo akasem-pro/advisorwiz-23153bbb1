@@ -15,11 +15,6 @@ const AuthButtons: React.FC<AuthButtonsProps> = ({ className = '' }) => {
   const { user, signOut, loading } = useAuth();
   const { isAuthenticated } = useUser();
   
-  // Check if this is a preview environment with mock auth
-  const isPreviewEnv = window.location.hostname.includes('preview') || 
-                       window.location.hostname.includes('lovableproject') ||
-                       window.location.hostname.includes('localhost');
-  
   // Use effective authentication status
   const effectiveIsAuthenticated = getEffectiveAuthStatus(isAuthenticated);
   

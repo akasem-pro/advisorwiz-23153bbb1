@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, User, Settings } from 'lucide-react';
@@ -13,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { getEffectiveAuthStatus } from '../../utils/mockAuthUtils';
 
 interface UserMenuProps {
   getUserName: () => string;
@@ -54,8 +54,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
     console.log('[UserMenu] Profile clicked, userType:', userType);
     
     // In preview environments, treat mock users as authenticated
-    const effectiveIsAuthenticated = isAuthenticated || 
-      (isPreviewEnv && !!localStorage.getItem('mock_auth_user'));
+    const effectiveIsAuthenticated = getEffectiveAuthStatus(isAuthenticated);
     
     // Make sure we're authenticated first
     if (!effectiveIsAuthenticated) {
@@ -93,8 +92,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
     console.log('[UserMenu] Settings clicked');
     
     // In preview environments, treat mock users as authenticated
-    const effectiveIsAuthenticated = isAuthenticated || 
-      (isPreviewEnv && !!localStorage.getItem('mock_auth_user'));
+    const effectiveIsAuthenticated = getEffectiveAuthStatus(isAuthenticated);
     
     // Make sure we're authenticated first
     if (!effectiveIsAuthenticated) {

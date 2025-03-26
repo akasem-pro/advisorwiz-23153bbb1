@@ -5,6 +5,7 @@ import { useUser } from '../../context/UserContext';
 import { supabase } from '../../integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '../../features/auth/context/AuthProvider';
+import { getEffectiveAuthStatus } from '../../utils/mockAuthUtils';
 import { AlertCircle } from 'lucide-react';
 
 interface AuthGuardProps {
@@ -22,28 +23,27 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   const location = useLocation();
   const [checking, setChecking] = useState(true);
   
-  // Check if this is a preview environment
-  const isPreviewEnv = window.location.hostname.includes('preview') || 
-                       window.location.hostname.includes('lovableproject') ||
-                       window.location.hostname.includes('localhost');
-  
   // Check auth status from multiple sources
   useEffect(() => {
     const verifyAuth = async () => {
       try {
         console.log("[AuthGuard] Starting auth verification...");
         
-        // For preview environment with mock auth, skip checks
-        if (isPreviewEnv && localStorage.getItem('mock_auth_user')) {
-          console.log("[AuthGuard] Preview environment with mock user detected");
+        // First check if we have a user from Auth context
+        if (user) {
+          console.log("[AuthGuard] User authenticated via Auth context:", user.email);
           setIsAuthenticated(true);
           setChecking(false);
           return;
         }
         
-        // First check if we have a user from Auth context
-        if (user) {
-          console.log("[AuthGuard] User authenticated via Auth context:", user.email);
+        // Check for mock user in preview environments
+        const isPreviewEnv = window.location.hostname.includes('preview') || 
+                             window.location.hostname.includes('lovableproject') ||
+                             window.location.hostname.includes('localhost');
+        
+        if (isPreviewEnv && localStorage.getItem('mock_auth_user')) {
+          console.log("[AuthGuard] Preview environment with mock user detected");
           setIsAuthenticated(true);
           setChecking(false);
           return;
@@ -71,7 +71,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
     };
     
     verifyAuth();
-  }, [setIsAuthenticated, location.pathname, user, isPreviewEnv]);
+  }, [setIsAuthenticated, location.pathname, user]);
   
   // Show loading state while checking
   if (checking) {
@@ -82,14 +82,15 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
     );
   }
 
-  // Check if authenticated or we're in a preview env with mock user
-  const effectiveIsAuthenticated = isAuthenticated || 
-    (isPreviewEnv && !!localStorage.getItem('mock_auth_user'));
-
+  // Use effective authentication status
+  const effectiveIsAuthenticated = getEffectiveAuthStatus(isAuthenticated);
+  
   console.log("[AuthGuard] Auth decision:", { 
     effectiveIsAuthenticated, 
     isAuthenticated, 
-    isPreviewEnv, 
+    isPreviewEnv: window.location.hostname.includes('preview') || 
+                  window.location.hostname.includes('lovableproject') ||
+                  window.location.hostname.includes('localhost'), 
     hasMockUser: !!localStorage.getItem('mock_auth_user'),
     path: location.pathname
   });

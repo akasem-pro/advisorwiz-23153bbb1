@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, AlertCircle } from 'lucide-react';
@@ -11,6 +10,7 @@ import ThemeToggleButton from './ThemeToggleButton';
 import UserMenu from './UserMenu';
 import AuthButtons from './AuthButtons';
 import SuccessMessage from '../ui/SuccessMessage';
+import { getEffectiveAuthStatus } from '../../utils/mockAuthUtils';
 
 // Define the navigation links
 const navigationLinks = [
@@ -56,11 +56,6 @@ const Header: React.FC = () => {
   console.log('isAuthenticated:', isAuthenticated);
   console.log('Current user in Header:', user);
 
-  // Check if this is a preview environment
-  const isPreviewEnv = window.location.hostname.includes('preview') || 
-                       window.location.hostname.includes('lovableproject') ||
-                       window.location.hostname.includes('localhost');
-  
   // Show success message when user signs in
   useEffect(() => {
     if (user) {
@@ -122,9 +117,8 @@ const Header: React.FC = () => {
   const isProfilePage = location.pathname.includes('profile');
   const needsAuth = isSettingsPage || isProfilePage;
   
-  // In preview environment with mock user, we should consider auth valid
-  const effectiveIsAuthenticated = isAuthenticated || 
-    (isPreviewEnv && !!localStorage.getItem('mock_auth_user'));
+  // Use our utility to get effective authentication status
+  const effectiveIsAuthenticated = getEffectiveAuthStatus(isAuthenticated);
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white dark:bg-navy-900 shadow-sm z-50">
