@@ -16,61 +16,58 @@ const LeadManagementPage = lazy(() => import('../pages/LeadManagementPage'));
 // Add the missing import for AdvisorProfile
 const AdvisorProfile = lazy(() => import('../pages/AdvisorProfile'));
 
-const DashboardRoutes = () => {
-  return (
-    <>
-      <Route path="dashboard/advisor" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <AdvisorDashboard />
-        </Suspense>
-      } />
-      <Route path="dashboard/consumer" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <ConsumerDashboard />
-        </Suspense>
-      } />
-      <Route path="dashboard/firm" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <FirmDashboard />
-        </Suspense>
-      } />
-      <Route path="schedule" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <Schedule />
-        </Suspense>
-      } />
-      <Route path="chat" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <Chat />
-        </Suspense>
-      } />
-      <Route path="consumer-profile" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <ConsumerProfile />
-        </Suspense>
-      } />
-      <Route path="advisor-profile" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <AdvisorProfile />
-        </Suspense>
-      } />
-      <Route path="firm-profile" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <FirmProfile />
-        </Suspense>
-      } />
-      <Route path="settings" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <Settings />
-        </Suspense>
-      } />
-      <Route path="leads" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <LeadManagementPage />
-        </Suspense>
-      } />
-    </>
-  );
-};
+// Export dashboard routes as an array of Route components
+const DashboardRoutes = [
+  <Route key="advisor-dashboard" path="dashboard/advisor" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <AdvisorDashboard />
+    </Suspense>
+  } />,
+  <Route key="consumer-dashboard" path="dashboard/consumer" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <ConsumerDashboard />
+    </Suspense>
+  } />,
+  <Route key="firm-dashboard" path="dashboard/firm" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <FirmDashboard />
+    </Suspense>
+  } />,
+  <Route key="schedule" path="schedule" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Schedule />
+    </Suspense>
+  } />,
+  <Route key="chat" path="chat" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Chat />
+    </Suspense>
+  } />,
+  <Route key="consumer-profile" path="consumer-profile" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <ConsumerProfile />
+    </Suspense>
+  } />,
+  <Route key="advisor-profile" path="advisor-profile" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <AdvisorProfile />
+    </Suspense>
+  } />,
+  <Route key="firm-profile" path="firm-profile" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <FirmProfile />
+    </Suspense>
+  } />,
+  <Route key="settings" path="settings" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Settings />
+    </Suspense>
+  } />,
+  <Route key="leads" path="leads" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <LeadManagementPage />
+    </Suspense>
+  } />
+];
 
 export default DashboardRoutes;

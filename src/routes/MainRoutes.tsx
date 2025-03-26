@@ -22,96 +22,93 @@ const Sitemap = lazy(() => import('../pages/Sitemap'));
 const Careers = lazy(() => import('../pages/Careers'));
 const DownloadApp = lazy(() => import('../pages/DownloadApp'));
 
-const MainRoutes = () => {
-  return (
-    <>
-      <Route index element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <Home />
-        </Suspense>
-      } />
-      <Route path="about" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <AboutUs />
-        </Suspense>
-      } />
-      <Route path="for-consumers" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <ForConsumers />
-        </Suspense>
-      } />
-      <Route path="for-advisors" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <ForAdvisors />
-        </Suspense>
-      } />
-      <Route path="for-firms" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <ForFirms />
-        </Suspense>
-      } />
-      <Route path="blog" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <Blog />
-        </Suspense>
-      } />
-      <Route path="contact" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <ContactUs />
-        </Suspense>
-      } />
-      <Route path="pricing" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <Pricing />
-        </Suspense>
-      } />
-      <Route path="terms" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <Terms />
-        </Suspense>
-      } />
-      <Route path="privacy" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <Privacy />
-        </Suspense>
-      } />
-      <Route path="advisor/:id" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <AdvisorProfile />
-        </Suspense>
-      } />
-      <Route path="match" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <MatchingInterface />
-        </Suspense>
-      } />
-      <Route path="onboarding" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <Onboarding />
-        </Suspense>
-      } />
-      <Route path="resources" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <Resources />
-        </Suspense>
-      } />
-      <Route path="sitemap" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <Sitemap />
-        </Suspense>
-      } />
-      <Route path="careers" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <Careers />
-        </Suspense>
-      } />
-      <Route path="download" element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <DownloadApp />
-        </Suspense>
-      } />
-    </>
-  );
-};
+// Export main routes as an array of Route components
+const MainRoutes = [
+  <Route key="home" index element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Home />
+    </Suspense>
+  } />,
+  <Route key="about" path="about" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <AboutUs />
+    </Suspense>
+  } />,
+  <Route key="for-consumers" path="for-consumers" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <ForConsumers />
+    </Suspense>
+  } />,
+  <Route key="for-advisors" path="for-advisors" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <ForAdvisors />
+    </Suspense>
+  } />,
+  <Route key="for-firms" path="for-firms" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <ForFirms />
+    </Suspense>
+  } />,
+  <Route key="blog" path="blog" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Blog />
+    </Suspense>
+  } />,
+  <Route key="contact" path="contact" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <ContactUs />
+    </Suspense>
+  } />,
+  <Route key="pricing" path="pricing" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Pricing />
+    </Suspense>
+  } />,
+  <Route key="terms" path="terms" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Terms />
+    </Suspense>
+  } />,
+  <Route key="privacy" path="privacy" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Privacy />
+    </Suspense>
+  } />,
+  <Route key="advisor-profile" path="advisor/:id" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <AdvisorProfile />
+    </Suspense>
+  } />,
+  <Route key="matching" path="match" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <MatchingInterface />
+    </Suspense>
+  } />,
+  <Route key="onboarding" path="onboarding" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Onboarding />
+    </Suspense>
+  } />,
+  <Route key="resources" path="resources" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Resources />
+    </Suspense>
+  } />,
+  <Route key="sitemap" path="sitemap" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Sitemap />
+    </Suspense>
+  } />,
+  <Route key="careers" path="careers" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Careers />
+    </Suspense>
+  } />,
+  <Route key="download" path="download" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <DownloadApp />
+    </Suspense>
+  } />
+];
 
 export default MainRoutes;

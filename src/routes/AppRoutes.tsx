@@ -23,8 +23,9 @@ const AppRoutes = () => {
       
       {/* Main Web Routes */}
       <Route path="/" element={<AppLayout><Outlet /></AppLayout>}>
-        <MainRoutes />
-        <DashboardRoutes />
+        {/* Spread the main routes and dashboard routes arrays */}
+        {MainRoutes}
+        {DashboardRoutes}
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
