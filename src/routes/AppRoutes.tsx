@@ -15,7 +15,6 @@ const AppRoutes = () => {
       {/* Mobile Routes */}
       <Route path="/m" element={<MobileLayout />}>
         <MobileRoutes />
-        {/* Add other mobile routes here */}
       </Route>
       
       {/* Authentication Routes (no layout) */}
