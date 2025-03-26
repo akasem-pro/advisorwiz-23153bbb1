@@ -9,17 +9,22 @@ import DashboardHeader from './DashboardHeader';
 import MobileDashboard from './MobileDashboard';
 import { getNavigationItems } from './dashboardNavigation';
 import { useNavigation } from '../../hooks/use-navigation';
+import { cn } from '@/lib/utils';
 
 interface DashboardLayoutProps {
   children: ReactNode;
   title: string;
   subtitle?: string;
+  actionButtons?: ReactNode;
+  contentClassName?: string;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ 
   children, 
   title, 
-  subtitle 
+  subtitle,
+  actionButtons,
+  contentClassName
 }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { userType, isAuthenticated, setIsAuthenticated, setUserType } = useUser();
@@ -60,7 +65,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   return (
     <AnimatedRoute animation="fade">
-      <div className="min-h-screen bg-slate-50 dark:bg-navy-900 flex">
+      <div className="min-h-screen bg-slate-50 dark:bg-navy-950 flex text-navy-900 dark:text-slate-100">
         <Sidebar 
           sidebarCollapsed={sidebarCollapsed}
           setSidebarCollapsed={setSidebarCollapsed}
@@ -70,18 +75,23 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         />
 
         <div 
-          className={`transition-all duration-300 ease-in-out ${
+          className={cn(
+            "transition-all duration-300 ease-in-out flex-1",
             sidebarCollapsed ? 'ml-20' : 'ml-64'
-          } flex-1`}
+          )}
         >
           <DashboardHeader 
             title={title} 
             subtitle={subtitle}
             userType={userType}
             sidebarCollapsed={sidebarCollapsed}
+            actionButtons={actionButtons}
           />
           
-          <main className="p-6">
+          <main className={cn(
+            "p-6 bg-slate-50 dark:bg-navy-950",
+            contentClassName
+          )}>
             {children}
           </main>
         </div>

@@ -19,8 +19,10 @@
   @import './components/forms.css';
   @import './components/sections.css';
   @import './components/mobile.css';
+  @import './components/transitions.css';
 }
 
 /* Utility styles */
 @import './utilities/fonts.css';
 @import './utilities/effects.css';
+@import './utilities/spacing.css';

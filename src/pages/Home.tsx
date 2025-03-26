@@ -7,6 +7,9 @@ import MarketingChannelsWidget from '../components/marketing/MarketingChannelsWi
 import ASOOptimizationInfo from '../components/marketing/ASOOptimizationInfo';
 import PromotionalBanner from '../components/promotions/PromotionalBanner';
 import { trackAppStoreEvent } from '../utils/analytics/marketingHelper';
+import OnboardingTour from '../components/onboarding/OnboardingTour';
+import ConsistentSection from '../components/ui/design-system/ConsistentSection';
+import ConsistentContainer from '../components/ui/design-system/ConsistentContainer';
 
 // Fixing imports to use default imports instead of named imports
 import HeroSection from '../components/home/HeroSection';
@@ -18,6 +21,7 @@ import MainCTASection from '../components/home/MainCTASection';
 import TrustedPartners from '../components/home/TrustedPartners';
 import PricingCTASection from '../components/home/PricingCTASection';
 import NewsletterSection from '../components/home/NewsletterSection';
+import AppLayout from '../components/layout/AppLayout';
 
 const Home = () => {
   // Show app review modal on the home page
@@ -31,12 +35,12 @@ const Home = () => {
   };
 
   return (
-    <>
+    <AppLayout fullWidth>
       {/* App Store Optimization Banner */}
       <ASOBanner variant="both" position="top" />
       
       {/* Main Home Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="overflow-hidden">
         {/* Promotional Banner for Marketing */}
         <PromotionalBanner
           id="home-promo-1"
@@ -52,9 +56,11 @@ const Home = () => {
         </div>
         
         {/* Marketing Channels Widget - after hero section */}
-        <div className="my-8">
-          <MarketingChannelsWidget orientation="horizontal" />
-        </div>
+        <ConsistentSection background="light" className="py-8">
+          <ConsistentContainer>
+            <MarketingChannelsWidget orientation="horizontal" />
+          </ConsistentContainer>
+        </ConsistentSection>
         
         <div id="how-it-works-section">
           <HowItWorksSection />
@@ -65,10 +71,12 @@ const Home = () => {
         </div>
         
         {/* ASO Optimization Info - strategic placement */}
-        <div className="my-12">
-          <h2 className="text-2xl font-bold text-center mb-6">Discover Our Mobile App</h2>
-          <ASOOptimizationInfo className="max-w-3xl mx-auto" />
-        </div>
+        <ConsistentSection centered background="accent" className="my-0">
+          <ConsistentContainer width="md">
+            <h2 className="text-2xl font-bold text-center mb-6 text-navy-900 dark:text-white">Discover Our Mobile App</h2>
+            <ASOOptimizationInfo className="max-w-3xl mx-auto" />
+          </ConsistentContainer>
+        </ConsistentSection>
         
         <div id="testimonials-section">
           <TestimonialsSection />
@@ -102,7 +110,7 @@ const Home = () => {
         pageVisitThreshold={3}
         onReviewSubmitted={handleReviewSubmitted}
       />
-    </>
+    </AppLayout>
   );
 };
 

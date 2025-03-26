@@ -1,6 +1,6 @@
 
 import { Routes, Route, Outlet } from 'react-router-dom';
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import MobileLayout from '../components/layout/MobileLayout';
 import NotFound from '../pages/NotFound';
@@ -9,8 +9,30 @@ import OnboardingTour from '../components/onboarding/OnboardingTour';
 import MainRoutes from './MainRoutes';
 import DashboardRoutes from './DashboardRoutes';
 import MobileRoutes from './MobileRoutes';
+import AuthRoutes from './AuthRoutes';
+import AccessibilityTestPage from '../pages/AccessibilityTestPage';
+import { useLocation } from 'react-router-dom';
 
 const AppRoutes = () => {
+  const location = useLocation();
+
+  // Track page route changes for analytics or other purposes
+  useEffect(() => {
+    // Scroll to top on route change
+    window.scrollTo(0, 0);
+    
+    // You could add analytics tracking here
+    console.log('Route changed:', location.pathname);
+    
+    // Apply page-specific body classes if needed
+    document.body.classList.add('page-' + location.pathname.split('/')[1] || 'home');
+    
+    return () => {
+      // Clean up any page-specific body classes
+      document.body.classList.remove('page-' + location.pathname.split('/')[1] || 'home');
+    };
+  }, [location.pathname]);
+
   return (
     <>
       {/* Global onboarding tour - context-aware based on route */}
@@ -26,8 +48,12 @@ const AppRoutes = () => {
         </Route>
         
         {/* Authentication Routes (no layout) */}
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/signin" element={<SignIn />} />
+        {AuthRoutes.map(route => (
+          <Fragment key={route.key}>{route}</Fragment>
+        ))}
+        
+        {/* Accessibility test page */}
+        <Route path="/accessibility-test" element={<AccessibilityTestPage />} />
         
         {/* Main Web Routes */}
         <Route path="/" element={<AppLayout><Outlet /></AppLayout>}>

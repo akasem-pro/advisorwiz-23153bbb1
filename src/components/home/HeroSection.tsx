@@ -1,37 +1,83 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import HeroActions from './hero/HeroActions';
+import { ArrowRight, Search, ShieldCheck, Users } from 'lucide-react';
+import ConsistentButton from '../ui/design-system/ConsistentButton';
 import HeroStatistics from './hero/HeroStatistics';
-import { useAuth } from '../../features/auth/context/AuthProvider';
+import Heading from '../ui/design-system/Heading';
+import TooltipHelper from '../ui/TooltipHelper';
 
 const HeroSection: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   return (
-    <section className="relative py-16 mt-8 overflow-hidden bg-gradient-to-b from-white to-slate-50 dark:from-navy-900 dark:to-navy-950">
-      <div className="container mx-auto px-4 z-20 relative">
-        <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-navy-900 dark:text-white leading-tight mb-6">
-            Find the Perfect Financial Advisor for Your Needs
-          </h1>
-          <p className="text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl">
-            Connect with qualified financial advisors who understand your unique financial situation and goals.
+    <div className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-navy-950 dark:to-navy-900 pt-10 pb-16 sm:pb-20 lg:pb-28">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Hero Content */}
+        <div className="text-center max-w-4xl mx-auto pt-10 pb-12">
+          <Heading 
+            level={1} 
+            variant="serif" 
+            size="4xl"
+            className="mb-6 animate-fade-in"
+          >
+            Find Your Ideal Financial Advisor Match
+          </Heading>
+          
+          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-8 animate-fade-in" style={{animationDelay: '0.1s'}}>
+            Personalized connections with qualified financial advisors who understand 
+            your unique needs and goals. Start your journey to financial well-being today.
           </p>
           
-          <HeroActions user={user} navigate={navigate} />
-          <HeroStatistics />
+          <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in" style={{animationDelay: '0.2s'}}>
+            <ConsistentButton 
+              variant="primary" 
+              size="lg"
+              onClick={() => navigate('/match')}
+              icon={<Search className="h-5 w-5" />}
+            >
+              Find My Advisor Match
+            </ConsistentButton>
+            
+            <ConsistentButton 
+              variant="outline" 
+              size="lg"
+              onClick={() => navigate('/for-advisors')}
+              icon={<ArrowRight className="h-5 w-5" />}
+              iconPosition="right"
+            >
+              Advisor Sign Up
+            </ConsistentButton>
+          </div>
+          
+          {/* Trust badges */}
+          <div className="mt-10 flex flex-wrap justify-center gap-8 animate-fade-in" style={{animationDelay: '0.3s'}}>
+            <div className="flex items-center text-navy-700 dark:text-slate-300">
+              <ShieldCheck className="h-5 w-5 mr-2 text-teal-600 dark:text-teal-400" />
+              <span className="text-sm md:text-base">Bank-Level Security</span>
+              <TooltipHelper 
+                title="Secure Data" 
+                content="Your financial information is protected with bank-level encryption and security measures"
+                className="ml-1"
+              />
+            </div>
+            
+            <div className="flex items-center text-navy-700 dark:text-slate-300">
+              <Users className="h-5 w-5 mr-2 text-teal-600 dark:text-teal-400" />
+              <span className="text-sm md:text-base">500+ Verified Advisors</span>
+            </div>
+          </div>
         </div>
+        
+        {/* Statistics Bar */}
+        <HeroStatistics className="mt-12" />
       </div>
       
-      {/* Decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-10 pointer-events-none">
-        <div className="absolute top-1/4 left-5 w-64 h-64 bg-teal-300 dark:bg-teal-900 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-        <div className="absolute top-1/3 right-5 w-72 h-72 bg-indigo-300 dark:bg-indigo-900 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-2/3 left-1/3 w-80 h-80 bg-blue-300 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
-      </div>
-    </section>
+      {/* Background Elements */}
+      <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-br from-teal-50/30 to-navy-50/30 dark:from-teal-900/10 dark:to-navy-800/10 -z-10"></div>
+      
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-navy-700 to-transparent"></div>
+    </div>
   );
 };
 
