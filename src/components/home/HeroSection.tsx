@@ -10,7 +10,7 @@ const HeroSection: React.FC = () => {
   const { user } = useAuth();
 
   return (
-    <section className="relative pt-20 pb-16 overflow-hidden bg-gradient-to-b from-white to-slate-50 dark:from-navy-900 dark:to-navy-950">
+    <section className="relative py-16 overflow-hidden bg-gradient-to-b from-white to-slate-50 dark:from-navy-900 dark:to-navy-950">
       <div className="container mx-auto px-4 z-20 relative">
         <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-navy-900 dark:text-white leading-tight mb-6">

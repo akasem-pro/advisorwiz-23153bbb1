@@ -1,18 +1,22 @@
+
 import { useState, useEffect } from 'react';
+import { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../integrations/supabase/client';
 
 export const useAuthSession = () => {
-  const [session, setSession] = useState(supabase.auth.getSession());
+  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Get the initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
+    // Set up the auth state change listener
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
@@ -21,6 +25,7 @@ export const useAuthSession = () => {
       }
     );
 
+    // Cleanup subscription
     return () => {
       authListener.subscription.unsubscribe();
     };

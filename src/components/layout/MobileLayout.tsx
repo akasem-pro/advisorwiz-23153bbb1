@@ -25,7 +25,7 @@ const MobileLayout: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <SocialProofBar />
-      <main className="flex-1 pt-28 pb-20 px-4 sm:px-6 mx-auto w-full">
+      <main className="flex-1 pt-32 pb-20 px-4 sm:px-6 mx-auto w-full">
         <AnimatedRoute animation="fade">
           <Outlet />
         </AnimatedRoute>

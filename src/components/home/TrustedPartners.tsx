@@ -14,7 +14,7 @@ const TrustedPartners: React.FC = () => {
   ];
 
   return (
-    <section className="py-12 bg-white dark:bg-navy-850 border-y border-slate-100 dark:border-navy-700">
+    <section className="py-12 bg-white dark:bg-navy-850 border-y border-slate-100 dark:border-navy-700 mt-8">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl font-serif font-bold text-center text-navy-900 dark:text-white mb-8">
           Trusted by Industry Leaders

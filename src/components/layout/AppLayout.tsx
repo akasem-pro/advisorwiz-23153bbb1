@@ -18,7 +18,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, hideSocialProof = false
       <div className="min-h-screen flex flex-col">
         <Header />
         {!hideSocialProof && <SocialProofBar />}
-        <main className="flex-grow pt-20">
+        <main className="flex-grow pt-24 md:pt-28">
           {children}
           <div className="container mx-auto px-4 my-8">
             <TrustBadges className="justify-center" />

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Check, BarChart, Users, ShieldCheck } from 'lucide-react';
@@ -17,7 +16,7 @@ const HeroSection: React.FC = () => {
   };
   
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-b from-white to-slate-50 dark:from-navy-900 dark:to-navy-950" aria-labelledby="advisor-heading">
+    <section className="py-16 md:py-20 bg-gradient-to-b from-white to-slate-50 dark:from-navy-900 dark:to-navy-950" aria-labelledby="advisor-heading">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="max-w-xl">
