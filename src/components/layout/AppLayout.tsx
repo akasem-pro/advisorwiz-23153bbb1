@@ -11,6 +11,9 @@ interface AppLayoutProps {
   fullWidth?: boolean;
   className?: string;
   showTrustBadges?: boolean;
+  contentClassName?: string;
+  withoutPadding?: boolean;
+  animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale';
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ 
@@ -18,7 +21,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   hideSocialProof = false,
   fullWidth = false,
   className = '',
-  showTrustBadges = true
+  showTrustBadges = true,
+  contentClassName,
+  withoutPadding = false,
+  animation = 'fade'
 }) => {
   return (
     <BaseLayout
@@ -28,7 +34,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       showTrustBadges={showTrustBadges}
       fullWidth={fullWidth}
       className={className}
-      contentClassName="pt-32 md:pt-36"
+      contentClassName={cn("pt-32 md:pt-36", contentClassName)}
+      withoutPadding={withoutPadding}
+      animation={animation}
     >
       {children}
     </BaseLayout>

@@ -19,6 +19,9 @@ export interface BaseLayoutProps {
   contentClassName?: string;
   mobileNavbar?: ReactNode;
   animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale';
+  headerClassName?: string;
+  mainClassName?: string;
+  withoutPadding?: boolean;
 }
 
 const BaseLayout: React.FC<BaseLayoutProps> = ({
@@ -31,7 +34,10 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   className = '',
   contentClassName = '',
   mobileNavbar,
-  animation = 'fade'
+  animation = 'fade',
+  headerClassName = '',
+  mainClassName = '',
+  withoutPadding = false
 }) => {
   const location = useLocation();
   
@@ -50,12 +56,22 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         "min-h-screen flex flex-col bg-slate-50 dark:bg-navy-950 text-navy-900 dark:text-slate-100",
         className
       )}>
-        {header}
+        <header className={cn("z-50", headerClassName)}>
+          {header}
+        </header>
         
         {showSocialProof && <SocialProofBar />}
         
-        <main className={cn("flex-grow", contentClassName)}>
-          {children}
+        <main className={cn(
+          "flex-grow",
+          !withoutPadding && contentClassName,
+          mainClassName
+        )}>
+          <div className={cn(
+            withoutPadding ? '' : contentClassName
+          )}>
+            {children}
+          </div>
           
           {showTrustBadges && (
             <div className={cn(
