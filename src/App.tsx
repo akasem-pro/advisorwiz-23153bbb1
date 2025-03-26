@@ -30,6 +30,7 @@ import Settings from './pages/Settings';
 import AuthGuard from './components/auth/AuthGuard';
 import UserOnboardingTour from './components/onboarding/UserOnboardingTour';
 import AccessibilityTestPage from './pages/AccessibilityTestPage';
+import FloatingSupportButton from './components/support/FloatingSupportButton';
 
 const App: React.FC = () => {
   return (
@@ -110,6 +111,9 @@ const App: React.FC = () => {
             {/* Fallback Route */}
             <Route path="*" element={<Home />} />
           </Routes>
+          
+          {/* Global floating support button - visible on all pages */}
+          <FloatingSupportButton />
         </RealtimeSubscriptionProvider>
       </UserProvider>
     </AuthProvider>

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { MessageCircle, PhoneCall, X, HelpCircle } from 'lucide-react';
+import { MessageCircle, PhoneCall, X, HelpCircle, FileQuestion, Video, Mail } from 'lucide-react';
 import SupportPanel from './SupportPanel';
 
 export const FloatingSupportButton: React.FC = () => {
@@ -34,6 +34,31 @@ export const FloatingSupportButton: React.FC = () => {
               aria-label="Call support"
             >
               <PhoneCall className="h-6 w-6" />
+            </a>
+            <a
+              href="mailto:support@advisorwiz.com"
+              className="flex items-center justify-center bg-white dark:bg-navy-800 text-green-600 dark:text-green-400 p-3 rounded-full shadow-lg hover:bg-green-50 dark:hover:bg-navy-700 transition-all"
+              aria-label="Email support"
+            >
+              <Mail className="h-6 w-6" />
+            </a>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                window.open('https://calendly.com/advisorwiz/demo', '_blank');
+              }}
+              className="flex items-center justify-center bg-white dark:bg-navy-800 text-purple-600 dark:text-purple-400 p-3 rounded-full shadow-lg hover:bg-purple-50 dark:hover:bg-navy-700 transition-all"
+              aria-label="Schedule video call"
+            >
+              <Video className="h-6 w-6" />
+            </a>
+            <a
+              href="/resources#faq"
+              className="flex items-center justify-center bg-white dark:bg-navy-800 text-amber-600 dark:text-amber-400 p-3 rounded-full shadow-lg hover:bg-amber-50 dark:hover:bg-navy-700 transition-all"
+              aria-label="View FAQ"
+            >
+              <FileQuestion className="h-6 w-6" />
             </a>
           </div>
         )}

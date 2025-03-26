@@ -13,9 +13,16 @@ import PricingValueProposition from '../components/pricing/PricingValuePropositi
 import PricingCTA from '../components/pricing/PricingCTA';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 import PageSEO from '../components/seo/PageSEO';
+import SocialProofBar from '../components/ui/SocialProofBar';
+import TrustBadges from '../components/ui/TrustBadges';
+import FloatingSupportButton from '../components/support/FloatingSupportButton';
+import { useTrackPageView } from '../hooks/use-analytics';
 
 const Pricing: React.FC = () => {
   const [userType, setUserType] = useState<'consumer' | 'advisor' | 'enterprise'>('consumer');
+  
+  // Track page view
+  useTrackPageView('Pricing Page');
 
   const breadcrumbs = [
     { name: "Home", url: "/" },
@@ -33,6 +40,7 @@ const Pricing: React.FC = () => {
       
       <div className="min-h-screen flex flex-col">
         <Header />
+        <SocialProofBar />
         
         <main className="flex-grow pt-20">
           <BreadcrumbNav items={breadcrumbs} />
@@ -49,6 +57,11 @@ const Pricing: React.FC = () => {
               {userType === 'consumer' && <ConsumerPlan />}
               {userType === 'advisor' && <AdvisorPlans />}
               {userType === 'enterprise' && <EnterprisePlans />}
+              
+              {/* Trust badges */}
+              <div className="my-12">
+                <TrustBadges className="justify-center" />
+              </div>
               
               {/* Trust signals section */}
               <PricingTrustSignals />
@@ -72,6 +85,7 @@ const Pricing: React.FC = () => {
           </section>
         </main>
         
+        <FloatingSupportButton />
         <Footer />
       </div>
     </AnimatedRoute>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Shield, Lock, CheckCircle2, Award } from 'lucide-react';
+import { Shield, Lock, CheckCircle2, Award, Database, CreditCard } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
 
 interface BadgeProps {
@@ -51,6 +51,16 @@ export const TrustBadges: React.FC<{ className?: string; compact?: boolean }> = 
       icon: <Award className="h-4 w-4" />,
       label: "FINRA Approved",
       description: "Financial Industry Regulatory Authority verified"
+    },
+    {
+      icon: <Database className="h-4 w-4" />,
+      label: "Data Protection",
+      description: "Your financial data is securely stored and protected"
+    },
+    {
+      icon: <CreditCard className="h-4 w-4" />,
+      label: "Secure Payments",
+      description: "All transactions are processed through secure channels"
     }
   ];
 

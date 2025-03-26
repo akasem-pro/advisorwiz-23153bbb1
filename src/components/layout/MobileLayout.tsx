@@ -4,6 +4,9 @@ import { Outlet, useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
 import Header from './Header';
 import MobileNavbar from './MobileNavbar';
+import SocialProofBar from '../ui/SocialProofBar';
+import TrustBadges from '../ui/TrustBadges';
+import FloatingSupportButton from '../support/FloatingSupportButton';
 import { initializeTagManager, trackPageView } from '../../utils/tagManager';
 
 const MobileLayout: React.FC = () => {
@@ -21,11 +24,17 @@ const MobileLayout: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
+      <SocialProofBar />
       <main className="flex-1 pt-28 pb-20 px-4 sm:px-6 mx-auto w-full">
         <AnimatedRoute animation="fade">
           <Outlet />
         </AnimatedRoute>
+        
+        <div className="my-8">
+          <TrustBadges compact className="justify-center" />
+        </div>
       </main>
+      <FloatingSupportButton />
       <MobileNavbar />
     </div>
   );

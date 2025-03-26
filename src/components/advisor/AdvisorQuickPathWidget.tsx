@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Users, Phone, MessageCircle, BarChart3, ArrowRight } from 'lucide-react';
+import { Calendar, Users, Phone, MessageCircle, BarChart3, ArrowRight, FileText, Shield } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
 const QuickPathCard: React.FC<{
@@ -64,11 +64,35 @@ export const AdvisorQuickPathWidget: React.FC = () => {
       to: "/analytics",
       actionText: "View Analytics",
       color: "bg-amber-600"
+    },
+    {
+      icon: <Phone className="h-5 w-5" />,
+      title: "Calls",
+      description: "Manage and schedule client calls",
+      to: "/calls",
+      actionText: "View Calls",
+      color: "bg-red-600"
+    },
+    {
+      icon: <FileText className="h-5 w-5" />,
+      title: "Documents",
+      description: "Manage client documents and files",
+      to: "/documents",
+      actionText: "View Documents",
+      color: "bg-indigo-600"
+    },
+    {
+      icon: <Shield className="h-5 w-5" />,
+      title: "Compliance",
+      description: "Stay up-to-date with regulations",
+      to: "/compliance",
+      actionText: "Check Status",
+      color: "bg-teal-600"
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-6">
       {quickPaths.map((path, index) => (
         <QuickPathCard key={index} {...path} />
       ))}
