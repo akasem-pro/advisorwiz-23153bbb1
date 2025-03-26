@@ -31,8 +31,12 @@ import AuthGuard from './components/auth/AuthGuard';
 import UserOnboardingTour from './components/onboarding/UserOnboardingTour';
 import AccessibilityTestPage from './pages/AccessibilityTestPage';
 import FloatingSupportButton from './components/support/FloatingSupportButton';
+import Schedule from './pages/Schedule';
+import Chat from './pages/Chat';
 
 const App: React.FC = () => {
+  console.log('App rendering with routes');
+  
   return (
     <AuthProvider>
       <UserProvider>
@@ -101,10 +105,36 @@ const App: React.FC = () => {
               </AuthGuard>
             } />
             
+            {/* Chat Route */}
+            <Route path="/chat" element={
+              <AuthGuard>
+                <Chat />
+              </AuthGuard>
+            } />
+            <Route path="/chat/:chatId" element={
+              <AuthGuard>
+                <Chat />
+              </AuthGuard>
+            } />
+            
+            {/* Schedule Route */}
+            <Route path="/schedule" element={
+              <AuthGuard>
+                <Schedule />
+              </AuthGuard>
+            } />
+            
             {/* Settings Route */}
             <Route path="/settings" element={
               <AuthGuard>
                 <Settings />
+              </AuthGuard>
+            } />
+            
+            {/* Matches Route */}
+            <Route path="/matches" element={
+              <AuthGuard>
+                <div>Matches Page</div>
               </AuthGuard>
             } />
             

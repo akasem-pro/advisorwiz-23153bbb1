@@ -1,10 +1,11 @@
 
 import React, { ReactNode } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 import { Button } from '../ui/button';
 import Logo from '../layout/Logo';
 import { UserType } from '../../context/UserContext';
+import { useNavigation } from '../../hooks/use-navigation';
 
 interface SidebarProps {
   sidebarCollapsed: boolean;
@@ -25,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   navigationItems,
   handleLogout
 }) => {
-  const navigate = useNavigate();
+  const { navigateTo, currentPath } = useNavigation();
   
   return (
     <aside 
@@ -48,23 +49,24 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="py-6">
         <nav>
           <ul className="space-y-2">
-            {navigationItems.map((item) => (
-              <li key={item.label}>
-                <Button
-                  variant="ghost"
-                  className={`w-full justify-start text-slate-300 hover:text-white hover:bg-navy-800 ${
-                    sidebarCollapsed ? 'px-0 justify-center' : 'px-4'
-                  }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate(item.link);
-                  }}
-                >
-                  <item.icon className={`h-5 w-5 ${sidebarCollapsed ? 'mr-0' : 'mr-3'}`} />
-                  {!sidebarCollapsed && <span>{item.label}</span>}
-                </Button>
-              </li>
-            ))}
+            {navigationItems.map((item) => {
+              const isActive = currentPath === item.link;
+              
+              return (
+                <li key={item.label}>
+                  <Button
+                    variant="ghost"
+                    className={`w-full justify-start ${isActive ? 'bg-navy-800 text-white' : 'text-slate-300'} hover:text-white hover:bg-navy-800 ${
+                      sidebarCollapsed ? 'px-0 justify-center' : 'px-4'
+                    }`}
+                    onClick={() => navigateTo(item.link)}
+                  >
+                    <item.icon className={`h-5 w-5 ${sidebarCollapsed ? 'mr-0' : 'mr-3'}`} />
+                    {!sidebarCollapsed && <span>{item.label}</span>}
+                  </Button>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </div>

@@ -9,6 +9,7 @@ export const useNavigation = () => {
   
   const navigateTo = (path: string) => {
     if (path !== location.pathname) {
+      console.log(`Navigating to: ${path}`);
       navigate(path);
     }
   };
