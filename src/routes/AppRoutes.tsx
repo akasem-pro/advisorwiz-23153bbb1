@@ -11,7 +11,7 @@ import MobileRoutes from './MobileRoutes';
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Mobile Routes */}
+      {/* Mobile Routes wrapped in MobileLayout */}
       <Route path="/m" element={<MobileLayout><Outlet /></MobileLayout>}>
         <MobileRoutes />
       </Route>
@@ -22,12 +22,8 @@ const AppRoutes = () => {
       
       {/* Main Web Routes */}
       <Route path="/" element={<AppLayout><Outlet /></AppLayout>}>
-        {/* Main Routes */}
         <MainRoutes />
-        
-        {/* Dashboard Routes */}
         <DashboardRoutes />
-        
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
