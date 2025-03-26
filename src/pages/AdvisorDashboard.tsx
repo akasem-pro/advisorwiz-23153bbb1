@@ -7,6 +7,9 @@ import { User, Calendar, Users, BarChart3, MessageCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Link } from 'react-router-dom';
 import QuickActionPanel from '../components/advisor/QuickActionPanel';
+import AdvisorQuickPathWidget from '../components/advisor/AdvisorQuickPathWidget';
+import TrustBadges from '../components/ui/TrustBadges';
+import FloatingSupportButton from '../components/support/FloatingSupportButton';
 
 const AdvisorDashboard: React.FC = () => {
   const { advisorProfile } = useUser();
@@ -17,6 +20,20 @@ const AdvisorDashboard: React.FC = () => {
         title="Advisor Dashboard" 
         subtitle="Manage your practice and client relationships"
       >
+        <FloatingSupportButton />
+        
+        <div className="bg-white dark:bg-navy-800 rounded-lg shadow-sm border border-slate-200 dark:border-navy-700 p-4 mb-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-serif font-bold text-navy-900 dark:text-white">Welcome back, {advisorProfile?.name || 'Advisor'}</h2>
+              <p className="text-slate-600 dark:text-slate-400">Here's your practice at a glance</p>
+            </div>
+            <TrustBadges compact className="hidden md:flex" />
+          </div>
+        </div>
+        
+        <AdvisorQuickPathWidget />
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Profile Card */}
           <div className="bg-white dark:bg-navy-800 rounded-xl shadow-sm p-6 border border-slate-200 dark:border-navy-700">
@@ -53,7 +70,7 @@ const AdvisorDashboard: React.FC = () => {
             </Link>
           </div>
           
-          {/* Quick Actions Panel - NEW COMPONENT */}
+          {/* Quick Actions Panel - Updated Component */}
           <div className="lg:col-span-2">
             <QuickActionPanel />
           </div>

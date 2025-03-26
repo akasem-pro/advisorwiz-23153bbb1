@@ -6,6 +6,9 @@ import Preload from '../components/seo/Preload';
 import SocialShare from '../components/ui/SocialShare';
 import { generateFAQSchema, generateWebsiteSchema, generateOrganizationSchema } from '../utils/schemas';
 import { initPerformanceOptimizations } from '../utils/performanceTracking';
+import SocialProofBar from '../components/ui/SocialProofBar';
+import TrustBadges from '../components/ui/TrustBadges';
+import FloatingSupportButton from '../components/support/FloatingSupportButton';
 
 // Import all the component sections
 import HeroSection from '../components/home/HeroSection';
@@ -109,12 +112,27 @@ const Home: React.FC = () => {
       />
       
       <AppLayout>
+        <FloatingSupportButton />
+        
         <div className="fixed bottom-6 right-6 z-10">
           <SocialShare />
         </div>
         
         <HeroSection />
+        
+        <SocialProofBar />
+        
         <HowItWorksSection />
+        
+        <div className="py-8 bg-slate-50 dark:bg-navy-950">
+          <div className="container mx-auto px-4">
+            <h2 className="text-2xl font-serif font-bold text-center text-navy-900 dark:text-white mb-6">
+              Trusted by Financial Professionals Nationwide
+            </h2>
+            <TrustBadges className="flex flex-wrap justify-center" />
+          </div>
+        </div>
+        
         <BenefitsSection />
         <TestimonialsSection />
         <PricingSection />

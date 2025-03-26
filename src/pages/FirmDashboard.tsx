@@ -3,10 +3,12 @@ import React from 'react';
 import DashboardLayout from '../components/dashboard/DashboardLayout';
 import { useUser } from '../context/UserContext';
 import AuthGuard from '../components/auth/AuthGuard';
-import { Building, Users, BarChart3, Plus } from 'lucide-react';
+import { Building, Users, BarChart3, Plus, Shield } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Link } from 'react-router-dom';
 import FirmMetricsDashboard from '../components/firm/FirmMetricsDashboard';
+import TrustBadges from '../components/ui/TrustBadges';
+import FloatingSupportButton from '../components/support/FloatingSupportButton';
 
 const FirmDashboard: React.FC = () => {
   const { firms } = useUser();
@@ -20,6 +22,18 @@ const FirmDashboard: React.FC = () => {
         title="Firm Dashboard" 
         subtitle="Manage your advisory firm and team"
       >
+        <FloatingSupportButton />
+        
+        <div className="bg-white dark:bg-navy-800 rounded-lg shadow-sm border border-slate-200 dark:border-navy-700 p-4 mb-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-serif font-bold text-navy-900 dark:text-white">Welcome, {firm?.name || 'Setup your firm'}</h2>
+              <p className="text-slate-600 dark:text-slate-400">Manage your advisory practice</p>
+            </div>
+            <TrustBadges compact className="hidden md:flex" />
+          </div>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Firm Profile Card */}
           <div className="bg-white dark:bg-navy-800 rounded-xl shadow-sm p-6 border border-slate-200 dark:border-navy-700">
@@ -106,8 +120,20 @@ const FirmDashboard: React.FC = () => {
           </div>
         </div>
         
-        {/* NEW: Consolidated Metrics Dashboard */}
-        <div className="mt-8">
+        {/* Compliance Banner - New Trust Element */}
+        <div className="my-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <div className="flex items-center">
+            <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400 mr-3" />
+            <div>
+              <h3 className="font-medium text-blue-800 dark:text-blue-300">Compliance Status: All Systems Active</h3>
+              <p className="text-sm text-blue-600 dark:text-blue-400">Your firm is up to date with all regulatory requirements</p>
+            </div>
+            <Button className="ml-auto" variant="outline">Compliance Center</Button>
+          </div>
+        </div>
+        
+        {/* Metrics Dashboard */}
+        <div className="mt-6">
           <FirmMetricsDashboard />
         </div>
       </DashboardLayout>
