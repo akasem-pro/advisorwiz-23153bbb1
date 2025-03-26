@@ -1,6 +1,6 @@
 
 import { useEffect, lazy, Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import { UserProvider } from './context/UserContext';
@@ -73,128 +73,130 @@ function App() {
             <Route path="/signin" element={<SignIn />} />
             
             {/* Main Web Routes */}
-            <Route element={<AppLayout />}>
-              <Route path="/" element={
+            <Route path="/" element={<AppLayout>
+              <Outlet />
+            </AppLayout>}>
+              <Route index element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Home />
                 </Suspense>
               } />
-              <Route path="/about" element={
+              <Route path="about" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <AboutUs />
                 </Suspense>
               } />
-              <Route path="/for-consumers" element={
+              <Route path="for-consumers" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <ForConsumers />
                 </Suspense>
               } />
-              <Route path="/for-advisors" element={
+              <Route path="for-advisors" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <ForAdvisors />
                 </Suspense>
               } />
-              <Route path="/for-firms" element={
+              <Route path="for-firms" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <ForFirms />
                 </Suspense>
               } />
-              <Route path="/blog" element={
+              <Route path="blog" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Blog />
                 </Suspense>
               } />
-              <Route path="/contact" element={
+              <Route path="contact" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <ContactUs />
                 </Suspense>
               } />
-              <Route path="/pricing" element={
+              <Route path="pricing" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Pricing />
                 </Suspense>
               } />
-              <Route path="/terms" element={
+              <Route path="terms" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Terms />
                 </Suspense>
               } />
-              <Route path="/privacy" element={
+              <Route path="privacy" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Privacy />
                 </Suspense>
               } />
-              <Route path="/advisor/:id" element={
+              <Route path="advisor/:id" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <AdvisorProfile />
                 </Suspense>
               } />
-              <Route path="/match" element={
+              <Route path="match" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <MatchingInterface />
                 </Suspense>
               } />
-              <Route path="/dashboard/advisor" element={
+              <Route path="dashboard/advisor" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <AdvisorDashboard />
                 </Suspense>
               } />
-              <Route path="/dashboard/consumer" element={
+              <Route path="dashboard/consumer" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <ConsumerDashboard />
                 </Suspense>
               } />
-              <Route path="/dashboard/firm" element={
+              <Route path="dashboard/firm" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <FirmDashboard />
                 </Suspense>
               } />
-              <Route path="/onboarding" element={
+              <Route path="onboarding" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Onboarding />
                 </Suspense>
               } />
-              <Route path="/schedule" element={
+              <Route path="schedule" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Schedule />
                 </Suspense>
               } />
-              <Route path="/chat" element={
+              <Route path="chat" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Chat />
                 </Suspense>
               } />
-              <Route path="/profile/consumer" element={
+              <Route path="profile/consumer" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <ConsumerProfile />
                 </Suspense>
               } />
-              <Route path="/profile/firm" element={
+              <Route path="profile/firm" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <FirmProfile />
                 </Suspense>
               } />
-              <Route path="/settings" element={
+              <Route path="settings" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Settings />
                 </Suspense>
               } />
-              <Route path="/leads" element={
+              <Route path="leads" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <LeadManagementPage />
                 </Suspense>
               } />
-              <Route path="/resources" element={
+              <Route path="resources" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Resources />
                 </Suspense>
               } />
-              <Route path="/sitemap" element={
+              <Route path="sitemap" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Sitemap />
                 </Suspense>
               } />
-              <Route path="/careers" element={
+              <Route path="careers" element={
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Careers />
                 </Suspense>
