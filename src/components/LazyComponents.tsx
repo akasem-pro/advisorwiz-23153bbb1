@@ -27,21 +27,23 @@ export const ComponentLoadingFallback = () => (
   <Skeleton className="h-24 w-full" />
 );
 
-// Lazy loading HOC that applies appropriate fallback
-export function withLazyLoading<P>(
+// Improved withLazyLoading HOC with better TypeScript support
+export function withLazyLoading<P extends React.JSX.IntrinsicAttributes>(
   importFn: () => Promise<{ default: React.ComponentType<P> }>,
   LoadingComponent: React.ComponentType = ComponentLoadingFallback
 ) {
   const LazyComponent = React.lazy(importFn);
   
-  // Use React.forwardRef to properly handle ref forwarding
-  const WithLazyLoadingComponent = React.forwardRef<unknown, P>((props, ref) => {
-    return (
-      <Suspense fallback={<LoadingComponent />}>
-        <LazyComponent {...props} ref={ref} />
-      </Suspense>
-    );
-  });
+  // Create a named component instead of using forwardRef directly
+  const WithLazyLoadingComponent = (props: P) => (
+    <Suspense fallback={<LoadingComponent />}>
+      <LazyComponent {...props} />
+    </Suspense>
+  );
+  
+  // Set display name for better debugging
+  const componentName = importFn.toString().match(/import\(['"](.+?)['"]\)/)?.[1]?.split('/').pop() || 'LazyComponent';
+  WithLazyLoadingComponent.displayName = `withLazyLoading(${componentName})`;
   
   return WithLazyLoadingComponent;
 }
