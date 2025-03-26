@@ -164,7 +164,8 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({
     }
     
     // Tour is finished or skipped
-    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+    // Fix: Compare status with the imported STATUS constants instead of string literals
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       setRun(false);
       
       // Mark the tour as completed
