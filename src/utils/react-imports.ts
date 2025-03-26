@@ -1,34 +1,21 @@
 
+// This file re-exports React hooks to ensure consistency across the application
 import { 
   useState, 
   useEffect, 
-  useRef, 
+  useContext, 
   useCallback, 
   useMemo, 
-  useContext, 
-  createContext,
-  useReducer,
-  useLayoutEffect,
-  useImperativeHandle,
-  useDebugValue
+  useRef,
+  createContext
 } from 'react';
-import { useNavigate, useParams, useLocation, useSearchParams } from 'react-router-dom';
 
-// Re-export React hooks for use across the application
 export {
   useState,
   useEffect,
-  useRef,
+  useContext,
   useCallback,
   useMemo,
-  useContext,
-  createContext,
-  useReducer,
-  useLayoutEffect,
-  useImperativeHandle,
-  useDebugValue,
-  useNavigate,
-  useParams,
-  useLocation,
-  useSearchParams
+  useRef,
+  createContext
 };

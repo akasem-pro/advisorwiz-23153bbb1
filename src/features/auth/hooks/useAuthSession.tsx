@@ -1,48 +1,30 @@
-
-import { useState, useEffect, useCallback } from 'react';
-import { Session, User } from '@supabase/supabase-js';
+import { useState, useEffect } from 'react';
 import { supabase } from '../../../integrations/supabase/client';
-import { useSupabase } from '../../../hooks/useSupabase';
 
-/**
- * Hook for managing authentication session state with improved error handling
- */
 export const useAuthSession = () => {
-  const { getCurrentSession } = useSupabase();
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState(supabase.auth.getSession());
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Get the initial session and set up auth listener
   useEffect(() => {
-    setLoading(true);
-    
-    // We'll set up the subscription FIRST to not miss any auth events
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
-        console.log("Auth state changed:", event, !!currentSession);
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
+      async (_event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
         setLoading(false);
       }
     );
-    
-    // THEN check for existing session
-    getCurrentSession().then(({ data, error }) => {
-      if (!error && data) {
-        setSession(data.session);
-        setUser(data.user);
-      } else if (error) {
-        console.error("Error getting initial session:", error);
-      }
-      setLoading(false);
-    });
-    
-    // Cleanup subscription
-    return () => {
-      authListener?.subscription.unsubscribe();
-    };
-  }, [getCurrentSession]);
 
-  return { user, session, loading, setLoading };
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  return { session, user, loading };
 };
