@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Settings } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 import { toast } from 'sonner';
@@ -118,24 +118,28 @@ const UserMenu: React.FC<UserMenuProps> = ({ getUserName, getInitials, getProfil
           </Avatar>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <div className="px-3 py-2">
-          <p className="text-sm font-medium">{getUserName()}</p>
-          <p className="text-xs text-slate-500">{user?.email}</p>
+      <DropdownMenuContent align="end" className="w-64">
+        <div className="px-4 py-3 border-b border-slate-200 dark:border-navy-600">
+          <p className="text-sm font-medium text-slate-800 dark:text-slate-100">{getUserName()}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{user?.email}</p>
+        </div>
+        <div className="p-1">
+          <DropdownMenuItem onClick={handleProfileClick} className="gap-2">
+            <User className="h-4 w-4" />
+            <span>My Profile</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleSettingsClick} className="gap-2">
+            <Settings className="h-4 w-4" />
+            <span>Settings</span>
+          </DropdownMenuItem>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleProfileClick}>
-          <User className="mr-2 h-4 w-4" />
-          <span>My Profile</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleSettingsClick}>
-          Settings
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Sign out</span>
-        </DropdownMenuItem>
+        <div className="p-1">
+          <DropdownMenuItem onClick={handleSignOut} className="gap-2 text-red-600 dark:text-red-400 focus:text-red-700 dark:focus:text-red-300">
+            <LogOut className="h-4 w-4" />
+            <span>Sign out</span>
+          </DropdownMenuItem>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
