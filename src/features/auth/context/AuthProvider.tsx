@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState, useEffect, useCallback } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { useAuthSession } from '../hooks/useAuthSession';
 import { useNetworkRetry } from '../hooks/useNetworkRetry';
@@ -56,14 +56,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   } = useNetworkRetry();
   const { signIn: supabaseSignIn, signUp: supabaseSignUp, signOut: supabaseSignOut, loading: authActionLoading } = useAuthActions();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (mockUser) {
       localStorage.setItem('mock_auth_user', JSON.stringify(mockUser));
       console.log("[Auth Provider] Updated mock auth user in localStorage:", mockUser);
     }
   }, [mockUser]);
   
-  React.useEffect(() => {
+  useEffect(() => {
     const mockAuthData = localStorage.getItem('mock_auth_user');
     if (mockAuthData) {
       try {

@@ -1,121 +1,119 @@
 
-import { useState, useCallback, useEffect } from 'react';
-import { isPreviewEnvironment } from '../../../utils/mockAuthUtils';
+import { useState, useCallback } from 'react';
 
-export const useNetworkRetry = () => {
+interface UseNetworkRetryProps {
+  maxRetries?: number;
+  timeout?: number;
+}
+
+/**
+ * Hook for handling network retry logic
+ */
+export const useNetworkRetry = (props?: UseNetworkRetryProps) => {
+  const { 
+    maxRetries = 3,
+    timeout = 2000
+  } = props || {};
+  
   const [networkStatus, setNetworkStatus] = useState<'online' | 'offline' | 'checking'>('checking');
   const [retryAttempts, setRetryAttempts] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
   
-  // Function to increment retry attempts
-  const incrementRetry = useCallback(() => {
-    setRetryAttempts(prev => prev + 1);
-  }, []);
-  
-  // Function to reset retry attempts
-  const resetRetryAttempts = useCallback(() => {
-    setRetryAttempts(0);
-  }, []);
-
-  // Set initial network status
-  useEffect(() => {
-    const checkNetworkStateInternal = async () => {
-      if (navigator.onLine) {
-        setNetworkStatus('online');
-      } else {
-        setNetworkStatus('offline');
-      }
-    };
-    
-    checkNetworkStateInternal();
-    
-    // Listen for online/offline events
-    const handleOnline = () => setNetworkStatus('online');
-    const handleOffline = () => setNetworkStatus('offline');
-    
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-
-  // Function to check network status
+  /**
+   * Check if the device is online by making a simple fetch request
+   */
   const checkNetworkStatus = useCallback(async (): Promise<boolean> => {
-    // Check if we're in a preview environment
-    if (isPreviewEnvironment()) {
-      console.log("[Network Check] Preview environment detected, simulating online status");
-      setNetworkStatus('online');
-      return true;
-    }
-    
-    // Start the check
-    setNetworkStatus('checking');
-    
     try {
-      // Basic connectivity check
-      if (!navigator.onLine) {
-        console.log("[Network Check] Browser reports offline");
+      setNetworkStatus('checking');
+      
+      // First check if navigator.onLine is false, which is a quick way to know we're offline
+      if (navigator.onLine === false) {
         setNetworkStatus('offline');
         return false;
       }
       
-      // For more reliable check, ping a known endpoint
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        
-        const response = await fetch('https://www.google.com/generate_204', {
-          method: 'HEAD',
-          mode: 'no-cors',
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (response) {
-          console.log("[Network Check] Endpoint check successful");
-          setNetworkStatus('online');
-          return true;
-        } else {
-          console.log("[Network Check] Endpoint check failed");
-          setNetworkStatus('offline');
-          return false;
-        }
-      } catch (error) {
-        console.error("[Network Check] Error checking endpoint:", error);
-        
-        // In preview environments, consider network as online even if check fails
-        if (isPreviewEnvironment()) {
-          console.log("[Network Check] Overriding for preview environment");
-          setNetworkStatus('online');
-          return true;
-        }
-        
+      // Make a simple fetch to a reliable endpoint
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      
+      const response = await fetch('https://www.google.com/generate_204', {
+        method: 'HEAD',
+        signal: controller.signal,
+        cache: 'no-cache',
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
+        setNetworkStatus('online');
+        return true;
+      } else {
         setNetworkStatus('offline');
         return false;
       }
     } catch (error) {
-      console.error("[Network Check] Unexpected error during network check:", error);
-      
-      // In preview environments, consider network as online even if check fails
-      if (isPreviewEnvironment()) {
-        console.log("[Network Check] Overriding for preview environment");
-        setNetworkStatus('online');
-        return true;
-      }
-      
+      console.error('Network check failed:', error);
       setNetworkStatus('offline');
       return false;
     }
+  }, [timeout]);
+  
+  /**
+   * Increment the retry counter
+   */
+  const incrementRetry = useCallback(() => {
+    setRetryAttempts(prev => {
+      const newCount = prev + 1;
+      return newCount > maxRetries ? maxRetries : newCount;
+    });
+  }, [maxRetries]);
+  
+  /**
+   * Reset the retry counter
+   */
+  const resetRetryAttempts = useCallback(() => {
+    setRetryAttempts(0);
   }, []);
+  
+  /**
+   * Attempt to reconnect with exponential backoff
+   */
+  const retryConnection = useCallback(async (): Promise<boolean> => {
+    if (isRetrying || retryAttempts >= maxRetries) {
+      return false;
+    }
+    
+    setIsRetrying(true);
+    
+    try {
+      // Exponential backoff
+      const backoffTime = Math.min(timeout * Math.pow(2, retryAttempts), 10000);
+      console.log(`Retrying connection in ${backoffTime}ms (attempt ${retryAttempts + 1}/${maxRetries})`);
+      
+      await new Promise(resolve => setTimeout(resolve, backoffTime));
+      
+      const isOnline = await checkNetworkStatus();
+      
+      if (isOnline) {
+        resetRetryAttempts();
+        return true;
+      } else {
+        incrementRetry();
+        return false;
+      }
+    } finally {
+      setIsRetrying(false);
+    }
+  }, [checkNetworkStatus, incrementRetry, isRetrying, maxRetries, resetRetryAttempts, retryAttempts, timeout]);
   
   return {
     networkStatus,
     retryAttempts,
+    isRetrying,
     checkNetworkStatus,
+    retryConnection,
     incrementRetry,
-    resetRetryAttempts
+    resetRetryAttempts,
+    hasExceededMaxRetries: retryAttempts >= maxRetries
   };
 };
