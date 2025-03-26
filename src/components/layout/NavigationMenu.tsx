@@ -28,7 +28,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ links, showGetStarted =
         <div key={link.path} className="relative group">
           <Link
             to={link.path}
-            className={`py-1 px-1 font-medium text-sm flex items-center ${
+            className={`py-1 px-2 font-medium text-sm flex items-center ${
               location.pathname === link.path || 
               (link.path !== '/' && location.pathname.startsWith(link.path))
                 ? 'text-teal-600 dark:text-teal-400'

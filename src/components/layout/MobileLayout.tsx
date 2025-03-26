@@ -29,7 +29,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <SocialProofBar />
-      <main className="flex-1 pt-36 pb-20 px-4 sm:px-6 mx-auto w-full">
+      <main className="flex-1 pt-40 pb-20 px-4 sm:px-6 mx-auto w-full">
         <AnimatedRoute animation="fade">
           {children}
         </AnimatedRoute>

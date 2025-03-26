@@ -32,7 +32,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         <Header />
         {!hideSocialProof && <SocialProofBar />}
         
-        <main className="flex-grow pt-28 md:pt-32">
+        <main className="flex-grow pt-32 md:pt-36">
           {children}
           
           {showTrustBadges && (

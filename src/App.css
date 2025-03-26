@@ -100,12 +100,13 @@
 
 /* Ensure content isn't hidden under fixed header */
 main {
-  padding-top: 5rem;
+  padding-top: 6rem; /* Increased to avoid header overlap */
 }
 
 /* Add appropriate spacing for sections */
 section {
   scroll-margin-top: 6rem;
+  padding-top: 2rem; /* Added to ensure first section content is visible */
 }
 
 /* Ensure smooth scrolling */
