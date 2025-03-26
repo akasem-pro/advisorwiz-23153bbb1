@@ -6,6 +6,7 @@ import AuthGuard from '../components/auth/AuthGuard';
 import { Building, Users, BarChart3, Plus } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Link } from 'react-router-dom';
+import FirmMetricsDashboard from '../components/firm/FirmMetricsDashboard';
 
 const FirmDashboard: React.FC = () => {
   const { firms } = useUser();
@@ -105,21 +106,9 @@ const FirmDashboard: React.FC = () => {
           </div>
         </div>
         
-        {/* Recent Activity Section */}
+        {/* NEW: Consolidated Metrics Dashboard */}
         <div className="mt-8">
-          <h3 className="font-serif font-semibold text-lg text-navy-900 dark:text-white mb-4">Recent Activity</h3>
-          
-          <div className="bg-white dark:bg-navy-800 rounded-xl shadow-sm border border-slate-200 dark:border-navy-700 overflow-hidden">
-            <div className="p-4 border-b border-slate-200 dark:border-navy-700 bg-slate-50 dark:bg-navy-900/50">
-              <h4 className="font-medium text-navy-900 dark:text-white">Firm Activity Feed</h4>
-            </div>
-            
-            <div className="p-4">
-              <p className="text-slate-500 dark:text-slate-400 text-center py-8">
-                Activity feed will appear here as your team interacts with clients
-              </p>
-            </div>
-          </div>
+          <FirmMetricsDashboard />
         </div>
       </DashboardLayout>
     </AuthGuard>

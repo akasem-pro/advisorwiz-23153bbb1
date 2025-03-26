@@ -6,6 +6,7 @@ import AuthGuard from '../components/auth/AuthGuard';
 import { User, Calendar, Users, BarChart3, MessageCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Link } from 'react-router-dom';
+import QuickActionPanel from '../components/advisor/QuickActionPanel';
 
 const AdvisorDashboard: React.FC = () => {
   const { advisorProfile } = useUser();
@@ -52,6 +53,11 @@ const AdvisorDashboard: React.FC = () => {
             </Link>
           </div>
           
+          {/* Quick Actions Panel - NEW COMPONENT */}
+          <div className="lg:col-span-2">
+            <QuickActionPanel />
+          </div>
+          
           {/* Appointments Card */}
           <div className="bg-white dark:bg-navy-800 rounded-xl shadow-sm p-6 border border-slate-200 dark:border-navy-700">
             <div className="mb-4">
@@ -92,32 +98,24 @@ const AdvisorDashboard: React.FC = () => {
             </Link>
           </div>
           
-          {/* Quick Actions */}
+          {/* Performance Metrics Card */}
           <div className="bg-white dark:bg-navy-800 rounded-xl shadow-sm p-6 border border-slate-200 dark:border-navy-700">
-            <h3 className="font-serif font-semibold text-lg text-navy-900 dark:text-white mb-4">Quick Actions</h3>
-            
-            <div className="space-y-3">
-              <Link to="/chat">
-                <Button variant="outline" className="w-full justify-start">
-                  <MessageCircle className="mr-2 h-4 w-4 text-blue-500" />
-                  Client Messages
-                </Button>
-              </Link>
-              
-              <Link to="/schedule">
-                <Button variant="outline" className="w-full justify-start">
-                  <Calendar className="mr-2 h-4 w-4 text-purple-500" />
-                  Manage Appointments
-                </Button>
-              </Link>
-              
-              <Link to="/analytics">
-                <Button variant="outline" className="w-full justify-start">
-                  <BarChart3 className="mr-2 h-4 w-4 text-green-500" />
-                  View Performance
-                </Button>
-              </Link>
+            <div className="mb-4">
+              <h3 className="font-serif font-semibold text-lg text-navy-900 dark:text-white">Performance Metrics</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Track your key performance indicators
+              </p>
             </div>
+            
+            <div className="flex justify-center my-4">
+              <BarChart3 className="w-12 h-12 text-green-500" />
+            </div>
+            
+            <Link to="/analytics">
+              <Button className="w-full bg-green-600 hover:bg-green-700">
+                View Analytics
+              </Button>
+            </Link>
           </div>
         </div>
       </DashboardLayout>
