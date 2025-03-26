@@ -46,16 +46,23 @@ const Home = () => {
           variant="primary"
         />
         
-        {/* Original Home Content */}
-        <HeroSection />
+        {/* Original Home Content - adding IDs for onboarding tour targeting */}
+        <div id="hero-section">
+          <HeroSection />
+        </div>
         
         {/* Marketing Channels Widget - after hero section */}
         <div className="my-8">
           <MarketingChannelsWidget orientation="horizontal" />
         </div>
         
-        <HowItWorksSection />
-        <BenefitsSection />
+        <div id="how-it-works-section">
+          <HowItWorksSection />
+        </div>
+        
+        <div id="benefits-section">
+          <BenefitsSection />
+        </div>
         
         {/* ASO Optimization Info - strategic placement */}
         <div className="my-12">
@@ -63,12 +70,29 @@ const Home = () => {
           <ASOOptimizationInfo className="max-w-3xl mx-auto" />
         </div>
         
-        <TestimonialsSection />
-        <FAQSection />
-        <MainCTASection />
-        <TrustedPartners />
-        <PricingCTASection />
-        <NewsletterSection />
+        <div id="testimonials-section">
+          <TestimonialsSection />
+        </div>
+        
+        <div id="faq-section">
+          <FAQSection />
+        </div>
+        
+        <div id="cta-section">
+          <MainCTASection />
+        </div>
+        
+        <div id="partners-section">
+          <TrustedPartners />
+        </div>
+        
+        <div id="pricing-section">
+          <PricingCTASection />
+        </div>
+        
+        <div id="newsletter-section">
+          <NewsletterSection />
+        </div>
       </div>
       
       {/* Review Request Modal */}
