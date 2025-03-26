@@ -1,11 +1,11 @@
 
 import { useState, useEffect } from 'react';
-import { Session } from '@supabase/supabase-js';
+import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../../../integrations/supabase/client';
 
 export const useAuthSession = () => {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
