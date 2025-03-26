@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, ReactNode } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
 import Header from './Header';
@@ -9,7 +9,11 @@ import TrustBadges from '../ui/TrustBadges';
 import FloatingSupportButton from '../support/FloatingSupportButton';
 import { initializeTagManager, trackPageView } from '../../utils/tagManager';
 
-const MobileLayout: React.FC = () => {
+interface MobileLayoutProps {
+  children: ReactNode;
+}
+
+const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   const location = useLocation();
   
   useEffect(() => {
@@ -27,7 +31,7 @@ const MobileLayout: React.FC = () => {
       <SocialProofBar />
       <main className="flex-1 pt-36 pb-20 px-4 sm:px-6 mx-auto w-full">
         <AnimatedRoute animation="fade">
-          <Outlet />
+          {children}
         </AnimatedRoute>
         
         <div className="my-8">
