@@ -8,16 +8,16 @@ import ASOOptimizationInfo from '../components/marketing/ASOOptimizationInfo';
 import PromotionalBanner from '../components/promotions/PromotionalBanner';
 import { trackAppStoreEvent } from '../utils/analytics/marketingHelper';
 
-// Using existing components from home directory instead of sections directory
-import { HeroSection } from '../components/home/HeroSection';
-import { HowItWorksSection } from '../components/home/HowItWorksSection';
-import { BenefitsSection } from '../components/home/BenefitsSection';
-import { TestimonialsSection } from '../components/home/TestimonialsSection';
-import { FAQSection } from '../components/home/FAQSection';
-import { MainCTASection } from '../components/home/MainCTASection';
-import { TrustedPartners } from '../components/home/TrustedPartners';
-import { PricingCTASection } from '../components/home/PricingCTASection';
-import { NewsletterSection } from '../components/home/NewsletterSection';
+// Fixing imports to use default imports instead of named imports
+import HeroSection from '../components/home/HeroSection';
+import HowItWorksSection from '../components/home/HowItWorksSection';
+import BenefitsSection from '../components/home/BenefitsSection';
+import TestimonialsSection from '../components/home/TestimonialsSection';
+import FAQSection from '../components/home/FAQSection';
+import MainCTASection from '../components/home/MainCTASection';
+import TrustedPartners from '../components/home/TrustedPartners';
+import PricingCTASection from '../components/home/PricingCTASection';
+import NewsletterSection from '../components/home/NewsletterSection';
 
 const Home = () => {
   // Show app review modal on the home page

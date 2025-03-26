@@ -13,6 +13,8 @@ const ConsumerProfile = lazy(() => import('../pages/ConsumerProfile'));
 const FirmProfile = lazy(() => import('../pages/FirmProfile'));
 const Settings = lazy(() => import('../pages/Settings'));
 const LeadManagementPage = lazy(() => import('../pages/LeadManagementPage'));
+// Add the missing import for AdvisorProfile
+const AdvisorProfile = lazy(() => import('../pages/AdvisorProfile'));
 
 const DashboardRoutes = () => {
   return (
