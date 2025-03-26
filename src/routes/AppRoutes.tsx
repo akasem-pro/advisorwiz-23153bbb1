@@ -14,6 +14,7 @@ const AppRoutes = () => {
     <Routes>
       {/* Mobile Routes */}
       <Route path="/m" element={<MobileLayout><Outlet /></MobileLayout>}>
+        {/* Use MobileRoutes directly inside the parent Route */}
         <MobileRoutes />
       </Route>
       
