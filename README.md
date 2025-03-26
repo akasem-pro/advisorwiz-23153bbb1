@@ -27,6 +27,7 @@ AdvisorWiz is a comprehensive platform designed to connect consumers with financ
 - **State Management**: React Context API, Tanstack Query
 - **Testing**: Jest, React Testing Library
 - **Accessibility**: Custom audit tools, WCAG compliance
+- **Performance Optimization**: Code splitting, lazy loading, Web Vitals monitoring
 
 ## Getting Started
 
@@ -62,29 +63,46 @@ npm test -- --coverage
 
 ## Development Guidelines
 
-### Code Structure
+For detailed development guidelines, please refer to the documentation in the `docs` directory:
 
-- **Components**: Reusable UI elements
-- **Pages**: Top-level components that represent routes
-- **Hooks**: Custom React hooks for business logic
-- **Context**: Application state management
-- **Services**: API and external service integrations
-- **Utils**: Helper functions and utilities
+- [Architecture Documentation](./docs/ARCHITECTURE.md) - System design and architectural decisions
+- [Code Standards](./docs/CODE_STANDARDS.md) - Coding conventions and standards
+- [Contributing Guide](./docs/CONTRIBUTING.md) - How to contribute to the project
 
-### Accessibility
+## Project Structure
 
-The project includes comprehensive accessibility tools:
-- Runtime accessibility audit in `/admin/accessibility`
-- WCAG AA compliance checks
-- Screen reader compatibility
-- Keyboard navigation support
+```
+advisorwiz/
+├── docs/                # Project documentation
+├── public/              # Static assets
+├── src/
+│   ├── components/      # UI components organized by feature
+│   ├── context/         # React context providers
+│   ├── features/        # Feature-specific code
+│   ├── hooks/           # Custom React hooks
+│   ├── integrations/    # External service integrations
+│   ├── pages/           # Page components
+│   ├── services/        # API and service layers
+│   ├── styles/          # CSS and styling
+│   ├── tests/           # Test files
+│   ├── types/           # TypeScript definitions
+│   └── utils/           # Utility functions
+├── .gitignore           # Git ignore file
+├── package.json         # NPM package configuration
+├── README.md            # Project documentation
+├── tailwind.config.ts   # Tailwind CSS configuration
+└── tsconfig.json        # TypeScript configuration
+```
 
-### Performance Optimization
+## Performance Optimizations
 
-- Lazy loading of components and images
-- Memoization for expensive operations
-- Bundle size optimization
-- Core Web Vitals monitoring
+This project implements several performance optimizations:
+
+- **Code Splitting**: React.lazy and Suspense for component-level code splitting
+- **Lazy Loading**: Components are loaded only when needed
+- **Web Vitals Monitoring**: Real-time performance metrics tracking
+- **Image Optimization**: Responsive images and lazy loading
+- **Bundle Size Management**: Careful dependency management
 
 ## Deployment
 
@@ -100,7 +118,7 @@ For custom domain deployment, we recommend using Netlify:
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed information on contributing to this project.
+See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for detailed information on contributing to this project.
 
 ## License
 

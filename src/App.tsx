@@ -1,153 +1,209 @@
 
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import SignIn from './pages/SignIn';
-import Login from './pages/Login';
-import Onboarding from './pages/Onboarding';
-import ConsumerProfile from './pages/ConsumerProfile';
-import AdvisorProfile from './pages/AdvisorProfile';
-import FirmProfile from './pages/FirmProfile';
-import ConsumerDashboard from './pages/ConsumerDashboard';
-import AdvisorDashboard from './pages/AdvisorDashboard';
-import FirmDashboard from './pages/FirmDashboard';
-import { UserProvider } from './context/UserContext';
+import { useEffect, lazy, Suspense } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './features/auth/context/AuthProvider';
-import Home from './pages/Home';
-import ForFirms from './pages/ForFirms';
-import Pricing from './pages/Pricing';
-import ContactUs from './pages/ContactUs';
-import Sitemap from './pages/Sitemap';
-import Blog from './pages/Blog';
-import Terms from './pages/Terms';
-import Privacy from './pages/Privacy';
-import ForAdvisors from './pages/ForAdvisors';
-import ForConsumers from './pages/ForConsumers';
-import Careers from './pages/Careers';
-import AboutUs from './pages/AboutUs';
-import Resources from './pages/Resources';
-import RealtimeSubscriptionProvider from './components/providers/RealtimeSubscriptionProvider';
-import Settings from './pages/Settings';
-import AuthGuard from './components/auth/AuthGuard';
-import UserOnboardingTour from './components/onboarding/UserOnboardingTour';
-import AccessibilityTestPage from './pages/AccessibilityTestPage';
-import FloatingSupportButton from './components/support/FloatingSupportButton';
-import Schedule from './pages/Schedule';
-import Chat from './pages/Chat';
+import { UserProvider } from './context/UserContext';
+import AppLayout from './components/layout/AppLayout';
+import MobileLayout from './components/layout/MobileLayout';
+import { PageLoadingFallback } from './components/LazyComponents';
+import { trackWebVitals } from './utils/performance/webVitals';
+import './App.css';
 
-const App: React.FC = () => {
-  console.log('App rendering with routes');
+// Core pages - load immediately
+import NotFound from './pages/NotFound';
+import SignIn from './pages/SignIn';
+
+// Lazy loaded pages
+const Home = lazy(() => import('./pages/Home'));
+const AboutUs = lazy(() => import('./pages/AboutUs'));
+const ForConsumers = lazy(() => import('./pages/ForConsumers'));
+const ForAdvisors = lazy(() => import('./pages/ForAdvisors'));
+const ForFirms = lazy(() => import('./pages/ForFirms'));
+const Blog = lazy(() => import('./pages/Blog'));
+const ContactUs = lazy(() => import('./pages/ContactUs'));
+const Pricing = lazy(() => import('./pages/Pricing'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const AdvisorProfile = lazy(() => import('./pages/AdvisorProfile'));
+const MatchingInterface = lazy(() => import('./pages/MatchingInterface'));
+const AdvisorDashboard = lazy(() => import('./pages/AdvisorDashboard'));
+const ConsumerDashboard = lazy(() => import('./pages/ConsumerDashboard'));
+const FirmDashboard = lazy(() => import('./pages/FirmDashboard'));
+const Onboarding = lazy(() => import('./pages/Onboarding'));
+const Schedule = lazy(() => import('./pages/Schedule'));
+const Chat = lazy(() => import('./pages/Chat'));
+const ConsumerProfile = lazy(() => import('./pages/ConsumerProfile'));
+const FirmProfile = lazy(() => import('./pages/FirmProfile'));
+const Settings = lazy(() => import('./pages/Settings'));
+const LeadManagementPage = lazy(() => import('./pages/LeadManagementPage'));
+const Resources = lazy(() => import('./pages/Resources'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const Sitemap = lazy(() => import('./pages/Sitemap'));
+const Careers = lazy(() => import('./pages/Careers'));
+
+function App() {
+  const location = useLocation();
+  
+  // Initialize performance tracking
+  useEffect(() => {
+    trackWebVitals();
+  }, []);
+  
+  // Determine if this is a mobile route
+  const isMobileRoute = location.pathname.startsWith('/m/');
   
   return (
     <AuthProvider>
       <UserProvider>
-        <RealtimeSubscriptionProvider>
-          {/* Add the UserOnboardingTour component */}
-          <UserOnboardingTour />
+        <Routes>
+          {/* Mobile Routes */}
+          <Route path="/m" element={<MobileLayout />}>
+            <Route index element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <LandingPage />
+              </Suspense>
+            } />
+            {/* Add other mobile routes here */}
+          </Route>
           
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/for-firms" element={<ForFirms />} />
-            <Route path="/for-advisors" element={<ForAdvisors />} />
-            <Route path="/for-consumers" element={<ForConsumers />} />
-            <Route path="/about" element={<AboutUs />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/contact" element={<ContactUs />} />
-            <Route path="/sitemap" element={<Sitemap />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<Blog />} />
-            <Route path="/careers" element={<Careers />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/resources" element={<Resources />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin/accessibility" element={
-              <AuthGuard>
-                <AccessibilityTestPage />
-              </AuthGuard>
+          {/* Authentication Routes (no layout) */}
+          <Route path="/login" element={<SignIn />} />
+          <Route path="/signin" element={<SignIn />} />
+          
+          {/* Main Web Routes */}
+          <Route element={<AppLayout />}>
+            <Route path="/" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <Home />
+              </Suspense>
             } />
-            
-            {/* Protected Profile Routes */}
-            <Route path="/consumer-profile" element={
-              <AuthGuard>
-                <ConsumerProfile />
-              </AuthGuard>
+            <Route path="/about" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <AboutUs />
+              </Suspense>
             } />
-            <Route path="/advisor-profile" element={
-              <AuthGuard>
+            <Route path="/for-consumers" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <ForConsumers />
+              </Suspense>
+            } />
+            <Route path="/for-advisors" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <ForAdvisors />
+              </Suspense>
+            } />
+            <Route path="/for-firms" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <ForFirms />
+              </Suspense>
+            } />
+            <Route path="/blog" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <Blog />
+              </Suspense>
+            } />
+            <Route path="/contact" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <ContactUs />
+              </Suspense>
+            } />
+            <Route path="/pricing" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <Pricing />
+              </Suspense>
+            } />
+            <Route path="/terms" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <Terms />
+              </Suspense>
+            } />
+            <Route path="/privacy" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <Privacy />
+              </Suspense>
+            } />
+            <Route path="/advisor/:id" element={
+              <Suspense fallback={<PageLoadingFallback />}>
                 <AdvisorProfile />
-              </AuthGuard>
+              </Suspense>
             } />
-            <Route path="/firm-profile" element={
-              <AuthGuard>
-                <FirmProfile />
-              </AuthGuard>
+            <Route path="/match" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <MatchingInterface />
+              </Suspense>
             } />
-            
-            {/* Protected Dashboard Routes */}
-            <Route path="/consumer-dashboard" element={
-              <AuthGuard>
-                <ConsumerDashboard />
-              </AuthGuard>
-            } />
-            <Route path="/advisor-dashboard" element={
-              <AuthGuard>
+            <Route path="/dashboard/advisor" element={
+              <Suspense fallback={<PageLoadingFallback />}>
                 <AdvisorDashboard />
-              </AuthGuard>
+              </Suspense>
             } />
-            <Route path="/firm-dashboard" element={
-              <AuthGuard>
+            <Route path="/dashboard/consumer" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <ConsumerDashboard />
+              </Suspense>
+            } />
+            <Route path="/dashboard/firm" element={
+              <Suspense fallback={<PageLoadingFallback />}>
                 <FirmDashboard />
-              </AuthGuard>
+              </Suspense>
             } />
-            
-            {/* Chat Route */}
-            <Route path="/chat" element={
-              <AuthGuard>
-                <Chat />
-              </AuthGuard>
+            <Route path="/onboarding" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <Onboarding />
+              </Suspense>
             } />
-            <Route path="/chat/:chatId" element={
-              <AuthGuard>
-                <Chat />
-              </AuthGuard>
-            } />
-            
-            {/* Schedule Route */}
             <Route path="/schedule" element={
-              <AuthGuard>
+              <Suspense fallback={<PageLoadingFallback />}>
                 <Schedule />
-              </AuthGuard>
+              </Suspense>
             } />
-            
-            {/* Settings Route */}
+            <Route path="/chat" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <Chat />
+              </Suspense>
+            } />
+            <Route path="/profile/consumer" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <ConsumerProfile />
+              </Suspense>
+            } />
+            <Route path="/profile/firm" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <FirmProfile />
+              </Suspense>
+            } />
             <Route path="/settings" element={
-              <AuthGuard>
+              <Suspense fallback={<PageLoadingFallback />}>
                 <Settings />
-              </AuthGuard>
+              </Suspense>
             } />
-            
-            {/* Matches Route */}
-            <Route path="/matches" element={
-              <AuthGuard>
-                <div>Matches Page</div>
-              </AuthGuard>
+            <Route path="/leads" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <LeadManagementPage />
+              </Suspense>
             } />
-            
-            {/* Fallback Route */}
-            <Route path="*" element={<Home />} />
-          </Routes>
-          
-          {/* Global floating support button - visible on all pages */}
-          <FloatingSupportButton />
-        </RealtimeSubscriptionProvider>
+            <Route path="/resources" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <Resources />
+              </Suspense>
+            } />
+            <Route path="/sitemap" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <Sitemap />
+              </Suspense>
+            } />
+            <Route path="/careers" element={
+              <Suspense fallback={<PageLoadingFallback />}>
+                <Careers />
+              </Suspense>
+            } />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
       </UserProvider>
     </AuthProvider>
   );
-};
+}
 
 export default App;
