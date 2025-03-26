@@ -1,6 +1,6 @@
 
 import { lazy, Suspense } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { PageLoadingFallback } from '../components/LazyComponents';
 
 // Lazy loaded mobile pages
@@ -8,11 +8,13 @@ const LandingPage = lazy(() => import('../pages/LandingPage'));
 
 const MobileRoutes = () => {
   return (
-    <Route path="/m" element={
-      <Suspense fallback={<PageLoadingFallback />}>
-        <LandingPage />
-      </Suspense>
-    } />
+    <>
+      <Route index element={
+        <Suspense fallback={<PageLoadingFallback />}>
+          <LandingPage />
+        </Suspense>
+      } />
+    </>
   );
 };
 
