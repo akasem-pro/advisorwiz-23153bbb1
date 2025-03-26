@@ -13,13 +13,15 @@ interface DashboardHeaderProps {
   subtitle?: string;
   userType: UserType;
   sidebarCollapsed: boolean;
+  actionButtons?: React.ReactNode; // Added this prop
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ 
   title, 
   subtitle, 
   userType,
-  sidebarCollapsed
+  sidebarCollapsed,
+  actionButtons // Include the new prop
 }) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -76,6 +78,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </div>
         
         <div className="flex items-center space-x-1 md:space-x-4">
+          {/* Search input logic */}
           {!isMobile && !searchOpen ? (
             <div className="relative hidden md:block">
               <input 
@@ -117,6 +120,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             </div>
           ) : null}
           
+          {/* Right side actions */}
           <div className="relative">
             <Button 
               variant="ghost" 
@@ -136,6 +140,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               )}
             </Button>
             
+            {/* Notifications dropdown */}
             {showNotifications && (
               <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-navy-800 rounded-lg shadow-lg border border-slate-200 dark:border-navy-700 overflow-hidden z-30">
                 <div className="p-3 border-b border-slate-200 dark:border-navy-700 flex justify-between items-center">
@@ -201,6 +206,13 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               {userType === 'consumer' ? 'C' : userType === 'advisor' ? 'A' : 'F'}
             </div>
           </Button>
+          
+          {/* Display actionButtons if provided */}
+          {actionButtons && (
+            <div className="ml-2">
+              {actionButtons}
+            </div>
+          )}
         </div>
       </div>
     </header>
