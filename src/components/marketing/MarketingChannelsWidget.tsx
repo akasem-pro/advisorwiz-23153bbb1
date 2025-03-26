@@ -8,11 +8,15 @@ import {
   Twitter, 
   Linkedin, 
   Youtube,
+  Download,
+  QrCode,
   MessageSquare
 } from 'lucide-react';
 import { Button } from '../ui/button';
+import { getButtonClasses } from '../ui/buttonStyles';
 import { trackUserBehavior } from '../../utils/analytics/eventTracker';
 import { useUser } from '../../context/UserContext';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 
 interface MarketingChannelProps {
   compact?: boolean;
@@ -87,81 +91,98 @@ const MarketingChannelsWidget: React.FC<MarketingChannelProps> = ({
   };
   
   const variantClasses = {
-    default: 'bg-white shadow-md border border-gray-200 dark:bg-gray-800 dark:border-gray-700',
-    light: 'bg-gray-50 border border-gray-100 dark:bg-gray-800/50 dark:border-gray-700',
-    dark: 'bg-gray-900 border border-gray-800 text-white'
+    default: 'bg-white shadow-md border border-slate-200 dark:bg-navy-800 dark:border-navy-700',
+    light: 'bg-slate-50 border border-slate-100 dark:bg-navy-800/50 dark:border-navy-700',
+    dark: 'bg-navy-900 border border-navy-800 text-white'
   };
   
-  const iconClasses = compact ? 'h-4 w-4' : 'h-5 w-5';
-  
   return (
-    <div className={`
+    <Card className={`
       ${variantClasses[variant]} 
-      ${orientation === 'horizontal' ? 'p-4' : 'p-4'} 
-      rounded-lg ${className}
+      overflow-hidden
+      ${className}
     `}>
       {showTitle && (
-        <h3 className={`text-sm font-medium mb-3 ${variant === 'dark' ? 'text-gray-200' : 'text-gray-700 dark:text-gray-200'}`}>
-          {compact ? 'Share' : 'Share AdvisorWiz'}
-        </h3>
+        <CardHeader className="pb-2">
+          <CardTitle className={`text-base font-medium ${variant === 'dark' ? 'text-white' : 'text-slate-800 dark:text-slate-200'}`}>
+            {compact ? 'Share' : 'Share AdvisorWiz'}
+          </CardTitle>
+          {!compact && (
+            <CardDescription className={variant === 'dark' ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}>
+              Help others discover financial expertise
+            </CardDescription>
+          )}
+        </CardHeader>
       )}
       
-      <div className={`
-        ${orientation === 'horizontal' ? 'flex flex-wrap' : 'flex flex-col'} 
-        gap-2 items-center
-      `}>
-        <Button
-          variant="outline"
-          size={compact ? 'sm' : 'default'}
-          className="flex-1"
-          onClick={() => handleShare('facebook')}
-        >
-          <Facebook className={iconClasses} />
-          {!compact && <span className="ml-2">Facebook</span>}
-        </Button>
-        
-        <Button
-          variant="outline"
-          size={compact ? 'sm' : 'default'}
-          className="flex-1"
-          onClick={() => handleShare('twitter')}
-        >
-          <Twitter className={iconClasses} />
-          {!compact && <span className="ml-2">Twitter</span>}
-        </Button>
-        
-        <Button
-          variant="outline"
-          size={compact ? 'sm' : 'default'}
-          className="flex-1"
-          onClick={() => handleShare('linkedin')}
-        >
-          <Linkedin className={iconClasses} />
-          {!compact && <span className="ml-2">LinkedIn</span>}
-        </Button>
-        
-        <Button
-          variant="outline"
-          size={compact ? 'sm' : 'default'}
-          className="flex-1"
-          onClick={() => handleShare('email')}
-        >
-          <Mail className={iconClasses} />
-          {!compact && <span className="ml-2">Email</span>}
-        </Button>
+      <CardContent className="p-4">
+        <div className={`
+          ${orientation === 'horizontal' ? 'flex flex-wrap' : 'flex flex-col'} 
+          gap-3 items-center
+        `}>
+          <Button
+            variant="outline"
+            size={compact ? 'sm' : 'default'}
+            onClick={() => handleShare('facebook')}
+            className="flex-1 bg-white dark:bg-navy-800 border-slate-200 dark:border-navy-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-200 dark:hover:border-blue-700"
+          >
+            <div className="bg-blue-50 dark:bg-blue-900/30 p-1.5 rounded-md mr-2">
+              <Facebook className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            </div>
+            {!compact && <span className="text-slate-700 dark:text-slate-300">Facebook</span>}
+          </Button>
+          
+          <Button
+            variant="outline"
+            size={compact ? 'sm' : 'default'}
+            onClick={() => handleShare('twitter')}
+            className="flex-1 bg-white dark:bg-navy-800 border-slate-200 dark:border-navy-700 hover:bg-sky-50 dark:hover:bg-sky-900/20 hover:border-sky-200 dark:hover:border-sky-700"
+          >
+            <div className="bg-sky-50 dark:bg-sky-900/30 p-1.5 rounded-md mr-2">
+              <Twitter className="h-4 w-4 text-sky-500 dark:text-sky-400" />
+            </div>
+            {!compact && <span className="text-slate-700 dark:text-slate-300">Twitter</span>}
+          </Button>
+          
+          <Button
+            variant="outline"
+            size={compact ? 'sm' : 'default'}
+            onClick={() => handleShare('linkedin')}
+            className="flex-1 bg-white dark:bg-navy-800 border-slate-200 dark:border-navy-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-200 dark:hover:border-blue-700"
+          >
+            <div className="bg-blue-50 dark:bg-blue-900/30 p-1.5 rounded-md mr-2">
+              <Linkedin className="h-4 w-4 text-blue-700 dark:text-blue-400" />
+            </div>
+            {!compact && <span className="text-slate-700 dark:text-slate-300">LinkedIn</span>}
+          </Button>
+          
+          <Button
+            variant="outline"
+            size={compact ? 'sm' : 'default'}
+            onClick={() => handleShare('email')}
+            className="flex-1 bg-white dark:bg-navy-800 border-slate-200 dark:border-navy-700 hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:border-amber-200 dark:hover:border-amber-700"
+          >
+            <div className="bg-amber-50 dark:bg-amber-900/30 p-1.5 rounded-md mr-2">
+              <Mail className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            </div>
+            {!compact && <span className="text-slate-700 dark:text-slate-300">Email</span>}
+          </Button>
+        </div>
         
         {!compact && (
-          <Button
-            variant="default"
-            className="mt-2 w-full"
-            onClick={handleDownload}
-          >
-            <Share className="mr-2 h-4 w-4" />
-            Get the App
-          </Button>
+          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-navy-700">
+            <Button
+              variant="default"
+              className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-sm"
+              onClick={handleDownload}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Get the App
+            </Button>
+          </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

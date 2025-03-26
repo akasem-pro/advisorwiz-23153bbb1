@@ -20,9 +20,68 @@
   @import './components/sections.css';
   @import './components/mobile.css';
   @import './components/transitions.css';
+  
+  /* Social sharing styling */
+  .social-share-dropdown {
+    @apply w-56 p-2 bg-white dark:bg-navy-800 shadow-lg border border-slate-200 dark:border-navy-700 rounded-lg;
+  }
+  
+  .social-share-title {
+    @apply px-2 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300;
+  }
+  
+  .social-share-separator {
+    @apply my-1 border-slate-200 dark:border-navy-700;
+  }
+  
+  .social-share-item {
+    @apply flex items-center p-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-navy-700 rounded-md transition-colors;
+  }
+  
+  .social-icon-wrapper {
+    @apply p-1.5 rounded-md mr-3;
+  }
+  
+  .social-icon {
+    @apply w-4 h-4;
+  }
+  
+  .social-text {
+    @apply text-slate-700 dark:text-slate-300;
+  }
+  
+  .app-download-button {
+    @apply w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-sm;
+  }
 }
 
 /* Utility styles */
 @import './utilities/fonts.css';
 @import './utilities/effects.css';
 @import './utilities/spacing.css';
+
+/* Social network branded colors */
+.facebook-color { @apply text-[#1877F2]; }
+.twitter-color { @apply text-[#1DA1F2]; }
+.linkedin-color { @apply text-[#0A66C2]; }
+.instagram-color { @apply text-[#E4405F]; }
+.youtube-color { @apply text-[#FF0000]; }
+
+.facebook-bg { @apply bg-[#1877F2]; }
+.twitter-bg { @apply bg-[#1DA1F2]; }
+.linkedin-bg { @apply bg-[#0A66C2]; }
+.instagram-bg { @apply bg-[#E4405F]; }
+.youtube-bg { @apply bg-[#FF0000]; }
+
+/* Gradient buttons */
+.gradient-primary {
+  @apply bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700;
+}
+
+.gradient-secondary {
+  @apply bg-gradient-to-r from-navy-600 to-navy-700 hover:from-navy-700 hover:to-navy-800;
+}
+
+.gradient-accent {
+  @apply bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700;
+}

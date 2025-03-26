@@ -34,3 +34,57 @@
 .button-group-spacing {
   @apply flex flex-wrap gap-3;
 }
+
+/* Social sharing components */
+.social-icon-container {
+  @apply p-1.5 rounded-md mr-2;
+}
+
+.social-facebook-bg {
+  @apply bg-blue-50 dark:bg-blue-900/30;
+}
+
+.social-facebook-text {
+  @apply text-blue-600 dark:text-blue-400;
+}
+
+.social-twitter-bg {
+  @apply bg-sky-50 dark:bg-sky-900/30;
+}
+
+.social-twitter-text {
+  @apply text-sky-500 dark:text-sky-400;
+}
+
+.social-linkedin-bg {
+  @apply bg-blue-50 dark:bg-blue-900/30;
+}
+
+.social-linkedin-text {
+  @apply text-blue-700 dark:text-blue-400;
+}
+
+.social-email-bg {
+  @apply bg-amber-50 dark:bg-amber-900/30;
+}
+
+.social-email-text {
+  @apply text-amber-600 dark:text-amber-400;
+}
+
+.social-share-button {
+  @apply bg-white dark:bg-navy-800 border-slate-200 dark:border-navy-700 hover:bg-slate-50 dark:hover:bg-navy-700/70 transition-all duration-200;
+}
+
+.social-menu-item {
+  @apply flex items-center p-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-navy-700 rounded-md transition-colors;
+}
+
+/* Sharing card variations */
+.share-card-compact {
+  @apply p-3 rounded-lg;
+}
+
+.share-card-full {
+  @apply p-4 rounded-lg;
+}
