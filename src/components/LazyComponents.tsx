@@ -28,7 +28,7 @@ export const ComponentLoadingFallback = () => (
 );
 
 // Lazy loading HOC that applies appropriate fallback
-export function withLazyLoading<T>(
+export function withLazyLoading<T extends Record<string, unknown>>(
   importFn: () => Promise<{ default: React.ComponentType<T> }>,
   LoadingComponent: React.ComponentType = ComponentLoadingFallback
 ) {
