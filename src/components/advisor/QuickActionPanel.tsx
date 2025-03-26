@@ -60,13 +60,14 @@ const QuickActionPanel: React.FC = () => {
   }, 0) || 0;
 
   // Calculate upcoming appointments (next 24 hours)
+  // Using the correct property names from the Appointment type
   const now = new Date();
   const tomorrow = new Date(now);
   tomorrow.setHours(tomorrow.getHours() + 24);
   
   const upcomingAppointments = appointments?.filter(
     appointment => {
-      const appointmentDate = new Date(appointment.scheduledStart);
+      const appointmentDate = new Date(appointment.date);
       return appointmentDate >= now && appointmentDate <= tomorrow;
     }
   ).length || 0;
