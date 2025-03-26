@@ -21,6 +21,8 @@ const Resources = lazy(() => import('../pages/Resources'));
 const Sitemap = lazy(() => import('../pages/Sitemap'));
 const Careers = lazy(() => import('../pages/Careers'));
 const DownloadApp = lazy(() => import('../pages/DownloadApp'));
+const Disclaimer = lazy(() => import('../pages/Disclaimer'));
+const Cookies = lazy(() => import('../pages/Cookies'));
 
 // Export main routes as an array of Route components
 const MainRoutes = [
@@ -74,12 +76,27 @@ const MainRoutes = [
       <Privacy />
     </Suspense>
   } />,
+  <Route key="disclaimer" path="disclaimer" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Disclaimer />
+    </Suspense>
+  } />,
+  <Route key="cookies" path="cookies" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Cookies />
+    </Suspense>
+  } />,
   <Route key="advisor-profile" path="advisor/:id" element={
     <Suspense fallback={<PageLoadingFallback />}>
       <AdvisorProfile />
     </Suspense>
   } />,
   <Route key="matching" path="match" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <MatchingInterface />
+    </Suspense>
+  } />,
+  <Route key="matches" path="matches" element={
     <Suspense fallback={<PageLoadingFallback />}>
       <MatchingInterface />
     </Suspense>

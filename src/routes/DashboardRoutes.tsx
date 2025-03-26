@@ -13,12 +13,19 @@ const ConsumerProfile = lazy(() => import('../pages/ConsumerProfile'));
 const FirmProfile = lazy(() => import('../pages/FirmProfile'));
 const Settings = lazy(() => import('../pages/Settings'));
 const LeadManagementPage = lazy(() => import('../pages/LeadManagementPage'));
-// Add the missing import for AdvisorProfile
 const AdvisorProfile = lazy(() => import('../pages/AdvisorProfile'));
+const Analytics = lazy(() => import('../pages/Analytics'));
+const Team = lazy(() => import('../pages/Team'));
 
 // Export dashboard routes as an array of Route components
 const DashboardRoutes = [
+  // Support for both dashboard path patterns
   <Route key="advisor-dashboard" path="dashboard/advisor" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <AdvisorDashboard />
+    </Suspense>
+  } />,
+  <Route key="advisor-dashboard-alt" path="advisor-dashboard" element={
     <Suspense fallback={<PageLoadingFallback />}>
       <AdvisorDashboard />
     </Suspense>
@@ -28,7 +35,17 @@ const DashboardRoutes = [
       <ConsumerDashboard />
     </Suspense>
   } />,
+  <Route key="consumer-dashboard-alt" path="consumer-dashboard" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <ConsumerDashboard />
+    </Suspense>
+  } />,
   <Route key="firm-dashboard" path="dashboard/firm" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <FirmDashboard />
+    </Suspense>
+  } />,
+  <Route key="firm-dashboard-alt" path="firm-dashboard" element={
     <Suspense fallback={<PageLoadingFallback />}>
       <FirmDashboard />
     </Suspense>
@@ -48,7 +65,7 @@ const DashboardRoutes = [
       <ConsumerProfile />
     </Suspense>
   } />,
-  <Route key="advisor-profile" path="advisor-profile" element={
+  <Route key="advisor-profile-dashboard" path="advisor-profile" element={
     <Suspense fallback={<PageLoadingFallback />}>
       <AdvisorProfile />
     </Suspense>
@@ -66,6 +83,16 @@ const DashboardRoutes = [
   <Route key="leads" path="leads" element={
     <Suspense fallback={<PageLoadingFallback />}>
       <LeadManagementPage />
+    </Suspense>
+  } />,
+  <Route key="analytics" path="analytics" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Analytics />
+    </Suspense>
+  } />,
+  <Route key="team" path="team" element={
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Team />
     </Suspense>
   } />
 ];

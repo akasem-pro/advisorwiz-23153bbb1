@@ -49,7 +49,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ links, showGetStarted =
           
           {/* Dropdown menu for links with subLinks */}
           {link.subLinks && link.subLinks.length > 0 && (
-            <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-navy-800 shadow-lg rounded-md overflow-hidden z-10 hidden group-hover:block">
+            <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-navy-800 shadow-lg rounded-md overflow-hidden z-20 hidden group-hover:block">
               {link.subLinks.map((subLink) => (
                 <Link
                   key={subLink.path}
