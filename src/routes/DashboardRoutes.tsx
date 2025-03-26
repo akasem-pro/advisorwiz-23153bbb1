@@ -14,6 +14,13 @@ const FirmProfile = lazy(() => import('../pages/FirmProfile'));
 const Settings = lazy(() => import('../pages/Settings'));
 const LeadManagementPage = lazy(() => import('../pages/LeadManagementPage'));
 
+/**
+ * Dashboard routes definition - this component returns Route elements
+ * to be used within a parent Route component.
+ * 
+ * Note: This component is kept for reference but is not directly used in AppRoutes.
+ * The routes are defined inline in AppRoutes.tsx.
+ */
 const DashboardRoutes = () => {
   return (
     <>
