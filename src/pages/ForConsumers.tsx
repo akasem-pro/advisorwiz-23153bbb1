@@ -2,9 +2,11 @@
 import React from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
-import { Button } from '../components/ui/button';
-import { Link } from 'react-router-dom';
-import { Check, Shield, Users, Award, ArrowRight } from 'lucide-react';
+import PageHero from '../components/shared/PageHero';
+import PageHowItWorks from '../components/shared/PageHowItWorks';
+import PageFAQ from '../components/shared/PageFAQ';
+import PageCTA from '../components/shared/PageCTA';
+import { Shield, Users, Award } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 
 const ForConsumers: React.FC = () => {
@@ -13,36 +15,71 @@ const ForConsumers: React.FC = () => {
     { name: 'For Consumers', url: '/for-consumers' }
   ];
 
+  // How it works steps
+  const steps = [
+    {
+      number: 1,
+      title: "Complete a Simple Profile",
+      description: "Tell us about your financial situation, goals, and preferences. This helps us understand what you're looking for in an advisor."
+    },
+    {
+      number: 2,
+      title: "Review Your Matches",
+      description: "We'll present you with a selection of advisors who best match your needs. Browse their profiles, credentials, and specialties."
+    },
+    {
+      number: 3,
+      title: "Connect with Advisors",
+      description: "Schedule an initial consultation with advisors who interest you. This can be done directly through our platform."
+    },
+    {
+      number: 4,
+      title: "Choose Your Advisor",
+      description: "After your consultations, select the advisor who best meets your needs and start working together on your financial future."
+    }
+  ];
+
+  // FAQs for consumers
+  const faqs = [
+    {
+      question: "Is it free to use AdvisorWiz as a consumer?",
+      answer: "Yes, our matching service is completely free for consumers. We never charge you to find and connect with financial advisors on our platform."
+    },
+    {
+      question: "How do you verify the advisors on your platform?",
+      answer: "We thoroughly vet all advisors, checking their credentials, regulatory standing, and professional history. We also continuously monitor their status to ensure ongoing compliance."
+    },
+    {
+      question: "Can I see advisors' fee structures before connecting?",
+      answer: "Yes, advisor profiles include information about their fee structures and compensation methods, allowing you to make informed decisions before scheduling consultations."
+    },
+    {
+      question: "What types of financial advice can I find on AdvisorWiz?",
+      answer: "Our platform includes advisors specializing in retirement planning, investment management, estate planning, tax strategies, insurance needs, debt management, and more."
+    },
+    {
+      question: "How do I prepare for my first consultation?",
+      answer: "After scheduling, you'll receive a preparation guide with suggested documents to gather and questions to consider. This helps ensure your consultation is productive and valuable."
+    }
+  ];
+
   return (
     <AppLayout>
       <BreadcrumbNav items={breadcrumbs} />
       
-      <section className="bg-gradient-to-b from-slate-50 to-white dark:from-navy-950 dark:to-navy-900 pt-16 pb-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-serif font-bold text-navy-900 dark:text-white mb-6 leading-tight">
-              Find Your Perfect Financial Advisor
-            </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-300 mb-10 leading-relaxed">
-              Connect with experienced financial advisors who match your specific needs and goals. Our intelligent matching system takes the guesswork out of finding the right financial professional.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
-              <Button asChild size="lg" className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-8 py-6 text-lg h-auto">
-                <Link to="/onboarding">
-                  Find My Advisor Match
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="border-navy-300 text-navy-700 dark:border-navy-600 dark:text-slate-200 rounded-full px-8 py-6 text-lg h-auto">
-                <Link to="/resources">
-                  Explore Resources
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PageHero 
+        title="Find Your Perfect Financial Advisor"
+        subtitle="Connect with experienced financial advisors who match your specific needs and goals. Our intelligent matching system takes the guesswork out of finding the right financial professional."
+        primaryCta={{
+          text: "Find My Advisor Match",
+          link: "/onboarding",
+          icon: true
+        }}
+        secondaryCta={{
+          text: "Explore Resources",
+          link: "/resources"
+        }}
+      />
       
       <section className="py-16 bg-white dark:bg-navy-900">
         <div className="container mx-auto px-4">
@@ -90,59 +127,10 @@ const ForConsumers: React.FC = () => {
         </div>
       </section>
       
-      <section className="py-16 bg-slate-50 dark:bg-navy-950">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-serif font-bold text-center text-navy-900 dark:text-slate-100 mb-12">
-            How It Works
-          </h2>
-          
-          <div className="max-w-5xl mx-auto">
-            <div className="relative">
-              <div className="absolute left-9 top-0 bottom-0 w-0.5 bg-teal-200 dark:bg-teal-900/60"></div>
-              
-              <div className="relative z-10 mb-12">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 bg-teal-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mr-8">1</div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-navy-900 dark:text-slate-100 mb-2">Complete a Simple Profile</h3>
-                    <p className="text-slate-600 dark:text-slate-300 mb-4">Tell us about your financial situation, goals, and preferences. This helps us understand what you're looking for in an advisor.</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="relative z-10 mb-12">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 bg-teal-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mr-8">2</div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-navy-900 dark:text-slate-100 mb-2">Review Your Matches</h3>
-                    <p className="text-slate-600 dark:text-slate-300 mb-4">We'll present you with a selection of advisors who best match your needs. Browse their profiles, credentials, and specialties.</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="relative z-10 mb-12">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 bg-teal-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mr-8">3</div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-navy-900 dark:text-slate-100 mb-2">Connect with Advisors</h3>
-                    <p className="text-slate-600 dark:text-slate-300 mb-4">Schedule an initial consultation with advisors who interest you. This can be done directly through our platform.</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="relative z-10">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 bg-teal-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl mr-8">4</div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-navy-900 dark:text-slate-100 mb-2">Choose Your Advisor</h3>
-                    <p className="text-slate-600 dark:text-slate-300 mb-4">After your consultations, select the advisor who best meets your needs and start working together on your financial future.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PageHowItWorks
+        title="How It Works"
+        steps={steps}
+      />
       
       <section className="py-16 bg-white dark:bg-navy-900">
         <div className="container mx-auto px-4">
@@ -186,20 +174,17 @@ const ForConsumers: React.FC = () => {
         </div>
       </section>
       
-      <section className="py-16 bg-teal-600 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-serif font-bold mb-6">Ready to Find Your Perfect Financial Advisor?</h2>
-          <p className="text-xl text-teal-100 mb-8 max-w-2xl mx-auto">
-            Take the first step toward achieving your financial goals with personalized guidance from a matched advisor.
-          </p>
-          <Button asChild size="lg" className="bg-white text-teal-700 hover:bg-teal-50 rounded-full px-8 py-6 text-lg h-auto">
-            <Link to="/onboarding">
-              Start Matching Now
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
-        </div>
-      </section>
+      <PageFAQ
+        title="Frequently Asked Questions"
+        faqs={faqs}
+      />
+      
+      <PageCTA
+        title="Ready to Find Your Perfect Financial Advisor?"
+        description="Take the first step toward achieving your financial goals with personalized guidance from a matched advisor."
+        buttonText="Start Matching Now"
+        buttonLink="/onboarding"
+      />
     </AppLayout>
   );
 };
