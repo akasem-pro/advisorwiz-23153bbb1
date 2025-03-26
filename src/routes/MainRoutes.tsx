@@ -20,14 +20,8 @@ const Onboarding = lazy(() => import('../pages/Onboarding'));
 const Resources = lazy(() => import('../pages/Resources'));
 const Sitemap = lazy(() => import('../pages/Sitemap'));
 const Careers = lazy(() => import('../pages/Careers'));
+const DownloadApp = lazy(() => import('../pages/DownloadApp'));
 
-/**
- * Main routes definition - this component returns Route elements
- * to be used within a parent Route component.
- * 
- * Note: This component is kept for reference but is not directly used in AppRoutes.
- * The routes are defined inline in AppRoutes.tsx.
- */
 const MainRoutes = () => {
   return (
     <>
@@ -109,6 +103,11 @@ const MainRoutes = () => {
       <Route path="careers" element={
         <Suspense fallback={<PageLoadingFallback />}>
           <Careers />
+        </Suspense>
+      } />
+      <Route path="download" element={
+        <Suspense fallback={<PageLoadingFallback />}>
+          <DownloadApp />
         </Suspense>
       } />
     </>

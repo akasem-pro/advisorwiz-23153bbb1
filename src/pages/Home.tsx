@@ -1,20 +1,23 @@
+
 import React from 'react';
-import HeroSection from '../components/sections/HeroSection';
-import HowItWorksSection from '../components/sections/HowItWorksSection';
-import BenefitsSection from '../components/sections/BenefitsSection';
-import TestimonialsSection from '../components/sections/TestimonialsSection';
-import FAQSection from '../components/sections/FAQSection';
-import MainCTASection from '../components/sections/MainCTASection';
-import TrustedPartners from '../components/sections/TrustedPartners';
-import PricingCTASection from '../components/sections/PricingCTASection';
-import NewsletterSection from '../components/sections/NewsletterSection';
+import { useEffect } from 'react';
 import ASOBanner from '../components/marketing/ASOBanner';
 import ReviewRequestModal from '../components/marketing/ReviewRequestModal';
 import MarketingChannelsWidget from '../components/marketing/MarketingChannelsWidget';
 import ASOOptimizationInfo from '../components/marketing/ASOOptimizationInfo';
 import PromotionalBanner from '../components/promotions/PromotionalBanner';
-import { useEffect } from 'react';
 import { trackAppStoreEvent } from '../utils/analytics/marketingHelper';
+
+// Using existing components from home directory instead of sections directory
+import { HeroSection } from '../components/home/HeroSection';
+import { HowItWorksSection } from '../components/home/HowItWorksSection';
+import { BenefitsSection } from '../components/home/BenefitsSection';
+import { TestimonialsSection } from '../components/home/TestimonialsSection';
+import { FAQSection } from '../components/home/FAQSection';
+import { MainCTASection } from '../components/home/MainCTASection';
+import { TrustedPartners } from '../components/home/TrustedPartners';
+import { PricingCTASection } from '../components/home/PricingCTASection';
+import { NewsletterSection } from '../components/home/NewsletterSection';
 
 const Home = () => {
   // Show app review modal on the home page
