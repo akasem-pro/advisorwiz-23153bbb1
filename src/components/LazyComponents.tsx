@@ -1,3 +1,4 @@
+
 import React, { Suspense } from 'react';
 import { Skeleton } from './ui/skeleton';
 
@@ -27,17 +28,20 @@ export const ComponentLoadingFallback = () => (
 );
 
 // Lazy loading HOC that applies appropriate fallback
-export function withLazyLoading<T extends { [key: string]: any }>(
-  importFn: () => Promise<{ default: React.ComponentType<T> }>,
+export function withLazyLoading<P>(
+  importFn: () => Promise<{ default: React.ComponentType<P> }>,
   LoadingComponent: React.ComponentType = ComponentLoadingFallback
 ) {
   const LazyComponent = React.lazy(importFn);
   
-  return function WithLazyLoadingComponent(props: T) {
+  // Use React.forwardRef to properly handle ref forwarding
+  const WithLazyLoadingComponent = React.forwardRef<unknown, P>((props, ref) => {
     return (
       <Suspense fallback={<LoadingComponent />}>
-        <LazyComponent {...props} />
+        <LazyComponent {...props} ref={ref} />
       </Suspense>
     );
-  };
+  });
+  
+  return WithLazyLoadingComponent;
 }
