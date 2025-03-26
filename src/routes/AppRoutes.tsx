@@ -13,7 +13,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Mobile Routes */}
-      <Route path="/m" element={<MobileLayout />}>
+      <Route path="/m" element={<MobileLayout><Outlet /></MobileLayout>}>
         <MobileRoutes />
       </Route>
       

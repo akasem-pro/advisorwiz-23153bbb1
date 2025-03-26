@@ -8,13 +8,11 @@ const LandingPage = lazy(() => import('../pages/LandingPage'));
 
 const MobileRoutes = () => {
   return (
-    <>
-      <Route index element={
-        <Suspense fallback={<PageLoadingFallback />}>
-          <LandingPage />
-        </Suspense>
-      } />
-    </>
+    <Route index element={
+      <Suspense fallback={<PageLoadingFallback />}>
+        <LandingPage />
+      </Suspense>
+    } />
   );
 };
 
