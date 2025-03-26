@@ -5,8 +5,12 @@ import { PageLoadingFallback } from '../components/LazyComponents';
 
 // Lazy loaded mobile pages
 const LandingPage = lazy(() => import('../pages/LandingPage'));
+const MobileDashboard = lazy(() => import('../pages/MobileDashboard'));
 
-// MobileRoutes should return Route elements, not use Routes
+/**
+ * MobileRoutes defines routes for the mobile version of the application.
+ * Note: This component returns Route elements to be used within a parent Route.
+ */
 const MobileRoutes = () => {
   return (
     <>
