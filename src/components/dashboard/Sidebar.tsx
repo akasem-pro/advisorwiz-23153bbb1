@@ -34,7 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       }`}
     >
       <div className="p-4 flex items-center justify-between border-b border-navy-800">
-        {!sidebarCollapsed && <Logo />}
+        {!sidebarCollapsed && <Logo forceLightMode={true} />}
         <Button 
           variant="ghost" 
           size="icon" 

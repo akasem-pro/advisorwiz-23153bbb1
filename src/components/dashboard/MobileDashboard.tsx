@@ -33,7 +33,7 @@ const MobileDashboard: React.FC<MobileDashboardProps> = ({
     <AnimatedRoute animation="fade">
       <div className="min-h-screen bg-slate-50 dark:bg-navy-900 flex flex-col">
         <header className="bg-white dark:bg-navy-800 border-b border-slate-200 dark:border-navy-700 px-4 py-3 flex items-center justify-between fixed top-0 left-0 right-0 z-10">
-          <Logo />
+          <Logo forceLightMode={true} />
           <div className="flex items-center space-x-4">
             <button className="relative">
               <BellRing className="h-6 w-6 text-slate-600 dark:text-slate-300" />
