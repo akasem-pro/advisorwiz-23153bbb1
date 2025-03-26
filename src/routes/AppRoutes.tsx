@@ -4,7 +4,6 @@ import { Outlet } from 'react-router-dom';
 import AppLayout from '../components/layout/AppLayout';
 import MobileLayout from '../components/layout/MobileLayout';
 import NotFound from '../pages/NotFound';
-import DashboardRoutes from './DashboardRoutes';
 import SignIn from '../pages/SignIn';
 import { lazy, Suspense } from 'react';
 import { PageLoadingFallback } from '../components/LazyComponents';
@@ -29,6 +28,17 @@ const Onboarding = lazy(() => import('../pages/Onboarding'));
 const Resources = lazy(() => import('../pages/Resources'));
 const Sitemap = lazy(() => import('../pages/Sitemap'));
 const Careers = lazy(() => import('../pages/Careers'));
+
+// Lazy loaded dashboard pages
+const AdvisorDashboard = lazy(() => import('../pages/AdvisorDashboard'));
+const ConsumerDashboard = lazy(() => import('../pages/ConsumerDashboard'));
+const FirmDashboard = lazy(() => import('../pages/FirmDashboard'));
+const Schedule = lazy(() => import('../pages/Schedule'));
+const Chat = lazy(() => import('../pages/Chat'));
+const ConsumerProfile = lazy(() => import('../pages/ConsumerProfile'));
+const FirmProfile = lazy(() => import('../pages/FirmProfile'));
+const Settings = lazy(() => import('../pages/Settings'));
+const LeadManagementPage = lazy(() => import('../pages/LeadManagementPage'));
 
 const AppRoutes = () => {
   return (
@@ -134,7 +144,52 @@ const AppRoutes = () => {
         {/* Dashboard Routes */}
         <Route path="dashboard/advisor" element={
           <Suspense fallback={<PageLoadingFallback />}>
-            <DashboardRoutes />
+            <AdvisorDashboard />
+          </Suspense>
+        } />
+        <Route path="dashboard/consumer" element={
+          <Suspense fallback={<PageLoadingFallback />}>
+            <ConsumerDashboard />
+          </Suspense>
+        } />
+        <Route path="dashboard/firm" element={
+          <Suspense fallback={<PageLoadingFallback />}>
+            <FirmDashboard />
+          </Suspense>
+        } />
+        <Route path="schedule" element={
+          <Suspense fallback={<PageLoadingFallback />}>
+            <Schedule />
+          </Suspense>
+        } />
+        <Route path="chat" element={
+          <Suspense fallback={<PageLoadingFallback />}>
+            <Chat />
+          </Suspense>
+        } />
+        <Route path="consumer-profile" element={
+          <Suspense fallback={<PageLoadingFallback />}>
+            <ConsumerProfile />
+          </Suspense>
+        } />
+        <Route path="advisor-profile" element={
+          <Suspense fallback={<PageLoadingFallback />}>
+            <AdvisorProfile />
+          </Suspense>
+        } />
+        <Route path="firm-profile" element={
+          <Suspense fallback={<PageLoadingFallback />}>
+            <FirmProfile />
+          </Suspense>
+        } />
+        <Route path="settings" element={
+          <Suspense fallback={<PageLoadingFallback />}>
+            <Settings />
+          </Suspense>
+        } />
+        <Route path="leads" element={
+          <Suspense fallback={<PageLoadingFallback />}>
+            <LeadManagementPage />
           </Suspense>
         } />
         
