@@ -1,6 +1,6 @@
 
 // This file re-exports React hooks to ensure consistency across the application
-import { 
+import React, { 
   useState, 
   useEffect, 
   useContext, 
