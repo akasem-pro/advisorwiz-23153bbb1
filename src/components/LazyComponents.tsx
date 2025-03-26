@@ -35,7 +35,7 @@ export function withLazyLoading<P extends Record<string, unknown>>(
   const LazyComponent = React.lazy(importFn);
   
   // Create a functional component to wrap the lazy component
-  const WithLazyLoadingComponent = (props: P & JSX.IntrinsicAttributes) => (
+  const WithLazyLoadingComponent = (props: React.PropsWithoutRef<P>) => (
     <Suspense fallback={<LoadingComponent />}>
       <LazyComponent {...props} />
     </Suspense>
