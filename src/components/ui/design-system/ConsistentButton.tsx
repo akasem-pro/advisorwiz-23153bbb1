@@ -17,6 +17,7 @@ type ConsistentButtonBaseProps = {
   iconPosition?: 'left' | 'right';
   className?: string;
   rounded?: 'full' | 'lg' | 'md' | 'sm';
+  disabled?: boolean;
 };
 
 // Props for button element
@@ -139,7 +140,7 @@ const ConsistentButton = (props: ConsistentButtonProps) => {
     <button
       className={buttonClasses}
       disabled={disabled || loading}
-      {...rest}
+      {...rest as React.ButtonHTMLAttributes<HTMLButtonElement>}
     >
       {contentElements}
     </button>
