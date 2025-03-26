@@ -1,6 +1,6 @@
 
-import React, { ReactNode, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { ReactNode, useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import AnimatedRoute from '../ui/AnimatedRoute';
 import { useIsMobile } from '../../hooks/use-mobile';
@@ -8,6 +8,7 @@ import Sidebar from './Sidebar';
 import DashboardHeader from './DashboardHeader';
 import MobileDashboard from './MobileDashboard';
 import { getNavigationItems } from './dashboardNavigation';
+import { useNavigation } from '../../hooks/use-navigation';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -24,16 +25,23 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const { userType, isAuthenticated, setIsAuthenticated, setUserType } = useUser();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const location = useLocation();
+  const { navigateTo } = useNavigation();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/sign-in');
+    }
+  }, [isAuthenticated, navigate]);
 
   if (!isAuthenticated) {
-    navigate('/sign-in');
     return null;
   }
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUserType(null);
-    navigate('/');
+    navigateTo('/');
   };
 
   const navigationItems = getNavigationItems(userType);

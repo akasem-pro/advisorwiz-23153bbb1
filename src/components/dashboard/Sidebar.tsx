@@ -1,6 +1,6 @@
 
 import React, { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 import { Button } from '../ui/button';
 import Logo from '../layout/Logo';
@@ -55,7 +55,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                   className={`w-full justify-start text-slate-300 hover:text-white hover:bg-navy-800 ${
                     sidebarCollapsed ? 'px-0 justify-center' : 'px-4'
                   }`}
-                  onClick={() => navigate(item.link)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(item.link);
+                  }}
                 >
                   <item.icon className={`h-5 w-5 ${sidebarCollapsed ? 'mr-0' : 'mr-3'}`} />
                   {!sidebarCollapsed && <span>{item.label}</span>}
