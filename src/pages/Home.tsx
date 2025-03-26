@@ -19,6 +19,7 @@ import FAQSection from '../components/home/FAQSection';
 import PricingSection from '../components/home/PricingSection';
 import NewsletterSection from '../components/home/NewsletterSection';
 import MainCTASection from '../components/home/MainCTASection';
+import TrustedPartners from '../components/home/TrustedPartners';
 
 // FAQ data for structured data
 const faqData = [
@@ -123,6 +124,9 @@ const Home: React.FC = () => {
         <SocialProofBar />
         
         <HowItWorksSection />
+        
+        {/* Added the TrustedPartners component here */}
+        <TrustedPartners />
         
         <div className="py-8 bg-slate-50 dark:bg-navy-950">
           <div className="container mx-auto px-4">
