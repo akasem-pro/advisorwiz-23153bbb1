@@ -6,12 +6,12 @@ import TrustBadges from '../ui/TrustBadges';
 import FloatingSupportButton from '../support/FloatingSupportButton';
 import { initializeTagManager, trackPageView } from '../../utils/tagManager';
 import { cn } from '@/lib/utils';
-import Footer from './Footer';
+import AppFooter from './AppFooter';
 
 export interface BaseLayoutProps {
   children: ReactNode;
   header: ReactNode;
-  footer?: ReactNode;
+  footer?: ReactNode | null;
   showSocialProof?: boolean;
   showTrustBadges?: boolean;
   fullWidth?: boolean;
@@ -98,10 +98,9 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
       
       <FloatingSupportButton />
       
-      {/* Only render a default Footer if footer prop is undefined */}
-      {footer === undefined && <Footer />}
-      {/* If footer prop is provided and not null, render it */}
-      {footer !== undefined && footer !== null && footer}
+      {/* Render footer based on the footer prop */}
+      {footer === undefined && <AppFooter />}
+      {footer !== null && footer}
       
       {mobileNavbar}
     </div>
