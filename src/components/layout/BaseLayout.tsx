@@ -96,8 +96,10 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
       </main>
       
       <FloatingSupportButton />
-      {/* Render the Footer component by default unless explicitly passed something */}
-      {footer === undefined ? <Footer /> : footer}
+      
+      {/* Only render a footer if one wasn't explicitly set to null */}
+      {footer !== null && (footer || <Footer />)}
+      
       {mobileNavbar}
     </div>
   );

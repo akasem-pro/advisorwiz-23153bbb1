@@ -14,6 +14,7 @@ interface MobileLayoutProps {
   animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale' | 'none';
   animationDuration?: 'fast' | 'normal' | 'slow';
   skipToContentId?: string;
+  hideFooter?: boolean;
 }
 
 const MobileLayout: React.FC<MobileLayoutProps> = ({ 
@@ -24,12 +25,13 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
   withoutPadding = true,
   animation = 'fade',
   animationDuration = 'normal',
-  skipToContentId = 'mobile-content'
+  skipToContentId = 'mobile-content',
+  hideFooter = false
 }) => {
   return (
     <BaseLayout
       header={<Header />}
-      footer={null} // Set to null to prevent Footer from being included
+      footer={hideFooter ? null : undefined} // If hideFooter is true, explicitly pass null, otherwise let BaseLayout handle it
       mobileNavbar={<MobileNavbar />}
       contentClassName={cn("pt-14 pb-14", contentClassName)}
       showSocialProof={showSocialProof}
