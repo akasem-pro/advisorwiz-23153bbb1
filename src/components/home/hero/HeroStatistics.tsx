@@ -5,14 +5,15 @@ import { cn } from '@/lib/utils';
 
 interface HeroStatisticsProps {
   className?: string;
+  style?: React.CSSProperties;
 }
 
-const HeroStatistics: React.FC<HeroStatisticsProps> = ({ className }) => {
+const HeroStatistics: React.FC<HeroStatisticsProps> = ({ className, style }) => {
   return (
     <div className={cn(
       "bg-white dark:bg-navy-800 shadow-sm border border-slate-200 dark:border-navy-700 rounded-lg py-4 px-6",
       className
-    )}>
+    )} style={style}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="flex items-center space-x-4">
           <div className="bg-teal-50 dark:bg-teal-900/30 p-3 rounded-full">
