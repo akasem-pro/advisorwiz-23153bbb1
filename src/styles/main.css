@@ -1,10 +1,10 @@
 
+/* Import theme variables */
+@import './theme/variables.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import theme variables */
-@import './theme/variables.css';
 
 /* Base styles */
 @layer base {
