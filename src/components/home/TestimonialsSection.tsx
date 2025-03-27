@@ -36,43 +36,44 @@ const testimonials: Testimonial[] = [
 
 const TestimonialsSection: React.FC = () => {
   return (
-    <section className="py-16 bg-white dark:bg-navy-900" aria-labelledby="testimonials-heading">
+    <section className="py-16 bg-gradient-to-b from-white to-slate-50 dark:from-navy-900 dark:to-navy-950" aria-labelledby="testimonials-heading">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 id="testimonials-heading" className="text-3xl font-serif font-bold text-navy-900 dark:text-white mb-4">
             What Our Clients Say
           </h2>
           <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-            Don't take our word for it — hear from people who have found their perfect financial match through AdvisorWiz.
+            Hear from people who have found their perfect financial match.
           </p>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial) => (
+        <div className="grid md:grid-cols-3 gap-6">
+          {testimonials.map((testimonial, index) => (
             <div 
               key={testimonial.id} 
-              className="bg-slate-50 dark:bg-navy-800 p-6 md:p-8 rounded-xl shadow-sm border border-slate-100 dark:border-navy-700 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-navy-800/70 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-slate-100/80 dark:border-navy-700/50 backdrop-blur-sm transform hover:-translate-y-1 transition-all duration-300"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <Quote className="text-teal-500 mb-4 w-10 h-10" aria-hidden="true" />
-              <blockquote className="mb-6">
-                <p className="text-slate-700 dark:text-slate-200 italic mb-4">"{testimonial.quote}"</p>
+              <Quote className="text-teal-500 mb-3 w-8 h-8" aria-hidden="true" />
+              <blockquote className="mb-5">
+                <p className="text-slate-700 dark:text-slate-200 text-sm leading-relaxed mb-4">"{testimonial.quote}"</p>
                 <footer className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-navy-200 dark:bg-navy-600 flex items-center justify-center text-white font-medium mr-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 dark:from-teal-600 dark:to-teal-700 flex items-center justify-center text-white font-medium mr-3 shadow-sm">
                     {testimonial.image ? (
                       <img 
                         src={testimonial.image} 
                         alt={testimonial.author} 
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (
                       <span>{testimonial.author.charAt(0)}</span>
                     )}
                   </div>
                   <div>
-                    <cite className="font-medium text-navy-900 dark:text-white not-italic block">
+                    <cite className="font-medium text-navy-900 dark:text-white not-italic block text-sm">
                       {testimonial.author}
                     </cite>
-                    <span className="text-slate-600 dark:text-slate-400 text-sm">
+                    <span className="text-slate-600 dark:text-slate-400 text-xs">
                       {testimonial.title}
                       {testimonial.company && ` • ${testimonial.company}`}
                     </span>

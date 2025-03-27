@@ -13,7 +13,6 @@ import ConsistentSection from '../components/ui/design-system/ConsistentSection'
 import ConsistentContainer from '../components/ui/design-system/ConsistentContainer';
 import TrustBadges from '../components/ui/TrustBadges';
 
-// Fixing imports to use default imports instead of named imports
 import HeroSection from '../components/home/HeroSection';
 import HowItWorksSection from '../components/home/HowItWorksSection';
 import BenefitsSection from '../components/home/BenefitsSection';
@@ -39,87 +38,98 @@ const Home = () => {
 
   return (
     <AppLayout fullWidth withoutPadding>
-      {/* App Store Optimization Banner */}
-      <ASOBanner variant="both" position="top" />
-      
       {/* Main Home Content */}
       <div className="overflow-hidden">
-        {/* Promotional Banner for Marketing */}
-        <PromotionalBanner
-          id="home-promo-1"
-          message="Download our mobile app for a better experience. Get it now!"
-          ctaText="Download App"
-          ctaUrl="/download"
-          variant="primary"
-        />
+        {/* Promotional Banner - Only show on mobile */}
+        {isMobile && (
+          <PromotionalBanner
+            id="home-promo-1"
+            message="Get our mobile app for a better experience!"
+            ctaText="Download"
+            ctaUrl="/download"
+            variant="primary"
+          />
+        )}
         
-        {/* Original Home Content - adding IDs for onboarding tour targeting */}
-        <div id="hero-section">
+        {/* Hero Section */}
+        <div id="hero-section" className="animate-fade-in" style={{animationDuration: '0.8s'}}>
           <HeroSection />
         </div>
         
-        {/* Trust Badges for credibility */}
-        <ConsistentSection background="transparent" spacing="sm" className="py-2">
+        {/* Trust Badges - More subtle placement */}
+        <ConsistentSection background="transparent" spacing="xs" className="py-1 -mt-2">
           <ConsistentContainer>
-            <TrustBadges className="mx-auto max-w-3xl" />
+            <TrustBadges className="mx-auto max-w-3xl" compact={true} />
           </ConsistentContainer>
         </ConsistentSection>
         
-        {/* Only show marketing widget if not on mobile */}
+        {/* Marketing widget - Only on desktop with reduced prominence */}
         {!isMobile && (
-          <ConsistentSection background="alt" className="py-4">
+          <ConsistentSection background="transparent" className="py-2">
             <ConsistentContainer>
               <MarketingChannelsWidget orientation="horizontal" />
             </ConsistentContainer>
           </ConsistentSection>
         )}
         
-        <div id="how-it-works-section">
+        {/* How It Works - Add animation */}
+        <div id="how-it-works-section" className="scroll-mt-20 animate-fade-in" style={{animationDuration: '0.8s', animationDelay: '0.1s'}}>
           <HowItWorksSection />
         </div>
         
-        <div id="benefits-section">
+        {/* Benefits Section */}
+        <div id="benefits-section" className="scroll-mt-20">
           <BenefitsSection />
         </div>
         
-        {/* Mobile App Promotion Section - replacing ASOOptimizationInfo */}
-        <ConsistentSection background="accent" className="py-6" centered={true}>
-          <ConsistentContainer width="md">
-            <h2 className="text-xl md:text-2xl font-bold text-center mb-3 text-navy-900 dark:text-white">
-              AdvisorWiz Mobile App
-            </h2>
-            <MobileAppPromotion className="max-w-4xl mx-auto" />
-          </ConsistentContainer>
-        </ConsistentSection>
+        {/* Mobile App Promotion - Only show when relevant */}
+        {!isMobile && (
+          <ConsistentSection background="accent" className="py-4" centered={true}>
+            <ConsistentContainer width="md">
+              <h2 className="text-xl md:text-2xl font-bold text-center mb-3 text-navy-900 dark:text-white">
+                AdvisorWiz Mobile App
+              </h2>
+              <MobileAppPromotion className="max-w-4xl mx-auto" />
+            </ConsistentContainer>
+          </ConsistentSection>
+        )}
         
-        <div id="testimonials-section">
+        {/* Testimonials Section */}
+        <div id="testimonials-section" className="scroll-mt-20">
           <TestimonialsSection />
         </div>
         
-        <div id="faq-section">
+        {/* FAQ Section */}
+        <div id="faq-section" className="scroll-mt-20">
           <FAQSection />
         </div>
         
-        <div id="cta-section">
+        {/* CTA Section */}
+        <div id="cta-section" className="scroll-mt-20">
           <MainCTASection />
         </div>
         
-        <div id="pricing-section">
+        {/* Pricing CTA - Positioned strategically */}
+        <div id="pricing-section" className="scroll-mt-20">
           <PricingCTASection />
         </div>
         
-        <div id="newsletter-section">
+        {/* Newsletter - Simplified */}
+        <div id="newsletter-section" className="scroll-mt-20">
           <NewsletterSection />
         </div>
       </div>
       
-      {/* Review Request Modal */}
+      {/* Review Request Modal - Less intrusive */}
       <ReviewRequestModal 
-        sessionCount={2}
-        minTimeOnSite={120}
-        pageVisitThreshold={3}
+        sessionCount={3} /* Increased threshold so it shows less frequently */
+        minTimeOnSite={180} /* Increased time threshold */
+        pageVisitThreshold={4} /* Increased threshold */
         onReviewSubmitted={handleReviewSubmitted}
       />
+      
+      {/* App Store Banner - Show at bottom only */}
+      <ASOBanner variant="both" position="bottom" />
     </AppLayout>
   );
 };
