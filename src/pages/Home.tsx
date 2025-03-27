@@ -11,7 +11,6 @@ import { trackAppStoreEvent } from '../utils/analytics/marketingHelper';
 import OnboardingTour from '../components/onboarding/OnboardingTour';
 import ConsistentSection from '../components/ui/design-system/ConsistentSection';
 import ConsistentContainer from '../components/ui/design-system/ConsistentContainer';
-import TrustBadges from '../components/ui/TrustBadges';
 
 import HeroSection from '../components/home/HeroSection';
 import HowItWorksSection from '../components/home/HowItWorksSection';
@@ -55,13 +54,6 @@ const Home = () => {
         <div id="hero-section" className="animate-fade-in" style={{animationDuration: '0.8s'}}>
           <HeroSection />
         </div>
-        
-        {/* Trust Badges - More subtle placement */}
-        <ConsistentSection background="transparent" spacing="xs" className="py-1 -mt-2">
-          <ConsistentContainer>
-            <TrustBadges className="mx-auto max-w-3xl" compact={true} />
-          </ConsistentContainer>
-        </ConsistentSection>
         
         {/* Marketing widget - Only on desktop with reduced prominence */}
         {!isMobile && (

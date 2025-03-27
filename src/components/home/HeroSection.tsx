@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Search, ShieldCheck, Users } from 'lucide-react';
+import { ArrowRight, Search } from 'lucide-react';
 import ConsistentButton from '../ui/design-system/ConsistentButton';
 import HeroStatistics from './hero/HeroStatistics';
 import Heading from '../ui/design-system/Heading';
@@ -52,19 +52,6 @@ const HeroSection: React.FC = () => {
             >
               For Advisors
             </ConsistentButton>
-          </div>
-          
-          {/* Simplified trust indicators */}
-          <div className="mt-6 flex flex-wrap justify-center gap-4 text-xs sm:text-sm text-slate-500 dark:text-slate-400 animate-fade-in" style={{animationDelay: '0.3s'}}>
-            <div className="flex items-center">
-              <ShieldCheck className="h-3.5 w-3.5 mr-1 text-teal-500 dark:text-teal-400" />
-              <span>Bank-Level Security</span>
-            </div>
-            
-            <div className="flex items-center">
-              <Users className="h-3.5 w-3.5 mr-1 text-teal-500 dark:text-teal-400" />
-              <span>500+ Verified Advisors</span>
-            </div>
           </div>
         </div>
         
