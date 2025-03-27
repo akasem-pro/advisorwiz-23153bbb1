@@ -2,7 +2,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { LogOut, LogIn } from 'lucide-react';
-import NavigationMenu from './NavigationMenu';
 import { useIsMobile } from '../../hooks/use-mobile';
 
 interface MobileMenuProps {

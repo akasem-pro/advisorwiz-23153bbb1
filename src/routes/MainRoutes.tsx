@@ -4,9 +4,9 @@ import { Route } from 'react-router-dom';
 import Home from '../pages/Home';
 import Resources from '../pages/Resources';
 import AboutUs from '../pages/AboutUs';
-import Consumers from '../pages/ForConsumers';
-import Advisors from '../pages/ForAdvisors';
-import Firms from '../pages/ForFirms';
+import ForConsumers from '../pages/ForConsumers';
+import ForAdvisors from '../pages/ForAdvisors';
+import ForFirms from '../pages/ForFirms';
 import Pricing from '../pages/Pricing';
 import ContactUs from '../pages/ContactUs';
 import DownloadApp from '../pages/DownloadApp';
@@ -25,9 +25,9 @@ const MainRoutes = [
   <Route key="home" path="/" element={<Home />} />,
   <Route key="resources" path="/resources" element={<Resources />} />,
   <Route key="about" path="/about" element={<AboutUs />} />,
-  <Route key="consumers" path="/consumers" element={<Consumers />} />,
-  <Route key="advisors" path="/advisors" element={<Advisors />} />,
-  <Route key="firms" path="/firms" element={<Firms />} />,
+  <Route key="consumers" path="/consumers" element={<ForConsumers />} />,
+  <Route key="advisors" path="/advisors" element={<ForAdvisors />} />,
+  <Route key="firms" path="/firms" element={<ForFirms />} />,
   <Route key="pricing" path="/pricing" element={<Pricing />} />,
   <Route key="contact" path="/contact" element={<ContactUs />} />,
   <Route key="download" path="/download" element={<DownloadApp />} />,
