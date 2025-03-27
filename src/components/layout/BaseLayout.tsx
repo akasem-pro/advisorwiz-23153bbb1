@@ -1,7 +1,7 @@
-
 import React, { ReactNode, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
+import SocialProofBar from '../ui/SocialProofBar';
 import TrustBadges from '../ui/TrustBadges';
 import FloatingSupportButton from '../support/FloatingSupportButton';
 import { initializeTagManager, trackPageView } from '../../utils/tagManager';
@@ -11,7 +11,7 @@ export interface BaseLayoutProps {
   children: ReactNode;
   header: ReactNode;
   footer?: ReactNode;
-  showSocialProof?: boolean; // Keeping property for backward compatibility
+  showSocialProof?: boolean;
   showTrustBadges?: boolean;
   fullWidth?: boolean;
   className?: string;
@@ -29,7 +29,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   children,
   header,
   footer,
-  showSocialProof = true, // Keeping property for backward compatibility
+  showSocialProof = true,
   showTrustBadges = true,
   fullWidth = false,
   className = '',
@@ -45,10 +45,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   const location = useLocation();
   
   useEffect(() => {
-    // Initialize Tag Manager
     initializeTagManager();
-    
-    // Track initial page view
     const pageTitle = document.title || 'AdvisorWiz';
     trackPageView(pageTitle, location.pathname);
   }, [location]);
@@ -76,7 +73,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         {header}
       </header>
       
-      {/* Removed SocialProofBar */}
+      {showSocialProof && <SocialProofBar />}
       
       <main className={cn(
         "flex-grow",
@@ -105,7 +102,6 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
     </div>
   );
 
-  // If animation is none, don't wrap in AnimatedRoute
   if (animation === 'none') {
     return renderContent();
   }
