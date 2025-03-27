@@ -1,3 +1,4 @@
+
 import React from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
@@ -7,6 +8,7 @@ import PageHowItWorks from '../components/shared/PageHowItWorks';
 import PageFAQ from '../components/shared/PageFAQ';
 import PageCTA from '../components/shared/PageCTA';
 import { Check } from 'lucide-react';
+import ShareAndDownloadSection from '../components/marketing/ShareAndDownloadSection';
 
 const ForAdvisors: React.FC = () => {
   const breadcrumbs = [
@@ -17,7 +19,7 @@ const ForAdvisors: React.FC = () => {
   // How it works steps
   const steps = [
     {
-      number: 1,
+      number:.1,
       title: "Create Your Advisor Profile",
       description: "Sign up and build your professional profile, highlighting your expertise, credentials, and services. The more complete your profile, the better our matching algorithm works."
     },
@@ -103,6 +105,9 @@ const ForAdvisors: React.FC = () => {
         title="How It Works"
         steps={steps}
       />
+      
+      {/* Add Social Sharing Section */}
+      <ShareAndDownloadSection variant="minimal" />
       
       <PageFAQ
         title="Frequently Asked Questions"

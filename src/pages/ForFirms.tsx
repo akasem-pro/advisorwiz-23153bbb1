@@ -8,6 +8,7 @@ import PageHowItWorks from '../components/shared/PageHowItWorks';
 import PageFAQ from '../components/shared/PageFAQ';
 import PageCTA from '../components/shared/PageCTA';
 import { Users, BarChart, Shield } from 'lucide-react';
+import AppShareWidget from '../components/ui/AppShareWidget';
 
 const ForFirms: React.FC = () => {
   // How it works steps
@@ -104,6 +105,13 @@ const ForFirms: React.FC = () => {
         title="How AdvisorWiz Works for Firms"
         steps={steps}
       />
+
+      {/* Add social sharing widget */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-sm mx-auto">
+          <AppShareWidget variant="standard" />
+        </div>
+      </div>
       
       <PageFAQ
         title="Frequently Asked Questions"

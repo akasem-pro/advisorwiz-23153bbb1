@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Download, Smartphone, CheckCircle, Zap, LockIcon, Share2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import AppLayout from '../components/layout/AppLayout';
 import PageSEO from '../components/seo/PageSEO';
+import ShareAndDownloadSection from '../components/marketing/ShareAndDownloadSection';
 import { trackUserBehavior } from '../utils/analytics/eventTracker';
 
 const DownloadApp = () => {
@@ -283,6 +283,9 @@ const DownloadApp = () => {
             </Button>
           </div>
         </div>
+        
+        {/* Share AdvisorWiz Section */}
+        <ShareAndDownloadSection variant="full-width" className="-mx-4 md:-mx-8 lg:-mx-16 mb-16" />
         
         {/* SEO section with keywords */}
         <div className="max-w-4xl mx-auto bg-slate-50 dark:bg-navy-800 p-6 rounded-lg border border-slate-200 dark:border-navy-700">
