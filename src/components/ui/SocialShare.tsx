@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from './dropdown-menu';
 import { Button } from './button';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface SocialShareProps {
   title?: string;
@@ -28,7 +28,6 @@ const SocialShare: React.FC<SocialShareProps> = ({
   triggerClassName = '',
   showAppDownload = true,
 }) => {
-  const { toast } = useToast();
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
   const encodedDescription = encodeURIComponent(description);
@@ -51,16 +50,9 @@ const SocialShare: React.FC<SocialShareProps> = ({
         break;
       case 'copy':
         navigator.clipboard.writeText(url).then(() => {
-          toast({
-            title: "Link copied",
-            description: "URL has been copied to your clipboard.",
-          });
+          toast("Link copied to clipboard");
         }).catch(() => {
-          toast({
-            title: "Failed to copy",
-            description: "Could not copy the link to clipboard.",
-            variant: "destructive",
-          });
+          toast("Failed to copy link");
         });
         return;
       case 'app':

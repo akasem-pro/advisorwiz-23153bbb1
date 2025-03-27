@@ -6,6 +6,7 @@ import { AuthProvider } from './features/auth/context/AuthProvider';
 import { UserProvider } from './context/UserContext';
 import { trackWebVitals } from './utils/performance/webVitals';
 import AppRoutes from './routes/AppRoutes';
+import { Toaster } from 'sonner';
 import './App.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
       <AuthProvider>
         <UserProvider>
           <AppRoutes />
+          <Toaster position="top-right" />
         </UserProvider>
       </AuthProvider>
     </ThemeProvider>
