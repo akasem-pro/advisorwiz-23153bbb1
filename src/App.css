@@ -6,8 +6,8 @@
 }
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
+  height: 5em; /* Smaller logo */
+  padding: 1em; /* Reduced padding */
   will-change: filter;
   transition: filter 300ms;
 }
@@ -34,7 +34,7 @@
 }
 
 .card {
-  padding: 1.5em;
+  padding: 1em; /* Reduced padding */
 }
 
 .read-the-docs {
@@ -48,7 +48,7 @@
   }
   
   .card {
-    padding: 1em;
+    padding: 0.75em; /* Reduced padding */
   }
   
   input, button, select, textarea {
@@ -56,46 +56,46 @@
   }
   
   h1 {
-    font-size: 1.75rem !important;
-    margin-bottom: 0.75rem !important;
+    font-size: 1.5rem !important; /* Smaller font size */
+    margin-bottom: 0.5rem !important; /* Reduced spacing */
   }
   
   h2 {
-    font-size: 1.5rem !important;
-    margin-bottom: 0.75rem !important;
+    font-size: 1.25rem !important; /* Smaller font size */
+    margin-bottom: 0.5rem !important; /* Reduced spacing */
   }
   
   /* Fix for auth form header */
   .card-title {
-    font-size: 1.5rem !important;
-    line-height: 1.3 !important;
+    font-size: 1.25rem !important; /* Smaller font size */
+    line-height: 1.2 !important; /* Tighter line height */
   }
   
   /* Improved spacing for forms */
   .form-container {
-    padding: 1rem;
+    padding: 0.75rem; /* Reduced padding */
   }
   
   /* Make sure buttons are large enough to tap */
   button, .button, [type="button"], [type="submit"] {
-    min-height: 44px;
+    min-height: 40px; /* Slightly smaller but still tappable */
   }
 }
 
 /* Add some spacing for auth forms */
 .auth-form-container {
-  margin-top: 0.75rem;
+  margin-top: 0.5rem; /* Reduced spacing */
 }
 
 /* Additional spacing for the auth main container to create space between header and content */
 .auth-main-container {
-  margin-top: 0.75rem;
+  margin-top: 0.5rem; /* Reduced spacing */
 }
 
 /* Enhanced spacing for sign-in card title on both web and mobile */
 .card-title {
-  margin-top: 0.5rem;
-  margin-bottom: 0.75rem;
+  margin-top: 0.25rem; /* Reduced spacing */
+  margin-bottom: 0.5rem; /* Reduced spacing */
 }
 
 /* Ensure content isn't hidden under fixed header but remove excess spacing */
@@ -105,7 +105,7 @@ main {
 
 /* Adjust spacing for sections */
 section {
-  scroll-margin-top: 4rem;
+  scroll-margin-top: 3rem; /* Reduced spacing */
 }
 
 /* Ensure smooth scrolling */

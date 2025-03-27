@@ -25,7 +25,7 @@ const ConsistentContainer: React.FC<ConsistentContainerProps> = ({
     full: 'w-full'
   };
   
-  const paddingClasses = padding ? 'px-4 sm:px-6 py-8' : '';
+  const paddingClasses = padding ? 'px-2 sm:px-2 py-4' : ''; // Reduced padding
   const centeringClasses = centered ? 'mx-auto' : '';
   
   return (

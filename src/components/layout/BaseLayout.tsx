@@ -39,7 +39,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   animationDuration = 'normal',
   headerClassName = '',
   mainClassName = '',
-  withoutPadding = false,
+  withoutPadding = true, // Set default to true to remove padding
   skipToContentId
 }) => {
   const location = useLocation();
@@ -86,8 +86,8 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         
         {showTrustBadges && (
           <div className={cn(
-            fullWidth ? 'w-full px-4' : 'container mx-auto px-4',
-            'my-4'
+            fullWidth ? 'w-full' : 'container mx-auto',
+            'my-2'
           )}>
             <TrustBadges className="justify-center" />
           </div>

@@ -2,27 +2,27 @@
 /* Typography styles */
 h1, h2, h3, h4, h5, h6 {
   @apply font-serif tracking-tight text-navy-900 dark:text-slate-50;
-  line-height: 1.2;
+  line-height: 1.1; /* Tighter line height */
   margin-top: 0;
 }
 
 h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1.25rem;
+  font-size: 2rem; /* Reduced font size */
+  margin-bottom: 0.75rem; /* Reduced spacing */
 }
 
 h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  font-size: 1.75rem; /* Reduced font size */
+  margin-bottom: 0.5rem; /* Reduced spacing */
 }
 
 h3 {
-  font-size: 1.5rem;
-  margin-bottom: 0.75rem;
+  font-size: 1.25rem; /* Reduced font size */
+  margin-bottom: 0.5rem; /* Reduced spacing */
 }
 
 p {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem; /* Reduced spacing */
   @apply text-slate-700 dark:text-slate-300;
 }
 
@@ -38,22 +38,22 @@ a {
 /* Mobile specific adjustments */
 @media (max-width: 640px) {
   h1 {
-    font-size: 2rem;
-    margin-bottom: 0.75rem;
+    font-size: 1.75rem; /* Reduced font size */
+    margin-bottom: 0.5rem; /* Reduced spacing */
   }
   
   h2 {
-    font-size: 1.75rem;
-    margin-bottom: 0.75rem;
+    font-size: 1.5rem; /* Reduced font size */
+    margin-bottom: 0.5rem; /* Reduced spacing */
   }
   
   h3 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.25rem; /* Reduced font size */
+    margin-bottom: 0.35rem; /* Reduced spacing */
   }
   
   p {
     font-size: 0.9375rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.35rem; /* Reduced spacing */
   }
 }

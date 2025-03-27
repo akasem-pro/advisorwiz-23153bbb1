@@ -39,7 +39,7 @@ const ConsistentSection: React.FC<ConsistentSectionProps> = ({
   };
   
   const containerStyles = fullWidth ? "" : "container mx-auto";
-  const paddingStyles = noPadding ? "" : "py-12 px-4 sm:px-6 lg:px-8";
+  const paddingStyles = noPadding ? "" : "py-6 px-2 sm:px-2 lg:px-4"; // Reduced padding
   const contentStyles = centered ? "text-center" : "";
   
   return (
@@ -56,17 +56,17 @@ const ConsistentSection: React.FC<ConsistentSectionProps> = ({
       )}>
         {(title || subtitle) && (
           <div className={cn(
-            "mb-8",
+            "mb-4", // Reduced spacing
             centered && "text-center",
             headerClassName
           )}>
             {title && (
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-navy-900 dark:text-white mb-4">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-navy-900 dark:text-white mb-2">
                 {title}
               </h2>
             )}
             {subtitle && (
-              <p className="text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              <p className="text-base text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
                 {subtitle}
               </p>
             )}

@@ -89,7 +89,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           />
           
           <main className={cn(
-            "p-5 bg-slate-50 dark:bg-navy-950",
+            "p-3 bg-slate-50 dark:bg-navy-950", // Reduced padding
             contentClassName
           )}>
             {children}

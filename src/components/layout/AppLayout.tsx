@@ -25,7 +25,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   className = '',
   showTrustBadges = true,
   contentClassName,
-  withoutPadding = false,
+  withoutPadding = true, // Set default to true to remove padding
   animation = 'fade',
   animationDuration = 'normal',
   skipToContentId = 'main-content'
@@ -38,7 +38,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       showTrustBadges={showTrustBadges}
       fullWidth={fullWidth}
       className={className}
-      contentClassName={cn("pt-24 md:pt-28", contentClassName)}
+      contentClassName={cn("pt-16 md:pt-16", contentClassName)} // Reduced padding
       withoutPadding={withoutPadding}
       animation={animation}
       animationDuration={animationDuration}
