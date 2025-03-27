@@ -48,7 +48,7 @@ const AppRoutes = () => {
           ))}
         </Route>
         
-        {/* Contact page - specifically for tour testing */}
+        {/* Contact page - Direct route without nested AppLayout footer */}
         <Route path="/contact" element={<ContactUs />} />
         
         {/* Authentication Routes (no layout) */}

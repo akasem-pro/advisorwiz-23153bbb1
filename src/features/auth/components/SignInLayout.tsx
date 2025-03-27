@@ -1,7 +1,6 @@
 
 import React from 'react';
-import Header from '../../../components/layout/Header';
-import Footer from '../../../components/layout/Footer';
+import AppLayout from '../../../components/layout/AppLayout';
 import AuthFormContainer from './AuthFormContainer';
 
 interface SignInLayoutProps {
@@ -60,10 +59,8 @@ const SignInLayout: React.FC<SignInLayoutProps> = ({
   signUpProps
 }) => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      
-      <main className="flex-grow flex items-center justify-center py-12 px-4 sm:py-16 auth-main-container">
+    <AppLayout fullWidth={true} contentClassName="auth-main-container">
+      <div className="flex-grow flex items-center justify-center py-12 px-4 sm:py-16">
         <div className="w-full max-w-md auth-form-container">
           <AuthFormContainer
             title={title}
@@ -79,10 +76,8 @@ const SignInLayout: React.FC<SignInLayoutProps> = ({
             signUpProps={signUpProps}
           />
         </div>
-      </main>
-      
-      <Footer />
-    </div>
+      </div>
+    </AppLayout>
   );
 };
 
