@@ -59,7 +59,7 @@ const Home = () => {
         
         {/* Only show marketing widget if not on mobile */}
         {!isMobile && (
-          <ConsistentSection background="light" className="py-4">
+          <ConsistentSection background="alt" className="py-4">
             <ConsistentContainer>
               <MarketingChannelsWidget orientation="horizontal" />
             </ConsistentContainer>
@@ -75,7 +75,7 @@ const Home = () => {
         </div>
         
         {/* Mobile App Promotion Section - replacing ASOOptimizationInfo */}
-        <ConsistentSection centered background="accent" className="py-6">
+        <ConsistentSection background="accent" className="py-6" centered={true}>
           <ConsistentContainer width="md">
             <h2 className="text-xl md:text-2xl font-bold text-center mb-3 text-navy-900 dark:text-white">
               AdvisorWiz Mobile App
