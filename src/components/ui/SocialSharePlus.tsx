@@ -1,9 +1,6 @@
 
 import React from 'react';
-import MinimalVariant from './social-share/MinimalVariant';
-import HorizontalVariant from './social-share/HorizontalVariant';
-import CardsVariant from './social-share/CardsVariant';
-import ButtonsVariant from './social-share/ButtonsVariant';
+import { getShareVariant, ShareVariantProps } from './social-share/ShareVariants';
 import { ShareOptions } from './social-share/utils';
 
 interface SocialSharePlusProps {
@@ -29,36 +26,17 @@ const SocialSharePlus: React.FC<SocialSharePlusProps> = ({
     url
   };
 
-  // Choose which variant to render based on prop
-  switch (variant) {
-    case 'minimal':
-      return <MinimalVariant 
-        shareOptions={shareOptions} 
-        showAppDownload={showAppDownload} 
-        className={className} 
-      />;
-    
-    case 'horizontal':
-      return <HorizontalVariant 
-        shareOptions={shareOptions} 
-        showAppDownload={showAppDownload} 
-        className={className} 
-      />;
-    
-    case 'cards':
-      return <CardsVariant 
-        shareOptions={shareOptions} 
-        showAppDownload={showAppDownload} 
-        className={className} 
-      />;
-    
-    default: // 'buttons' variant (default)
-      return <ButtonsVariant 
-        shareOptions={shareOptions} 
-        showAppDownload={showAppDownload} 
-        className={className} 
-      />;
-  }
+  // Get the appropriate variant component using the factory function
+  const VariantComponent = getShareVariant(variant);
+
+  // Render the variant with the shared props
+  return (
+    <VariantComponent 
+      shareOptions={shareOptions} 
+      showAppDownload={showAppDownload} 
+      className={className} 
+    />
+  );
 };
 
 export default SocialSharePlus;
