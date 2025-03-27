@@ -64,7 +64,6 @@ const AppRoutes = () => {
           {DashboardRoutes.map(route => (
             <Fragment key={route.key}>{route}</Fragment>
           ))}
-          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </>
