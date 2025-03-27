@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import AnimatedRoute from '../components/ui/AnimatedRoute';
 import { useParams } from 'react-router-dom';
-import Header from '../components/layout/Header';
 import ChatList from '../components/chat/ChatList';
 import ChatWindow from '../components/chat/ChatWindow';
 import { useUser } from '../context/UserContext';
