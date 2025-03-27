@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { BellRing, Menu, X } from 'lucide-react';
 import { Button } from '../../ui/button';
 import ThemeToggleButton from '../ThemeToggleButton';
-import UserMenu from '../UserMenu';
+import UserMenu from '../user-menu';
 import AuthButtons from '../AuthButtons';
 import MobileMenu from '../MobileMenu';
 import { useAuth } from '../../../features/auth/context/AuthProvider';
