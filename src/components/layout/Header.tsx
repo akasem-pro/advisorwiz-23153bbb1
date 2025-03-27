@@ -14,19 +14,19 @@ import SuccessMessage from '../ui/SuccessMessage';
 import { getEffectiveAuthStatus } from '../../utils/mockAuthUtils';
 import { useIsMobile } from '../../hooks/use-mobile';
 
-// Define the navigation links
+// Define the navigation links with updated paths
 const navigationLinks = [
   {
     name: 'Firms',
-    path: '/for-firms',
+    path: '/firms',
   },
   {
     name: 'Advisors',
-    path: '/for-advisors',
+    path: '/advisors',
   },
   {
     name: 'Consumers',
-    path: '/for-consumers',
+    path: '/consumers',
   },
   {
     name: 'Resources',

@@ -14,15 +14,15 @@ interface MobileMenuProps {
 const navigationLinks = [
   {
     name: 'Firms',
-    path: '/for-firms',
+    path: '/firms',
   },
   {
     name: 'Advisors',
-    path: '/for-advisors',
+    path: '/advisors',
   },
   {
     name: 'Consumers',
-    path: '/for-consumers',
+    path: '/consumers',
   },
   {
     name: 'Resources',

@@ -63,7 +63,7 @@ const ForFirms: React.FC = () => {
       <BreadcrumbNav 
         items={[
           { name: 'Home', url: '/' },
-          { name: 'For Financial Firms', url: '/for-firms' }
+          { name: 'Financial Firms', url: '/firms' }
         ]} 
       />
       

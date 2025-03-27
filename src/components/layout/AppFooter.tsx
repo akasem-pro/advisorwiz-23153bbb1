@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from 'lucide-react';
@@ -42,7 +43,7 @@ const AppFooter: React.FC = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-medium text-white">For Users</h4>
             <ul className="space-y-2">
-              <li><Link to="/for-consumers" className="text-slate-300 hover:text-teal-400 transition-colors">Find an Advisor</Link></li>
+              <li><Link to="/consumers" className="text-slate-300 hover:text-teal-400 transition-colors">Find an Advisor</Link></li>
               <li><Link to="/matches" className="text-slate-300 hover:text-teal-400 transition-colors">Browse Matches</Link></li>
               <li><Link to="/resources" className="text-slate-300 hover:text-teal-400 transition-colors">Resources</Link></li>
               <li><Link to="/pricing" className="text-slate-300 hover:text-teal-400 transition-colors">Pricing</Link></li>
@@ -55,8 +56,8 @@ const AppFooter: React.FC = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-medium text-white">For Advisors</h4>
             <ul className="space-y-2">
-              <li><Link to="/for-advisors" className="text-slate-300 hover:text-teal-400 transition-colors">Join Network</Link></li>
-              <li><Link to="/for-firms" className="text-slate-300 hover:text-teal-400 transition-colors">Firm Solutions</Link></li>
+              <li><Link to="/advisors" className="text-slate-300 hover:text-teal-400 transition-colors">Join Network</Link></li>
+              <li><Link to="/firms" className="text-slate-300 hover:text-teal-400 transition-colors">Firm Solutions</Link></li>
               <li><Link to="/pricing" className="text-slate-300 hover:text-teal-400 transition-colors">Pricing Plans</Link></li>
               <li><Link to="/resources#compliance-regulations" className="text-slate-300 hover:text-teal-400 transition-colors">Compliance Resources</Link></li>
               <li><Link to="/resources#tools-calculators" className="text-slate-300 hover:text-teal-400 transition-colors">Advisor Tools</Link></li>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
@@ -12,7 +11,7 @@ import { Check } from 'lucide-react';
 const ForAdvisors: React.FC = () => {
   const breadcrumbs = [
     { name: 'Home', url: '/' },
-    { name: 'For Advisors', url: '/for-advisors' }
+    { name: 'Advisors', url: '/advisors' }
   ];
 
   // How it works steps

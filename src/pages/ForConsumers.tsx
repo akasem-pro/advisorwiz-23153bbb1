@@ -1,4 +1,3 @@
-
 import React from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
@@ -12,7 +11,7 @@ import { Card, CardContent } from '../components/ui/card';
 const ForConsumers: React.FC = () => {
   const breadcrumbs = [
     { name: 'Home', url: '/' },
-    { name: 'For Consumers', url: '/for-consumers' }
+    { name: 'Consumers', url: '/consumers' }
   ];
 
   // How it works steps
