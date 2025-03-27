@@ -1,85 +1,55 @@
 
 import React from 'react';
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
+import { getSectionSpacing } from '@/utils/designSystem';
 
 interface ConsistentSectionProps {
   children: React.ReactNode;
-  title?: string;
-  subtitle?: string;
   className?: string;
-  contentClassName?: string;
-  headerClassName?: string;
   id?: string;
-  fullWidth?: boolean;
-  centered?: boolean;
-  noPadding?: boolean;
-  background?: 'default' | 'light' | 'dark' | 'accent' | 'transparent';
+  background?: 'default' | 'alt' | 'gradient' | 'transparent' | 'primary' | 'accent';
+  spacing?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'none';
+  container?: boolean;
+  innerClassName?: string;
 }
 
 const ConsistentSection: React.FC<ConsistentSectionProps> = ({
   children,
-  title,
-  subtitle,
   className = '',
-  contentClassName = '',
-  headerClassName = '',
   id,
-  fullWidth = false,
-  centered = false,
-  noPadding = false,
-  background = 'default'
+  background = 'default',
+  spacing = 'lg',
+  container = true,
+  innerClassName = ''
 }) => {
-  // Section background styles
-  const bgStyles = {
-    default: "bg-white dark:bg-navy-900",
-    light: "bg-slate-50 dark:bg-navy-800",
-    dark: "bg-navy-800 dark:bg-navy-950",
-    accent: "bg-teal-50 dark:bg-teal-900/20",
-    transparent: "bg-transparent"
+  const backgroundClasses = {
+    default: 'bg-white dark:bg-navy-900',
+    alt: 'bg-slate-50 dark:bg-navy-950',
+    gradient: 'bg-gradient-to-b from-slate-50 to-white dark:from-navy-950 dark:to-navy-900',
+    transparent: 'bg-transparent',
+    primary: 'bg-navy-50 dark:bg-navy-900/50',
+    accent: 'bg-teal-50 dark:bg-teal-900/20'
   };
   
-  const containerStyles = fullWidth ? "" : "container mx-auto";
-  const paddingStyles = noPadding ? "" : "py-6 px-2 sm:px-2 lg:px-4"; // Reduced padding
-  const contentStyles = centered ? "text-center" : "";
+  const spacingClass = spacing === 'none' ? '' : getSectionSpacing(spacing);
   
   return (
     <section 
-      id={id} 
+      id={id}
       className={cn(
-        bgStyles[background],
+        backgroundClasses[background],
+        spacingClass,
+        "w-full",
         className
       )}
     >
-      <div className={cn(
-        containerStyles,
-        paddingStyles
-      )}>
-        {(title || subtitle) && (
-          <div className={cn(
-            "mb-4", // Reduced spacing
-            centered && "text-center",
-            headerClassName
-          )}>
-            {title && (
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-navy-900 dark:text-white mb-2">
-                {title}
-              </h2>
-            )}
-            {subtitle && (
-              <p className="text-base text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-                {subtitle}
-              </p>
-            )}
-          </div>
-        )}
-        
-        <div className={cn(
-          contentStyles,
-          contentClassName
-        )}>
+      {container ? (
+        <div className={cn("container mx-auto px-3 sm:px-6", innerClassName)}>
           {children}
         </div>
-      </div>
+      ) : (
+        children
+      )}
     </section>
   );
 };

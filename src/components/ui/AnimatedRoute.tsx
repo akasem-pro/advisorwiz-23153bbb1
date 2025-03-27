@@ -1,67 +1,64 @@
 
-import React, { ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import React, { ReactNode, useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
+
+type AnimationType = 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale' | 'none';
 
 interface AnimatedRouteProps {
   children: ReactNode;
-  animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale';
+  animation?: AnimationType;
   className?: string;
+  delay?: number;
 }
 
-export const AnimatedRoute: React.FC<AnimatedRouteProps> = ({ 
-  children, 
+const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
+  children,
   animation = 'fade',
-  className = ''
+  className = '',
+  delay = 0
 }) => {
-  const animations = {
-    fade: {
-      initial: { opacity: 0 },
-      animate: { opacity: 1 },
-      exit: { opacity: 0 },
-    },
-    'slide-up': {
-      initial: { y: 20, opacity: 0 },
-      animate: { y: 0, opacity: 1 },
-      exit: { y: -20, opacity: 0 },
-    },
-    'slide-down': {
-      initial: { y: -20, opacity: 0 },
-      animate: { y: 0, opacity: 1 },
-      exit: { y: 20, opacity: 0 },
-    },
-    'slide-left': {
-      initial: { x: -20, opacity: 0 },
-      animate: { x: 0, opacity: 1 },
-      exit: { x: 20, opacity: 0 },
-    },
-    'slide-right': {
-      initial: { x: 20, opacity: 0 },
-      animate: { x: 0, opacity: 1 },
-      exit: { x: -20, opacity: 0 },
-    },
-    'scale': {
-      initial: { scale: 0.95, opacity: 0 },
-      animate: { scale: 1, opacity: 1 },
-      exit: { scale: 0.95, opacity: 0 },
-    },
+  const [isVisible, setIsVisible] = useState(false);
+  
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsVisible(true);
+    }, delay);
+    
+    return () => clearTimeout(timeoutId);
+  }, [delay]);
+  
+  const getAnimationClass = () => {
+    if (animation === 'none') return '';
+    
+    if (!isVisible) {
+      return 'opacity-0 ' + getInitialPosition();
+    }
+    
+    return 'opacity-100 transform-none transition-all duration-300 ease-out';
   };
-
+  
+  const getInitialPosition = () => {
+    switch (animation) {
+      case 'slide-up':
+        return 'translate-y-4';
+      case 'slide-down':
+        return '-translate-y-4';
+      case 'slide-left':
+        return 'translate-x-4';
+      case 'slide-right':
+        return '-translate-x-4';
+      case 'scale':
+        return 'scale-95';
+      default:
+        return '';
+    }
+  };
+  
   return (
-    <motion.div
-      initial={animations[animation].initial}
-      animate={animations[animation].animate}
-      exit={animations[animation].exit}
-      transition={{ duration: 0.3 }}
-      className={cn("w-full", className)}
-    >
+    <div className={cn(getAnimationClass(), className)}>
       {children}
-    </motion.div>
+    </div>
   );
-};
-
-// Add cn utility if not imported
-const cn = (...classes: any[]) => {
-  return classes.filter(Boolean).join(' ');
 };
 
 export default AnimatedRoute;

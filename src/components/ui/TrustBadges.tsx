@@ -1,86 +1,58 @@
 
 import React from 'react';
-import { Shield, Lock, CheckCircle2, Award, Database, CreditCard } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
+import { Shield, Users, Award, Lock } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-interface BadgeProps {
+interface TrustBadgeProps {
   icon: React.ReactNode;
-  label: string;
-  description: string;
+  text: string;
   className?: string;
 }
 
-const TrustBadge: React.FC<BadgeProps> = ({ icon, label, description, className }) => {
+const TrustBadge: React.FC<TrustBadgeProps> = ({ icon, text, className }) => {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className={`flex items-center bg-white dark:bg-navy-800 border border-slate-200 dark:border-navy-700 rounded-lg px-3 py-2 hover:shadow-md transition-shadow ${className}`}>
-            <div className="mr-2 text-teal-600 dark:text-teal-400">
-              {icon}
-            </div>
-            <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{label}</span>
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p className="text-sm">{description}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <div className={cn(
+      "flex items-center px-2 py-1 text-xs md:text-sm text-navy-700 dark:text-slate-300",
+      className
+    )}>
+      <div className="text-teal-600 dark:text-teal-400 mr-1.5">{icon}</div>
+      <span>{text}</span>
+    </div>
   );
 };
 
-export const TrustBadges: React.FC<{ className?: string; compact?: boolean }> = ({ className, compact = false }) => {
-  const badges = [
-    {
-      icon: <Shield className="h-4 w-4" />,
-      label: "SSL Secured",
-      description: "Your data is protected with 256-bit encryption"
-    },
-    {
-      icon: <CheckCircle2 className="h-4 w-4" />,
-      label: "SEC Compliant",
-      description: "We adhere to all SEC regulatory requirements"
-    },
-    {
-      icon: <Lock className="h-4 w-4" />,
-      label: "GDPR Ready",
-      description: "Fully compliant with data protection regulations"
-    },
-    {
-      icon: <Award className="h-4 w-4" />,
-      label: "FINRA Approved",
-      description: "Financial Industry Regulatory Authority verified"
-    },
-    {
-      icon: <Database className="h-4 w-4" />,
-      label: "Data Protection",
-      description: "Your financial data is securely stored and protected"
-    },
-    {
-      icon: <CreditCard className="h-4 w-4" />,
-      label: "Secure Payments",
-      description: "All transactions are processed through secure channels"
-    }
-  ];
+interface TrustBadgesProps {
+  className?: string;
+  compact?: boolean;
+}
 
-  if (compact) {
-    return (
-      <div className={`flex flex-wrap gap-2 ${className}`}>
-        {badges.map((badge, index) => (
-          <div key={index} className="flex items-center text-teal-600 dark:text-teal-400">
-            {badge.icon}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
+const TrustBadges: React.FC<TrustBadgesProps> = ({ 
+  className = '', 
+  compact = false 
+}) => {
+  const iconSize = compact ? "h-3 w-3" : "h-4 w-4";
+  
   return (
-    <div className={`flex flex-wrap gap-2 ${className}`}>
-      {badges.map((badge, index) => (
-        <TrustBadge key={index} {...badge} />
-      ))}
+    <div className={cn(
+      "flex flex-wrap items-center gap-3 justify-center",
+      className
+    )}>
+      <TrustBadge 
+        icon={<Shield className={iconSize} />} 
+        text="Bank-Level Security" 
+      />
+      <TrustBadge 
+        icon={<Users className={iconSize} />} 
+        text="500+ Verified Advisors" 
+      />
+      <TrustBadge 
+        icon={<Award className={iconSize} />} 
+        text="Certified Professionals" 
+      />
+      <TrustBadge 
+        icon={<Lock className={iconSize} />} 
+        text="Data Protection" 
+      />
     </div>
   );
 };

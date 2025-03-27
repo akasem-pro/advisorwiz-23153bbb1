@@ -1,280 +1,325 @@
 
 import React from 'react';
-import { Facebook, Twitter, Linkedin, Mail, Download, ArrowRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Facebook, Linkedin, Mail, Share2, Twitter, Link as LinkIcon, Download } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '../button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../card';
-import { handleShare, ShareOptions } from './utils';
+import { ShareOptions } from './utils';
 
-// Shared interface for all variants
-export interface ShareVariantProps {
-  shareOptions: ShareOptions;
-  showAppDownload?: boolean;
-  className?: string;
-}
-
-// Factory function to get the appropriate variant component
-export const getShareVariant = (variant: 'minimal' | 'buttons' | 'cards' | 'horizontal'): React.FC<ShareVariantProps> => {
-  switch (variant) {
-    case 'minimal':
-      return MinimalVariant;
-    case 'buttons':
-      return ButtonsVariant;
-    case 'cards':
-      return CardsVariant;
-    case 'horizontal':
-      return HorizontalVariant;
-    default:
-      return ButtonsVariant;
-  }
-};
-
-// Minimal Variant Implementation
-const MinimalVariant: React.FC<ShareVariantProps> = ({
-  shareOptions,
+/* Minimal Variant */
+export const MinimalVariant: React.FC<ShareVariantProps> = ({ 
+  shareOptions, 
   showAppDownload = true,
-  className = '',
+  className = ''
 }) => {
   return (
-    <div className={`flex space-x-3 ${className}`}>
-      <button 
-        onClick={() => handleShare('facebook', shareOptions)} 
-        className="text-blue-600 hover:text-blue-800 transition-colors"
-        aria-label="Share on Facebook"
+    <div className={cn("flex gap-2 items-center", className)}>
+      <Button 
+        size="sm"
+        variant="ghost"
+        className="text-navy-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-full w-8 h-8 p-0"
+        onClick={() => handleShare('facebook', shareOptions)}
       >
-        <Facebook className="h-5 w-5" />
-      </button>
-      <button 
-        onClick={() => handleShare('twitter', shareOptions)} 
-        className="text-sky-500 hover:text-sky-700 transition-colors"
-        aria-label="Share on Twitter"
+        <Facebook className="h-4 w-4" />
+        <span className="sr-only">Share on Facebook</span>
+      </Button>
+      
+      <Button 
+        size="sm"
+        variant="ghost"
+        className="text-navy-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-full w-8 h-8 p-0"
+        onClick={() => handleShare('twitter', shareOptions)}
       >
-        <Twitter className="h-5 w-5" />
-      </button>
-      <button 
-        onClick={() => handleShare('linkedin', shareOptions)} 
-        className="text-blue-700 hover:text-blue-900 transition-colors"
-        aria-label="Share on LinkedIn"
+        <Twitter className="h-4 w-4" />
+        <span className="sr-only">Share on Twitter</span>
+      </Button>
+      
+      <Button 
+        size="sm"
+        variant="ghost"
+        className="text-navy-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-full w-8 h-8 p-0"
+        onClick={() => handleShare('linkedin', shareOptions)}
       >
-        <Linkedin className="h-5 w-5" />
-      </button>
-      <button 
-        onClick={() => handleShare('email', shareOptions)} 
-        className="text-amber-500 hover:text-amber-700 transition-colors"
-        aria-label="Share via Email"
+        <Linkedin className="h-4 w-4" />
+        <span className="sr-only">Share on LinkedIn</span>
+      </Button>
+      
+      <Button 
+        size="sm"
+        variant="ghost"
+        className="text-navy-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-800 rounded-full w-8 h-8 p-0"
+        onClick={() => handleShare('copy', shareOptions)}
       >
-        <Mail className="h-5 w-5" />
-      </button>
+        <LinkIcon className="h-4 w-4" />
+        <span className="sr-only">Copy link</span>
+      </Button>
+    </div>
+  );
+};
+
+/* Buttons Variant */
+export const ButtonsVariant: React.FC<ShareVariantProps> = ({ 
+  shareOptions, 
+  showAppDownload = true,
+  className = ''
+}) => {
+  return (
+    <div className={cn("flex flex-wrap gap-3", className)}>
+      <Button 
+        size="sm"
+        variant="outline"
+        className="flex items-center gap-2"
+        onClick={() => handleShare('facebook', shareOptions)}
+      >
+        <Facebook className="h-4 w-4 text-blue-600" />
+        <span>Facebook</span>
+      </Button>
+      
+      <Button 
+        size="sm"
+        variant="outline"
+        className="flex items-center gap-2"
+        onClick={() => handleShare('twitter', shareOptions)}
+      >
+        <Twitter className="h-4 w-4 text-sky-500" />
+        <span>Twitter</span>
+      </Button>
+      
+      <Button 
+        size="sm"
+        variant="outline"
+        className="flex items-center gap-2"
+        onClick={() => handleShare('linkedin', shareOptions)}
+      >
+        <Linkedin className="h-4 w-4 text-blue-700" />
+        <span>LinkedIn</span>
+      </Button>
+      
+      <Button 
+        size="sm"
+        variant="outline"
+        className="flex items-center gap-2"
+        onClick={() => handleShare('email', shareOptions)}
+      >
+        <Mail className="h-4 w-4 text-amber-600" />
+        <span>Email</span>
+      </Button>
+      
+      <Button 
+        size="sm"
+        variant="outline"
+        className="flex items-center gap-2"
+        onClick={() => handleShare('copy', shareOptions)}
+      >
+        <LinkIcon className="h-4 w-4 text-purple-600" />
+        <span>Copy Link</span>
+      </Button>
+      
       {showAppDownload && (
-        <button 
-          onClick={() => handleShare('app', shareOptions)} 
-          className="text-teal-500 hover:text-teal-700 transition-colors"
-          aria-label="Get the App"
+        <Button 
+          size="sm"
+          variant="default"
+          className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 w-full mt-2"
+          onClick={() => handleShare('app', shareOptions)}
         >
-          <Download className="h-5 w-5" />
+          <Download className="h-4 w-4" />
+          <span>Get the App</span>
+        </Button>
+      )}
+    </div>
+  );
+};
+
+/* Cards Variant */
+export const CardsVariant: React.FC<ShareVariantProps> = ({ 
+  shareOptions, 
+  showAppDownload = true,
+  className = ''
+}) => {
+  return (
+    <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3", className)}>
+      <button
+        className="flex flex-col items-center p-4 bg-white dark:bg-navy-800 rounded-lg border border-slate-200 dark:border-navy-700 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors"
+        onClick={() => handleShare('facebook', shareOptions)}
+      >
+        <div className="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-full mb-2">
+          <Facebook className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+        </div>
+        <span className="text-sm text-slate-700 dark:text-slate-300">Facebook</span>
+      </button>
+      
+      <button
+        className="flex flex-col items-center p-4 bg-white dark:bg-navy-800 rounded-lg border border-slate-200 dark:border-navy-700 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors"
+        onClick={() => handleShare('twitter', shareOptions)}
+      >
+        <div className="bg-sky-50 dark:bg-sky-900/30 p-2 rounded-full mb-2">
+          <Twitter className="h-5 w-5 text-sky-500 dark:text-sky-400" />
+        </div>
+        <span className="text-sm text-slate-700 dark:text-slate-300">Twitter</span>
+      </button>
+      
+      <button
+        className="flex flex-col items-center p-4 bg-white dark:bg-navy-800 rounded-lg border border-slate-200 dark:border-navy-700 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors"
+        onClick={() => handleShare('linkedin', shareOptions)}
+      >
+        <div className="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-full mb-2">
+          <Linkedin className="h-5 w-5 text-blue-700 dark:text-blue-400" />
+        </div>
+        <span className="text-sm text-slate-700 dark:text-slate-300">LinkedIn</span>
+      </button>
+      
+      <button
+        className="flex flex-col items-center p-4 bg-white dark:bg-navy-800 rounded-lg border border-slate-200 dark:border-navy-700 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors"
+        onClick={() => handleShare('email', shareOptions)}
+      >
+        <div className="bg-amber-50 dark:bg-amber-900/30 p-2 rounded-full mb-2">
+          <Mail className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+        </div>
+        <span className="text-sm text-slate-700 dark:text-slate-300">Email</span>
+      </button>
+      
+      <button
+        className="flex flex-col items-center p-4 bg-white dark:bg-navy-800 rounded-lg border border-slate-200 dark:border-navy-700 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors"
+        onClick={() => handleShare('copy', shareOptions)}
+      >
+        <div className="bg-purple-50 dark:bg-purple-900/30 p-2 rounded-full mb-2">
+          <LinkIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+        </div>
+        <span className="text-sm text-slate-700 dark:text-slate-300">Copy Link</span>
+      </button>
+      
+      {showAppDownload && (
+        <button
+          className="flex flex-col items-center p-4 bg-teal-50 dark:bg-teal-900/30 rounded-lg border border-teal-200 dark:border-teal-800 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors col-span-2 sm:col-span-3 md:col-span-4"
+          onClick={() => handleShare('app', shareOptions)}
+        >
+          <div className="bg-teal-100 dark:bg-teal-800/50 p-2 rounded-full mb-2">
+            <Download className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+          </div>
+          <span className="text-sm text-slate-700 dark:text-slate-300">Get the App</span>
         </button>
       )}
     </div>
   );
 };
 
-// Horizontal Variant Implementation
-const HorizontalVariant: React.FC<ShareVariantProps> = ({
-  shareOptions,
+/* Horizontal Variant */
+export const HorizontalVariant: React.FC<ShareVariantProps> = ({ 
+  shareOptions, 
   showAppDownload = true,
-  className = '',
+  className = ''
 }) => {
   return (
-    <div className={`${className}`}>
-      <div className="text-center mb-3">
-        <h3 className="text-lg font-medium mb-1">Share AdvisorWiz</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Help others discover financial expertise</p>
+    <div className={cn("flex flex-col", className)}>
+      <div className="flex items-center mb-3">
+        <Share2 className="mr-2 h-4 w-4 text-navy-600 dark:text-slate-300" />
+        <span className="text-sm font-medium text-navy-700 dark:text-slate-200">Share with friends</span>
       </div>
-      <div className="flex flex-wrap justify-center gap-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => handleShare('facebook', shareOptions)}
-          className="bg-white hover:bg-blue-50 text-blue-600 border-blue-200"
-        >
-          <Facebook className="h-4 w-4 mr-2" />
-          Facebook
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => handleShare('twitter', shareOptions)}
-          className="bg-white hover:bg-sky-50 text-sky-500 border-sky-200"
-        >
-          <Twitter className="h-4 w-4 mr-2" />
-          Twitter
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => handleShare('linkedin', shareOptions)}
-          className="bg-white hover:bg-blue-50 text-blue-700 border-blue-200"
-        >
-          <Linkedin className="h-4 w-4 mr-2" />
-          LinkedIn
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => handleShare('email', shareOptions)}
-          className="bg-white hover:bg-amber-50 text-amber-500 border-amber-200"
-        >
-          <Mail className="h-4 w-4 mr-2" />
-          Email
-        </Button>
-        {showAppDownload && (
-          <Button 
-            variant="default" 
-            size="sm" 
-            onClick={() => handleShare('app', shareOptions)}
-            className="bg-teal-500 hover:bg-teal-600 text-white"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Get App
-          </Button>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Buttons Variant Implementation
-const ButtonsVariant: React.FC<ShareVariantProps> = ({
-  shareOptions,
-  showAppDownload = true,
-  className = '',
-}) => {
-  return (
-    <div className={`${className}`}>
-      <div className="text-center mb-4">
-        <h3 className="text-lg font-medium mb-1">Share AdvisorWiz</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Help others discover financial expertise</p>
-      </div>
-      <div className="space-y-2">
-        <Button 
-          variant="outline" 
-          className="w-full justify-start bg-white hover:bg-blue-50 text-blue-600 border-blue-200"
+      
+      <div className="flex flex-wrap gap-2">
+        <button
+          className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-navy-800 rounded-md border border-slate-200 dark:border-navy-700 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors text-sm"
           onClick={() => handleShare('facebook', shareOptions)}
         >
-          <div className="bg-blue-100 p-1.5 rounded-md mr-3">
-            <Facebook className="h-4 w-4 text-blue-600" />
-          </div>
-          <span>Share on Facebook</span>
-        </Button>
-        <Button 
-          variant="outline" 
-          className="w-full justify-start bg-white hover:bg-sky-50 text-sky-500 border-sky-200"
-          onClick={() => handleShare('twitter', shareOptions)}
-        >
-          <div className="bg-sky-100 p-1.5 rounded-md mr-3">
-            <Twitter className="h-4 w-4 text-sky-500" />
-          </div>
-          <span>Share on Twitter</span>
-        </Button>
-        <Button 
-          variant="outline" 
-          className="w-full justify-start bg-white hover:bg-blue-50 text-blue-700 border-blue-200"
-          onClick={() => handleShare('linkedin', shareOptions)}
-        >
-          <div className="bg-blue-100 p-1.5 rounded-md mr-3">
-            <Linkedin className="h-4 w-4 text-blue-700" />
-          </div>
-          <span>Share on LinkedIn</span>
-        </Button>
-        <Button 
-          variant="outline" 
-          className="w-full justify-start bg-white hover:bg-amber-50 text-amber-500 border-amber-200"
-          onClick={() => handleShare('email', shareOptions)}
-        >
-          <div className="bg-amber-100 p-1.5 rounded-md mr-3">
-            <Mail className="h-4 w-4 text-amber-500" />
-          </div>
-          <span>Share via Email</span>
-        </Button>
+          <Facebook className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <span className="text-slate-700 dark:text-slate-300">Facebook</span>
+        </button>
         
-        {showAppDownload && (
-          <Button 
-            className="w-full bg-teal-500 hover:bg-teal-600 text-white mt-2 flex items-center justify-center"
-            onClick={() => handleShare('app', shareOptions)}
-          >
-            <Download className="h-4 w-4 mr-2" />
-            <span>Get the AdvisorWiz App</span>
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        )}
+        <button
+          className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-navy-800 rounded-md border border-slate-200 dark:border-navy-700 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors text-sm"
+          onClick={() => handleShare('twitter', shareOptions)}
+        >
+          <Twitter className="h-4 w-4 text-sky-500 dark:text-sky-400" />
+          <span className="text-slate-700 dark:text-slate-300">Twitter</span>
+        </button>
+        
+        <button
+          className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-navy-800 rounded-md border border-slate-200 dark:border-navy-700 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors text-sm"
+          onClick={() => handleShare('linkedin', shareOptions)}
+        >
+          <Linkedin className="h-4 w-4 text-blue-700 dark:text-blue-400" />
+          <span className="text-slate-700 dark:text-slate-300">LinkedIn</span>
+        </button>
+        
+        <button
+          className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-navy-800 rounded-md border border-slate-200 dark:border-navy-700 hover:bg-slate-50 dark:hover:bg-navy-700 transition-colors text-sm"
+          onClick={() => handleShare('copy', shareOptions)}
+        >
+          <LinkIcon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+          <span className="text-slate-700 dark:text-slate-300">Copy Link</span>
+        </button>
       </div>
+      
+      {showAppDownload && (
+        <button
+          className="flex items-center justify-center gap-2 mt-3 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-md transition-colors text-sm"
+          onClick={() => handleShare('app', shareOptions)}
+        >
+          <Download className="h-4 w-4" />
+          <span>Download Our App</span>
+        </button>
+      )}
     </div>
   );
 };
 
-// Cards Variant Implementation
-const CardsVariant: React.FC<ShareVariantProps> = ({
-  shareOptions,
-  showAppDownload = true,
-  className = '',
-}) => {
-  return (
-    <div className={`${className}`}>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle>Share AdvisorWiz</CardTitle>
-          <CardDescription>Help others discover financial expertise</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-2">
-            <div 
-              className="bg-white p-3 rounded-lg border border-gray-200 hover:bg-blue-50 cursor-pointer text-center flex flex-col items-center"
-              onClick={() => handleShare('facebook', shareOptions)}
-            >
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mb-2">
-                <Facebook className="h-5 w-5 text-blue-600" />
-              </div>
-              <span className="text-sm font-medium">Facebook</span>
-            </div>
-            <div 
-              className="bg-white p-3 rounded-lg border border-gray-200 hover:bg-sky-50 cursor-pointer text-center flex flex-col items-center"
-              onClick={() => handleShare('twitter', shareOptions)}
-            >
-              <div className="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center mb-2">
-                <Twitter className="h-5 w-5 text-sky-500" />
-              </div>
-              <span className="text-sm font-medium">Twitter</span>
-            </div>
-            <div 
-              className="bg-white p-3 rounded-lg border border-gray-200 hover:bg-blue-50 cursor-pointer text-center flex flex-col items-center"
-              onClick={() => handleShare('linkedin', shareOptions)}
-            >
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mb-2">
-                <Linkedin className="h-5 w-5 text-blue-700" />
-              </div>
-              <span className="text-sm font-medium">LinkedIn</span>
-            </div>
-            <div 
-              className="bg-white p-3 rounded-lg border border-gray-200 hover:bg-amber-50 cursor-pointer text-center flex flex-col items-center"
-              onClick={() => handleShare('email', shareOptions)}
-            >
-              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mb-2">
-                <Mail className="h-5 w-5 text-amber-500" />
-              </div>
-              <span className="text-sm font-medium">Email</span>
-            </div>
-          </div>
-          
-          {showAppDownload && (
-            <Button 
-              className="w-full mt-3 bg-teal-500 hover:bg-teal-600 text-white"
-              onClick={() => handleShare('app', shareOptions)}
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Get the AdvisorWiz App
-            </Button>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
+// Helper function to handle sharing
+const handleShare = (platform: string, options: ShareOptions) => {
+  const { title, description, url } = options;
+  const encodedUrl = encodeURIComponent(url);
+  const encodedTitle = encodeURIComponent(title);
+  const encodedDescription = encodeURIComponent(description);
+
+  let shareUrl = '';
+
+  switch (platform) {
+    case 'facebook':
+      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+      break;
+    case 'twitter':
+      shareUrl = `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
+      break;
+    case 'linkedin':
+      shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+      break;
+    case 'email':
+      shareUrl = `mailto:?subject=${encodedTitle}&body=${encodedDescription}%0A%0A${encodedUrl}`;
+      break;
+    case 'copy':
+      navigator.clipboard.writeText(url).then(() => {
+        toast("Link copied to clipboard");
+      }).catch(() => {
+        toast("Failed to copy link");
+      });
+      return;
+    case 'app':
+      window.location.href = '/download';
+      return;
+    default:
+      return;
+  }
+
+  // Open share URL in a new window
+  if (shareUrl) {
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+  }
 };
+
+// Factory function to get the appropriate variant component
+export const getShareVariant = (variant: string): React.FC<ShareVariantProps> => {
+  const variantsMap: Record<string, React.FC<ShareVariantProps>> = {
+    minimal: MinimalVariant,
+    buttons: ButtonsVariant,
+    cards: CardsVariant,
+    horizontal: HorizontalVariant
+  };
+  
+  return variantsMap[variant] || ButtonsVariant;
+};
+
+// Types
+export interface ShareVariantProps {
+  shareOptions: ShareOptions;
+  showAppDownload?: boolean;
+  className?: string;
+}

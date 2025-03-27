@@ -1,89 +1,92 @@
 
 import React from 'react';
-import { Home, MessageCircle, Calendar, Settings, Search, User } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
-import { useUser } from '../../context/UserContext';
-import { getDashboardLink } from '../dashboard/dashboardNavigation';
-import { useNavigation } from '../../hooks/use-navigation';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '../ui/tooltip';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '../ui/popover';
-import UserMenu from './UserMenu';
+import { Link, useLocation } from 'react-router-dom';
+import { Home, Search, User, MessageCircle, Menu } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-const MobileNavbar: React.FC = () => {
-  const { userType } = useUser();
-  const { navigateTo, currentPath } = useNavigation();
+interface NavItemProps {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+  isActive: boolean;
+  onClick?: () => void;
+}
+
+const NavItem: React.FC<NavItemProps> = ({ to, icon, label, isActive, onClick }) => {
+  return (
+    <Link
+      to={to}
+      className={cn(
+        "flex flex-col items-center justify-center px-3 py-1",
+        isActive 
+          ? "text-teal-600 dark:text-teal-400" 
+          : "text-slate-600 dark:text-slate-400"
+      )}
+      onClick={onClick}
+    >
+      {icon}
+      <span className="text-xs mt-1">{label}</span>
+    </Link>
+  );
+};
+
+interface MobileNavbarProps {
+  className?: string;
+}
+
+const MobileNavbar: React.FC<MobileNavbarProps> = ({ className = '' }) => {
+  const location = useLocation();
+  const pathWithoutTrailingSlash = location.pathname.endsWith('/')
+    ? location.pathname.slice(0, -1)
+    : location.pathname;
   
-  const dashboardLink = getDashboardLink(userType);
-  
-  const navItems = [
-    { label: 'Home', icon: Home, link: dashboardLink },
-    { label: 'Messages', icon: MessageCircle, link: '/chat' },
-    { label: 'Schedule', icon: Calendar, link: '/schedule' },
-    { label: 'Search', icon: Search, link: '/matches' },
-  ];
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return pathWithoutTrailingSlash === '' || pathWithoutTrailingSlash === '/';
+    }
+    return pathWithoutTrailingSlash === path || pathWithoutTrailingSlash.startsWith(`${path}/`);
+  };
   
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-navy-800 border-t border-slate-200 dark:border-navy-700 z-30">
-      <div className="grid grid-cols-5 h-12">
-        <TooltipProvider>
-          {navItems.map((item) => {
-            const isActive = currentPath === item.link;
-            return (
-              <Tooltip key={item.label}>
-                <TooltipTrigger asChild>
-                  <button
-                    className={`flex flex-col items-center justify-center text-xs ${
-                      isActive 
-                      ? 'text-teal-500 dark:text-teal-400' 
-                      : 'text-slate-600 dark:text-slate-400'
-                    }`}
-                    onClick={() => navigateTo(item.link)}
-                  >
-                    <item.icon className="h-4 w-4 mb-0.5" />
-                    <span className="text-[10px]">{item.label}</span>
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs">{item.label}</p>
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
-          
-          {/* Profile Menu in Mobile Nav */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <button 
-                className={`flex flex-col items-center justify-center text-xs ${
-                  ['/consumer-profile', '/advisor-profile', '/firm-profile'].includes(currentPath)
-                  ? 'text-teal-500 dark:text-teal-400' 
-                  : 'text-slate-600 dark:text-slate-400'
-                }`}
-              >
-                <User className="h-4 w-4 mb-0.5" />
-                <span className="text-[10px]">Profile</span>
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-56 p-0" align="end">
-              <UserMenu 
-                getUserName={() => userType === 'consumer' ? 'Consumer' : userType === 'advisor' ? 'Advisor' : 'Firm Admin'}
-                getInitials={() => userType && userType[0] ? userType[0].toUpperCase() : 'U'}
-                getProfileImage={() => ''}
-              />
-            </PopoverContent>
-          </Popover>
-        </TooltipProvider>
-      </div>
-    </nav>
+    <div className={cn(
+      "fixed bottom-0 left-0 right-0 bg-white dark:bg-navy-900 border-t border-slate-200 dark:border-navy-700 px-1 py-1 flex justify-around items-center z-50 safe-area-bottom",
+      className
+    )}>
+      <NavItem 
+        to="/" 
+        icon={<Home className="h-5 w-5" />} 
+        label="Home" 
+        isActive={isActive('/')} 
+      />
+      
+      <NavItem 
+        to="/match" 
+        icon={<Search className="h-5 w-5" />} 
+        label="Find Advisor" 
+        isActive={isActive('/match')} 
+      />
+      
+      <NavItem 
+        to="/messages" 
+        icon={<MessageCircle className="h-5 w-5" />} 
+        label="Messages" 
+        isActive={isActive('/messages')} 
+      />
+      
+      <NavItem 
+        to="/profile" 
+        icon={<User className="h-5 w-5" />} 
+        label="Profile" 
+        isActive={isActive('/profile')} 
+      />
+      
+      <NavItem 
+        to="/menu" 
+        icon={<Menu className="h-5 w-5" />} 
+        label="More" 
+        isActive={isActive('/menu')} 
+      />
+    </div>
   );
 };
 
