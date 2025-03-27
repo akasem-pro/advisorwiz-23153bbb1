@@ -12,7 +12,6 @@ import OnboardingTour from '../components/onboarding/OnboardingTour';
 import ConsistentSection from '../components/ui/design-system/ConsistentSection';
 import ConsistentContainer from '../components/ui/design-system/ConsistentContainer';
 import TrustBadges from '../components/ui/TrustBadges';
-import SocialSharePlus from '../components/ui/SocialSharePlus';
 
 // Fixing imports to use default imports instead of named imports
 import HeroSection from '../components/home/HeroSection';
@@ -101,15 +100,7 @@ const Home = () => {
           <FAQSection />
         </div>
         
-        {/* Social Sharing Section */}
-        <ConsistentSection background="alt" spacing="sm" className="py-4">
-          <ConsistentContainer>
-            <div className="text-center">
-              <h3 className="text-lg font-medium mb-2">Share AdvisorWiz with your network</h3>
-              <SocialSharePlus variant="buttons" className="justify-center" />
-            </div>
-          </ConsistentContainer>
-        </ConsistentSection>
+        {/* Social Sharing Section - REMOVED */}
         
         <div id="cta-section">
           <MainCTASection />
