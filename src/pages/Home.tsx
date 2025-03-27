@@ -100,8 +100,6 @@ const Home = () => {
           <FAQSection />
         </div>
         
-        {/* Social Sharing Section - REMOVED */}
-        
         <div id="cta-section">
           <MainCTASection />
         </div>
