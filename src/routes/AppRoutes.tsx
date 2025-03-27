@@ -49,7 +49,7 @@ const AppRoutes = () => {
         </Route>
         
         {/* Contact page */}
-        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/contact" element={<AppLayout><ContactUs /></AppLayout>} />
         
         {/* Authentication Routes (no layout) */}
         {AuthRoutes.map(route => (
