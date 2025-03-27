@@ -26,7 +26,7 @@ const LandingPage: React.FC = () => {
   }, [trackSectionView]);
 
   return (
-    <AppLayout>
+    <AppLayout hideSocialProof={true}>
       <Helmet>
         <title>AdvisorWiz - Connecting Financial Advisors with Clients</title>
         <meta 

@@ -2,7 +2,6 @@
 import React, { ReactNode, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
-import SocialProofBar from '../ui/SocialProofBar';
 import TrustBadges from '../ui/TrustBadges';
 import FloatingSupportButton from '../support/FloatingSupportButton';
 import { initializeTagManager, trackPageView } from '../../utils/tagManager';
@@ -30,7 +29,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   children,
   header,
   footer,
-  showSocialProof = true,
+  showSocialProof = false, // Changed default to false
   showTrustBadges = true,
   fullWidth = false,
   className = '',
@@ -73,8 +72,6 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
       <header className={cn("z-50", headerClassName)}>
         {header}
       </header>
-      
-      {showSocialProof && <SocialProofBar />}
       
       <main className={cn(
         "flex-grow",
