@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, AlertCircle } from 'lucide-react';
@@ -11,6 +12,7 @@ import UserMenu from './UserMenu';
 import AuthButtons from './AuthButtons';
 import SuccessMessage from '../ui/SuccessMessage';
 import { getEffectiveAuthStatus } from '../../utils/mockAuthUtils';
+import { useIsMobile } from '../../hooks/use-mobile';
 
 // Define the navigation links
 const navigationLinks = [
@@ -51,6 +53,7 @@ const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isAuthLoaded, setIsAuthLoaded] = useState(false);
+  const isMobile = useIsMobile();
 
   console.log('Current userType in Header:', userType);
   console.log('isAuthenticated:', isAuthenticated);
@@ -121,20 +124,20 @@ const Header: React.FC = () => {
   const effectiveIsAuthenticated = getEffectiveAuthStatus(isAuthenticated);
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white dark:bg-navy-900 shadow-sm z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <header className={`fixed top-0 left-0 w-full bg-white dark:bg-navy-900 shadow-sm z-50 ${isMobile ? 'h-14' : 'h-16'}`}>
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 h-full">
+        <div className="flex justify-between items-center h-full">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0">
               <Logo />
             </Link>
-            <div className="hidden md:block ml-10">
+            <div className="hidden md:block ml-6">
               <NavigationMenu links={navigationLinks} />
             </div>
           </div>
           
-          <div className="flex items-center space-x-4">
-            <ThemeToggleButton className="mr-2" />
+          <div className="flex items-center space-x-2 md:space-x-4">
+            <ThemeToggleButton className={isMobile ? "mr-1" : "mr-2"} />
             
             {(user || effectiveIsAuthenticated) ? (
               <UserMenu 
@@ -147,11 +150,11 @@ const Header: React.FC = () => {
             )}
             
             <button
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-navy-800 focus:outline-none"
+              className="md:hidden inline-flex items-center justify-center p-1.5 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-navy-800 focus:outline-none"
               onClick={toggleMobileMenu}
               aria-label="Toggle mobile menu"
             >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
@@ -159,11 +162,11 @@ const Header: React.FC = () => {
       
       {/* Auth warning message for protected pages */}
       {needsAuth && isAuthLoaded && !user && !effectiveIsAuthenticated && (
-        <div className="fixed top-16 left-0 right-0 z-50 bg-red-100 text-red-800 px-4 py-2 text-center shadow-md">
-          <div className="flex items-center justify-center gap-2">
-            <AlertCircle className="h-4 w-4" />
+        <div className="fixed top-14 md:top-16 left-0 right-0 z-50 bg-red-100 text-red-800 px-3 py-1 text-center shadow-md">
+          <div className="flex items-center justify-center gap-1 text-xs md:text-sm">
+            <AlertCircle className="h-3 w-3 md:h-4 md:w-4" />
             <span>You must be signed in to access this page</span>
-            <Link to="/sign-in" className="ml-2 bg-red-700 text-white px-2 py-1 rounded text-xs font-medium hover:bg-red-800">
+            <Link to="/sign-in" className="ml-2 bg-red-700 text-white px-2 py-0.5 rounded text-xs font-medium hover:bg-red-800">
               Sign In
             </Link>
           </div>
@@ -172,7 +175,7 @@ const Header: React.FC = () => {
       
       {/* Success message toast */}
       {showSuccessMessage && (
-        <div className="fixed top-20 right-4 z-50 animate-fade-in-down">
+        <div className="fixed top-16 right-2 z-50 animate-fade-in-down">
           <SuccessMessage message="Successfully signed in!" />
         </div>
       )}

@@ -2,27 +2,27 @@
 /* Typography styles */
 h1, h2, h3, h4, h5, h6 {
   @apply font-serif tracking-tight text-navy-900 dark:text-slate-50;
-  line-height: 1.1; /* Tighter line height */
+  line-height: 1.1;
   margin-top: 0;
 }
 
 h1 {
-  font-size: 2rem; /* Reduced font size */
-  margin-bottom: 0.75rem; /* Reduced spacing */
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
 }
 
 h2 {
-  font-size: 1.75rem; /* Reduced font size */
-  margin-bottom: 0.5rem; /* Reduced spacing */
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 h3 {
-  font-size: 1.25rem; /* Reduced font size */
-  margin-bottom: 0.5rem; /* Reduced spacing */
+  font-size: 1.25rem;
+  margin-bottom: 0.35rem;
 }
 
 p {
-  margin-bottom: 0.5rem; /* Reduced spacing */
+  margin-bottom: 0.5rem;
   @apply text-slate-700 dark:text-slate-300;
 }
 
@@ -38,22 +38,37 @@ a {
 /* Mobile specific adjustments */
 @media (max-width: 640px) {
   h1 {
-    font-size: 1.75rem; /* Reduced font size */
-    margin-bottom: 0.5rem; /* Reduced spacing */
+    font-size: 1.5rem;
+    margin-bottom: 0.4rem;
   }
   
   h2 {
-    font-size: 1.5rem; /* Reduced font size */
-    margin-bottom: 0.5rem; /* Reduced spacing */
+    font-size: 1.25rem;
+    margin-bottom: 0.35rem;
   }
   
   h3 {
-    font-size: 1.25rem; /* Reduced font size */
-    margin-bottom: 0.35rem; /* Reduced spacing */
+    font-size: 1.125rem;
+    margin-bottom: 0.3rem;
   }
   
   p {
-    font-size: 0.9375rem;
-    margin-bottom: 0.35rem; /* Reduced spacing */
+    font-size: 0.875rem;
+    margin-bottom: 0.3rem;
+    line-height: 1.4;
+  }
+
+  .content-section {
+    padding: 1rem 0;
+  }
+
+  .section-title {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .section-subtitle {
+    font-size: 0.875rem !important;
+    margin-bottom: 0.5rem !important;
   }
 }

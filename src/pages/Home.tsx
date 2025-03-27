@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { useEffect } from 'react';
+import { useIsMobile } from '../hooks/use-mobile';
 import ASOBanner from '../components/marketing/ASOBanner';
 import ReviewRequestModal from '../components/marketing/ReviewRequestModal';
 import MarketingChannelsWidget from '../components/marketing/MarketingChannelsWidget';
@@ -23,6 +24,8 @@ import NewsletterSection from '../components/home/NewsletterSection';
 import AppLayout from '../components/layout/AppLayout';
 
 const Home = () => {
+  const isMobile = useIsMobile();
+  
   // Show app review modal on the home page
   useEffect(() => {
     // Track home page view for ASO
@@ -54,12 +57,14 @@ const Home = () => {
           <HeroSection />
         </div>
         
-        {/* Marketing Channels Widget - after hero section */}
-        <ConsistentSection background="light" className="py-6">
-          <ConsistentContainer>
-            <MarketingChannelsWidget orientation="horizontal" />
-          </ConsistentContainer>
-        </ConsistentSection>
+        {/* Only show marketing widget if not on mobile */}
+        {!isMobile && (
+          <ConsistentSection background="light" className="py-4">
+            <ConsistentContainer>
+              <MarketingChannelsWidget orientation="horizontal" />
+            </ConsistentContainer>
+          </ConsistentSection>
+        )}
         
         <div id="how-it-works-section">
           <HowItWorksSection />
@@ -70,9 +75,11 @@ const Home = () => {
         </div>
         
         {/* ASO Optimization Info - strategic placement */}
-        <ConsistentSection centered background="accent" className="py-8">
+        <ConsistentSection centered background="accent" className="py-6">
           <ConsistentContainer width="md">
-            <h2 className="text-2xl font-bold text-center mb-4 text-navy-900 dark:text-white">Discover Our Mobile App</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-center mb-3 text-navy-900 dark:text-white">
+              Discover Our Mobile App
+            </h2>
             <ASOOptimizationInfo className="max-w-3xl mx-auto" />
           </ConsistentContainer>
         </ConsistentSection>

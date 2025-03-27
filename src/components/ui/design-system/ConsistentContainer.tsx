@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "../../../hooks/use-mobile";
 
 interface ConsistentContainerProps {
   children: React.ReactNode;
@@ -17,6 +18,8 @@ const ConsistentContainer: React.FC<ConsistentContainerProps> = ({
   padding = true,
   centered = true
 }) => {
+  const isMobile = useIsMobile();
+  
   const widthClasses = {
     sm: 'max-w-screen-sm',
     md: 'max-w-screen-md',
@@ -25,7 +28,7 @@ const ConsistentContainer: React.FC<ConsistentContainerProps> = ({
     full: 'w-full'
   };
   
-  const paddingClasses = padding ? 'px-2 sm:px-2 py-4' : ''; // Reduced padding
+  const paddingClasses = padding ? (isMobile ? 'px-2 py-2' : 'px-2 sm:px-2 py-3') : '';
   const centeringClasses = centered ? 'mx-auto' : '';
   
   return (

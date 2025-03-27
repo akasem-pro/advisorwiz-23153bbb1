@@ -21,7 +21,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
   contentClassName,
   showSocialProof = false,
   showTrustBadges = true,
-  withoutPadding = true, // Set default to true to remove padding
+  withoutPadding = true,
   animation = 'fade',
   animationDuration = 'normal',
   skipToContentId = 'mobile-content'
@@ -30,7 +30,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
     <BaseLayout
       header={<Header />}
       mobileNavbar={<MobileNavbar />}
-      contentClassName={cn("pt-16 pb-16 px-2 sm:px-2 mx-auto w-full", contentClassName)} // Reduced padding
+      contentClassName={cn("pt-14 pb-14", contentClassName)}
       showSocialProof={showSocialProof}
       showTrustBadges={showTrustBadges}
       withoutPadding={withoutPadding}

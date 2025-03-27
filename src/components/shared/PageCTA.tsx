@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '../ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { useIsMobile } from '../../hooks/use-mobile';
 
 interface PageCTAProps {
   title: string;
@@ -17,17 +18,19 @@ const PageCTA: React.FC<PageCTAProps> = ({
   buttonText,
   buttonLink
 }) => {
+  const isMobile = useIsMobile();
+  
   return (
-    <section className="py-6 bg-teal-600 text-white"> {/* Reduced padding */}
-      <div className="container mx-auto px-2 text-center"> {/* Reduced padding */}
-        <h2 className="text-xl md:text-2xl font-serif font-bold mb-2">{title}</h2> {/* Reduced font size and margin */}
-        <p className="text-sm text-teal-100 mb-3 max-w-xl mx-auto"> {/* Reduced font size and margin */}
+    <section className="py-4 bg-teal-600 text-white">
+      <div className="container mx-auto px-2 text-center">
+        <h2 className={`${isMobile ? 'text-lg' : 'text-xl md:text-2xl'} font-serif font-bold mb-1.5`}>{title}</h2>
+        <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-teal-100 mb-2 max-w-xl mx-auto`}>
           {description}
         </p>
-        <Button asChild size="lg" className="bg-white text-teal-700 hover:bg-teal-50 rounded-lg px-6 py-2 text-base h-auto">
+        <Button asChild size={isMobile ? "sm" : "default"} className="bg-white text-teal-700 hover:bg-teal-50 rounded-lg px-4 py-1.5 text-sm h-auto">
           <Link to={buttonLink}>
             {buttonText}
-            <ArrowRight className="ml-2 h-4 w-4" /> {/* Smaller icon */}
+            <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
           </Link>
         </Button>
       </div>

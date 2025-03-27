@@ -1,7 +1,7 @@
 
 /* Mobile-specific components */
 .mobile-card {
-  @apply bg-white dark:bg-navy-800 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-navy-700;
+  @apply bg-white dark:bg-navy-800 rounded-xl p-3 shadow-sm border border-slate-100 dark:border-navy-700;
 }
 
 /* Mobile Navigation */
@@ -10,23 +10,75 @@
 }
 
 .mobile-nav-icon {
-  @apply mb-1 h-5 w-5;
+  @apply mb-0.5 h-4 w-4;
 }
 
 /* Mobile optimized spacing */
 .mobile-container {
-  @apply px-4 py-3;
+  @apply px-3 py-2;
 }
 
 .mobile-section {
-  @apply py-6;
+  @apply py-4;
 }
 
 /* Mobile Card Components */
 .mobile-card-title {
-  @apply text-lg font-semibold text-navy-800 dark:text-slate-200 mb-2;
+  @apply text-base font-semibold text-navy-800 dark:text-slate-200 mb-1;
 }
 
 .mobile-card-description {
-  @apply text-sm text-slate-600 dark:text-slate-400;
+  @apply text-xs text-slate-600 dark:text-slate-400;
+}
+
+/* Mobile-specific padding reductions */
+.mobile-reduced-padding {
+  @apply p-2;
+}
+
+.mobile-text-sm {
+  @apply text-sm;
+}
+
+.mobile-text-xs {
+  @apply text-xs;
+}
+
+/* Compact mobile header */
+.mobile-header {
+  @apply h-12 px-2;
+}
+
+/* Compact mobile buttons */
+.mobile-btn {
+  @apply py-1.5 px-3 text-sm;
+}
+
+/* Mobile menu enhancements */
+.mobile-menu-item {
+  @apply py-2 border-b border-slate-100 dark:border-navy-700 last:border-0;
+}
+
+/* Tighter mobile spacing */
+.mobile-tight {
+  @apply space-y-2;
+}
+
+/* Properly sized icons for mobile */
+.mobile-icon {
+  @apply h-4 w-4;
+}
+
+/* Mobile grid adjustments */
+.mobile-grid {
+  @apply grid-cols-1 gap-3;
+}
+
+/* Mobile form elements */
+.mobile-input {
+  @apply h-10 text-sm px-3;
+}
+
+.mobile-label {
+  @apply text-xs mb-1;
 }
