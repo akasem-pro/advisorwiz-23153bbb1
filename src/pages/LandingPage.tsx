@@ -35,13 +35,13 @@ const LandingPage: React.FC = () => {
         />
       </Helmet>
       
-      <div id="hero-section"><HeroSection /></div>
-      <div id="benefits-section"><BenefitsSection /></div>
-      <div id="how-it-works-section"><HowItWorksSection /></div>
-      <div id="testimonials-section"><TestimonialsSection /></div>
-      <div id="faq-section"><FAQSection /></div>
-      <div id="pricing-cta-section"><PricingCTASection /></div>
-      <div id="main-cta-section"><MainCTASection /></div>
+      <div id="hero-section" className="mt-0"><HeroSection /></div>
+      <div id="benefits-section" className="mt-0"><BenefitsSection /></div>
+      <div id="how-it-works-section" className="mt-0"><HowItWorksSection /></div>
+      <div id="testimonials-section" className="mt-0"><TestimonialsSection /></div>
+      <div id="faq-section" className="mt-0"><FAQSection /></div>
+      <div id="pricing-cta-section" className="mt-0"><PricingCTASection /></div>
+      <div id="main-cta-section" className="mt-0"><MainCTASection /></div>
     </AppLayout>
   );
 };

@@ -11,10 +11,10 @@ const HeroSection: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-navy-950 dark:to-navy-900 pt-10 pb-16 sm:pb-20 lg:pb-28">
+    <div className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-navy-950 dark:to-navy-900 pt-0 pb-12 sm:pb-16 lg:pb-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Hero Content */}
-        <div className="text-center max-w-4xl mx-auto pt-10 pb-12">
+        <div className="text-center max-w-4xl mx-auto pt-6 pb-8">
           <Heading 
             level={1} 
             variant="serif" 
@@ -51,7 +51,7 @@ const HeroSection: React.FC = () => {
           </div>
           
           {/* Trust badges */}
-          <div className="mt-10 flex flex-wrap justify-center gap-8 animate-fade-in" style={{animationDelay: '0.3s'}}>
+          <div className="mt-8 flex flex-wrap justify-center gap-6 animate-fade-in" style={{animationDelay: '0.3s'}}>
             <div className="flex items-center text-navy-700 dark:text-slate-300">
               <ShieldCheck className="h-5 w-5 mr-2 text-teal-600 dark:text-teal-400" />
               <span className="text-sm md:text-base">Bank-Level Security</span>
@@ -70,7 +70,7 @@ const HeroSection: React.FC = () => {
         </div>
         
         {/* Statistics Bar */}
-        <HeroStatistics className="mt-12" />
+        <HeroStatistics className="mt-8" />
       </div>
       
       {/* Background Elements */}

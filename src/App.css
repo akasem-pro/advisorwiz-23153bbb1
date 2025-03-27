@@ -89,7 +89,7 @@
 
 /* Additional spacing for the auth main container to create space between header and content */
 .auth-main-container {
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 /* Enhanced spacing for sign-in card title on both web and mobile */
@@ -98,15 +98,15 @@
   margin-bottom: 0.75rem;
 }
 
-/* Ensure content isn't hidden under fixed header */
+/* Ensure content isn't hidden under fixed header but remove excess spacing */
 main {
-  padding-top: 6rem; /* Increased to avoid header overlap */
+  padding-top: 0;
 }
 
-/* Add appropriate spacing for sections */
+/* Adjust spacing for sections */
 section {
-  scroll-margin-top: 6rem;
-  padding-top: 2rem; /* Added to ensure first section content is visible */
+  scroll-margin-top: 4rem;
+  padding-top: 0;
 }
 
 /* Ensure smooth scrolling */

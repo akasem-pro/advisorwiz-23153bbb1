@@ -1,3 +1,4 @@
+
 import React, { ReactNode, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
@@ -89,7 +90,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         {showTrustBadges && (
           <div className={cn(
             fullWidth ? 'w-full px-4' : 'container mx-auto px-4',
-            'my-8'
+            'my-6'
           )}>
             <TrustBadges className="justify-center" />
           </div>

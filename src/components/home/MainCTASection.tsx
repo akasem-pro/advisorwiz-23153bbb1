@@ -13,16 +13,16 @@ const MainCTASection: React.FC = () => {
   };
   
   return (
-    <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-navy-800 to-navy-900 dark:from-[#1A1F2C] dark:to-[#17213c]" aria-labelledby="cta-heading">
+    <section className="py-12 md:py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-navy-800 to-navy-900 dark:from-[#1A1F2C] dark:to-[#17213c]" aria-labelledby="cta-heading">
       <div className="container mx-auto text-center max-w-4xl">
         <h2 id="cta-heading" className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-6 animate-fade-in leading-tight">
           Ready to Find Your Financial Advisor?
         </h2>
-        <p className="mt-4 text-lg md:text-xl text-slate-200 mb-10 max-w-2xl mx-auto leading-relaxed">
+        <p className="mt-3 text-lg md:text-xl text-slate-200 mb-8 max-w-2xl mx-auto leading-relaxed">
           Join thousands of consumers who have found their perfect financial match through AdvisorWiz.
         </p>
         
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-navy-700/50 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-navy-600/30 hover:transform hover:scale-105 transition-all">
             <div className="flex justify-center mb-4">
               <div className="rounded-full bg-teal-500/20 p-3">
@@ -54,7 +54,7 @@ const MainCTASection: React.FC = () => {
           </div>
         </div>
         
-        <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-16">
+        <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-10">
           <Button
             asChild
             className="bg-teal-600 hover:bg-teal-700 text-white text-lg px-8 py-7 h-auto group font-medium shadow-lg"
@@ -76,8 +76,8 @@ const MainCTASection: React.FC = () => {
           </Button>
         </div>
         
-        <div className="pt-6 border-t border-navy-600/30 text-center">
-          <p className="text-slate-200 font-medium mb-5">Trusted by over 10,000 clients nationwide</p>
+        <div className="pt-4 border-t border-navy-600/30 text-center">
+          <p className="text-slate-200 font-medium mb-4">Trusted by over 10,000 clients nationwide</p>
           <div className="flex justify-center mt-2 space-x-8">
             <div className="bg-navy-700/50 backdrop-blur-sm px-6 py-3 rounded-lg border border-navy-600/30">
               <span className="text-2xl font-bold text-white">★★★★★</span>
