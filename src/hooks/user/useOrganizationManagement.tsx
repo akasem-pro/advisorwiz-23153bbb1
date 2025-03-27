@@ -1,26 +1,27 @@
 
 import { useState } from 'react';
-import { FinancialFirm as Firm } from '../../types/firmTypes';
+import { FinancialFirm } from '../../types/firmTypes';
 
 /**
  * Hook to manage organizations (firms)
  */
 export const useOrganizationManagement = () => {
-  const [firms, setFirms] = useState<Firm[]>([]);
+  const [firms, setFirms] = useState<FinancialFirm[]>([]);
   
   /**
    * Add a new firm
    */
-  const addFirm = (firm: Firm) => {
+  const addFirm = (firm: FinancialFirm) => {
     setFirms(prev => [...prev, firm]);
   };
   
   /**
    * Get a firm by admin ID
+   * Modified to return an array of firms instead of a Promise to match context type
    */
-  const getFirmByAdmin = async (adminId: string): Promise<Firm | undefined> => {
-    // In a real app, this would likely be an API call
-    return firms.find(firm => firm.adminId === adminId);
+  const getFirmByAdmin = (adminId: string): FinancialFirm[] => {
+    // Return firms matching the adminId as an array
+    return firms.filter(firm => firm.adminId === adminId);
   };
   
   return {

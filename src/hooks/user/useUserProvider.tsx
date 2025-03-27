@@ -10,12 +10,23 @@ import { useProfileInitialization } from './useProfileInitialization';
 import { useAuthStateManagement } from './useAuthStateManagement';
 import { useUserSettings } from './useUserSettings';
 import { useAuth } from '../../components/auth/AuthContext';
+import { User } from '@supabase/supabase-js';
 
 /**
  * Main hook for the User Provider that combines all specialized hooks
  */
 export const useUserProvider = () => {
-  const { user } = useAuth();
+  const { user: authUser } = useAuth();
+  
+  // Map AuthUser to User type if needed
+  const user: User | null = authUser ? {
+    id: authUser.id,
+    email: authUser.email,
+    app_metadata: {},
+    user_metadata: {},
+    aud: 'authenticated',
+    created_at: new Date().toISOString()
+  } : null;
   
   // Core user profiles
   const {
