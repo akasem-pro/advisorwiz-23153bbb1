@@ -1,7 +1,7 @@
 
 import { useEffect } from 'react';
-import { useAuth } from '../features/auth/context/AuthProvider';
-import { supabase } from '../integrations/supabase/client';
+import { useAuth } from '../../features/auth/context/AuthProvider';
+import { supabase } from '../../integrations/supabase/client';
 
 /**
  * Hook to manage authentication state synchronization
