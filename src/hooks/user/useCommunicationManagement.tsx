@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
-import { Chat } from '../../types/chatTypes';
-import { Appointment } from '../../types/timeTypes';
+import { Chat, ChatMessage } from '../../types/chatTypes';
+import { Appointment, AppointmentStatus } from '../../types/timeTypes';
 
 /**
  * Hook to manage user communication (chats and appointments)
@@ -13,7 +13,7 @@ export const useCommunicationManagement = () => {
   /**
    * Add a new message to a chat
    */
-  const addMessage = (chatId: string, senderId: string, text: string) => {
+  const addMessage = (chatId: string, senderId: string, content: string) => {
     setChats(prevChats => {
       return prevChats.map(chat => {
         if (chat.id === chatId) {
@@ -24,11 +24,15 @@ export const useCommunicationManagement = () => {
               {
                 id: `msg-${Date.now()}`,
                 senderId,
-                text,
+                senderName: "", // Will be populated from the sender's profile
+                recipientId: chat.participants.find(id => id !== senderId) || "",
+                recipientName: "", // Will be populated from the recipient's profile
+                content,
                 timestamp: new Date().toISOString(),
-                isRead: false
+                read: false
               }
-            ]
+            ],
+            lastUpdated: new Date().toISOString()
           };
         }
         return chat;
@@ -46,8 +50,8 @@ export const useCommunicationManagement = () => {
           return {
             ...chat,
             messages: chat.messages.map(message => {
-              if (message.senderId !== userId && !message.isRead) {
-                return { ...message, isRead: true };
+              if (message.senderId !== userId && !message.read) {
+                return { ...message, read: true };
               }
               return message;
             })
@@ -68,7 +72,7 @@ export const useCommunicationManagement = () => {
   /**
    * Update the status of an appointment
    */
-  const updateAppointmentStatus = (appointmentId: string, status: string) => {
+  const updateAppointmentStatus = (appointmentId: string, status: AppointmentStatus) => {
     setAppointments(prev => {
       return prev.map(appointment => {
         if (appointment.id === appointmentId) {

@@ -1,14 +1,12 @@
 
 import { useEffect } from 'react';
-import { useAuth } from '../../features/auth/context/AuthProvider';
+import { useAuth } from '../../components/auth/AuthContext';
 import { supabase } from '../../integrations/supabase/client';
 
 /**
  * Hook to manage authentication state synchronization
  */
-export const useAuthStateManagement = (
-  setIsAuthenticated: (value: boolean) => void
-) => {
+export const useAuthStateManagement = (setIsAuthenticated: (value: boolean) => void) => {
   const { user } = useAuth();
   
   // Effect to set the authenticated state based on user existence
@@ -22,7 +20,6 @@ export const useAuthStateManagement = (
         // Fallback to checking with supabase directly
         try {
           const { data, error } = await supabase.auth.getSession();
-          
           if (error) {
             console.error("[AuthStateManagement] Error checking session:", error);
             setIsAuthenticated(false);

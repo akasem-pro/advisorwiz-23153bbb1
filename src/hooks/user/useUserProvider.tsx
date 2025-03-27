@@ -9,7 +9,7 @@ import { useLeadManagement } from './useLeadManagement';
 import { useProfileInitialization } from './useProfileInitialization';
 import { useAuthStateManagement } from './useAuthStateManagement';
 import { useUserSettings } from './useUserSettings';
-import { useAuth } from '../../features/auth/context/AuthProvider';
+import { useAuth } from '../../components/auth/AuthContext';
 
 /**
  * Main hook for the User Provider that combines all specialized hooks

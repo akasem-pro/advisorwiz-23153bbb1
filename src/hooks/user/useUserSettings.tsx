@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { MatchPreferences } from '../../types/compatibilityTypes';
+import { MatchPreferences } from '../../context/UserContextDefinition';
 
 /**
  * Hook to manage user preferences and settings

@@ -11,8 +11,21 @@ export const UserProviderRefactored = ({ children }: { children: ReactNode }) =>
   // Destructure just the values needed for the CallModal
   const { activeCall, isCallModalOpen, endCall, closeCallModal } = userProviderValue;
 
+  // Create a properly typed context value by wrapping addMessage to match the expected signature
+  const contextValue = {
+    ...userProviderValue,
+    addMessage: (chatId: string, message: any) => {
+      // Extract required fields from the message object to call the original function
+      userProviderValue.addMessage(
+        chatId, 
+        message.senderId, 
+        message.content || message.text // Support both content and text properties
+      );
+    }
+  };
+
   return (
-    <UserContext.Provider value={userProviderValue}>
+    <UserContext.Provider value={contextValue}>
       {children}
       <CallModal 
         callSession={activeCall} 

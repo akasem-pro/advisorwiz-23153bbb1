@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Firm } from '../../types/firmTypes';
+import { FinancialFirm as Firm } from '../../types/firmTypes';
 
 /**
  * Hook to manage organizations (firms)
