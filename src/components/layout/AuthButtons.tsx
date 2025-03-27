@@ -7,7 +7,7 @@ const AuthButtons: React.FC = () => {
   return (
     <div className="flex items-center gap-x-2">
       <Link
-        to="/sign-in"
+        to="/login"
         className={cn(
           "text-sm px-3 py-1.5 rounded-md text-slate-700 dark:text-slate-200",
           "hover:bg-slate-100 dark:hover:bg-navy-800 transition-colors",
@@ -18,7 +18,7 @@ const AuthButtons: React.FC = () => {
       </Link>
       
       <Link
-        to="/sign-up"
+        to="/onboarding"
         className={cn(
           "text-sm px-4 py-1.5 rounded-md font-medium",
           "bg-teal-500 hover:bg-teal-600 text-white shadow-sm",
