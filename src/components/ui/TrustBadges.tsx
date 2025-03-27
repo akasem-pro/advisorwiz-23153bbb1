@@ -12,10 +12,10 @@ interface TrustBadgeProps {
 const TrustBadge: React.FC<TrustBadgeProps> = ({ icon, text, className }) => {
   return (
     <div className={cn(
-      "flex items-center px-2 py-1 text-xs md:text-sm text-navy-700 dark:text-slate-300",
+      "flex items-center px-3 py-2 text-sm md:text-base text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 rounded-md shadow-sm border border-gray-100 dark:border-gray-700",
       className
     )}>
-      <div className="text-teal-600 dark:text-teal-400 mr-1.5">{icon}</div>
+      <div className="text-blue-600 dark:text-blue-400 mr-2">{icon}</div>
       <span>{text}</span>
     </div>
   );

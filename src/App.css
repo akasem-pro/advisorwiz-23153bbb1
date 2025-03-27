@@ -2,20 +2,15 @@
 #root {
   width: 100%;
   margin: 0 auto;
-  text-align: center;
 }
 
 .logo {
-  height: 4em;
-  padding: 0.75em;
+  height: 3em;
   will-change: filter;
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 1em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 1em #61dafbaa);
+  filter: drop-shadow(0 0 1em rgba(0, 123, 255, 0.6));
 }
 
 @keyframes logo-spin {
@@ -34,11 +29,15 @@
 }
 
 .card {
-  padding: 0.75em;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
 }
 
-.read-the-docs {
-  color: #888;
+.card:hover {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* Better Mobile specific adjustments */
@@ -48,7 +47,7 @@
   }
   
   .card {
-    padding: 0.5em;
+    padding: 1rem;
   }
   
   input, button, select, textarea {
@@ -56,12 +55,12 @@
   }
   
   h1 {
-    font-size: 1.25rem !important;
+    font-size: 1.5rem !important;
     margin-bottom: 0.35rem !important;
   }
   
   h2 {
-    font-size: 1.125rem !important;
+    font-size: 1.25rem !important;
     margin-bottom: 0.35rem !important;
   }
   
@@ -73,78 +72,77 @@
   
   /* Improved spacing for forms */
   .form-container {
-    padding: 0.5rem;
+    padding: 1rem;
   }
   
   /* Make sure buttons are large enough to tap */
   button, .button, [type="button"], [type="submit"] {
-    min-height: 36px;
+    min-height: 44px;
   }
   
   /* Reduce all paddings */
   .section-padding {
-    padding: 1rem 0 !important;
-  }
-  
-  /* Scale down icons */
-  .icon {
-    transform: scale(0.85);
-  }
-  
-  /* Fix spacing between form elements */
-  .form-group {
-    margin-bottom: 0.5rem !important;
-  }
-  
-  /* Reduce card padding */
-  .card-padding {
-    padding: 0.75rem !important;
-  }
-  
-  /* Compact tables */
-  .table-cell {
-    padding: 0.35rem !important;
-  }
-  
-  /* Optimize grid gaps */
-  .grid-gap {
-    gap: 0.5rem !important;
-  }
-  
-  /* Make lists more compact */
-  .list-item {
-    padding-top: 0.35rem !important;
-    padding-bottom: 0.35rem !important;
+    padding: 1.5rem 0 !important;
   }
 }
 
-/* Add some spacing for auth forms */
-.auth-form-container {
-  margin-top: 0.35rem;
+/* Base button styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
-/* Additional spacing for the auth main container to create space between header and content */
-.auth-main-container {
-  margin-top: 0.35rem;
+/* Primary button */
+.btn-primary {
+  background-color: #007BFF;
+  color: white;
+  border: none;
 }
 
-/* Enhanced spacing for sign-in card title on both web and mobile */
-.card-title {
-  margin-top: 0.25rem;
-  margin-bottom: 0.35rem;
+.btn-primary:hover {
+  background-color: #0069d9;
 }
 
-/* Ensure content isn't hidden under fixed header but remove excess spacing */
-main {
-  padding-top: 0;
+/* Accent button for CTAs */
+.btn-accent {
+  background-color: #FFC107;
+  color: #212529;
+  border: none;
 }
 
-/* Adjust spacing for sections */
-section {
-  scroll-margin-top: 2.5rem;
+.btn-accent:hover {
+  background-color: #e0a800;
 }
 
-/* Ensure smooth scrolling */
-html {
-  scroll-behavior: smooth;
+/* Cards for consistent UI */
+.feature-card {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Typography improvements */
+.title-lg {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: #6C757D;
+  margin-bottom: 1.5rem;
 }

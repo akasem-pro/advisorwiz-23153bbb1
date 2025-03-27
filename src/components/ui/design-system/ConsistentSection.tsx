@@ -29,8 +29,8 @@ const ConsistentSection: React.FC<ConsistentSectionProps> = ({
     alt: 'bg-slate-50 dark:bg-navy-950',
     gradient: 'bg-gradient-to-b from-slate-50 to-white dark:from-navy-950 dark:to-navy-900',
     transparent: 'bg-transparent',
-    primary: 'bg-navy-50 dark:bg-navy-900/50',
-    accent: 'bg-teal-50 dark:bg-teal-900/20',
+    primary: 'bg-blue-50 dark:bg-blue-900/20',
+    accent: 'bg-yellow-50 dark:bg-yellow-900/20',
     light: 'bg-slate-50 dark:bg-navy-900/30'
   };
   
@@ -48,7 +48,7 @@ const ConsistentSection: React.FC<ConsistentSectionProps> = ({
     >
       {container ? (
         <div className={cn(
-          "container mx-auto px-3 sm:px-6", 
+          "container mx-auto px-4 sm:px-6", 
           centered && "text-center",
           innerClassName
         )}>

@@ -21,6 +21,8 @@ interface PageHeroProps {
     description: string;
     icon: React.ReactNode;
   }>;
+  className?: string;
+  backgroundStyle?: 'default' | 'gradient' | 'blue' | 'dark';
 }
 
 const PageHero: React.FC<PageHeroProps> = ({
@@ -28,21 +30,42 @@ const PageHero: React.FC<PageHeroProps> = ({
   subtitle,
   primaryCta,
   secondaryCta,
-  features
+  features,
+  className = '',
+  backgroundStyle = 'default'
 }) => {
+  // Define background styles based on the chosen style
+  const getBackgroundClass = () => {
+    switch (backgroundStyle) {
+      case 'gradient':
+        return 'bg-gradient-to-b from-slate-50 to-white dark:from-gray-900 dark:to-gray-950';
+      case 'blue':
+        return 'bg-blue-50 dark:bg-blue-900/20';
+      case 'dark':
+        return 'bg-gray-900 text-white';
+      default:
+        return 'bg-slate-50 dark:bg-gray-900';
+    }
+  };
+  
+  // Adjust text color for dark background
+  const isDarkBg = backgroundStyle === 'dark';
+  const titleClass = isDarkBg ? 'text-white' : 'text-gray-900 dark:text-white';
+  const subtitleClass = isDarkBg ? 'text-gray-200' : 'text-gray-600 dark:text-gray-300';
+  
   return (
-    <section className="bg-gradient-to-b from-slate-50 to-white dark:from-navy-950 dark:to-navy-900 py-12">
+    <section className={`py-12 ${getBackgroundClass()} ${className}`}>
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 dark:text-white mb-3">
+          <h1 className={`text-3xl md:text-4xl font-serif font-bold ${titleClass} mb-4`}>
             {title}
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-300 mb-6">
+          <p className={`text-lg ${subtitleClass} mb-8 leading-relaxed`}>
             {subtitle}
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center gap-4 mb-10">
-            <Button asChild size="lg" className="bg-teal-600 hover:bg-teal-700 text-white rounded-lg px-6 py-2.5 text-base h-auto">
+            <Button asChild size="lg" className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 dark:text-gray-900 rounded-md px-6 py-3 text-base h-auto shadow-md">
               <Link to={primaryCta.link}>
                 {primaryCta.text}
                 {primaryCta.icon && <ArrowRight className="ml-2 h-5 w-5" />}
@@ -50,7 +73,7 @@ const PageHero: React.FC<PageHeroProps> = ({
             </Button>
             
             {secondaryCta && (
-              <Button asChild variant="outline" size="lg" className="border-navy-300 text-navy-700 dark:border-navy-600 dark:text-slate-200 rounded-lg px-6 py-2.5 text-base h-auto">
+              <Button asChild variant="outline" size="lg" className="border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-200 rounded-md px-6 py-3 text-base h-auto">
                 <Link to={secondaryCta.link}>
                   {secondaryCta.text}
                 </Link>
@@ -59,16 +82,16 @@ const PageHero: React.FC<PageHeroProps> = ({
           </div>
           
           {features && features.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
               {features.map((feature, index) => (
-                <div key={index} className="bg-white dark:bg-navy-800 p-4 rounded-lg shadow-sm border border-slate-100 dark:border-navy-700">
-                  <div className="flex items-center mb-2">
-                    <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center">
+                <div key={index} className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
+                  <div className="mb-3">
+                    <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center mx-auto">
                       {feature.icon}
                     </div>
-                    <h3 className="text-base font-medium ml-3 text-navy-900 dark:text-slate-100">{feature.title}</h3>
                   </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-300">{feature.description}</p>
+                  <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-white">{feature.title}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{feature.description}</p>
                 </div>
               ))}
             </div>

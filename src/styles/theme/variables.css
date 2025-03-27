@@ -2,35 +2,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 :root {
-  --background: 210 50% 98%;
-  --foreground: 218 35% 18%;
-
-  --card: 0 0% 100%;
-  --card-foreground: 218 35% 18%;
-
-  --popover: 0 0% 100%;
-  --popover-foreground: 218 35% 18%;
-
-  --primary: 218 35% 30%;
+  /* Primary brand colors */
+  --primary: 210 100% 50%; /* Trustworthy blue #007BFF */
   --primary-foreground: 210 40% 98%;
 
-  --secondary: 185 75% 30%;
+  /* Secondary colors */
+  --secondary: 210 14% 45%; /* Subtle gray #6C757D */
   --secondary-foreground: 210 40% 98%;
 
-  --muted: 218 10% 90%;
-  --muted-foreground: 218 30% 45%;
+  /* Accent colors for CTAs */
+  --accent: 45 100% 51%; /* Eye-catching yellow #FFC107 */
+  --accent-foreground: 210 20% 12%;
 
-  --accent: 43 85% 50%;
-  --accent-foreground: 218 35% 18%;
+  /* Background and surface colors */
+  --background: 210 50% 98%; 
+  --foreground: 210 20% 12%;
 
+  /* Card and component colors */
+  --card: 0 0% 100%;
+  --card-foreground: 210 20% 12%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 210 20% 12%;
+
+  /* UI feedback colors */
+  --muted: 210 10% 92%;
+  --muted-foreground: 210 10% 40%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
 
-  --border: 218 15% 85%;
-  --input: 218 15% 85%;
-  --ring: 218 35% 30%;
+  /* Border and input styling */
+  --border: 210 15% 90%;
+  --input: 210 15% 90%;
+  --ring: 210 100% 50%;
 
-  --radius: 0.75rem;
+  /* Border radius */
+  --radius: 0.5rem;
 }
 
 .dark {
@@ -43,17 +49,17 @@
   --popover: 222 47% 11%;
   --popover-foreground: 210 40% 98%;
 
-  --primary: 210 40% 98%;
+  --primary: 210 100% 50%;
   --primary-foreground: 222 47% 11%;
 
-  --secondary: 185 70% 30%;
-  --secondary-foreground: 210 40% 98%;
+  --secondary: 210 14% 66%;
+  --secondary-foreground: 222 47% 11%;
+
+  --accent: 45 100% 51%;
+  --accent-foreground: 222 47% 11%;
 
   --muted: 217 33% 17%;
   --muted-foreground: 215 20% 65%;
-
-  --accent: 43 85% 50%;
-  --accent-foreground: 222 47% 11%;
 
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { getShareVariant, ShareVariantProps } from './social-share/ShareVariants';
+import { getShareVariant } from './social-share/ShareVariants';
 import { ShareOptions } from './social-share/utils';
 
 interface SocialSharePlusProps {
@@ -31,11 +31,13 @@ const SocialSharePlus: React.FC<SocialSharePlusProps> = ({
 
   // Render the variant with the shared props
   return (
-    <VariantComponent 
-      shareOptions={shareOptions} 
-      showAppDownload={showAppDownload} 
-      className={className} 
-    />
+    <div className="my-3">
+      <VariantComponent 
+        shareOptions={shareOptions} 
+        showAppDownload={showAppDownload} 
+        className={className} 
+      />
+    </div>
   );
 };
 

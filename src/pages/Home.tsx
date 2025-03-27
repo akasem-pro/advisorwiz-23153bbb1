@@ -11,6 +11,8 @@ import { trackAppStoreEvent } from '../utils/analytics/marketingHelper';
 import OnboardingTour from '../components/onboarding/OnboardingTour';
 import ConsistentSection from '../components/ui/design-system/ConsistentSection';
 import ConsistentContainer from '../components/ui/design-system/ConsistentContainer';
+import TrustBadges from '../components/ui/TrustBadges';
+import SocialSharePlus from '../components/ui/SocialSharePlus';
 
 // Fixing imports to use default imports instead of named imports
 import HeroSection from '../components/home/HeroSection';
@@ -57,6 +59,13 @@ const Home = () => {
           <HeroSection />
         </div>
         
+        {/* Trust Badges for credibility */}
+        <ConsistentSection background="transparent" spacing="sm" className="py-2">
+          <ConsistentContainer>
+            <TrustBadges className="mx-auto max-w-3xl" />
+          </ConsistentContainer>
+        </ConsistentSection>
+        
         {/* Only show marketing widget if not on mobile */}
         {!isMobile && (
           <ConsistentSection background="alt" className="py-4">
@@ -91,6 +100,16 @@ const Home = () => {
         <div id="faq-section">
           <FAQSection />
         </div>
+        
+        {/* Social Sharing Section */}
+        <ConsistentSection background="alt" spacing="sm" className="py-4">
+          <ConsistentContainer>
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-2">Share AdvisorWiz with your network</h3>
+              <SocialSharePlus variant="buttons" className="justify-center" />
+            </div>
+          </ConsistentContainer>
+        </ConsistentSection>
         
         <div id="cta-section">
           <MainCTASection />
