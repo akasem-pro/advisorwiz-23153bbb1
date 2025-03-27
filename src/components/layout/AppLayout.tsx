@@ -1,7 +1,6 @@
 
 import React from 'react';
 import Header from './Header';
-import Footer from './Footer';
 import BaseLayout from './BaseLayout';
 import { cn } from '@/lib/utils';
 
@@ -16,7 +15,7 @@ interface AppLayoutProps {
   animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale' | 'none';
   animationDuration?: 'fast' | 'normal' | 'slow';
   skipToContentId?: string;
-  hideFooter?: boolean; // Added prop to optionally hide footer
+  hideFooter?: boolean;
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ 
@@ -26,21 +25,21 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   className = '',
   showTrustBadges = true,
   contentClassName,
-  withoutPadding = true, // Set default to true to remove padding
+  withoutPadding = true,
   animation = 'fade',
   animationDuration = 'normal',
   skipToContentId = 'main-content',
-  hideFooter = false // Default to showing footer
+  hideFooter = false
 }) => {
   return (
     <BaseLayout
       header={<Header />}
-      footer={hideFooter ? undefined : <Footer />}
+      footer={hideFooter ? undefined : null} // Set to null to prevent Footer from being included in BaseLayout
       showSocialProof={!hideSocialProof}
       showTrustBadges={showTrustBadges}
       fullWidth={fullWidth}
       className={className}
-      contentClassName={cn("pt-24 md:pt-28", contentClassName)} // Increased top padding
+      contentClassName={cn("pt-24 md:pt-28", contentClassName)}
       withoutPadding={withoutPadding}
       animation={animation}
       animationDuration={animationDuration}

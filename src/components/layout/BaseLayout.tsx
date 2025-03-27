@@ -6,6 +6,7 @@ import TrustBadges from '../ui/TrustBadges';
 import FloatingSupportButton from '../support/FloatingSupportButton';
 import { initializeTagManager, trackPageView } from '../../utils/tagManager';
 import { cn } from '@/lib/utils';
+import Footer from './Footer';
 
 export interface BaseLayoutProps {
   children: ReactNode;
@@ -39,7 +40,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   animationDuration = 'normal',
   headerClassName = '',
   mainClassName = '',
-  withoutPadding = true, // Set default to true to remove padding
+  withoutPadding = true,
   skipToContentId
 }) => {
   const location = useLocation();
@@ -95,7 +96,8 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
       </main>
       
       <FloatingSupportButton />
-      {footer}
+      {/* Render the Footer component by default unless explicitly passed something */}
+      {footer === undefined ? <Footer /> : footer}
       {mobileNavbar}
     </div>
   );

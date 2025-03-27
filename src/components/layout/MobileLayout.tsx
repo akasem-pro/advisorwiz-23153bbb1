@@ -29,6 +29,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
   return (
     <BaseLayout
       header={<Header />}
+      footer={null} // Set to null to prevent Footer from being included
       mobileNavbar={<MobileNavbar />}
       contentClassName={cn("pt-14 pb-14", contentClassName)}
       showSocialProof={showSocialProof}
