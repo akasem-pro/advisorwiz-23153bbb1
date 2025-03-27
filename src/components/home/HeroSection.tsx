@@ -13,20 +13,20 @@ const HeroSection: React.FC = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white dark:from-navy-950 dark:via-navy-900 dark:to-navy-900 pt-6 pb-8 sm:pb-12">
+    <div className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white dark:from-navy-950 dark:via-navy-900 dark:to-navy-900 pt-12 pb-12 sm:pt-16 sm:pb-16">
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Hero Content */}
-        <div className="text-center max-w-4xl mx-auto pt-6 pb-8">
+        <div className="text-center max-w-4xl mx-auto pt-8 pb-10 sm:pt-10">
           <Heading 
             level={1} 
             variant="serif" 
             size={isMobile ? "3xl" : "4xl"}
-            className="mb-4 animate-fade-in leading-tight"
+            className="mb-6 animate-fade-in leading-tight"
           >
             Find the Perfect Financial Advisor for Your Needs
           </Heading>
           
-          <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 mb-6 animate-fade-in max-w-2xl mx-auto" style={{animationDelay: '0.1s'}}>
+          <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 mb-8 animate-fade-in max-w-2xl mx-auto" style={{animationDelay: '0.1s'}}>
             Connect with qualified financial advisors who understand your unique
             financial situation and help you achieve your goals.
           </p>
@@ -56,7 +56,7 @@ const HeroSection: React.FC = () => {
         </div>
         
         {/* Statistics Bar - Hide on mobile */}
-        {!isMobile && <HeroStatistics className="mt-4 animate-fade-in" style={{animationDelay: '0.4s'}} />}
+        {!isMobile && <HeroStatistics className="mt-6 animate-fade-in" style={{animationDelay: '0.4s'}} />}
       </div>
       
       {/* Background Elements - More subtle and modern */}

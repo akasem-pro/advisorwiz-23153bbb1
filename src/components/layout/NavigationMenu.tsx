@@ -17,7 +17,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ links }) => {
   
   return (
     <nav>
-      <ul className="flex space-x-1">
+      <ul className="flex space-x-2">
         {links.map((link) => {
           const isActive = location.pathname === link.path || 
                           (link.path !== '/' && location.pathname.startsWith(link.path));

@@ -22,7 +22,7 @@ const Logo: React.FC<LogoProps> = ({ className = '', forceLightMode = false }) =
       <img 
         src={logoSrc} 
         alt="AdvisorWiz Logo" 
-        className={cn("h-12 w-auto", className)}
+        className={cn("h-10 w-auto", className)}
         loading="eager" 
         fetchPriority="high"
       />
