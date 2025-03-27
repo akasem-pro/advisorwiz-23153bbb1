@@ -1,14 +1,14 @@
 
-import { ReactNode } from 'react';
 import { useUserProfiles } from './useUserProfiles';
-import { useUserCommunication } from './useUserCommunication';
-import { useUserOrganizations } from './useUserOrganizations';
+import { useCommunicationManagement } from './useCommunicationManagement';
+import { useOrganizationManagement } from './useOrganizationManagement';
 import { useFilterOperations } from './useFilterOperations';
 import { useUserMatching } from './useUserMatching';
 import { useCallManagement } from './useCallManagement';
 import { useLeadManagement } from './useLeadManagement';
 import { useProfileInitialization } from './useProfileInitialization';
 import { useAuthStateManagement } from './useAuthStateManagement';
+import { useUserSettings } from './useUserSettings';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 
 /**
@@ -49,16 +49,22 @@ export const useUserProvider = () => {
     appointments, setAppointments,
     addMessage, markChatAsRead,
     addAppointment, updateAppointmentStatus
-  } = useUserCommunication();
+  } = useCommunicationManagement();
 
   // Organizations (firms)
   const {
     firms, setFirms,
     addFirm, getFirmByAdmin
-  } = useUserOrganizations();
+  } = useOrganizationManagement();
 
   // Filtering operations
   const { getFilteredAdvisors, getFilteredConsumers } = useFilterOperations();
+
+  // User settings and preferences
+  const {
+    matchPreferences,
+    updateMatchPreferences
+  } = useUserSettings();
 
   // Get the current user ID based on profile type
   const userId = userType === 'consumer' 
@@ -89,8 +95,6 @@ export const useUserProvider = () => {
 
   // User matching
   const {
-    matchPreferences,
-    updateMatchPreferences,
     calculateCompatibilityScore,
     getTopMatches,
     getRecommendedMatches
