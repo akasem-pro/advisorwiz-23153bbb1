@@ -23,7 +23,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   hideSocialProof = false,
   fullWidth = false,
   className = '',
-  showTrustBadges = true,
+  showTrustBadges = false, // Default to false to avoid duplication
   contentClassName,
   withoutPadding = true,
   animation = 'fade',

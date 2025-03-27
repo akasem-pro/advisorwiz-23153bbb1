@@ -85,6 +85,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
           {children}
         </div>
         
+        {/* Only show TrustBadges in the main content if specifically requested */}
         {showTrustBadges && (
           <div className={cn(
             fullWidth ? 'w-full' : 'container mx-auto',

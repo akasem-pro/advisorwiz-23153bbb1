@@ -21,7 +21,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
   children,
   contentClassName,
   showSocialProof = false,
-  showTrustBadges = true,
+  showTrustBadges = false, // Default to false to avoid duplication
   withoutPadding = true,
   animation = 'fade',
   animationDuration = 'normal',
