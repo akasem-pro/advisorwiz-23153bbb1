@@ -23,12 +23,12 @@ const HeroSection: React.FC = () => {
             size={isMobile ? "3xl" : "4xl"}
             className="mb-3 animate-fade-in"
           >
-            Find Your Perfect Financial Match
+            Find the Perfect Financial Advisor for Your Needs
           </Heading>
           
           <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 mb-4 animate-fade-in" style={{animationDelay: '0.1s'}}>
-            Personalized connections with qualified financial advisors who understand 
-            your unique needs and goals.
+            Connect with qualified financial advisors who understand your unique
+            financial situation and goals.
           </p>
           
           <div className={`flex ${isMobile ? 'flex-col' : 'sm:flex-row'} justify-center gap-3 animate-fade-in`} style={{animationDelay: '0.2s'}}>
@@ -39,7 +39,7 @@ const HeroSection: React.FC = () => {
               icon={<Search className="h-4 w-4" />}
               className="w-full sm:w-auto"
             >
-              Find My Advisor Match
+              Get Started
             </ConsistentButton>
             
             <ConsistentButton 
@@ -50,7 +50,7 @@ const HeroSection: React.FC = () => {
               iconPosition="right"
               className="w-full sm:w-auto mt-2 sm:mt-0"
             >
-              Advisor Sign Up
+              For Advisors
             </ConsistentButton>
           </div>
           
