@@ -1,4 +1,7 @@
 
+// Define correct types for React-Joyride's Styles
+type TextAlign = 'left' | 'center' | 'right' | 'justify';
+
 export const tourStyles = {
   options: {
     zIndex: 10000,
@@ -15,7 +18,7 @@ export const tourStyles = {
     color: '#333',
   },
   tooltipContainer: {
-    textAlign: 'left',
+    textAlign: 'left' as TextAlign,
   },
   buttonNext: {
     backgroundColor: '#0091EA',
