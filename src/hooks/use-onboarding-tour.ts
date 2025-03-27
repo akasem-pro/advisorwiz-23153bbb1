@@ -209,8 +209,8 @@ export const useOnboardingTour = (
       }
     }
     
-    // Tour is finished or skipped
-    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+    // Fix: Use string literals instead of enum values for comparison to fix type error
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       setRun(false);
       
       // Mark the tour as completed
