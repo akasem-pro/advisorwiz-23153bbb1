@@ -23,7 +23,7 @@ const HeroSection: React.FC = () => {
             size={isMobile ? "3xl" : "4xl"}
             className="mb-3 animate-fade-in"
           >
-            Find Your Ideal Financial Advisor Match
+            Find Your Perfect Financial Match
           </Heading>
           
           <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 mb-4 animate-fade-in" style={{animationDelay: '0.1s'}}>
