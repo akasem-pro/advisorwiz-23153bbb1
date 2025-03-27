@@ -82,3 +82,43 @@
 .mobile-label {
   @apply text-xs mb-1;
 }
+
+/* Mobile-specific tab improvements */
+.mobile-tabs [role="tablist"] {
+  @apply h-auto py-1;
+}
+
+.mobile-tabs [role="tab"] {
+  @apply text-xs py-2 px-1;
+  height: auto;
+  min-height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Prevent text wrapping and overflow in tabs */
+.mobile-tabs [role="tab"] span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Fix for tab content on mobile */
+.mobile-tab-content {
+  @apply px-2 py-3;
+}
+
+/* Improved readability for mobile cards */
+.mobile-step-card {
+  @apply p-3 rounded-lg;
+}
+
+.mobile-step-card-title {
+  @apply text-sm font-medium mb-1;
+}
+
+.mobile-step-card-description {
+  @apply text-xs leading-tight;
+}

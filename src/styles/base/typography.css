@@ -71,4 +71,28 @@ a {
     font-size: 0.875rem !important;
     margin-bottom: 0.5rem !important;
   }
+  
+  /* Fix for tab labels on mobile */
+  [role="tab"] {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Space improvement for mobile cards */
+  .glass-card {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Improve icons spacing on mobile */
+  .w-16 {
+    width: 3rem;
+  }
+  
+  .h-16 {
+    height: 3rem;
+  }
 }

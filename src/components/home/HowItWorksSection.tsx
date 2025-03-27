@@ -3,8 +3,11 @@ import React from 'react';
 import { Users, BarChart, Clock, User, Briefcase, Building, BadgeCheck, FileCheck, PiggyBank } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { useIsMobile } from '../../hooks/use-mobile';
 
 const HowItWorksSection: React.FC = () => {
+  const isMobile = useIsMobile();
+  
   const consumerSteps = [
     {
       icon: <User className="w-10 h-10 text-teal-500" />,
@@ -60,9 +63,9 @@ const HowItWorksSection: React.FC = () => {
   ];
 
   return (
-    <section id="how-it-works" className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-navy-950" aria-labelledby="how-it-works-heading">
+    <section id="how-it-works" className="py-12 md:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-navy-950" aria-labelledby="how-it-works-heading">
       <div className="container mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-teal-600 dark:text-teal-400 font-medium">How It Works</span>
           <h2 id="how-it-works-heading" className="mt-2 text-3xl md:text-4xl font-serif font-bold text-navy-900 dark:text-white">
             Simple Process for Everyone
@@ -73,23 +76,38 @@ const HowItWorksSection: React.FC = () => {
         </div>
 
         <Tabs defaultValue="consumer" className="w-full max-w-4xl mx-auto">
-          <TabsList className="grid w-full grid-cols-3 mb-8 dark:bg-navy-800">
-            <TabsTrigger value="consumer" className="text-center py-3 dark:data-[state=active]:bg-navy-700 dark:data-[state=active]:text-white dark:text-slate-300">For Consumers</TabsTrigger>
-            <TabsTrigger value="advisor" className="text-center py-3 dark:data-[state=active]:bg-navy-700 dark:data-[state=active]:text-white dark:text-slate-300">For Advisors</TabsTrigger>
-            <TabsTrigger value="firm" className="text-center py-3 dark:data-[state=active]:bg-navy-700 dark:data-[state=active]:text-white dark:text-slate-300">For Firms</TabsTrigger>
+          <TabsList className={`${isMobile ? 'h-auto py-1' : ''} grid w-full grid-cols-3 mb-8 dark:bg-navy-800`}>
+            <TabsTrigger 
+              value="consumer" 
+              className={`${isMobile ? 'py-2 text-xs' : 'py-3'} text-center dark:data-[state=active]:bg-navy-700 dark:data-[state=active]:text-white dark:text-slate-300`}
+            >
+              For Consumers
+            </TabsTrigger>
+            <TabsTrigger 
+              value="advisor" 
+              className={`${isMobile ? 'py-2 text-xs' : 'py-3'} text-center dark:data-[state=active]:bg-navy-700 dark:data-[state=active]:text-white dark:text-slate-300`}
+            >
+              For Advisors
+            </TabsTrigger>
+            <TabsTrigger 
+              value="firm" 
+              className={`${isMobile ? 'py-2 text-xs' : 'py-3'} text-center dark:data-[state=active]:bg-navy-700 dark:data-[state=active]:text-white dark:text-slate-300`}
+            >
+              For Firms
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="consumer" className="mt-0">
-            <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+            <div className="grid md:grid-cols-3 gap-4 md:gap-12">
               {consumerSteps.map((step, index) => (
-                <div key={index} className="glass-card rounded-xl p-6 flex flex-col items-center text-center dark:bg-navy-800 dark:border-navy-700">
-                  <div className="w-16 h-16 rounded-full bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center mb-5">
+                <div key={index} className="glass-card rounded-xl p-5 flex flex-col items-center text-center dark:bg-navy-800 dark:border-navy-700">
+                  <div className="w-16 h-16 rounded-full bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center mb-4">
                     {step.icon}
                   </div>
-                  <h3 className="text-xl font-serif font-semibold text-navy-900 dark:text-white mb-3">
+                  <h3 className="text-lg font-serif font-semibold text-navy-900 dark:text-white mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-300">
+                  <p className={`${isMobile ? 'text-sm' : ''} text-slate-600 dark:text-slate-300`}>
                     {step.description}
                   </p>
                 </div>
@@ -103,16 +121,16 @@ const HowItWorksSection: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="advisor" className="mt-0">
-            <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+            <div className="grid md:grid-cols-3 gap-4 md:gap-12">
               {advisorSteps.map((step, index) => (
-                <div key={index} className="glass-card rounded-xl p-6 flex flex-col items-center text-center dark:bg-navy-800 dark:border-navy-700">
-                  <div className="w-16 h-16 rounded-full bg-navy-50 dark:bg-navy-700 flex items-center justify-center mb-5">
+                <div key={index} className="glass-card rounded-xl p-5 flex flex-col items-center text-center dark:bg-navy-800 dark:border-navy-700">
+                  <div className="w-16 h-16 rounded-full bg-navy-50 dark:bg-navy-700 flex items-center justify-center mb-4">
                     {step.icon}
                   </div>
-                  <h3 className="text-xl font-serif font-semibold text-navy-900 dark:text-white mb-3">
+                  <h3 className="text-lg font-serif font-semibold text-navy-900 dark:text-white mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-300">
+                  <p className={`${isMobile ? 'text-sm' : ''} text-slate-600 dark:text-slate-300`}>
                     {step.description}
                   </p>
                 </div>
@@ -126,16 +144,16 @@ const HowItWorksSection: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="firm" className="mt-0">
-            <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+            <div className="grid md:grid-cols-3 gap-4 md:gap-12">
               {firmSteps.map((step, index) => (
-                <div key={index} className="glass-card rounded-xl p-6 flex flex-col items-center text-center dark:bg-navy-800 dark:border-navy-700">
-                  <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-700 flex items-center justify-center mb-5">
+                <div key={index} className="glass-card rounded-xl p-5 flex flex-col items-center text-center dark:bg-navy-800 dark:border-navy-700">
+                  <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-700 flex items-center justify-center mb-4">
                     {step.icon}
                   </div>
-                  <h3 className="text-xl font-serif font-semibold text-navy-900 dark:text-white mb-3">
+                  <h3 className="text-lg font-serif font-semibold text-navy-900 dark:text-white mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-300">
+                  <p className={`${isMobile ? 'text-sm' : ''} text-slate-600 dark:text-slate-300`}>
                     {step.description}
                   </p>
                 </div>
