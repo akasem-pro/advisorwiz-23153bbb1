@@ -1,9 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AnimatedRoute from '../components/ui/AnimatedRoute';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import AppLayout from '../components/layout/AppLayout';
 import { useUser, AdvisorProfile as AdvisorProfileType } from '../context/UserContext';
 import { 
   licensingBodies,
@@ -90,65 +88,59 @@ const AdvisorProfile: React.FC = () => {
   };
 
   return (
-    <AnimatedRoute animation="fade">
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        
-        <main className="flex-grow pt-20">
-          <div className="container mx-auto px-4 py-6 md:py-12 max-w-4xl">
-            <div className="glass-card rounded-2xl overflow-hidden shadow-lg">
-              <div className="p-6 md:p-8">
-                <ProfileHeader progress={progress} />
+    <AppLayout>
+      <div className="pt-6">
+        <div className="container mx-auto px-4 py-6 md:py-12 max-w-4xl">
+          <div className="glass-card rounded-2xl overflow-hidden shadow-lg">
+            <div className="p-6 md:p-8">
+              <ProfileHeader progress={progress} />
 
-                <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
-                  {/* Profile Sections */}
-                  <ProfileSectionManager 
-                    sections={sections}
-                    formData={formData}
-                    handleChange={handleChange}
-                    toggleSection={toggleSection}
-                    handleVerifyEmail={handleVerifyEmail}
-                    handleVerifyPhone={handleVerifyPhone}
-                    isEmailVerified={isEmailVerified}
-                    isPhoneVerified={isPhoneVerified}
-                    handleExpertiseChange={handleExpertiseChange}
-                    isExpertiseSelected={isExpertiseSelected}
-                    handleMultiSelectChange={handleMultiSelectChange}
-                    handlePictureChange={handlePictureChange}
-                    handleSubscriptionSelect={handleSubscriptionSelect}
-                    
-                    // Data arrays
-                    provincesOptions={provincesOptions}
-                    licensingBodies={licensingBodies}
-                    experienceOptions={experienceOptions}
-                    serviceCategories={serviceCategories}
-                    feeStructureOptions={feeStructureOptions}
-                    minimumInvestmentOptions={minimumInvestmentOptions}
-                    clientTypeOptions={clientTypeOptions}
-                    meetingMethodOptions={meetingMethodOptions}
-                    subscriptionPlans={subscriptionPlans}
-                  />
+              <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
+                {/* Profile Sections */}
+                <ProfileSectionManager 
+                  sections={sections}
+                  formData={formData}
+                  handleChange={handleChange}
+                  toggleSection={toggleSection}
+                  handleVerifyEmail={handleVerifyEmail}
+                  handleVerifyPhone={handleVerifyPhone}
+                  isEmailVerified={isEmailVerified}
+                  isPhoneVerified={isPhoneVerified}
+                  handleExpertiseChange={handleExpertiseChange}
+                  isExpertiseSelected={isExpertiseSelected}
+                  handleMultiSelectChange={handleMultiSelectChange}
+                  handlePictureChange={handlePictureChange}
+                  handleSubscriptionSelect={handleSubscriptionSelect}
+                  
+                  // Data arrays
+                  provincesOptions={provincesOptions}
+                  licensingBodies={licensingBodies}
+                  experienceOptions={experienceOptions}
+                  serviceCategories={serviceCategories}
+                  feeStructureOptions={feeStructureOptions}
+                  minimumInvestmentOptions={minimumInvestmentOptions}
+                  clientTypeOptions={clientTypeOptions}
+                  meetingMethodOptions={meetingMethodOptions}
+                  subscriptionPlans={subscriptionPlans}
+                />
 
-                  {/* Form Actions */}
-                  <ProfileFormActions 
-                    handleSubmit={handleSubmit}
-                    handleContinue={handleContinue}
-                  />
-                </form>
-                
-                {saved && (
-                  <div className="mt-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded text-center">
-                    Profile saved successfully!
-                  </div>
-                )}
-              </div>
+                {/* Form Actions */}
+                <ProfileFormActions 
+                  handleSubmit={handleSubmit}
+                  handleContinue={handleContinue}
+                />
+              </form>
+              
+              {saved && (
+                <div className="mt-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded text-center">
+                  Profile saved successfully!
+                </div>
+              )}
             </div>
           </div>
-        </main>
-        
-        <Footer />
+        </div>
       </div>
-    </AnimatedRoute>
+    </AppLayout>
   );
 };
 

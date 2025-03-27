@@ -1,9 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import AnimatedRoute from '../components/ui/AnimatedRoute';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import AppLayout from '../components/layout/AppLayout';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 import PageSEO from '../components/seo/PageSEO';
 
@@ -14,15 +12,13 @@ const Cookies: React.FC = () => {
   ];
 
   return (
-    <AnimatedRoute animation="fade">
+    <AppLayout>
       <PageSEO
         title="Cookies Policy | AdvisorWiz"
         description="Learn about how AdvisorWiz uses cookies and similar technologies to improve your experience."
         keywords="cookies policy, cookie usage, tracking cookies, privacy"
         canonicalUrl="https://advisorwiz.com/cookies"
       />
-      
-      <Header />
       
       <BreadcrumbNav items={breadcrumbs} />
       
@@ -94,9 +90,7 @@ const Cookies: React.FC = () => {
           </p>
         </div>
       </main>
-      
-      <Footer />
-    </AnimatedRoute>
+    </AppLayout>
   );
 };
 

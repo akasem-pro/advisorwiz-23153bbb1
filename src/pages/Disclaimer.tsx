@@ -1,9 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import AnimatedRoute from '../components/ui/AnimatedRoute';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import AppLayout from '../components/layout/AppLayout';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 import PageSEO from '../components/seo/PageSEO';
 
@@ -14,15 +12,13 @@ const Disclaimer: React.FC = () => {
   ];
 
   return (
-    <AnimatedRoute animation="fade">
+    <AppLayout>
       <PageSEO
         title="Financial Disclaimer | AdvisorWiz"
         description="Important financial disclaimer and limitations of services provided by AdvisorWiz."
         keywords="financial disclaimer, advisorwiz disclaimer, financial advice limitations"
         canonicalUrl="https://advisorwiz.com/disclaimer"
       />
-      
-      <Header />
       
       <BreadcrumbNav items={breadcrumbs} />
       
@@ -83,9 +79,7 @@ const Disclaimer: React.FC = () => {
           </p>
         </div>
       </main>
-      
-      <Footer />
-    </AnimatedRoute>
+    </AppLayout>
   );
 };
 

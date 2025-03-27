@@ -16,6 +16,7 @@ interface AppLayoutProps {
   animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale' | 'none';
   animationDuration?: 'fast' | 'normal' | 'slow';
   skipToContentId?: string;
+  hideFooter?: boolean; // Added prop to optionally hide footer
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ 
@@ -28,12 +29,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   withoutPadding = true, // Set default to true to remove padding
   animation = 'fade',
   animationDuration = 'normal',
-  skipToContentId = 'main-content'
+  skipToContentId = 'main-content',
+  hideFooter = false // Default to showing footer
 }) => {
   return (
     <BaseLayout
       header={<Header />}
-      footer={<Footer />}
+      footer={hideFooter ? undefined : <Footer />}
       showSocialProof={!hideSocialProof}
       showTrustBadges={showTrustBadges}
       fullWidth={fullWidth}
