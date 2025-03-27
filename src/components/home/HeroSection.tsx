@@ -11,20 +11,20 @@ const HeroSection: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-navy-950 dark:to-navy-900 pt-0 pb-12 sm:pb-16 lg:pb-24">
+    <div className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-navy-950 dark:to-navy-900 pt-0 pb-8 sm:pb-10 lg:pb-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Hero Content */}
-        <div className="text-center max-w-4xl mx-auto pt-6 pb-8">
+        <div className="text-center max-w-4xl mx-auto pt-4 pb-6">
           <Heading 
             level={1} 
             variant="serif" 
             size="4xl"
-            className="mb-6 animate-fade-in"
+            className="mb-4 animate-fade-in"
           >
             Find Your Ideal Financial Advisor Match
           </Heading>
           
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-8 animate-fade-in" style={{animationDelay: '0.1s'}}>
+          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
             Personalized connections with qualified financial advisors who understand 
             your unique needs and goals. Start your journey to financial well-being today.
           </p>
@@ -51,7 +51,7 @@ const HeroSection: React.FC = () => {
           </div>
           
           {/* Trust badges */}
-          <div className="mt-8 flex flex-wrap justify-center gap-6 animate-fade-in" style={{animationDelay: '0.3s'}}>
+          <div className="mt-6 flex flex-wrap justify-center gap-6 animate-fade-in" style={{animationDelay: '0.3s'}}>
             <div className="flex items-center text-navy-700 dark:text-slate-300">
               <ShieldCheck className="h-5 w-5 mr-2 text-teal-600 dark:text-teal-400" />
               <span className="text-sm md:text-base">Bank-Level Security</span>
@@ -70,7 +70,7 @@ const HeroSection: React.FC = () => {
         </div>
         
         {/* Statistics Bar */}
-        <HeroStatistics className="mt-8" />
+        <HeroStatistics className="mt-4" />
       </div>
       
       {/* Background Elements */}

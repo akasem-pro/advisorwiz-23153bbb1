@@ -29,7 +29,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   children,
   header,
   footer,
-  showSocialProof = false, // Changed default to false
+  showSocialProof = false,
   showTrustBadges = true,
   fullWidth = false,
   className = '',
@@ -87,7 +87,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         {showTrustBadges && (
           <div className={cn(
             fullWidth ? 'w-full px-4' : 'container mx-auto px-4',
-            'my-6'
+            'my-4'
           )}>
             <TrustBadges className="justify-center" />
           </div>

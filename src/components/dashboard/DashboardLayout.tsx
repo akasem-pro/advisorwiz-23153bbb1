@@ -77,7 +77,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <div 
           className={cn(
             "transition-all duration-300 ease-in-out flex-1",
-            sidebarCollapsed ? 'ml-20' : 'ml-64'
+            sidebarCollapsed ? 'ml-16' : 'ml-56'
           )}
         >
           <DashboardHeader 
@@ -89,7 +89,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           />
           
           <main className={cn(
-            "p-6 bg-slate-50 dark:bg-navy-950",
+            "p-5 bg-slate-50 dark:bg-navy-950",
             contentClassName
           )}>
             {children}

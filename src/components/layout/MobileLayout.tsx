@@ -19,7 +19,7 @@ interface MobileLayoutProps {
 const MobileLayout: React.FC<MobileLayoutProps> = ({ 
   children,
   contentClassName,
-  showSocialProof = true,
+  showSocialProof = false,
   showTrustBadges = true,
   withoutPadding = false,
   animation = 'fade',
@@ -30,7 +30,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
     <BaseLayout
       header={<Header />}
       mobileNavbar={<MobileNavbar />}
-      contentClassName={cn("pt-40 pb-20 px-4 sm:px-6 mx-auto w-full", contentClassName)}
+      contentClassName={cn("pt-32 pb-16 px-4 sm:px-6 mx-auto w-full", contentClassName)}
       showSocialProof={showSocialProof}
       showTrustBadges={showTrustBadges}
       withoutPadding={withoutPadding}

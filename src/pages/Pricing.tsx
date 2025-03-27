@@ -13,7 +13,6 @@ import PricingValueProposition from '../components/pricing/PricingValuePropositi
 import PricingCTA from '../components/pricing/PricingCTA';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 import PageSEO from '../components/seo/PageSEO';
-import SocialProofBar from '../components/ui/SocialProofBar';
 import TrustBadges from '../components/ui/TrustBadges';
 import FloatingSupportButton from '../components/support/FloatingSupportButton';
 import { useTrackPageView } from '../hooks/use-analytics';
@@ -40,13 +39,12 @@ const Pricing: React.FC = () => {
       
       <div className="min-h-screen flex flex-col">
         <Header />
-        <SocialProofBar />
         
         <main className="flex-grow pt-20">
           <BreadcrumbNav items={breadcrumbs} />
           
           {/* Pricing Section */}
-          <section className="py-16 md:py-24 bg-gradient-to-b from-white to-slate-50 dark:from-navy-900 dark:to-navy-950">
+          <section className="py-12 md:py-16 bg-gradient-to-b from-white to-slate-50 dark:from-navy-900 dark:to-navy-950">
             <div className="container mx-auto px-4">
               <PricingHeader userType={userType} setUserType={setUserType} />
               
@@ -59,7 +57,7 @@ const Pricing: React.FC = () => {
               {userType === 'enterprise' && <EnterprisePlans />}
               
               {/* Trust badges */}
-              <div className="my-12">
+              <div className="my-8">
                 <TrustBadges className="justify-center" />
               </div>
               
@@ -72,9 +70,9 @@ const Pricing: React.FC = () => {
           </section>
           
           {/* FAQ Section */}
-          <section className="py-16 bg-white dark:bg-navy-900">
+          <section className="py-12 bg-white dark:bg-navy-900">
             <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-serif font-bold text-center text-navy-900 dark:text-slate-100 mb-12">
+              <h2 className="text-3xl font-serif font-bold text-center text-navy-900 dark:text-slate-100 mb-8">
                 Frequently Asked Questions
               </h2>
               

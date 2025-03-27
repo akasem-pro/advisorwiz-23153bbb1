@@ -35,7 +35,7 @@ const Home = () => {
   };
 
   return (
-    <AppLayout fullWidth>
+    <AppLayout fullWidth withoutPadding>
       {/* App Store Optimization Banner */}
       <ASOBanner variant="both" position="top" />
       
@@ -56,7 +56,7 @@ const Home = () => {
         </div>
         
         {/* Marketing Channels Widget - after hero section */}
-        <ConsistentSection background="light" className="py-8">
+        <ConsistentSection background="light" className="py-6">
           <ConsistentContainer>
             <MarketingChannelsWidget orientation="horizontal" />
           </ConsistentContainer>
@@ -71,9 +71,9 @@ const Home = () => {
         </div>
         
         {/* ASO Optimization Info - strategic placement */}
-        <ConsistentSection centered background="accent" className="my-0">
+        <ConsistentSection centered background="accent" className="py-8">
           <ConsistentContainer width="md">
-            <h2 className="text-2xl font-bold text-center mb-6 text-navy-900 dark:text-white">Discover Our Mobile App</h2>
+            <h2 className="text-2xl font-bold text-center mb-4 text-navy-900 dark:text-white">Discover Our Mobile App</h2>
             <ASOOptimizationInfo className="max-w-3xl mx-auto" />
           </ConsistentContainer>
         </ConsistentSection>

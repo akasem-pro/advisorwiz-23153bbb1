@@ -83,17 +83,17 @@ const ForFirms: React.FC = () => {
           {
             title: "Team Management",
             description: "Centralize control of advisor profiles, leads, and client interactions.",
-            icon: <Users className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+            icon: <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" />
           },
           {
             title: "Analytics Dashboard",
             description: "Access comprehensive performance metrics and reporting tools.",
-            icon: <BarChart className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+            icon: <BarChart className="h-5 w-5 text-teal-600 dark:text-teal-400" />
           },
           {
             title: "Compliance Controls",
             description: "Implement governance tools that ensure regulatory compliance.",
-            icon: <Shield className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+            icon: <Shield className="h-5 w-5 text-teal-600 dark:text-teal-400" />
           }
         ]}
       />
