@@ -17,15 +17,15 @@ import { useIsMobile } from '../../hooks/use-mobile';
 // Define the navigation links
 const navigationLinks = [
   {
-    name: 'For Firms',
+    name: 'Firms',
     path: '/for-firms',
   },
   {
-    name: 'For Advisors',
+    name: 'Advisors',
     path: '/for-advisors',
   },
   {
-    name: 'For Consumers',
+    name: 'Consumers',
     path: '/for-consumers',
   },
   {

@@ -81,19 +81,19 @@ const HowItWorksSection: React.FC = () => {
               value="consumer" 
               className={`${isMobile ? 'py-2 text-xs' : 'py-3'} text-center dark:data-[state=active]:bg-navy-700 dark:data-[state=active]:text-white dark:text-slate-300`}
             >
-              For Consumers
+              Consumers
             </TabsTrigger>
             <TabsTrigger 
               value="advisor" 
               className={`${isMobile ? 'py-2 text-xs' : 'py-3'} text-center dark:data-[state=active]:bg-navy-700 dark:data-[state=active]:text-white dark:text-slate-300`}
             >
-              For Advisors
+              Advisors
             </TabsTrigger>
             <TabsTrigger 
               value="firm" 
               className={`${isMobile ? 'py-2 text-xs' : 'py-3'} text-center dark:data-[state=active]:bg-navy-700 dark:data-[state=active]:text-white dark:text-slate-300`}
             >
-              For Firms
+              Firms
             </TabsTrigger>
           </TabsList>
           
