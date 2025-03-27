@@ -1,260 +1,321 @@
 
-import React, { useEffect } from 'react';
-import { StoreIcon, Smartphone, QrCode, Tablet, Download, ExternalLink, Share, ChevronRight } from 'lucide-react';
+import React from 'react';
+import { Download, Smartphone, CheckCircle, Zap, LockIcon, Share2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import AppLayout from '../components/layout/AppLayout';
-import { trackAppStoreEvent } from '../utils/analytics/marketingHelper';
-import { useUser } from '../context/UserContext';
-import { generateAppInstallQRCode } from '../utils/analytics/marketingHelper';
-import SocialShare from '../components/ui/SocialShare';
+import PageSEO from '../components/seo/PageSEO';
+import { trackUserBehavior } from '../utils/analytics/eventTracker';
 
 const DownloadApp = () => {
-  const { isAuthenticated, userType } = useUser();
-  
-  useEffect(() => {
-    // Track page view
-    trackAppStoreEvent('view', 'web', { 
-      page: 'download',
-      authenticated: isAuthenticated,
-      user_type: userType || 'visitor'
-    });
-  }, [isAuthenticated, userType]);
-  
-  const handleAppStoreClick = (store: 'app_store' | 'play_store') => {
-    trackAppStoreEvent('click', store, { page: 'download' });
-    
-    const url = store === 'app_store' 
-      ? 'https://apps.apple.com/app/advisorwiz/id123456789'
-      : 'https://play.google.com/store/apps/details?id=com.advisorwiz';
-      
-    window.open(url, '_blank');
+  const trackDownload = (platform: string) => {
+    trackUserBehavior('app_download', { platform: platform });
   };
-  
-  const generateQRCode = () => {
-    // In a real app, this would generate a QR code image
-    return generateAppInstallQRCode('download_page', 'qr');
-  };
-  
+
   return (
     <AppLayout>
-      <div className="bg-gradient-to-b from-slate-50 to-white dark:from-navy-900 dark:to-navy-800 py-16">
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-navy-900 dark:text-white">
-                Download the AdvisorWiz App
-              </h1>
-              <p className="text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-2xl mx-auto">
-                Get personalized financial advice and connect with expert advisors anytime, anywhere
-              </p>
+      <PageSEO
+        title="Download the AdvisorWiz Mobile App | Financial Advisor Matching"
+        description="Download our mobile app to connect with financial advisors, manage your appointments, and track your financial goals on the go. Available for iOS and Android."
+      />
+      
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 dark:text-white mb-4">
+            Download the AdvisorWiz Mobile App
+          </h1>
+          <p className="text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+            Take your financial future into your hands with our feature-rich mobile app. 
+            Connect with advisors, track goals, and manage appointments anytime, anywhere.
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-8 items-center mb-16">
+          <div className="flex justify-center md:justify-end">
+            <div className="relative max-w-[280px]">
+              <img
+                src="/lovable-uploads/6dc09fb4-35e4-43a0-90fd-282d5deb27a4.png"
+                alt="AdvisorWiz Mobile App Interface"
+                className="w-full h-auto rounded-3xl shadow-2xl"
+              />
+              <div className="absolute -top-4 -right-4 bg-yellow-400 text-navy-900 font-bold px-3 py-1 rounded-full text-sm">
+                NEW!
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h2 className="text-2xl font-serif font-semibold text-navy-900 dark:text-white mb-4">
+              Your Financial Partner in Your Pocket
+            </h2>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">
+              The AdvisorWiz mobile app brings powerful financial advisory connections to your fingertips. 
+              Whether you're looking for an advisor, managing appointments, or tracking your financial goals, 
+              our app makes it simple and efficient.
+            </p>
+            
+            <div className="space-y-4 mb-8">
+              <div className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-teal-500 mt-1 mr-3" />
+                <div>
+                  <h3 className="font-medium text-navy-800 dark:text-white">Smart Advisor Matching</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Our AI-powered algorithm connects you with advisors who match your specific needs and preferences.
+                  </p>
+                </div>
+              </div>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <Button 
-                  size="lg" 
-                  onClick={() => handleAppStoreClick('app_store')}
-                  className="bg-black text-white hover:bg-gray-800 h-14 px-6 shadow-sm"
-                >
-                  <StoreIcon className="mr-2 h-5 w-5" />
-                  Download on App Store
-                </Button>
+              <div className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-teal-500 mt-1 mr-3" />
+                <div>
+                  <h3 className="font-medium text-navy-800 dark:text-white">Secure Messaging</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Communicate directly with your financial advisor through our secure, end-to-end encrypted messaging system.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-teal-500 mt-1 mr-3" />
+                <div>
+                  <h3 className="font-medium text-navy-800 dark:text-white">Financial Dashboard</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Track your investments, goals, and progress with our intuitive visual dashboard.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-teal-500 mt-1 mr-3" />
+                <div>
+                  <h3 className="font-medium text-navy-800 dark:text-white">Calendar Integration</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Schedule appointments with your advisor that sync directly with your device calendar.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button 
+                size="lg"
+                className="bg-black text-white hover:bg-gray-800"
+                onClick={() => trackDownload('ios')}
+              >
+                <img src="/lovable-uploads/ea20c450-6c61-4276-91db-5f04659e6193.png" alt="App Store" className="h-5 w-5 mr-2" />
+                Download on App Store
+              </Button>
+              
+              <Button 
+                size="lg"
+                className="bg-teal-600 hover:bg-teal-700"
+                onClick={() => trackDownload('android')}
+              >
+                <Download className="h-5 w-5 mr-2" />
+                Get it on Google Play
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        {/* App Features Tabs */}
+        <div className="mb-16">
+          <h2 className="text-2xl font-serif font-semibold text-navy-900 dark:text-white text-center mb-8">
+            App Features
+          </h2>
+          
+          <Tabs defaultValue="consumers" className="max-w-4xl mx-auto">
+            <TabsList className="w-full grid grid-cols-3 mb-8">
+              <TabsTrigger value="consumers">For Consumers</TabsTrigger>
+              <TabsTrigger value="advisors">For Advisors</TabsTrigger>
+              <TabsTrigger value="firms">For Firms</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="consumers" className="mt-0">
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="bg-white dark:bg-navy-800 p-5 rounded-lg shadow-sm border border-slate-200 dark:border-navy-700">
+                  <div className="h-12 w-12 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center mb-4">
+                    <Smartphone className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-navy-900 dark:text-white mb-2">
+                    Advisor Discovery
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">
+                    Browse profiles of qualified financial advisors who match your specific needs, preferences, and financial goals.
+                  </p>
+                </div>
                 
-                <Button 
-                  size="lg"
-                  onClick={() => handleAppStoreClick('play_store')}
-                  className="bg-teal-600 hover:bg-teal-700 text-white h-14 px-6 shadow-sm"
-                >
-                  <StoreIcon className="mr-2 h-5 w-5" />
-                  Get it on Google Play
-                </Button>
+                <div className="bg-white dark:bg-navy-800 p-5 rounded-lg shadow-sm border border-slate-200 dark:border-navy-700">
+                  <div className="h-12 w-12 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center mb-4">
+                    <Zap className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-navy-900 dark:text-white mb-2">
+                    Real-time Messaging
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">
+                    Chat directly with financial advisors, ask questions, and get personalized advice through our secure messaging system.
+                  </p>
+                </div>
+                
+                <div className="bg-white dark:bg-navy-800 p-5 rounded-lg shadow-sm border border-slate-200 dark:border-navy-700">
+                  <div className="h-12 w-12 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center mb-4">
+                    <LockIcon className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-navy-900 dark:text-white mb-2">
+                    Secure Document Sharing
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">
+                    Securely share financial documents with your advisor through our encrypted file sharing system.
+                  </p>
+                </div>
               </div>
-              
-              <div className="flex justify-center mb-12">
-                <Card className="max-w-sm mx-auto bg-white dark:bg-navy-800 overflow-hidden shadow-md border border-slate-200 dark:border-navy-700">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-center mb-2">
-                      <div className="bg-teal-50 dark:bg-teal-900/30 p-3 rounded-full">
-                        <QrCode className="h-8 w-8 text-teal-600 dark:text-teal-400" />
-                      </div>
-                    </div>
-                    <CardTitle className="text-center">Scan to Download</CardTitle>
-                    <CardDescription className="text-center">
-                      Use your camera app to scan this QR code
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="px-6 pb-6 flex justify-center">
-                    <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 dark:border-navy-700 w-48 h-48 flex items-center justify-center">
-                      {/* This would be a real QR code image in production */}
-                      <div className="bg-slate-100 w-40 h-40 flex items-center justify-center p-4">
-                        <img src="/lovable-uploads/54700f01-bc3e-46e6-a14f-7cc0101fe21f.png" alt="QR Code" className="w-full h-full object-contain" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+            </TabsContent>
+            
+            <TabsContent value="advisors" className="mt-0">
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="bg-white dark:bg-navy-800 p-5 rounded-lg shadow-sm border border-slate-200 dark:border-navy-700">
+                  <div className="h-12 w-12 rounded-full bg-navy-100 dark:bg-navy-700 flex items-center justify-center mb-4">
+                    <Share2 className="h-6 w-6 text-navy-600 dark:text-navy-300" />
+                  </div>
+                  <h3 className="text-lg font-medium text-navy-900 dark:text-white mb-2">
+                    Client Acquisition
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">
+                    Connect with potential clients who match your expertise and grow your advisory practice.
+                  </p>
+                </div>
+                
+                <div className="bg-white dark:bg-navy-800 p-5 rounded-lg shadow-sm border border-slate-200 dark:border-navy-700">
+                  <div className="h-12 w-12 rounded-full bg-navy-100 dark:bg-navy-700 flex items-center justify-center mb-4">
+                    <Zap className="h-6 w-6 text-navy-600 dark:text-navy-300" />
+                  </div>
+                  <h3 className="text-lg font-medium text-navy-900 dark:text-white mb-2">
+                    Client Management
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">
+                    Manage client relationships, track interactions, and organize client information efficiently.
+                  </p>
+                </div>
+                
+                <div className="bg-white dark:bg-navy-800 p-5 rounded-lg shadow-sm border border-slate-200 dark:border-navy-700">
+                  <div className="h-12 w-12 rounded-full bg-navy-100 dark:bg-navy-700 flex items-center justify-center mb-4">
+                    <LockIcon className="h-6 w-6 text-navy-600 dark:text-navy-300" />
+                  </div>
+                  <h3 className="text-lg font-medium text-navy-900 dark:text-white mb-2">
+                    Schedule Management
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">
+                    Set availability, manage appointments, and sync with your existing calendar systems.
+                  </p>
+                </div>
               </div>
+            </TabsContent>
+            
+            <TabsContent value="firms" className="mt-0">
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="bg-white dark:bg-navy-800 p-5 rounded-lg shadow-sm border border-slate-200 dark:border-navy-700">
+                  <div className="h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-4">
+                    <Share2 className="h-6 w-6 text-slate-600 dark:text-slate-300" />
+                  </div>
+                  <h3 className="text-lg font-medium text-navy-900 dark:text-white mb-2">
+                    Team Management
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">
+                    Manage your advisory team, assign clients, and track team performance through the mobile app.
+                  </p>
+                </div>
+                
+                <div className="bg-white dark:bg-navy-800 p-5 rounded-lg shadow-sm border border-slate-200 dark:border-navy-700">
+                  <div className="h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-4">
+                    <Zap className="h-6 w-6 text-slate-600 dark:text-slate-300" />
+                  </div>
+                  <h3 className="text-lg font-medium text-navy-900 dark:text-white mb-2">
+                    Performance Analytics
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">
+                    Access real-time analytics on client acquisition, advisor performance, and business growth.
+                  </p>
+                </div>
+                
+                <div className="bg-white dark:bg-navy-800 p-5 rounded-lg shadow-sm border border-slate-200 dark:border-navy-700">
+                  <div className="h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-4">
+                    <LockIcon className="h-6 w-6 text-slate-600 dark:text-slate-300" />
+                  </div>
+                  <h3 className="text-lg font-medium text-navy-900 dark:text-white mb-2">
+                    Compliance Tools
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm">
+                    Ensure your advisory team maintains regulatory compliance with built-in compliance monitoring tools.
+                  </p>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+        
+        {/* App Store Badges */}
+        <div className="bg-gradient-to-r from-teal-500 to-navy-600 rounded-lg p-8 text-white text-center mb-16">
+          <h2 className="text-2xl font-serif font-semibold mb-4">
+            Download AdvisorWiz Today
+          </h2>
+          <p className="max-w-2xl mx-auto mb-8">
+            Take the first step towards better financial connections. Download our app now and experience 
+            the future of financial advisory services.
+          </p>
+          
+          <div className="flex flex-col md:flex-row gap-4 justify-center">
+            <Button 
+              size="lg"
+              className="bg-black text-white hover:bg-gray-800 border border-white/20"
+              onClick={() => trackDownload('ios')}
+            >
+              <img src="/lovable-uploads/ea20c450-6c61-4276-91db-5f04659e6193.png" alt="App Store" className="h-5 w-5 mr-2" />
+              Download on App Store
+            </Button>
+            
+            <Button 
+              size="lg"
+              className="bg-white text-navy-900 hover:bg-slate-100"
+              onClick={() => trackDownload('android')}
+            >
+              <Download className="h-5 w-5 mr-2" />
+              Get it on Google Play
+            </Button>
+          </div>
+        </div>
+        
+        {/* SEO section with keywords */}
+        <div className="max-w-4xl mx-auto bg-slate-50 dark:bg-navy-800 p-6 rounded-lg border border-slate-200 dark:border-navy-700">
+          <h2 className="text-xl font-medium text-navy-900 dark:text-white mb-3">
+            Why Choose the AdvisorWiz Mobile App?
+          </h2>
+          <p className="text-slate-600 dark:text-slate-300 mb-4">
+            The AdvisorWiz mobile app is designed to make finding and connecting with financial advisors simpler and more efficient. 
+            Whether you're a consumer looking for guidance, an advisor seeking clients, or a firm managing a team of advisors, 
+            our app provides the tools you need to succeed.
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <h3 className="font-medium text-navy-800 dark:text-slate-200 mb-2">For Investors & Consumers:</h3>
+              <ul className="list-disc pl-5 space-y-1 text-slate-600 dark:text-slate-400">
+                <li>Find certified financial advisors</li>
+                <li>Get personalized retirement planning advice</li>
+                <li>Investment management on the go</li>
+                <li>Secure wealth management consultations</li>
+                <li>Estate planning and tax optimization</li>
+              </ul>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-              <Card className="bg-white dark:bg-navy-800 border border-slate-200 dark:border-navy-700 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                <div className="h-2 bg-gradient-to-r from-blue-500 to-blue-600"></div>
-                <CardHeader>
-                  <div className="mb-3">
-                    <div className="bg-blue-50 dark:bg-blue-900/30 w-12 h-12 rounded-lg flex items-center justify-center">
-                      <Smartphone className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                    </div>
-                  </div>
-                  <CardTitle className="flex items-center">
-                    Mobile Features
-                  </CardTitle>
-                  <CardDescription>Enhanced mobile experience</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3 text-sm">
-                    <li className="flex items-start">
-                      <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-1 rounded-full mr-2 mt-0.5">
-                        <ChevronRight className="h-3 w-3" />
-                      </div>
-                      <span className="text-slate-700 dark:text-slate-300">Real-time notifications for advisor matches</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-1 rounded-full mr-2 mt-0.5">
-                        <ChevronRight className="h-3 w-3" />
-                      </div>
-                      <span className="text-slate-700 dark:text-slate-300">Seamless video calls with financial advisors</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-1 rounded-full mr-2 mt-0.5">
-                        <ChevronRight className="h-3 w-3" />
-                      </div>
-                      <span className="text-slate-700 dark:text-slate-300">Offline access to saved advisor profiles</span>
-                    </li>
-                  </ul>
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    variant="outline" 
-                    className="w-full border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-900/20" 
-                    onClick={() => handleAppStoreClick('app_store')}
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    Download iOS App
-                  </Button>
-                </CardFooter>
-              </Card>
-              
-              <Card className="bg-white dark:bg-navy-800 border border-slate-200 dark:border-navy-700 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                <div className="h-2 bg-gradient-to-r from-purple-500 to-purple-600"></div>
-                <CardHeader>
-                  <div className="mb-3">
-                    <div className="bg-purple-50 dark:bg-purple-900/30 w-12 h-12 rounded-lg flex items-center justify-center">
-                      <Tablet className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                    </div>
-                  </div>
-                  <CardTitle className="flex items-center">
-                    Tablet Optimization
-                  </CardTitle>
-                  <CardDescription>Perfect for larger screens</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3 text-sm">
-                    <li className="flex items-start">
-                      <div className="bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 p-1 rounded-full mr-2 mt-0.5">
-                        <ChevronRight className="h-3 w-3" />
-                      </div>
-                      <span className="text-slate-700 dark:text-slate-300">Enhanced dashboard view with detailed analytics</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 p-1 rounded-full mr-2 mt-0.5">
-                        <ChevronRight className="h-3 w-3" />
-                      </div>
-                      <span className="text-slate-700 dark:text-slate-300">Side-by-side comparison of advisor profiles</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 p-1 rounded-full mr-2 mt-0.5">
-                        <ChevronRight className="h-3 w-3" />
-                      </div>
-                      <span className="text-slate-700 dark:text-slate-300">Rich document viewing and annotations</span>
-                    </li>
-                  </ul>
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    variant="outline" 
-                    className="w-full border-purple-200 text-purple-600 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-400 dark:hover:bg-purple-900/20" 
-                    onClick={() => handleAppStoreClick('play_store')}
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    Download Android App
-                  </Button>
-                </CardFooter>
-              </Card>
-              
-              <Card className="bg-white dark:bg-navy-800 border border-slate-200 dark:border-navy-700 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                <div className="h-2 bg-gradient-to-r from-teal-500 to-teal-600"></div>
-                <CardHeader>
-                  <div className="mb-3">
-                    <div className="bg-teal-50 dark:bg-teal-900/30 w-12 h-12 rounded-lg flex items-center justify-center">
-                      <Share className="h-6 w-6 text-teal-600 dark:text-teal-400" />
-                    </div>
-                  </div>
-                  <CardTitle className="flex items-center">
-                    Share & Refer
-                  </CardTitle>
-                  <CardDescription>Invite friends and colleagues</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3 text-sm">
-                    <li className="flex items-start">
-                      <div className="bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 p-1 rounded-full mr-2 mt-0.5">
-                        <ChevronRight className="h-3 w-3" />
-                      </div>
-                      <span className="text-slate-700 dark:text-slate-300">Send app invitations to contacts</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 p-1 rounded-full mr-2 mt-0.5">
-                        <ChevronRight className="h-3 w-3" />
-                      </div>
-                      <span className="text-slate-700 dark:text-slate-300">Earn rewards for successful referrals</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 p-1 rounded-full mr-2 mt-0.5">
-                        <ChevronRight className="h-3 w-3" />
-                      </div>
-                      <span className="text-slate-700 dark:text-slate-300">Track your referral progress and status</span>
-                    </li>
-                  </ul>
-                </CardContent>
-                <CardFooter className="flex gap-2">
-                  <Button variant="outline" className="flex-1 border-teal-200 text-teal-600 hover:bg-teal-50 dark:border-teal-800 dark:text-teal-400 dark:hover:bg-teal-900/20">
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Program
-                  </Button>
-                  <SocialShare className="flex-1" triggerClassName="w-full justify-center border-teal-200 text-teal-600 hover:bg-teal-50 dark:border-teal-800 dark:text-teal-400 dark:hover:bg-teal-900/20" showAppDownload={false} />
-                </CardFooter>
-              </Card>
-            </div>
-            
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-8 text-white text-center shadow-lg">
-              <h2 className="text-3xl font-bold mb-4">Download Today</h2>
-              <p className="mb-6 text-lg max-w-2xl mx-auto">
-                Join thousands of users who are already experiencing the best way to connect with financial advisors.
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <Button 
-                  className="bg-white text-blue-600 hover:bg-slate-100 h-12 shadow-sm"
-                  onClick={() => handleAppStoreClick('app_store')}
-                >
-                  <StoreIcon className="mr-2 h-5 w-5" />
-                  App Store
-                </Button>
-                <Button 
-                  className="bg-white text-blue-600 hover:bg-slate-100 h-12 shadow-sm"
-                  onClick={() => handleAppStoreClick('play_store')}
-                >
-                  <StoreIcon className="mr-2 h-5 w-5" />
-                  Google Play
-                </Button>
-              </div>
+            <div>
+              <h3 className="font-medium text-navy-800 dark:text-slate-200 mb-2">For Financial Professionals:</h3>
+              <ul className="list-disc pl-5 space-y-1 text-slate-600 dark:text-slate-400">
+                <li>Grow your client base</li>
+                <li>Streamline client communications</li>
+                <li>Manage appointments efficiently</li>
+                <li>Track client engagement</li>
+                <li>Secure document sharing</li>
+              </ul>
             </div>
           </div>
         </div>

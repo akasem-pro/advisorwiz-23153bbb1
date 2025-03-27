@@ -5,7 +5,7 @@ import { useIsMobile } from '../hooks/use-mobile';
 import ASOBanner from '../components/marketing/ASOBanner';
 import ReviewRequestModal from '../components/marketing/ReviewRequestModal';
 import MarketingChannelsWidget from '../components/marketing/MarketingChannelsWidget';
-import ASOOptimizationInfo from '../components/marketing/ASOOptimizationInfo';
+import MobileAppPromotion from '../components/marketing/MobileAppPromotion';
 import PromotionalBanner from '../components/promotions/PromotionalBanner';
 import { trackAppStoreEvent } from '../utils/analytics/marketingHelper';
 import OnboardingTour from '../components/onboarding/OnboardingTour';
@@ -74,13 +74,13 @@ const Home = () => {
           <BenefitsSection />
         </div>
         
-        {/* ASO Optimization Info - strategic placement */}
+        {/* Mobile App Promotion Section - replacing ASOOptimizationInfo */}
         <ConsistentSection centered background="accent" className="py-6">
           <ConsistentContainer width="md">
             <h2 className="text-xl md:text-2xl font-bold text-center mb-3 text-navy-900 dark:text-white">
-              Discover Our Mobile App
+              AdvisorWiz Mobile App
             </h2>
-            <ASOOptimizationInfo className="max-w-3xl mx-auto" />
+            <MobileAppPromotion className="max-w-4xl mx-auto" />
           </ConsistentContainer>
         </ConsistentSection>
         
