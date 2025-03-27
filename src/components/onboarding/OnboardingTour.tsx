@@ -155,16 +155,46 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({
     }
   }, [location.pathname]);
 
+  // Helper function to scroll to element
+  const scrollToElement = (selector: string) => {
+    try {
+      const element = document.querySelector(selector);
+      if (element && selector !== 'body') {
+        // Scroll the element into view with smooth behavior
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    } catch (err) {
+      console.error('Error scrolling to element:', err);
+    }
+  };
+
   const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status, index, type } = data;
+    const { status, index, type, step } = data;
     
     // Update step index for tracking
     if (type === 'step:after') {
       setStepIndex(index + 1);
+      
+      // Get the next step and scroll to it
+      const steps = getSteps();
+      if (index + 1 < steps.length) {
+        const nextTarget = steps[index + 1].target;
+        if (typeof nextTarget === 'string') {
+          // Add a short delay to ensure UI updates before scrolling
+          setTimeout(() => scrollToElement(nextTarget), 300);
+        }
+      }
+    }
+    
+    // Scroll to the current step's target when it becomes active
+    if (type === 'step:before') {
+      const currentTarget = step.target;
+      if (typeof currentTarget === 'string') {
+        setTimeout(() => scrollToElement(currentTarget), 300);
+      }
     }
     
     // Tour is finished or skipped
-    // Fix: Compare status with the imported STATUS constants instead of string literals
     if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       setRun(false);
       
@@ -203,10 +233,12 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({
       hideCloseButton
       run={run}
       scrollToFirstStep
+      scrollOffset={80} // Add offset for fixed headers
       showProgress
       showSkipButton
       stepIndex={stepIndex}
       steps={steps}
+      disableScrolling={false} // Allow Joyride to handle scrolling
       styles={{
         options: {
           zIndex: 10000,

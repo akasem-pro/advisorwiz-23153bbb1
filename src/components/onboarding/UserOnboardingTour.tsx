@@ -94,10 +94,31 @@ const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => 
     }
   }, [isAuthenticated]);
 
+  // Helper function to scroll to element
+  const scrollToElement = (selector: string) => {
+    try {
+      const element = document.querySelector(selector);
+      if (element && selector !== 'body') {
+        // Scroll the element into view with smooth behavior
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    } catch (err) {
+      console.error('Error scrolling to element:', err);
+    }
+  };
+
   const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status } = data;
+    const { status, index, type, step } = data;
     
-    // Fix: Use string literals for the status values as defined in react-joyride
+    // Scroll to the current step's target when it becomes active
+    if (type === 'step:before') {
+      const currentTarget = step.target;
+      if (typeof currentTarget === 'string') {
+        setTimeout(() => scrollToElement(currentTarget), 300);
+      }
+    }
+    
+    // Fix: Use the STATUS from react-joyride for the status values
     if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       // Mark the tour as completed
       localStorage.setItem('hasSeenOnboardingTour', 'true');
@@ -112,9 +133,11 @@ const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => 
       hideCloseButton
       run={run}
       scrollToFirstStep
+      scrollOffset={80} // Add offset for fixed headers
       showProgress
       showSkipButton
       steps={getSteps()}
+      disableScrolling={false} // Allow Joyride to handle scrolling
       styles={{
         options: {
           zIndex: 10000,
