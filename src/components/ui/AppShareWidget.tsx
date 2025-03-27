@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowRight, Share2, Download, QrCode, Smartphone } from 'lucide-react';
+import { ArrowRight, Download, QrCode, Smartphone } from 'lucide-react';
 import { Button } from './button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from './card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
