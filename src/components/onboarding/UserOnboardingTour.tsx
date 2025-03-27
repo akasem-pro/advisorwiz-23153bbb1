@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 import { useUser } from '../../context/UserContext';
+import { tourStyles } from './OnboardingTourStyles';
 
 interface UserOnboardingTourProps {
   userType?: 'consumer' | 'advisor' | 'firm_admin';
@@ -138,18 +139,7 @@ const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => 
       showSkipButton
       steps={getSteps()}
       disableScrolling={false} // Allow Joyride to handle scrolling
-      styles={{
-        options: {
-          zIndex: 10000,
-          primaryColor: '#0091EA',
-        },
-        tooltipContainer: {
-          textAlign: 'left',
-        },
-        buttonBack: {
-          marginRight: 10,
-        },
-      }}
+      styles={tourStyles}
     />
   );
 };
