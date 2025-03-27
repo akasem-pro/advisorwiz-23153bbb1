@@ -2,7 +2,6 @@
 import React, { ReactNode, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
-import SocialProofBar from '../ui/SocialProofBar';
 import TrustBadges from '../ui/TrustBadges';
 import FloatingSupportButton from '../support/FloatingSupportButton';
 import { initializeTagManager, trackPageView } from '../../utils/tagManager';
@@ -12,7 +11,7 @@ export interface BaseLayoutProps {
   children: ReactNode;
   header: ReactNode;
   footer?: ReactNode;
-  showSocialProof?: boolean;
+  showSocialProof?: boolean; // Keeping property for backward compatibility
   showTrustBadges?: boolean;
   fullWidth?: boolean;
   className?: string;
@@ -30,7 +29,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   children,
   header,
   footer,
-  showSocialProof = true,
+  showSocialProof = true, // Keeping property for backward compatibility
   showTrustBadges = true,
   fullWidth = false,
   className = '',
@@ -77,7 +76,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         {header}
       </header>
       
-      {showSocialProof && <SocialProofBar />}
+      {/* Removed SocialProofBar */}
       
       <main className={cn(
         "flex-grow",
