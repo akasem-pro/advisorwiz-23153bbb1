@@ -14,8 +14,6 @@ import ConsistentContainer from '../components/ui/design-system/ConsistentContai
 import TrustBadges from '../components/ui/TrustBadges';
 
 import HeroSection from '../components/home/HeroSection';
-import HowItWorksSection from '../components/home/HowItWorksSection';
-import BenefitsSection from '../components/home/BenefitsSection';
 import TestimonialsSection from '../components/home/TestimonialsSection';
 import FAQSection from '../components/home/FAQSection';
 import MainCTASection from '../components/home/MainCTASection';
@@ -56,13 +54,6 @@ const Home = () => {
           <HeroSection />
         </div>
         
-        {/* Trust Badges - More subtle placement */}
-        <ConsistentSection background="transparent" spacing="xs" className="py-1 -mt-2">
-          <ConsistentContainer>
-            <TrustBadges className="mx-auto max-w-3xl" compact={true} />
-          </ConsistentContainer>
-        </ConsistentSection>
-        
         {/* Marketing widget - Only on desktop with reduced prominence */}
         {!isMobile && (
           <ConsistentSection background="transparent" className="py-2">
@@ -71,16 +62,6 @@ const Home = () => {
             </ConsistentContainer>
           </ConsistentSection>
         )}
-        
-        {/* How It Works - Add animation */}
-        <div id="how-it-works-section" className="scroll-mt-20 animate-fade-in" style={{animationDuration: '0.8s', animationDelay: '0.1s'}}>
-          <HowItWorksSection />
-        </div>
-        
-        {/* Benefits Section */}
-        <div id="benefits-section" className="scroll-mt-20">
-          <BenefitsSection />
-        </div>
         
         {/* Mobile App Promotion - Only show when relevant */}
         {!isMobile && (
