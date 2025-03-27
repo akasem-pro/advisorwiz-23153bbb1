@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import AccessibilityDashboard from '../components/admin/AccessibilityDashboard';
@@ -26,12 +25,10 @@ const AccessibilityTestPage: React.FC = () => {
   
   return (
     <AppLayout>
-      {showTour && (
-        <OnboardingTour 
-          onComplete={() => setShowTour(false)} 
-          onSkip={() => setShowTour(false)}
-        />
-      )}
+      <OnboardingTour 
+        onComplete={() => setShowTour(false)} 
+        onSkip={() => setShowTour(false)}
+      />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">

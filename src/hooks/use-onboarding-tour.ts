@@ -12,6 +12,7 @@ export const useOnboardingTour = (
 ) => {
   const [run, setRun] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
+  const [steps, setSteps] = useState<Step[]>([]);
   const location = useLocation();
   const { toast } = useToast();
   
@@ -121,6 +122,23 @@ export const useOnboardingTour = (
       }
     }
 
+    // Contact page specific steps
+    if (pathname.includes('contact')) {
+      return [
+        ...commonSteps,
+        {
+          target: '.bg-teal-50',
+          content: 'Here you can find our contact information.',
+          placement: 'bottom',
+        },
+        {
+          target: 'form',
+          content: 'Fill out this form to send us a message directly.',
+          placement: 'top',
+        },
+      ];
+    }
+
     // Matching interface specific steps
     if (pathname.includes('match')) {
       return [
@@ -142,17 +160,21 @@ export const useOnboardingTour = (
   };
 
   useEffect(() => {
-    // Reset tour when route changes
-    setStepIndex(0);
+    // Get and set steps based on current location
+    const currentSteps = getSteps();
+    setSteps(currentSteps);
     
-    // Show onboarding tour for new users on supported pages
+    // Reset step index but don't stop tour when route changes
+    if (run) {
+      setStepIndex(0);
+    }
+  }, [location.pathname, userType]);
+
+  useEffect(() => {
+    // Show onboarding tour for new users
     const hasSeenTour = localStorage.getItem('hasSeenOnboardingTour');
-    const isAppropriateRoute = location.pathname === '/' || 
-                               location.pathname === '' || 
-                               location.pathname.includes('dashboard') || 
-                               location.pathname.includes('match');
     
-    if (!hasSeenTour && isAppropriateRoute) {
+    if (!hasSeenTour) {
       // Delay to ensure the UI is fully loaded
       const timer = setTimeout(() => {
         setRun(true);
@@ -160,36 +182,35 @@ export const useOnboardingTour = (
       
       return () => clearTimeout(timer);
     }
-  }, [location.pathname]);
+  }, []);
 
   const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status, index, type, step } = data;
+    const { action, index, status, type } = data;
     
-    // Update step index for tracking
-    if (type === 'step:after') {
+    // Log tour events for debugging
+    console.log('Tour event:', { action, index, status, type });
+    
+    if (type === 'step:after' && action === 'next') {
+      // Update step index when user clicks next
       setStepIndex(index + 1);
-      
-      // Get the next step and scroll to it
-      const steps = getSteps();
-      if (index + 1 < steps.length) {
-        const nextTarget = steps[index + 1].target;
-        if (typeof nextTarget === 'string') {
-          // Add a short delay to ensure UI updates before scrolling
-          setTimeout(() => scrollToElement(nextTarget), 300);
-        }
-      }
+    }
+    
+    // Handle click on "back" button
+    if (type === 'step:after' && action === 'prev') {
+      setStepIndex(index - 1);
     }
     
     // Scroll to the current step's target when it becomes active
     if (type === 'step:before') {
-      const currentTarget = step.target;
-      if (typeof currentTarget === 'string') {
+      const currentStep = steps[index];
+      const currentTarget = currentStep?.target;
+      if (typeof currentTarget === 'string' && currentTarget !== 'body') {
         setTimeout(() => scrollToElement(currentTarget), 300);
       }
     }
     
     // Tour is finished or skipped
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
       setRun(false);
       
       // Mark the tour as completed
@@ -219,7 +240,8 @@ export const useOnboardingTour = (
   return {
     run,
     stepIndex,
-    steps: getSteps(),
+    steps,
     handleJoyrideCallback,
+    setRun, // Export setRun to allow manual control of the tour
   };
 };

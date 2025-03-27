@@ -1,45 +1,42 @@
 
-import React from 'react';
 import { Route } from 'react-router-dom';
 import Home from '../pages/Home';
-import Resources from '../pages/Resources';
 import AboutUs from '../pages/AboutUs';
-import ForConsumers from '../pages/ForConsumers';
 import ForAdvisors from '../pages/ForAdvisors';
+import ForConsumers from '../pages/ForConsumers';
 import ForFirms from '../pages/ForFirms';
-import Pricing from '../pages/Pricing';
-import ContactUs from '../pages/ContactUs';
-import DownloadApp from '../pages/DownloadApp';
-import Team from '../pages/Team';
 import Blog from '../pages/Blog';
+import Pricing from '../pages/Pricing';
+import Team from '../pages/Team';
 import Careers from '../pages/Careers';
-import Terms from '../pages/Terms';
+import ContactUs from '../pages/ContactUs';
 import Privacy from '../pages/Privacy';
+import Terms from '../pages/Terms';
 import Disclaimer from '../pages/Disclaimer';
 import Cookies from '../pages/Cookies';
 import Sitemap from '../pages/Sitemap';
-import NotFound from '../pages/NotFound';
+import DownloadApp from '../pages/DownloadApp';
+import Resources from '../pages/Resources';
 
-// Export main routes as an array of Route components
+// Always provide a unique key for each route for proper rendering
 const MainRoutes = [
-  <Route key="home" path="/" element={<Home />} />,
-  <Route key="resources" path="/resources" element={<Resources />} />,
-  <Route key="about" path="/about" element={<AboutUs />} />,
-  <Route key="consumers" path="/consumers" element={<ForConsumers />} />,
-  <Route key="advisors" path="/advisors" element={<ForAdvisors />} />,
-  <Route key="firms" path="/firms" element={<ForFirms />} />,
-  <Route key="pricing" path="/pricing" element={<Pricing />} />,
-  <Route key="contact" path="/contact" element={<ContactUs />} />,
-  <Route key="download" path="/download" element={<DownloadApp />} />,
-  <Route key="team" path="/team" element={<Team />} />,
-  <Route key="blog" path="/blog" element={<Blog />} />,
-  <Route key="careers" path="/careers" element={<Careers />} />,
-  <Route key="terms" path="/terms" element={<Terms />} />,
-  <Route key="privacy" path="/privacy" element={<Privacy />} />,
-  <Route key="disclaimer" path="/disclaimer" element={<Disclaimer />} />,
-  <Route key="cookies" path="/cookies" element={<Cookies />} />,
-  <Route key="sitemap" path="/sitemap" element={<Sitemap />} />,
-  <Route key="notfound" path="*" element={<NotFound />} />
+  <Route index element={<Home />} key="home" />,
+  <Route path="about" element={<AboutUs />} key="about" />,
+  <Route path="for-advisors" element={<ForAdvisors />} key="for-advisors" />,
+  <Route path="for-consumers" element={<ForConsumers />} key="for-consumers" />,
+  <Route path="for-firms" element={<ForFirms />} key="for-firms" />,
+  <Route path="blog/*" element={<Blog />} key="blog" />,
+  <Route path="pricing" element={<Pricing />} key="pricing" />,
+  <Route path="team" element={<Team />} key="team" />,
+  <Route path="careers" element={<Careers />} key="careers" />,
+  <Route path="contact" element={<ContactUs />} key="contact" />,
+  <Route path="privacy" element={<Privacy />} key="privacy" />,
+  <Route path="terms" element={<Terms />} key="terms" />,
+  <Route path="disclaimer" element={<Disclaimer />} key="disclaimer" />,
+  <Route path="cookies" element={<Cookies />} key="cookies" />,
+  <Route path="sitemap" element={<Sitemap />} key="sitemap" />,
+  <Route path="download" element={<DownloadApp />} key="download" />,
+  <Route path="resources" element={<Resources />} key="resources" />,
 ];
 
 export default MainRoutes;

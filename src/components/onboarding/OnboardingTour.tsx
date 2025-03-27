@@ -1,6 +1,6 @@
 
 import React from 'react';
-import Joyride from 'react-joyride';
+import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
 import { UserType } from '../../types/profileTypes';
 import { useOnboardingTour } from '../../hooks/use-onboarding-tour';
 import { tourStyles } from './OnboardingTourStyles';
@@ -22,23 +22,25 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({
     onSkip
   );
 
-  // Only render if there are steps
-  if (!steps.length) return null;
+  // Only render if there are steps and the tour should run
+  if (!steps.length || !run) return null;
 
   return (
     <Joyride
       callback={handleJoyrideCallback}
       continuous
-      hideCloseButton
+      hideCloseButton={false}
       run={run}
       scrollToFirstStep
-      scrollOffset={80} // Add offset for fixed headers
+      scrollOffset={80}
       showProgress
       showSkipButton
       stepIndex={stepIndex}
       steps={steps}
-      disableScrolling={false} // Allow Joyride to handle scrolling
+      disableScrolling={false}
       styles={tourStyles}
+      disableOverlayClose
+      spotlightClicks
     />
   );
 };

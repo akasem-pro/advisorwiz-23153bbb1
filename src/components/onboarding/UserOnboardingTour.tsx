@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
+import Joyride, { CallBackProps, STATUS, Step, ACTIONS } from 'react-joyride';
 import { useUser } from '../../context/UserContext';
 import { tourStyles } from './OnboardingTourStyles';
 
@@ -10,6 +10,7 @@ interface UserOnboardingTourProps {
 
 const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => {
   const [run, setRun] = useState(false);
+  const [stepIndex, setStepIndex] = useState(0);
   const { isAuthenticated } = useUser();
   
   // Define steps based on user type
@@ -109,12 +110,24 @@ const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => 
   };
 
   const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status, index, type, step } = data;
+    const { status, index, type, action, step } = data;
+    
+    console.log('Tour event:', { action, index, type, status });
+    
+    // Update step index when user clicks next
+    if (type === 'step:after' && action === 'next') {
+      setStepIndex(index + 1);
+    }
+    
+    // Handle click on "back" button
+    if (type === 'step:after' && action === 'prev') {
+      setStepIndex(index - 1);
+    }
     
     // Scroll to the current step's target when it becomes active
     if (type === 'step:before') {
       const currentTarget = step.target;
-      if (typeof currentTarget === 'string') {
+      if (typeof currentTarget === 'string' && currentTarget !== 'body') {
         setTimeout(() => scrollToElement(currentTarget), 300);
       }
     }
@@ -127,19 +140,25 @@ const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => 
     }
   };
 
+  const steps = getSteps();
+  if (!steps.length || !run) return null;
+
   return (
     <Joyride
       callback={handleJoyrideCallback}
       continuous
-      hideCloseButton
+      hideCloseButton={false}
       run={run}
       scrollToFirstStep
       scrollOffset={80} // Add offset for fixed headers
       showProgress
       showSkipButton
-      steps={getSteps()}
+      stepIndex={stepIndex}
+      steps={steps}
       disableScrolling={false} // Allow Joyride to handle scrolling
       styles={tourStyles}
+      disableOverlayClose
+      spotlightClicks
     />
   );
 };

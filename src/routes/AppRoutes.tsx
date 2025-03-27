@@ -12,6 +12,7 @@ import MobileRoutes from './MobileRoutes';
 import AuthRoutes from './AuthRoutes';
 import AccessibilityTestPage from '../pages/AccessibilityTestPage';
 import { useLocation } from 'react-router-dom';
+import ContactUs from '../pages/ContactUs';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -46,6 +47,9 @@ const AppRoutes = () => {
             <Fragment key={route.key}>{route}</Fragment>
           ))}
         </Route>
+        
+        {/* Contact page - specifically for tour testing */}
+        <Route path="/contact" element={<ContactUs />} />
         
         {/* Authentication Routes (no layout) */}
         {AuthRoutes.map(route => (
