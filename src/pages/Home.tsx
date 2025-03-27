@@ -18,7 +18,6 @@ import BenefitsSection from '../components/home/BenefitsSection';
 import TestimonialsSection from '../components/home/TestimonialsSection';
 import FAQSection from '../components/home/FAQSection';
 import MainCTASection from '../components/home/MainCTASection';
-import TrustedPartners from '../components/home/TrustedPartners';
 import PricingCTASection from '../components/home/PricingCTASection';
 import NewsletterSection from '../components/home/NewsletterSection';
 import AppLayout from '../components/layout/AppLayout';
@@ -88,10 +87,6 @@ const Home = () => {
         
         <div id="cta-section">
           <MainCTASection />
-        </div>
-        
-        <div id="partners-section">
-          <TrustedPartners />
         </div>
         
         <div id="pricing-section">
