@@ -82,7 +82,7 @@ const handler = async (req: Request): Promise<Response> => {
     // 2. Send notification email to admin
     const adminEmailResult = await resend.emails.send({
       from: "AdvisorWiz <no-reply@resend.dev>",
-      to: ["your-email@example.com"], // CHANGE THIS to your admin email
+      to: ["info@advisorwiz.com"], // Changed to the requested email address
       subject: "New Contact Form Submission",
       html: `
         <h2>New Contact Form Submission</h2>
