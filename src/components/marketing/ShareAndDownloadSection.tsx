@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Download, Share2, Smartphone, ArrowRight } from 'lucide-react';
 import { Button } from '../ui/button';
