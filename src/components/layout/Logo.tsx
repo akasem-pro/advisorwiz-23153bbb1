@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
+import { cn } from '@/lib/utils';
 
 interface LogoProps {
   className?: string;
@@ -21,7 +22,7 @@ const Logo: React.FC<LogoProps> = ({ className = '', forceLightMode = false }) =
       <img 
         src={logoSrc} 
         alt="AdvisorWiz Logo" 
-        className={`h-12 w-auto ${className}`}
+        className={cn("h-12 w-auto", className)}
         loading="eager" 
         fetchPriority="high"
       />
