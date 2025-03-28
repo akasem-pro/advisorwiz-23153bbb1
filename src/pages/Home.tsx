@@ -18,7 +18,6 @@ import TestimonialsSection from '../components/home/TestimonialsSection';
 import FAQSection from '../components/home/FAQSection';
 import MainCTASection from '../components/home/MainCTASection';
 import PricingCTASection from '../components/home/PricingCTASection';
-import NewsletterSection from '../components/home/NewsletterSection';
 import AppLayout from '../components/layout/AppLayout';
 
 const Home = () => {
@@ -105,10 +104,7 @@ const Home = () => {
           <PricingCTASection />
         </div>
         
-        {/* Newsletter - Simplified */}
-        <div id="newsletter-section" className="scroll-mt-20">
-          <NewsletterSection />
-        </div>
+        {/* Removing the Newsletter section that might be causing the duplicate footer */}
       </div>
       
       {/* Review Request Modal - Less intrusive */}

@@ -49,7 +49,7 @@ const AppRoutes = () => {
         </Route>
         
         {/* Contact page */}
-        <Route path="/contact" element={<AppLayout><ContactUs /></AppLayout>} />
+        <Route path="/contact" element={<ContactUs />} />
         
         {/* Authentication Routes (no layout) */}
         {AuthRoutes.map(route => (
@@ -60,7 +60,7 @@ const AppRoutes = () => {
         <Route path="/accessibility-test" element={<AccessibilityTestPage />} />
         
         {/* Main Web Routes */}
-        <Route path="/" element={<AppLayout><Outlet /></AppLayout>}>
+        <Route path="/" element={<Outlet />}>
           {/* Spread the main routes and dashboard routes arrays */}
           {MainRoutes.map(route => (
             <Fragment key={route.key}>{route}</Fragment>
