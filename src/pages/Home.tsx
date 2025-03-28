@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useIsMobile } from '../hooks/use-mobile';
 import ASOBanner from '../components/marketing/ASOBanner';
 import ReviewRequestModal from '../components/marketing/ReviewRequestModal';
@@ -36,7 +35,7 @@ const Home = () => {
   };
 
   return (
-    <AppLayout fullWidth withoutPadding>
+    <AppLayout fullWidth withoutPadding hideFooter={false}>
       {/* Main Home Content */}
       <div className="overflow-hidden">
         {/* Promotional Banner - Only show on mobile */}
