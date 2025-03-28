@@ -21,12 +21,13 @@ const HeroSection: React.FC = () => {
             level={1} 
             variant="serif" 
             size={isMobile ? "3xl" : "4xl"}
-            className="mb-6 animate-fade-in leading-tight"
+            className="mb-6 animate-fade-in leading-tight text-center"
+            align="center"
           >
             Find the Perfect Financial Advisor for Your Needs
           </Heading>
           
-          <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 mb-8 animate-fade-in max-w-2xl mx-auto" style={{animationDelay: '0.1s'}}>
+          <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 mb-8 animate-fade-in max-w-2xl mx-auto text-center" style={{animationDelay: '0.1s'}}>
             Connect with qualified financial advisors who understand your unique
             financial situation and help you achieve your goals.
           </p>
