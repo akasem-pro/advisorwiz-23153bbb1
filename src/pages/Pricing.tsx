@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
@@ -83,7 +84,7 @@ const Pricing: React.FC = () => {
         </main>
         
         <FloatingSupportButton />
-        <AppFooter />
+        {/* Remove the AppFooter from here as it's already included in the main layout */}
       </div>
     </AnimatedRoute>
   );

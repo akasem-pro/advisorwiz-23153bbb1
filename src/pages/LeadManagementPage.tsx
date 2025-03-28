@@ -1,7 +1,7 @@
+
 import React from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
-import AppFooter from '../components/layout/AppFooter';
 import LeadManagement from '../components/lead/LeadManagement';
 import { useUser } from '../context/UserContext';
 import { Link } from 'react-router-dom';
@@ -51,7 +51,7 @@ const LeadManagementPage: React.FC = () => {
           </div>
         </main>
         
-        <AppFooter />
+        {/* Remove AppFooter from here */}
       </div>
     </AnimatedRoute>
   );

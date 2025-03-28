@@ -1,7 +1,7 @@
+
 import React from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
-import AppFooter from '../components/layout/AppFooter';
 import SearchFilters from '../components/search/SearchFilters';
 import MatchCard from '../components/matching/MatchCard';
 import EmptyState from '../components/matching/EmptyState';
@@ -162,7 +162,7 @@ const MatchingInterface: React.FC = () => {
           </div>
         </main>
 
-        <AppFooter />
+        {/* Remove AppFooter from here */}
       </div>
     </AnimatedRoute>
   );

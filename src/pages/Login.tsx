@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -5,7 +6,6 @@ import { useAuth } from '../features/auth/context/AuthProvider';
 import { useUser } from '../context/UserContext';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
-import AppFooter from '../components/layout/AppFooter';
 import { Button } from '../components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import PageSEO from '../components/seo/PageSEO';
@@ -179,7 +179,7 @@ const Login: React.FC = () => {
           </div>
         </main>
         
-        <AppFooter />
+        {/* Remove AppFooter from here */}
       </div>
     </AnimatedRoute>
   );
