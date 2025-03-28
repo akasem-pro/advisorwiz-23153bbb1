@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
-import AppFooter from '../components/layout/AppFooter';
 import PricingHeader from '../components/pricing/PricingHeader';
 import ConsumerPlan from '../components/pricing/ConsumerPlan';
 import AdvisorPlans from '../components/pricing/AdvisorPlans';
