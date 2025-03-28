@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -6,7 +5,7 @@ import { useAuth } from '../features/auth/context/AuthProvider';
 import { useUser } from '../context/UserContext';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import AppFooter from '../components/layout/AppFooter';
 import { Button } from '../components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import PageSEO from '../components/seo/PageSEO';
@@ -19,7 +18,6 @@ const Login: React.FC = () => {
   const { setIsAuthenticated, userType, setUserType } = useUser();
   const navigate = useNavigate();
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (user) {
       redirectBasedOnUserType();
@@ -29,7 +27,6 @@ const Login: React.FC = () => {
   const redirectBasedOnUserType = () => {
     setIsAuthenticated(true);
     
-    // Redirect based on user type
     if (userType === 'consumer') {
       navigate('/consumer-dashboard');
     } else if (userType === 'advisor') {
@@ -37,7 +34,6 @@ const Login: React.FC = () => {
     } else if (userType === 'firm_admin') {
       navigate('/firm-dashboard');
     } else {
-      // If user type is not set, redirect to onboarding to select user type
       navigate('/onboarding');
     }
   };
@@ -183,7 +179,7 @@ const Login: React.FC = () => {
           </div>
         </main>
         
-        <Footer />
+        <AppFooter />
       </div>
     </AnimatedRoute>
   );

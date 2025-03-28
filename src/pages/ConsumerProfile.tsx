@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import AppFooter from '../components/layout/AppFooter';
 import { useUser, ConsumerProfile as ConsumerProfileType } from '../context/UserContext';
 import { 
   ArrowRight, 
@@ -1145,62 +1145,64 @@ const ConsumerProfile: React.FC = () => {
   return (
     <AnimatedRoute>
       <Header />
-      <main className="max-w-4xl mx-auto px-4 py-12">
-        <h1 className="text-3xl font-serif font-bold text-navy-900 mb-2">
-          Create Your Profile
-        </h1>
-        <p className="text-gray-600 mb-10">
-          Help us match you with the right financial advisor by telling us about yourself and your financial goals.
-        </p>
-        
-        {renderStepIndicator()}
-        
-        <div className="bg-white shadow-lg rounded-xl p-6 mb-8">
-          {renderCurrentStep()}
+      <div className="flex-grow pt-20">
+        <main className="max-w-4xl mx-auto px-4 py-12">
+          <h1 className="text-3xl font-serif font-bold text-navy-900 mb-2">
+            Create Your Profile
+          </h1>
+          <p className="text-gray-600 mb-10">
+            Help us match you with the right financial advisor by telling us about yourself and your financial goals.
+          </p>
           
-          <div className="mt-8 flex justify-between">
-            {currentStep > 1 ? (
+          {renderStepIndicator()}
+          
+          <div className="bg-white shadow-lg rounded-xl p-6 mb-8">
+            {renderCurrentStep()}
+            
+            <div className="mt-8 flex justify-between">
+              {currentStep > 1 ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handlePreviousStep}
+                  className="px-4 py-2"
+                >
+                  Back
+                </Button>
+              ) : (
+                <div></div>
+              )}
+              
               <Button
                 type="button"
-                variant="outline"
-                onClick={handlePreviousStep}
-                className="px-4 py-2"
+                onClick={handleNextStep}
+                className="px-6 py-2"
+                disabled={saved}
               >
-                Back
-              </Button>
-            ) : (
-              <div></div>
-            )}
-            
-            <Button
-              type="button"
-              onClick={handleNextStep}
-              className="px-6 py-2"
-              disabled={saved}
-            >
-              {currentStep === totalSteps ? (
-                saved ? (
-                  <span className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Saved!
-                  </span>
+                {currentStep === totalSteps ? (
+                  saved ? (
+                    <span className="flex items-center">
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Saved!
+                    </span>
+                  ) : (
+                    <span className="flex items-center">
+                      <Save className="w-4 h-4 mr-2" />
+                      Submit Profile
+                    </span>
+                  )
                 ) : (
                   <span className="flex items-center">
-                    <Save className="w-4 h-4 mr-2" />
-                    Submit Profile
+                    Next
+                    <ArrowRight className="w-4 h-4 ml-2" />
                   </span>
-                )
-              ) : (
-                <span className="flex items-center">
-                  Next
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </span>
-              )}
-            </Button>
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
-      </main>
-      <Footer />
+        </main>
+      </div>
+      <AppFooter />
     </AnimatedRoute>
   );
 };

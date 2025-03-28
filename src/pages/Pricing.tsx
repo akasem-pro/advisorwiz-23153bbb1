@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import AppFooter from '../components/layout/AppFooter';
 import PricingHeader from '../components/pricing/PricingHeader';
 import ConsumerPlan from '../components/pricing/ConsumerPlan';
 import AdvisorPlans from '../components/pricing/AdvisorPlans';
@@ -84,7 +83,7 @@ const Pricing: React.FC = () => {
         </main>
         
         <FloatingSupportButton />
-        <Footer />
+        <AppFooter />
       </div>
     </AnimatedRoute>
   );

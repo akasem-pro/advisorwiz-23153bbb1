@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import AppFooter from '../components/layout/AppFooter';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import PageSEO from '../components/seo/PageSEO';
@@ -138,7 +138,6 @@ const Onboarding: React.FC = () => {
                       </p>
                     </div>
 
-                    {/* Use our extracted component */}
                     <OnboardingUserType
                       selectedUserType={selectedUserType}
                       onSelect={setSelectedUserType}
@@ -276,7 +275,7 @@ const Onboarding: React.FC = () => {
           </div>
         </main>
 
-        <Footer />
+        <AppFooter />
       </div>
     </AnimatedRoute>
   );

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import AppFooter from '../components/layout/AppFooter';
 import { Button } from '../components/ui/button';
 import { Building, MapPin, Globe, Users, DollarSign } from 'lucide-react';
 import { useUser } from '../context/UserContext';
@@ -316,7 +316,7 @@ const FirmProfile: React.FC = () => {
             </div>
           </main>
           
-          <Footer />
+          <AppFooter />
         </div>
       </AnimatedRoute>
     </AuthGuard>
