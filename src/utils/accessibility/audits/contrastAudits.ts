@@ -1,5 +1,5 @@
 
-import { checkContrastRatio } from '../accessibilityGuide';
+import { checkContrastRatio } from '../contrast/contrastUtils';
 import { AuditResult } from '../types';
 
 /**

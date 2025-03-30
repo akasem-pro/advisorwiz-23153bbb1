@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { runAccessibilityAudit, generateHTMLReport } from '../../utils/accessibility/accessibilityAudit';
 import { Button } from '../ui/button';
