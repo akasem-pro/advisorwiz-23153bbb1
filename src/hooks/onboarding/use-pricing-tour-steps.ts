@@ -1,6 +1,6 @@
 
 import { useCallback } from 'react';
-import { Step } from 'react-joyride';
+import { Step, Placement } from 'react-joyride';
 import { PricingUserType } from './types';
 
 /**
