@@ -1,3 +1,4 @@
+
 import { trackPerformance, storeAnalyticsMetric } from './core';
 
 // Local storage key for persisted metrics
@@ -14,6 +15,7 @@ interface MetricData {
 
 // Buffer for metrics that will be sent in batch
 const metricsBuffer: MetricData[] = [];
+let flushTimer: number | null = null;
 
 /**
  * Track performance metric with improved batching and persistence
@@ -43,15 +45,31 @@ export const trackEnhancedPerformance = (
     persistMetricToStorage(metricData);
   }
   
-  // Either send immediately or check if buffer should be flushed
+  // Either send immediately or schedule a flush
   if (options?.sendImmediately) {
     flushMetricsBuffer();
-  } else if (metricsBuffer.length >= 10) {
-    flushMetricsBuffer();
+  } else {
+    scheduleFlush();
   }
   
   // Also send to existing tracking for backward compatibility
   trackPerformance(metricName, metricValue, options?.tags);
+};
+
+/**
+ * Schedule a flush of the metrics buffer with debouncing
+ */
+const scheduleFlush = () => {
+  if (flushTimer !== null) {
+    window.clearTimeout(flushTimer);
+  }
+  
+  // Flush after 2 seconds of inactivity or if buffer gets too large
+  if (metricsBuffer.length >= 20) {
+    flushMetricsBuffer();
+  } else {
+    flushTimer = window.setTimeout(flushMetricsBuffer, 2000);
+  }
 };
 
 /**
@@ -77,21 +95,38 @@ export const flushMetricsBuffer = async (): Promise<void> => {
   if (metricsBuffer.length === 0) return;
   
   try {
+    // Reset flush timer
+    if (flushTimer !== null) {
+      window.clearTimeout(flushTimer);
+      flushTimer = null;
+    }
+    
     // Batch metrics for more efficient sending
     console.log(`Flushing ${metricsBuffer.length} performance metrics in batch`);
     
-    // Send metrics to backend
-    // In a real app, this would be an API call
-    
-    // For now, use the existing tracker for each metric
-    metricsBuffer.forEach(metric => {
-      storeAnalyticsMetric(metric.name, metric.value);
-    });
-    
-    // Clear the buffer
+    // Create a copy of the buffer for processing
+    const metricsToSend = [...metricsBuffer];
     metricsBuffer.length = 0;
+    
+    // Group metrics by type for more efficient processing
+    const metricsByType = metricsToSend.reduce((acc, metric) => {
+      const type = metric.name.split('_')[0];
+      if (!acc[type]) acc[type] = [];
+      acc[type].push(metric);
+      return acc;
+    }, {} as Record<string, MetricData[]>);
+    
+    // Send metrics to backend in groups
+    Object.values(metricsByType).forEach(metricGroup => {
+      // For now, use the existing tracker for each metric
+      metricGroup.forEach(metric => {
+        storeAnalyticsMetric(metric.name, metric.value);
+      });
+    });
   } catch (error) {
     console.error('Error flushing metrics buffer:', error);
+    // Add back to buffer if sending fails
+    metricsBuffer.push(...metricsBuffer);
   }
 };
 
@@ -154,4 +189,12 @@ export const initEnhancedPerformanceTracking = (): void => {
   
   // Log initialization
   console.log('Enhanced performance tracking initialized');
+  
+  // Return cleanup function
+  return () => {
+    if (flushTimer !== null) {
+      window.clearTimeout(flushTimer);
+    }
+    flushMetricsBuffer();
+  };
 };

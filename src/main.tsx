@@ -6,10 +6,10 @@ import App from './App.tsx'
 import './styles/main.css'
 import { ThemeProvider } from './context/ThemeContext'
 import { Toaster } from 'sonner'
-import { initPerformanceOptimizations } from './utils/performanceTracking'
+import { initEnhancedPerformanceTracking } from './utils/performance/enhancedPerformanceTracking'
 
-// Initialize performance optimizations with enhanced features
-initPerformanceOptimizations();
+// Initialize enhanced performance tracking
+initEnhancedPerformanceTracking();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

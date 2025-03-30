@@ -19,6 +19,7 @@ let cacheHits = 0;
 let cacheMisses = 0;
 let lastCacheCleanup = Date.now();
 const CACHE_CLEANUP_INTERVAL = 3600000; // 1 hour
+const CACHE_AUTO_CLEANUP_SIZE = 3000; // When cache reaches this size, auto cleanup
 
 // Maximum cache size to prevent memory leaks
 const MAX_CACHE_SIZE = 5000;
@@ -44,11 +45,22 @@ export const getCachedResult = (cacheKey: string) => {
   cacheMisses++;
   
   // Consider automatic cleanup
-  if (Date.now() - lastCacheCleanup > CACHE_CLEANUP_INTERVAL || scoreCache.size > MAX_CACHE_SIZE) {
-    cleanupStaleEntries();
+  if (scoreCache.size > CACHE_AUTO_CLEANUP_SIZE || 
+      (Date.now() - lastCacheCleanup > CACHE_CLEANUP_INTERVAL)) {
+    cleanupCacheAsync();
   }
   
   return null;
+};
+
+/**
+ * Clean up cache asynchronously to not block the main thread
+ */
+const cleanupCacheAsync = () => {
+  // Use setTimeout to move this work off the main thread
+  setTimeout(() => {
+    cleanupStaleEntries();
+  }, 0);
 };
 
 /**
@@ -64,7 +76,7 @@ export const cacheResult = (
     
     // If still at capacity, remove least recently used entries
     if (scoreCache.size >= MAX_CACHE_SIZE) {
-      pruneCache(100); // Remove 100 least accessed entries
+      pruneCache(MAX_CACHE_SIZE / 5); // Remove 20% of entries
     }
   }
   
@@ -92,12 +104,14 @@ export const cleanupStaleEntries = (): void => {
   const now = Date.now();
   let removedCount = 0;
   
-  for (const [key, entry] of scoreCache.entries()) {
-    if (now - entry.timestamp > CACHE_EXPIRATION_MS) {
-      scoreCache.delete(key);
-      removedCount++;
-    }
-  }
+  // Convert to array and filter in one go for better performance
+  const entries = Array.from(scoreCache.entries());
+  const staleEntries = entries.filter(([_, entry]) => now - entry.timestamp > CACHE_EXPIRATION_MS);
+  
+  staleEntries.forEach(([key]) => {
+    scoreCache.delete(key);
+    removedCount++;
+  });
   
   console.log(`[Cache] Cleaned up ${removedCount} stale entries`);
   lastCacheCleanup = now;
@@ -128,26 +142,20 @@ export const pruneCache = (count: number): void => {
 export const retainTopHitEntries = (maxEntries: number = 1000): void => {
   if (scoreCache.size <= maxEntries) return;
   
-  // Convert to array, sort by hit count, and keep only top entries
+  // Convert to array and sort by hit count
   const entries = Array.from(scoreCache.entries())
-    .sort((a, b) => b[1].hitCount - a[1].hitCount)
-    .slice(0, maxEntries);
+    .sort((a, b) => b[1].hitCount - a[1].hitCount);
+  
+  // Take only the top entries
+  const topEntries = entries.slice(0, maxEntries);
   
   // Clear and rebuild cache with only top entries
   scoreCache.clear();
-  entries.forEach(([key, value]) => {
+  topEntries.forEach(([key, value]) => {
     scoreCache.set(key, value);
   });
   
-  console.log(`[Cache] Retained top ${entries.length} most accessed entries`);
-};
-
-/**
- * Merge statistics from another cache (useful for worker thread scenarios)
- */
-export const mergeStats = (stats: { hits: number, misses: number }): void => {
-  cacheHits += stats.hits;
-  cacheMisses += stats.misses;
+  console.log(`[Cache] Retained top ${topEntries.length} most accessed entries`);
 };
 
 /**
@@ -158,10 +166,12 @@ export const getCompatibilityCacheStats = (): {
   hitRate: number, 
   oldestEntry: number | null,
   frequentlyAccessedCount: number,
-  memoryUsageEstimate: string
+  memoryUsageEstimate: string,
+  efficiency: number
 } => {
   let oldestTimestamp: number | null = null;
   let frequentlyAccessedCount = 0;
+  let totalHitCount = 0;
   
   for (const entry of scoreCache.values()) {
     if (oldestTimestamp === null || entry.timestamp < oldestTimestamp) {
@@ -170,10 +180,14 @@ export const getCompatibilityCacheStats = (): {
     if (entry.hitCount > 10) {
       frequentlyAccessedCount++;
     }
+    totalHitCount += entry.hitCount;
   }
   
   const totalRequests = cacheHits + cacheMisses;
   const hitRate = totalRequests > 0 ? (cacheHits / totalRequests) * 100 : 0;
+  
+  // Calculate efficiency (hits per cache entry) - higher is better
+  const efficiency = scoreCache.size > 0 ? totalHitCount / scoreCache.size : 0;
   
   // Estimate memory usage (rough calculation)
   // Assuming each entry takes about 200 bytes on average
@@ -187,6 +201,7 @@ export const getCompatibilityCacheStats = (): {
     hitRate,
     oldestEntry: oldestTimestamp ? Date.now() - oldestTimestamp : null,
     frequentlyAccessedCount,
-    memoryUsageEstimate
+    memoryUsageEstimate,
+    efficiency
   };
 };
