@@ -276,8 +276,32 @@ const checkKeyboardNavigation = (): AuditResult[] => {
  */
 const checkARIAUsage = (): AuditResult[] => {
   const results: AuditResult[] = [];
-  const ariaElements = document.querySelectorAll('[aria-*]');
   
+  // Fix: Use specific ARIA attributes instead of the invalid [aria-*] selector
+  const ariaAttributeSelectors = [
+    '[aria-label]', '[aria-labelledby]', '[aria-describedby]',
+    '[aria-hidden]', '[aria-expanded]', '[aria-haspopup]',
+    '[aria-controls]', '[aria-live]', '[aria-atomic]',
+    '[aria-current]', '[aria-disabled]', '[aria-selected]',
+    '[aria-required]', '[aria-checked]', '[aria-pressed]',
+    '[aria-valuemin]', '[aria-valuemax]', '[aria-valuenow]',
+    '[aria-valuetext]', '[aria-busy]', '[aria-invalid]',
+    '[role]'
+  ];
+  
+  // Query elements with common ARIA attributes
+  const ariaElements = new Set<Element>();
+  
+  ariaAttributeSelectors.forEach(selector => {
+    try {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(el => ariaElements.add(el));
+    } catch (error) {
+      console.warn(`Error querying selector ${selector}:`, error);
+    }
+  });
+  
+  // Now process all found elements with ARIA attributes
   ariaElements.forEach(element => {
     // Check for invalid ARIA roles
     const role = element.getAttribute('role');
