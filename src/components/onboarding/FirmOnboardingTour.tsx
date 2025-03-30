@@ -20,7 +20,7 @@ const FirmOnboardingTour: React.FC<FirmOnboardingTourProps> = ({
     <BaseTourComponent
       tourName="FIRM_ONBOARDING"
       tourSteps={steps}
-      userType="firm_admin" as UserType
+      userType="firm_admin"
       autoStart={autoStart}
       onComplete={onComplete}
       completionMessage={{
