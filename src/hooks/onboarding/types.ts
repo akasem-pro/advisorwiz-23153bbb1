@@ -31,5 +31,6 @@ export const TOUR_NAMES = {
   GENERAL: 'hasSeenOnboardingTour',
   PRICING: 'hasTakenPricingTour',
   ADVISOR_ONBOARDING: 'hasSeenAdvisorOnboardingTour',
-  USER_ONBOARDING: 'hasSeenUserOnboardingTour'
+  USER_ONBOARDING: 'hasSeenUserOnboardingTour',
+  FIRM_ONBOARDING: 'hasSeenFirmOnboardingTour'
 };

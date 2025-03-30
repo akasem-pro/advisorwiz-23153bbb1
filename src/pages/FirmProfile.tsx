@@ -1,325 +1,157 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AnimatedRoute from '../components/ui/AnimatedRoute';
-import Header from '../components/layout/Header';
-import AppFooter from '../components/layout/AppFooter';
-import { Button } from '../components/ui/button';
-import { Building, MapPin, Globe, Users, DollarSign } from 'lucide-react';
+
+import React from 'react';
+import AppLayout from '../components/layout/AppLayout';
 import { useUser } from '../context/UserContext';
-import { FinancialFirm } from '../types/firmTypes';
-import AuthGuard from '../components/auth/AuthGuard';
+import FirmOnboardingTour from '../components/onboarding/FirmOnboardingTour';
 
 const FirmProfile: React.FC = () => {
-  const { firms, addFirm, userType } = useUser();
-  const navigate = useNavigate();
-  
-  // For demo purposes, we'll assume the user is editing the first firm
-  // In a real app, you would fetch the user's firm from the backend
-  const existingFirm = firms && firms.length > 0 ? firms[0] : null;
-  
-  const [formData, setFormData] = useState<Partial<FinancialFirm>>({
-    id: existingFirm?.id || '',
-    name: existingFirm?.name || '',
-    description: existingFirm?.description || '',
-    website: existingFirm?.website || '',
-    logo: existingFirm?.logo || '',
-    city: existingFirm?.city || '',
-    state: existingFirm?.state || '',
-    country: existingFirm?.country || 'US',
-    industry: existingFirm?.industry || '',
-    size: existingFirm?.size || '',
-    assetsUnderManagement: existingFirm?.assetsUnderManagement || 0,
-    employeeCount: existingFirm?.employeeCount || 0
-  });
-  
-  const [saved, setSaved] = useState(false);
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-  
-  const handleLogoChange = (url: string) => {
-    setFormData(prev => ({
-      ...prev,
-      logo: url
-    }));
-  };
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Create a new firm entry with required fields
-    addFirm({
-      name: formData.name || 'My Firm',
-      description: formData.description || '',
-      website: formData.website || '',
-      logo: formData.logo || '',
-      city: formData.city || '',
-      state: formData.state || '',
-      country: formData.country || 'US',
-      industry: formData.industry || '',
-      size: formData.size || '',
-      assetsUnderManagement: formData.assetsUnderManagement || 0,
-      employeeCount: formData.employeeCount || 0,
-      adminId: 'current-user-id',
-      advisorIds: []
-    });
-    
-    setSaved(true);
-    setTimeout(() => {
-      setSaved(false);
-    }, 3000);
-  };
-  
-  const handleContinue = () => {
-    navigate('/firm-dashboard');
-  };
+  const { firms } = useUser();
   
   return (
-    <AuthGuard userTypes={['firm_admin']}>
-      <AnimatedRoute animation="fade">
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          
-          <main className="flex-grow pt-20">
-            <div className="container mx-auto px-4 py-12 max-w-4xl">
-              <div className="glass-card rounded-2xl overflow-hidden shadow-lg">
-                <div className="p-8">
-                  <div className="text-center mb-10">
-                    <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-2">
-                      Firm Profile
-                    </h1>
-                    <p className="text-slate-600 max-w-2xl mx-auto">
-                      Set up your firm's profile to help consumers find your advisors
-                    </p>
-                  </div>
-                  
-                  <form onSubmit={handleSubmit} className="space-y-8">
-                    {/* Basic Information Section */}
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-2 border-b pb-2 mb-4">
-                        <Building className="text-teal-600" />
-                        <h2 className="text-xl font-serif font-semibold">Basic Information</h2>
-                      </div>
-                      
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                          <label htmlFor="name" className="block text-sm font-medium text-navy-800 mb-1">
-                            Firm Name *
-                          </label>
-                          <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="input-field"
-                            placeholder="Enter your firm's name"
-                            required
-                          />
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="website" className="block text-sm font-medium text-navy-800 mb-1">
-                            Website
-                          </label>
-                          <input
-                            type="url"
-                            id="website"
-                            name="website"
-                            value={formData.website}
-                            onChange={handleChange}
-                            className="input-field"
-                            placeholder="https://www.yourfirm.com"
-                          />
-                        </div>
-                        
-                        <div className="md:col-span-2">
-                          <label htmlFor="description" className="block text-sm font-medium text-navy-800 mb-1">
-                            Firm Description
-                          </label>
-                          <textarea
-                            id="description"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            className="input-field"
-                            rows={4}
-                            placeholder="Describe your firm, its values, and services"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Location Section */}
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-2 border-b pb-2 mb-4">
-                        <MapPin className="text-purple-600" />
-                        <h2 className="text-xl font-serif font-semibold">Location</h2>
-                      </div>
-                      
-                      <div className="grid md:grid-cols-3 gap-6">
-                        <div>
-                          <label htmlFor="city" className="block text-sm font-medium text-navy-800 mb-1">
-                            City
-                          </label>
-                          <input
-                            type="text"
-                            id="city"
-                            name="city"
-                            value={formData.city}
-                            onChange={handleChange}
-                            className="input-field"
-                            placeholder="Enter city"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="state" className="block text-sm font-medium text-navy-800 mb-1">
-                            State/Province
-                          </label>
-                          <input
-                            type="text"
-                            id="state"
-                            name="state"
-                            value={formData.state}
-                            onChange={handleChange}
-                            className="input-field"
-                            placeholder="Enter state"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="country" className="block text-sm font-medium text-navy-800 mb-1">
-                            Country
-                          </label>
-                          <select
-                            id="country"
-                            name="country"
-                            value={formData.country}
-                            onChange={handleChange}
-                            className="input-field"
-                          >
-                            <option value="US">United States</option>
-                            <option value="CA">Canada</option>
-                            <option value="UK">United Kingdom</option>
-                            <option value="AU">Australia</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Business Details Section */}
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-2 border-b pb-2 mb-4">
-                        <DollarSign className="text-green-600" />
-                        <h2 className="text-xl font-serif font-semibold">Business Details</h2>
-                      </div>
-                      
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                          <label htmlFor="industry" className="block text-sm font-medium text-navy-800 mb-1">
-                            Industry Focus
-                          </label>
-                          <input
-                            type="text"
-                            id="industry"
-                            name="industry"
-                            value={formData.industry}
-                            onChange={handleChange}
-                            className="input-field"
-                            placeholder="e.g., Retirement Planning, Wealth Management"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="size" className="block text-sm font-medium text-navy-800 mb-1">
-                            Firm Size
-                          </label>
-                          <select
-                            id="size"
-                            name="size"
-                            value={formData.size}
-                            onChange={handleChange}
-                            className="input-field"
-                          >
-                            <option value="">Select firm size</option>
-                            <option value="Small">Small (1-10 employees)</option>
-                            <option value="Medium">Medium (11-50 employees)</option>
-                            <option value="Large">Large (51-200 employees)</option>
-                            <option value="Enterprise">Enterprise (201+ employees)</option>
-                          </select>
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="assetsUnderManagement" className="block text-sm font-medium text-navy-800 mb-1">
-                            Assets Under Management (AUM)
-                          </label>
-                          <input
-                            type="number"
-                            id="assetsUnderManagement"
-                            name="assetsUnderManagement"
-                            value={formData.assetsUnderManagement || ''}
-                            onChange={handleChange}
-                            className="input-field"
-                            placeholder="Enter amount in USD"
-                          />
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="employeeCount" className="block text-sm font-medium text-navy-800 mb-1">
-                            Number of Employees
-                          </label>
-                          <input
-                            type="number"
-                            id="employeeCount"
-                            name="employeeCount"
-                            value={formData.employeeCount || ''}
-                            onChange={handleChange}
-                            className="input-field"
-                            placeholder="Enter number of employees"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Form Actions */}
-                    <div className="flex justify-between pt-6 border-t border-slate-200">
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={handleContinue}
-                      >
-                        Skip for Now
-                      </Button>
-                      
-                      <Button 
-                        type="submit" 
-                        className="bg-teal-600 hover:bg-teal-700"
-                      >
-                        Save Profile
-                      </Button>
-                    </div>
-                  </form>
-                  
-                  {saved && (
-                    <div className="mt-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded text-center">
-                      Firm profile saved successfully!
-                    </div>
-                  )}
+    <AppLayout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="FirmProfileHeader mb-8">
+          <h1 className="text-3xl font-bold">Firm Profile</h1>
+          <p className="text-gray-600 mt-2">Manage your firm's information and team members</p>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="bg-white p-6 rounded-lg shadow-md mb-8" id="firm-basic-info">
+              <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
+              {/* Firm basic information form would go here */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Firm Name</label>
+                  <input type="text" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Website</label>
+                  <input type="url" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Contact Email</label>
+                  <input type="email" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
                 </div>
               </div>
             </div>
-          </main>
+            
+            <div className="bg-white p-6 rounded-lg shadow-md mb-8" id="firm-description">
+              <h2 className="text-xl font-semibold mb-4">Firm Description</h2>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <textarea rows={4} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></textarea>
+              </div>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-md mb-8" id="firm-credentials">
+              <h2 className="text-xl font-semibold mb-4">Credentials & Regulatory Information</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Registration Number</label>
+                  <input type="text" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Regulatory Body</label>
+                  <input type="text" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-md mb-8" id="firm-assets">
+              <h2 className="text-xl font-semibold mb-4">Assets & Metrics</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Assets Under Management</label>
+                  <input type="number" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Years in Business</label>
+                  <input type="number" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-md" id="firm-subscription">
+              <h2 className="text-xl font-semibold mb-4">Subscription Plan</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="border border-gray-300 p-4 rounded-md">
+                  <h3 className="font-medium">Basic</h3>
+                  <p>For small firms</p>
+                </div>
+                <div className="border border-indigo-500 p-4 rounded-md bg-indigo-50">
+                  <h3 className="font-medium">Professional</h3>
+                  <p>For growing firms</p>
+                  <div className="mt-2 text-sm bg-indigo-100 text-indigo-700 px-2 py-1 rounded inline-block">CURRENT PLAN</div>
+                </div>
+                <div className="border border-gray-300 p-4 rounded-md">
+                  <h3 className="font-medium">Enterprise</h3>
+                  <p>For large firms</p>
+                </div>
+              </div>
+            </div>
+          </div>
           
-          <AppFooter />
+          <div className="lg:col-span-1">
+            <div className="bg-white p-6 rounded-lg shadow-md mb-8" id="team-management">
+              <h2 className="text-xl font-semibold mb-4">Team Management</h2>
+              <button className="bg-indigo-600 text-white px-4 py-2 rounded-md w-full mb-4 invite-advisor-button">
+                + Invite Advisor
+              </button>
+              
+              <div className="advisor-list space-y-3">
+                <h3 className="font-medium text-sm text-gray-500">TEAM MEMBERS</h3>
+                {firms && firms.length > 0 && firms[0].advisorIds ? (
+                  firms[0].advisorIds.map(advisorId => (
+                    <div key={advisorId} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                      <div>
+                        <p className="font-medium">John Doe</p>
+                        <p className="text-sm text-gray-500">Financial Advisor</p>
+                      </div>
+                      <button className="text-indigo-600 hover:text-indigo-800">View</button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-4 text-gray-500">
+                    No team members yet
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-md analytics-dashboard">
+              <h2 className="text-xl font-semibold mb-4">Analytics Overview</h2>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-gray-500">CLIENT ACQUISITIONS</p>
+                  <p className="text-2xl font-bold">24</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">CONVERSION RATE</p>
+                  <p className="text-2xl font-bold">18.5%</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">AVERAGE MATCH SCORE</p>
+                  <p className="text-2xl font-bold">87</p>
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <a href="/analytics" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">View detailed analytics →</a>
+              </div>
+            </div>
+          </div>
         </div>
-      </AnimatedRoute>
-    </AuthGuard>
+        
+        <div className="mt-8 flex justify-end">
+          <button className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700">
+            Save Changes
+          </button>
+        </div>
+      </div>
+      
+      {/* Add the firm onboarding tour */}
+      <FirmOnboardingTour />
+    </AppLayout>
   );
 };
 
