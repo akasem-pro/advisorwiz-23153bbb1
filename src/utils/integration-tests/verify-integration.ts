@@ -1,4 +1,3 @@
-
 /**
  * This utility provides integration verification functions to test the app's
  * connection with Supabase, Resend, and other services.
@@ -8,20 +7,35 @@ import { supabase, checkSupabaseConnection } from "../../integrations/supabase/c
 import { toast } from "sonner";
 import { mockAuthTest, mockDatabaseTest, mockEmailTest } from "./mock-integration";
 
-// Update the isPreviewEnvironment check to include lovable.app domains
+// Improved environment detection with more comprehensive checks
 const isPreviewOrTestEnvironment = () => {
   try {
-    return typeof window !== 'undefined' && (
-      window.location.hostname.includes('preview') ||
-      window.location.hostname.includes('lovableproject') ||
-      window.location.hostname.includes('localhost') ||
-      window.location.hostname.includes('lovable.app') ||
-      // Check for consultantwiz.com which appears in errors
-      window.location.hostname.includes('consultantwiz.com')
-    );
+    // Skip environment check for specific hostnames that are known production domains
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      
+      // Explicit production domain checks (add your actual production domains here)
+      if (hostname.includes('advisorwiz.com') || 
+          hostname.includes('production') ||
+          hostname.endsWith('.app') ||
+          !hostname.includes('.') || // No subdomain - likely production
+          hostname === 'localhost') {
+        // These are explicit production domains
+        console.log("[Integration Tests] Production domain detected:", hostname);
+        return false;
+      }
+      
+      // Consider everything else as preview/test
+      return (
+        hostname.includes('preview') ||
+        hostname.includes('lovableproject') ||
+        hostname.includes('consultantwiz.com')
+      );
+    }
+    return false;
   } catch (e) {
     console.error("[Integration Tests] Error checking environment:", e);
-    return true; // Fallback to assuming preview mode on error
+    return false; // Default to production on error
   }
 };
 

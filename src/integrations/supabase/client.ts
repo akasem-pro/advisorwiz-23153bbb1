@@ -9,13 +9,32 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJ
 // Export the URL and key for other components to use if needed
 export { SUPABASE_URL, SUPABASE_ANON_KEY };
 
-// Determine if we're in a preview environment
-const isPreviewEnvironment = typeof window !== 'undefined' && (
-  window.location.hostname.includes('preview') ||
-  window.location.hostname.includes('lovableproject') ||
-  window.location.hostname.includes('localhost') ||
-  window.location.hostname.includes('consultantwiz.com')
-);
+// Improved environment detection with more explicit production domain checks
+const isPreviewEnvironment = () => {
+  try {
+    const hostname = window.location.hostname;
+    
+    // Explicit checks for production domains
+    if (hostname.includes('advisorwiz.com') || 
+        hostname.includes('production') ||
+        hostname.endsWith('.app') ||
+        !hostname.includes('.') || // No subdomain - likely production
+        hostname === 'localhost') {
+      console.log("[Supabase] Production domain detected:", hostname);
+      return false;
+    }
+    
+    // Consider everything else as preview/test
+    return (
+      hostname.includes('preview') ||
+      hostname.includes('lovableproject') ||
+      hostname.includes('consultantwiz.com')
+    );
+  } catch (e) {
+    console.error("[Supabase] Error checking environment:", e);
+    return false; // Default to production on error
+  }
+};
 
 // Create a Supabase client with improved configuration
 export const supabase = createClient<Database>(
@@ -56,8 +75,8 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     
     console.log("[Supabase Debug] Browser reports online status");
     
-    // Check if we're in a preview environment
-    if (isPreviewEnvironment) {
+    // Skip detailed check for preview environments but more careful detection
+    if (isPreviewEnvironment()) {
       console.log("[Supabase Debug] Preview environment detected, skipping detailed check");
       return true;
     }

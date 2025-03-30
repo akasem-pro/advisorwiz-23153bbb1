@@ -14,23 +14,30 @@ const VerifyIntegrationsPage: React.FC = () => {
     // Mark component as mounted to prevent state updates after unmount
     setIsMounted(true);
     
-    // Determine environment type with improved domain detection
+    // Improved environment detection logic
     const checkEnvironment = () => {
       try {
-        // Enhanced check to accurately detect preview vs production environments
         const hostname = window.location.hostname;
         
-        // Check for preview/test domains
-        const isPreview = hostname.includes('preview') ||
+        // Explicit production domain checks
+        const isProduction = 
+          hostname.includes('advisorwiz.com') || 
+          hostname.includes('production') ||
+          hostname.endsWith('.app') ||
+          !hostname.includes('.') || // No subdomain - likely production
+          hostname === 'localhost';
+        
+        // Not a production domain, so it's a preview
+        const isPreview = !isProduction && (
+          hostname.includes('preview') ||
           hostname.includes('lovableproject') ||
-          hostname.includes('localhost') ||
-          hostname.includes('lovable.app') ||
-          // Added consultantwiz.com to the preview list based on error messages
-          hostname.includes('consultantwiz.com');
+          hostname.includes('consultantwiz.com')
+        );
           
         if (isMounted) {
           console.log("[VerifyIntegrations] Environment detection:", { 
             hostname, 
+            isProduction,
             isPreview,
             url: window.location.href
           });
@@ -41,7 +48,7 @@ const VerifyIntegrationsPage: React.FC = () => {
       } catch (error) {
         console.error("[VerifyIntegrations] Error detecting environment:", error);
         if (isMounted) {
-          setIsPreviewEnvironment(true); // Fallback to preview mode on error
+          setIsPreviewEnvironment(false); // Default to production on error
           setIsLoading(false);
         }
       }

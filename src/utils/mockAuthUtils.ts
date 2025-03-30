@@ -1,4 +1,3 @@
-
 /**
  * Comprehensive utilities to handle authentication in preview environments
  */
@@ -11,12 +10,31 @@ const STORAGE_KEYS = {
 };
 
 /**
- * Check if the current environment is a preview environment
+ * Improved environment detection with explicit production domain checks
  */
 export const isPreviewEnvironment = (): boolean => {
-  return window.location.hostname.includes('preview') || 
-         window.location.hostname.includes('lovableproject') ||
-         window.location.hostname.includes('localhost');
+  try {
+    const hostname = window.location.hostname;
+    
+    // Explicit checks for production domains
+    if (hostname.includes('advisorwiz.com') || 
+        hostname.includes('production') ||
+        hostname.endsWith('.app') ||
+        !hostname.includes('.') || // No subdomain - likely production
+        hostname === 'localhost') {
+      return false;
+    }
+    
+    // Consider everything else as preview/test
+    return (
+      hostname.includes('preview') ||
+      hostname.includes('lovableproject') ||
+      hostname.includes('consultantwiz.com')
+    );
+  } catch (e) {
+    console.error('[MockAuth] Error checking environment:', e);
+    return false; // Default to production on error
+  }
 };
 
 /**
