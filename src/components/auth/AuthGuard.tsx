@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
@@ -23,13 +22,11 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   const location = useLocation();
   const [checking, setChecking] = useState(true);
   
-  // Check auth status from multiple sources
   useEffect(() => {
     const verifyAuth = async () => {
       try {
         console.log("[AuthGuard] Starting auth verification...");
         
-        // First check if we have a user from Auth context
         if (user) {
           console.log("[AuthGuard] User authenticated via Auth context:", user.email);
           setIsAuthenticated(true);
@@ -37,7 +34,6 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
           return;
         }
         
-        // Check for mock user in preview environments
         const isPreviewEnv = window.location.hostname.includes('preview') || 
                              window.location.hostname.includes('lovableproject') ||
                              window.location.hostname.includes('localhost');
@@ -49,7 +45,6 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
           return;
         }
         
-        // If not, check with Supabase directly
         const { data, error } = await supabase.auth.getUser();
         
         if (error) {
@@ -73,7 +68,6 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
     verifyAuth();
   }, [setIsAuthenticated, location.pathname, user]);
   
-  // Show loading state while checking
   if (checking) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
@@ -82,7 +76,6 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
     );
   }
 
-  // Use effective authentication status
   const effectiveIsAuthenticated = getEffectiveAuthStatus(isAuthenticated);
   
   console.log("[AuthGuard] Auth decision:", { 
@@ -96,21 +89,16 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   });
 
   if (!effectiveIsAuthenticated) {
-    // Store the intended destination for after login
     const destination = location.pathname !== "/" ? location.pathname : undefined;
     
-    // Show toast to inform user
     toast.error("Please sign in to access this page");
     
-    // Redirect to login if not authenticated - update to new route
     return <Navigate to="/signin" state={{ from: destination }} replace />;
   }
 
-  // If userTypes is provided, check if current user type is allowed
   if (userTypes && userTypes.length > 0 && userType && !userTypes.includes(userType)) {
     console.log("[AuthGuard] User type not allowed:", { userType, allowedTypes: userTypes });
     
-    // Redirect to appropriate dashboard based on user type
     if (userType === 'consumer') {
       return <Navigate to="/consumer-dashboard" replace />;
     } else if (userType === 'advisor') {

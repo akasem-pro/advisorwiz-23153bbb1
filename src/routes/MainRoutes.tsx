@@ -6,18 +6,11 @@ import AboutUs from '../pages/AboutUs';
 import ForAdvisors from '../pages/ForAdvisors';
 import ForConsumers from '../pages/ForConsumers';
 import ForFirms from '../pages/ForFirms';
-import Blog from '../pages/Blog';
 import Pricing from '../pages/Pricing';
-import Team from '../pages/Team';
-import Careers from '../pages/Careers';
-import ContactUs from '../pages/ContactUs';
 import Privacy from '../pages/Privacy';
 import Terms from '../pages/Terms';
 import Disclaimer from '../pages/Disclaimer';
 import Cookies from '../pages/Cookies';
-import Sitemap from '../pages/Sitemap';
-import DownloadApp from '../pages/DownloadApp';
-import Resources from '../pages/Resources';
 
 // Always provide a unique key for each route for proper rendering
 const MainRoutes = [
@@ -67,8 +60,6 @@ const MainRoutes = [
       <Cookies />
     </AppLayout>
   } key="cookies" />,
-  // Note: The routes for team, blog, careers, resources, download, sitemap
-  // are now directly handled in AppRoutes.tsx for better layout control
 ];
 
 export default MainRoutes;

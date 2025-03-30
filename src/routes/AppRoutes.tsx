@@ -71,17 +71,10 @@ const AppRoutes = () => {
         <Route path="/sign-up" element={<Navigate to="/signup" replace />} />
         <Route path="/onboarding" element={<Navigate to="/signup" replace />} />
         
-        {/* Contact page */}
-        <Route path="/contact" element={<ContactUs />} />
-        
-        {/* Utility Routes - includes verification page and other utility pages */}
-        {UtilityRoutes.map(route => (
-          <Fragment key={route.key}>{route}</Fragment>
-        ))}
-        
-        {/* Admin and utility pages with AppLayout */}
+        {/* Content pages */}
         <Route element={<AppLayout><Outlet /></AppLayout>}>
-          {/* Direct routes that need AppLayout */}
+          {/* Direct routes with AppLayout */}
+          <Route path="/contact" element={<ContactUs />} />
           <Route path="/team" element={<Team />} />
           <Route path="/blog/*" element={<Blog />} />
           <Route path="/careers" element={<Careers />} />
@@ -92,6 +85,11 @@ const AppRoutes = () => {
           <Route path="/chat" element={<Chat />} />
           <Route path="/consumer-profile" element={<ConsumerProfile />} />
         </Route>
+        
+        {/* Utility Routes - includes verification page and other utility pages */}
+        {UtilityRoutes.map(route => (
+          <Fragment key={route.key}>{route}</Fragment>
+        ))}
         
         {/* Main Web Routes */}
         <Route path="/" element={<Outlet />}>

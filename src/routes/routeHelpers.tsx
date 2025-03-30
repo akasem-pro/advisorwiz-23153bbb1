@@ -51,23 +51,23 @@ export const getRoutePath = (name: string, params?: Record<string, string>): str
     cookies: '/cookies',
     
     // Auth routes
-    signIn: '/sign-in',
-    login: '/login',
+    signIn: '/signin',
+    signUp: '/signup',
     
     // Dashboard routes
-    advisorDashboard: '/dashboard/advisor',
-    consumerDashboard: '/dashboard/consumer',
-    firmDashboard: '/dashboard/firm',
+    advisorDashboard: '/advisor-dashboard',
+    consumerDashboard: '/consumer-dashboard',
+    firmDashboard: '/firm-dashboard',
     schedule: '/schedule',
     chat: '/chat',
     leads: '/leads',
     settings: '/settings',
-    profile: '/profile',
     
     // Other routes
-    advisorProfile: '/advisor/:id',
+    advisorProfile: '/advisor-profile',
     match: '/match',
-    onboarding: '/onboarding',
+    team: '/team',
+    resources: '/resources',
     downloadApp: '/download',
   };
   

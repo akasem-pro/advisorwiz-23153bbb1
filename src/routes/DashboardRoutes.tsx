@@ -1,4 +1,3 @@
-
 import { lazy, Suspense } from 'react';
 import { Route } from 'react-router-dom';
 import { PageLoadingFallback } from '../components/LazyComponents';
