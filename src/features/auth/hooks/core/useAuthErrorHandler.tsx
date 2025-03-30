@@ -12,10 +12,10 @@ export const useAuthErrorHandler = () => {
   ): void => {
     // Extract error message
     const errorMessage = error.message || 'An unknown error occurred';
-    console.error(`[Auth Error] ${isSignIn ? 'Sign In' : 'Sign Up'} error:`, errorMessage);
+    console.error(`[Auth Debug] ${isSignIn ? 'Sign In' : 'Sign Up'} error:`, errorMessage);
     
     // Log detailed error information
-    console.error("[Auth Error] Full error object:", error);
+    console.error("[Auth Debug] Full error object:", error);
     
     if (errorMessage.includes('Invalid login credentials') || 
         errorMessage.includes('Invalid email or password')) {
@@ -28,7 +28,8 @@ export const useAuthErrorHandler = () => {
               errorMessage.includes('fetch') || 
               errorMessage.includes('network') || 
               !navigator.onLine) {
-      setFormError('Unable to connect to authentication service. Please check your connection and try again.');
+      setFormError('Connection issue. Please check your internet and try again.');
+      toast.error('Network connection issue detected');
     } else if (errorMessage.includes('rate limit')) {
       setFormError('Too many failed attempts. Please try again later.');
     } else {
