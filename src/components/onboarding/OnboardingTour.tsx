@@ -2,7 +2,7 @@
 import React from 'react';
 import Joyride from 'react-joyride';
 import { UserType } from '../../types/profileTypes';
-import { useOnboardingTour } from '../../hooks/use-onboarding-tour';
+import { useOnboardingTour } from '../../hooks/onboarding/use-onboarding-tour';
 import { tourStyles } from './OnboardingTourStyles';
 import { cn } from '@/lib/utils';
 

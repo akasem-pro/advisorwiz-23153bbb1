@@ -1,9 +1,9 @@
 
 import React from 'react';
-import Joyride, { Step } from 'react-joyride';
+import Joyride from 'react-joyride';
 import { useUser } from '../../context/UserContext';
 import { tourStyles } from './OnboardingTourStyles';
-import { useOnboardingTour } from '../../hooks/use-onboarding-tour';
+import { useOnboardingTour } from '../../hooks/onboarding/use-onboarding-tour';
 import { UserType } from '../../types/profileTypes';
 
 interface UserOnboardingTourProps {
