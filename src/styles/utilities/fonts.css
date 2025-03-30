@@ -1,4 +1,5 @@
 
+/* Font utilities */
 @layer utilities {
   .font-sans {
     font-family: 'Inter', system-ui, sans-serif;

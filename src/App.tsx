@@ -8,8 +8,7 @@ import { trackWebVitals } from './utils/performance/webVitals';
 import AppRoutes from './routes/AppRoutes';
 import { Toaster } from 'sonner';
 
-// Import new global styles
-import './styles/main.css';
+// Main styles are imported in main.tsx
 
 function App() {
   const location = useLocation();

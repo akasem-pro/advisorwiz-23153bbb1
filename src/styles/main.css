@@ -1,5 +1,10 @@
 
-/* Add this to your main.css file */
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Component imports */
 @import './base/reset.css';
 @import './base/typography.css';
 @import './theme/variables.css';
