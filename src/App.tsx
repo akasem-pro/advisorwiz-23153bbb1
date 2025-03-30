@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
@@ -7,15 +8,15 @@ import AppLayout from './components/layout/AppLayout';
 import LandingPage from './pages/LandingPage';
 import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
-import TermsOfService from './pages/TermsOfService';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import FinancialDisclaimer from './pages/FinancialDisclaimer';
-import CookiesPolicy from './pages/CookiesPolicy';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import Disclaimer from './pages/Disclaimer';
+import Cookies from './pages/Cookies';
 import NotFound from './pages/NotFound';
 import AuthRoutes from './routes/AuthRoutes';
-import ConsumerDashboard from './pages/dashboards/ConsumerDashboard';
-import AdvisorDashboard from './pages/dashboards/AdvisorDashboard';
-import FirmDashboard from './pages/dashboards/FirmDashboard';
+import ConsumerDashboard from './pages/ConsumerDashboard';
+import AdvisorDashboard from './pages/AdvisorDashboard';
+import FirmDashboard from './pages/FirmDashboard';
 import AuthGuard from './components/auth/AuthGuard';
 import { useUser } from './context/UserContext';
 import Onboarding from './pages/Onboarding';
@@ -49,10 +50,10 @@ function App() {
               <Route path="/" element={<AppLayout><LandingPage /></AppLayout>} />
               <Route path="/about" element={<AppLayout><AboutUs /></AppLayout>} />
               <Route path="/contact" element={<AppLayout><ContactUs /></AppLayout>} />
-              <Route path="/terms" element={<AppLayout><TermsOfService /></AppLayout>} />
-              <Route path="/privacy" element={<AppLayout><PrivacyPolicy /></AppLayout>} />
-              <Route path="/disclaimer" element={<AppLayout><FinancialDisclaimer /></AppLayout>} />
-              <Route path="/cookies" element={<AppLayout><CookiesPolicy /></AppLayout>} />
+              <Route path="/terms" element={<AppLayout><Terms /></AppLayout>} />
+              <Route path="/privacy" element={<AppLayout><Privacy /></AppLayout>} />
+              <Route path="/disclaimer" element={<AppLayout><Disclaimer /></AppLayout>} />
+              <Route path="/cookies" element={<AppLayout><Cookies /></AppLayout>} />
               
               {/* Auth Routes */}
               {AuthRoutes}
