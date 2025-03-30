@@ -21,6 +21,7 @@ import { ProfileSectionManager } from '../components/profile/ProfileSectionManag
 import { ProfileFormActions } from '../components/profile/ProfileFormActions';
 import { useProfileSections } from '../hooks/useProfileSections';
 import { useAdvisorProfileForm } from '../hooks/useAdvisorProfileForm';
+import AdvisorOnboardingTour from '../components/onboarding/AdvisorOnboardingTour';
 
 const AdvisorProfile: React.FC = () => {
   const { advisorProfile, handleProfileUpdate, updateOnlineStatus } = useUser();
@@ -140,6 +141,9 @@ const AdvisorProfile: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add the advisor onboarding tour */}
+      <AdvisorOnboardingTour />
     </AppLayout>
   );
 };
