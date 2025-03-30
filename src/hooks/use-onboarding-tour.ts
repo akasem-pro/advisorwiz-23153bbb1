@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CallBackProps, STATUS, Step } from 'react-joyride';
 import { useLocation } from 'react-router-dom';
 import { useToast } from './use-toast';
@@ -17,20 +17,26 @@ export const useOnboardingTour = (
   const { toast } = useToast();
   
   // Helper function to scroll to element
-  const scrollToElement = (selector: string) => {
+  const scrollToElement = useCallback((selector: string) => {
     try {
       const element = document.querySelector(selector);
       if (element && selector !== 'body') {
         // Scroll the element into view with smooth behavior
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Add a highlight class temporarily to make the element more visible
+        element.classList.add('tour-highlight');
+        setTimeout(() => {
+          element.classList.remove('tour-highlight');
+        }, 1500);
       }
     } catch (err) {
       console.error('Error scrolling to element:', err);
     }
-  };
+  }, []);
 
   // Define steps based on user type and current route
-  const getSteps = (): Step[] => {
+  const getSteps = useCallback((): Step[] => {
     const pathname = location.pathname;
     
     // Common steps that appear on most pages
@@ -157,19 +163,20 @@ export const useOnboardingTour = (
     }
 
     return commonSteps;
-  };
+  }, [location.pathname, userType]);
 
   useEffect(() => {
     // Get and set steps based on current location
     const currentSteps = getSteps();
     setSteps(currentSteps);
     
-    // Reset step index but don't stop tour when route changes
+    // Reset step index when route changes, but don't stop tour
     if (run) {
       setStepIndex(0);
     }
-  }, [location.pathname, userType]);
+  }, [location.pathname, userType, getSteps]);
 
+  // Only run on mount, not on re-renders
   useEffect(() => {
     // Show onboarding tour for new users
     const hasSeenTour = localStorage.getItem('hasSeenOnboardingTour');
@@ -178,7 +185,7 @@ export const useOnboardingTour = (
       // Delay to ensure the UI is fully loaded
       const timer = setTimeout(() => {
         setRun(true);
-      }, 1000);
+      }, 1500);
       
       return () => clearTimeout(timer);
     }
@@ -190,26 +197,44 @@ export const useOnboardingTour = (
     // Log tour events for debugging
     console.log('Tour event:', { action, index, status, type });
     
-    if (type === 'step:after' && action === 'next') {
-      // Update step index when user clicks next
-      setStepIndex(index + 1);
+    // Handle step changes
+    if (type === 'step:after') {
+      if (action === 'next') {
+        // Update step index when user clicks next
+        setStepIndex(prevIndex => prevIndex + 1);
+        
+        // Pre-scroll to the next target if it exists
+        if (index + 1 < steps.length) {
+          const nextTarget = steps[index + 1]?.target;
+          if (typeof nextTarget === 'string' && nextTarget !== 'body') {
+            setTimeout(() => scrollToElement(nextTarget), 300);
+          }
+        }
+      } else if (action === 'prev') {
+        // Handle click on "back" button
+        setStepIndex(prevIndex => Math.max(0, prevIndex - 1));
+        
+        // Pre-scroll to the previous target
+        if (index - 1 >= 0) {
+          const prevTarget = steps[index - 1]?.target;
+          if (typeof prevTarget === 'string' && prevTarget !== 'body') {
+            setTimeout(() => scrollToElement(prevTarget), 300);
+          }
+        }
+      }
     }
     
-    // Handle click on "back" button
-    if (type === 'step:after' && action === 'prev') {
-      setStepIndex(index - 1);
-    }
-    
-    // Scroll to the current step's target when it becomes active
+    // Ensure proper scrolling when a new step becomes active
     if (type === 'step:before') {
       const currentStep = steps[index];
       const currentTarget = currentStep?.target;
       if (typeof currentTarget === 'string' && currentTarget !== 'body') {
+        // Add a small delay to ensure DOM is ready
         setTimeout(() => scrollToElement(currentTarget), 300);
       }
     }
     
-    // Fix: Use string literals instead of enum values for comparison to fix type error
+    // Handle tour completion
     if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       setRun(false);
       
@@ -237,11 +262,24 @@ export const useOnboardingTour = (
     }
   };
 
+  // Function to manually start the tour
+  const startTour = useCallback(() => {
+    setStepIndex(0);
+    setRun(true);
+  }, []);
+
+  // Function to reset the tour (so it can be shown again)
+  const resetTour = useCallback(() => {
+    localStorage.removeItem('hasSeenOnboardingTour');
+  }, []);
+
   return {
     run,
     stepIndex,
     steps,
     handleJoyrideCallback,
-    setRun, // Export setRun to allow manual control of the tour
+    setRun,
+    startTour,
+    resetTour
   };
 };

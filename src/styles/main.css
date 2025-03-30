@@ -1,87 +1,32 @@
 
-/* Import theme variables */
+/* Add this to your main.css file */
+@import './base/reset.css';
+@import './base/typography.css';
 @import './theme/variables.css';
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Base styles */
-@layer base {
-  @import './base/reset.css';
-  @import './base/typography.css';
-}
-
-/* Component styles */
-@layer components {
-  @import './components/cards.css';
-  @import './components/buttons.css';
-  @import './components/forms.css';
-  @import './components/sections.css';
-  @import './components/mobile.css';
-  @import './components/transitions.css';
-  
-  /* Social sharing styling */
-  .social-share-dropdown {
-    @apply w-56 p-2 bg-white dark:bg-navy-800 shadow-lg border border-slate-200 dark:border-navy-700 rounded-lg;
-  }
-  
-  .social-share-title {
-    @apply px-2 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300;
-  }
-  
-  .social-share-separator {
-    @apply my-1 border-slate-200 dark:border-navy-700;
-  }
-  
-  .social-share-item {
-    @apply flex items-center p-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-navy-700 rounded-md transition-colors;
-  }
-  
-  .social-icon-wrapper {
-    @apply p-1.5 rounded-md mr-3;
-  }
-  
-  .social-icon {
-    @apply w-4 h-4;
-  }
-  
-  .social-text {
-    @apply text-slate-700 dark:text-slate-300;
-  }
-  
-  .app-download-button {
-    @apply w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-sm;
-  }
-}
-
-/* Utility styles */
+@import './theme/design-tokens.css';
+@import './components/buttons.css';
+@import './components/cards.css';
+@import './components/forms.css';
+@import './components/sections.css';
+@import './components/transitions.css';
+@import './components/mobile.css';
+@import './utilities/spacing.css';
 @import './utilities/fonts.css';
 @import './utilities/effects.css';
-@import './utilities/spacing.css';
 
-/* Social network branded colors */
-.facebook-color { @apply text-[#1877F2]; }
-.twitter-color { @apply text-[#1DA1F2]; }
-.linkedin-color { @apply text-[#0A66C2]; }
-.instagram-color { @apply text-[#E4405F]; }
-.youtube-color { @apply text-[#FF0000]; }
-
-.facebook-bg { @apply bg-[#1877F2]; }
-.twitter-bg { @apply bg-[#1DA1F2]; }
-.linkedin-bg { @apply bg-[#0A66C2]; }
-.instagram-bg { @apply bg-[#E4405F]; }
-.youtube-bg { @apply bg-[#FF0000]; }
-
-/* Gradient buttons */
-.gradient-primary {
-  @apply bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700;
+/* Tour highlight effects */
+.tour-highlight {
+  box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.6) !important;
+  transition: box-shadow 0.3s ease-in-out !important;
+  position: relative;
+  z-index: 9000;
 }
 
-.gradient-secondary {
-  @apply bg-gradient-to-r from-navy-600 to-navy-700 hover:from-navy-700 hover:to-navy-800;
+/* Ensure tooltip visibility and proper z-index */
+.__floater {
+  z-index: 10000 !important;
 }
 
-.gradient-accent {
-  @apply bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700;
+.__floater__body {
+  max-width: 350px !important;
 }

@@ -37,7 +37,9 @@ const AppRoutes = () => {
   return (
     <>
       {/* Global onboarding tour - context-aware based on route */}
-      <OnboardingTour />
+      <div className="relative z-[9999]">
+        <OnboardingTour />
+      </div>
       
       <Routes>
         {/* Mobile Routes wrapped in MobileLayout */}

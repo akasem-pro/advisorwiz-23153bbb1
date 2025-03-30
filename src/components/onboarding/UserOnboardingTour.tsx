@@ -1,146 +1,44 @@
 
-import React, { useState, useEffect } from 'react';
-import Joyride, { CallBackProps, STATUS, Step, ACTIONS } from 'react-joyride';
+import React from 'react';
+import Joyride, { Step } from 'react-joyride';
 import { useUser } from '../../context/UserContext';
 import { tourStyles } from './OnboardingTourStyles';
+import { useOnboardingTour } from '../../hooks/use-onboarding-tour';
+import { UserType } from '../../types/profileTypes';
 
 interface UserOnboardingTourProps {
   userType?: 'consumer' | 'advisor' | 'firm_admin';
 }
 
 const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => {
-  const [run, setRun] = useState(false);
-  const [stepIndex, setStepIndex] = useState(0);
   const { isAuthenticated } = useUser();
+  const { 
+    run, 
+    stepIndex, 
+    steps, 
+    handleJoyrideCallback, 
+    startTour 
+  } = useOnboardingTour(userType as UserType);
   
-  // Define steps based on user type
-  const getSteps = (): Step[] => {
-    const commonSteps: Step[] = [
-      {
-        target: 'body',
-        content: 'Welcome to AdvisorWiz! Let us show you around the platform.',
-        placement: 'center',
-        disableBeacon: true,
-      },
-      {
-        target: '.navigation-menu',
-        content: 'Navigate through different sections of the platform here.',
-        placement: 'bottom',
-      },
-      {
-        target: '.user-menu',
-        content: 'Access your profile and account settings from here.',
-        placement: 'bottom-end',
-      },
-    ];
-
-    // Add user type specific steps
-    if (userType === 'consumer') {
-      return [
-        ...commonSteps,
-        {
-          target: '.match-section',
-          content: 'Find financial advisors that match your needs and preferences.',
-          placement: 'bottom',
-        },
-        {
-          target: '.appointment-section',
-          content: 'Schedule appointments with advisors you connect with.',
-          placement: 'bottom',
-        },
-      ];
-    } else if (userType === 'advisor') {
-      return [
-        ...commonSteps,
-        {
-          target: '.profile-section',
-          content: 'Complete your profile to attract clients that match your expertise.',
-          placement: 'bottom',
-        },
-        {
-          target: '.calendar-section',
-          content: 'Set your availability and manage appointments with clients.',
-          placement: 'bottom',
-        },
-      ];
-    } else if (userType === 'firm_admin') {
-      return [
-        ...commonSteps,
-        {
-          target: '.advisors-section',
-          content: "Manage your firm's advisors and their profiles.",
-          placement: 'bottom',
-        },
-        {
-          target: '.analytics-section',
-          content: "View analytics about your firm's performance and client engagement.",
-          placement: 'bottom',
-        },
-      ];
-    }
-
-    return commonSteps;
-  };
-
-  useEffect(() => {
-    // Show onboarding tour for new users
-    const hasSeenTour = localStorage.getItem('hasSeenOnboardingTour');
-    
-    if (isAuthenticated && !hasSeenTour) {
-      // Delay to ensure the UI is fully loaded
-      const timer = setTimeout(() => {
-        setRun(true);
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated]);
-
-  // Helper function to scroll to element
-  const scrollToElement = (selector: string) => {
-    try {
-      const element = document.querySelector(selector);
-      if (element && selector !== 'body') {
-        // Scroll the element into view with smooth behavior
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    } catch (err) {
-      console.error('Error scrolling to element:', err);
-    }
-  };
-
-  const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status, index, type, action, step } = data;
-    
-    console.log('Tour event:', { action, index, type, status });
-    
-    // Update step index when user clicks next
-    if (type === 'step:after' && action === 'next') {
-      setStepIndex(index + 1);
-    }
-    
-    // Handle click on "back" button
-    if (type === 'step:after' && action === 'prev') {
-      setStepIndex(index - 1);
-    }
-    
-    // Scroll to the current step's target when it becomes active
-    if (type === 'step:before') {
-      const currentTarget = step.target;
-      if (typeof currentTarget === 'string' && currentTarget !== 'body') {
-        setTimeout(() => scrollToElement(currentTarget), 300);
+  React.useEffect(() => {
+    // Only show user onboarding tour for authenticated users
+    if (isAuthenticated) {
+      // Check if they've already seen this specific tour
+      const hasSeenUserTour = localStorage.getItem('hasSeenUserOnboardingTour');
+      if (!hasSeenUserTour) {
+        // Delay to ensure the UI is fully loaded
+        const timer = setTimeout(() => {
+          startTour();
+          // Mark this specific tour as seen
+          localStorage.setItem('hasSeenUserOnboardingTour', 'true');
+        }, 1000);
+        
+        return () => clearTimeout(timer);
       }
     }
-    
-    // Fix: Use the STATUS from react-joyride for the status values
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
-      // Mark the tour as completed
-      localStorage.setItem('hasSeenOnboardingTour', 'true');
-      setRun(false);
-    }
-  };
+  }, [isAuthenticated, startTour]);
 
-  const steps = getSteps();
+  // Only render if there are steps and the tour should run
   if (!steps.length || !run) return null;
 
   return (
@@ -150,12 +48,12 @@ const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => 
       hideCloseButton={false}
       run={run}
       scrollToFirstStep
-      scrollOffset={80} // Add offset for fixed headers
+      scrollOffset={80} 
       showProgress
       showSkipButton
       stepIndex={stepIndex}
       steps={steps}
-      disableScrolling={false} // Allow Joyride to handle scrolling
+      disableScrolling={false}
       styles={tourStyles}
       disableOverlayClose
       spotlightClicks
