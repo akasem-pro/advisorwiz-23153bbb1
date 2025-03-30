@@ -27,9 +27,9 @@ const AppFooter: React.FC = () => {
           <div>
             <h4 className="text-sm font-medium text-white mb-3">Services</h4>
             <ul className="space-y-1.5 text-xs">
-              <li><Link to="/consumers" className="text-slate-300 hover:text-teal-400 transition-colors">For Consumers</Link></li>
-              <li><Link to="/advisors" className="text-slate-300 hover:text-teal-400 transition-colors">For Advisors</Link></li>
-              <li><Link to="/firms" className="text-slate-300 hover:text-teal-400 transition-colors">For Firms</Link></li>
+              <li><Link to="/for-consumers" className="text-slate-300 hover:text-teal-400 transition-colors">For Consumers</Link></li>
+              <li><Link to="/for-advisors" className="text-slate-300 hover:text-teal-400 transition-colors">For Advisors</Link></li>
+              <li><Link to="/for-firms" className="text-slate-300 hover:text-teal-400 transition-colors">For Firms</Link></li>
               <li><Link to="/pricing" className="text-slate-300 hover:text-teal-400 transition-colors">Pricing</Link></li>
             </ul>
           </div>
@@ -40,7 +40,7 @@ const AppFooter: React.FC = () => {
               <li><Link to="/blog" className="text-slate-300 hover:text-teal-400 transition-colors">Blog</Link></li>
               <li><Link to="/resources" className="text-slate-300 hover:text-teal-400 transition-colors">Resources</Link></li>
               <li><Link to="/sitemap" className="text-slate-300 hover:text-teal-400 transition-colors">Sitemap</Link></li>
-              <li><Link to="/download-app" className="text-slate-300 hover:text-teal-400 transition-colors">Download App</Link></li>
+              <li><Link to="/download" className="text-slate-300 hover:text-teal-400 transition-colors">Download App</Link></li>
             </ul>
           </div>
           

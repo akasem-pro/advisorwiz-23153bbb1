@@ -13,13 +13,13 @@ import ShareAndDownloadSection from '../components/marketing/ShareAndDownloadSec
 const ForAdvisors: React.FC = () => {
   const breadcrumbs = [
     { name: 'Home', url: '/' },
-    { name: 'Advisors', url: '/advisors' }
+    { name: 'Advisors', url: '/for-advisors' }
   ];
 
   // How it works steps
   const steps = [
     {
-      number:.1,
+      number: 1,
       title: "Create Your Advisor Profile",
       description: "Sign up and build your professional profile, highlighting your expertise, credentials, and services. The more complete your profile, the better our matching algorithm works."
     },
@@ -73,7 +73,7 @@ const ForAdvisors: React.FC = () => {
         subtitle="Connect with pre-screened clients who are actively seeking your expertise. Our advanced matching system pairs you with prospects most likely to benefit from your services."
         primaryCta={{
           text: "Join as an Advisor",
-          link: "/onboarding",
+          link: "/contact",
           icon: true
         }}
         secondaryCta={{
@@ -118,7 +118,7 @@ const ForAdvisors: React.FC = () => {
         title="Ready to Grow Your Advisory Practice?"
         description="Join thousands of advisors who are expanding their client base through our platform."
         buttonText="Get Started Now"
-        buttonLink="/onboarding"
+        buttonLink="/contact"
       />
     </AppLayout>
   );

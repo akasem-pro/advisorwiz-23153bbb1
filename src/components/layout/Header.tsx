@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
@@ -12,11 +11,10 @@ import AuthWarningBanner from './header/AuthWarningBanner';
 import SuccessToast from './header/SuccessToast';
 import HeaderActions from './header/HeaderActions';
 
-// Define the navigation links with updated paths
 const navigationLinks = [
-  { name: 'Firms', path: '/firms' },
-  { name: 'Advisors', path: '/advisors' },
-  { name: 'Consumers', path: '/consumers' },
+  { name: 'Firms', path: '/for-firms' },
+  { name: 'Advisors', path: '/for-advisors' },
+  { name: 'Consumers', path: '/for-consumers' },
   { name: 'Resources', path: '/resources' },
   { name: 'About Us', path: '/about' },
   { name: 'Pricing', path: '/pricing' },
@@ -31,11 +29,9 @@ const Header: React.FC = () => {
   const [isAuthLoaded, setIsAuthLoaded] = useState(false);
   const isMobile = useIsMobile();
 
-  // Show success message when user signs in
   useEffect(() => {
     if (user) {
       setShowSuccessMessage(true);
-      // Auto-hide after 5 seconds
       const timer = setTimeout(() => {
         setShowSuccessMessage(false);
       }, 5000);
@@ -43,7 +39,6 @@ const Header: React.FC = () => {
     }
   }, [user]);
 
-  // Track when auth state is fully loaded
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsAuthLoaded(true);
@@ -82,13 +77,11 @@ const Header: React.FC = () => {
     return 'User';
   };
 
-  // Determine if the user needs to see authentication state
   const isAuthPage = location.pathname === '/sign-in' || location.pathname === '/login';
   const isSettingsPage = location.pathname === '/settings';
   const isProfilePage = location.pathname.includes('profile');
   const needsAuth = isSettingsPage || isProfilePage;
-  
-  // Use our utility to get effective authentication status
+
   const effectiveIsAuthenticated = getEffectiveAuthStatus(isAuthenticated);
 
   return (

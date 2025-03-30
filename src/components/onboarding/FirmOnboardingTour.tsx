@@ -3,6 +3,7 @@ import React from 'react';
 import BaseTourComponent from './BaseTourComponent';
 import { useFirmTourSteps } from '../../hooks/onboarding/use-firm-tour-steps';
 import { TOUR_NAMES } from '../../hooks/onboarding/types';
+import { UserType } from '../../types/profileTypes';
 
 interface FirmOnboardingTourProps {
   autoStart?: boolean;
@@ -19,7 +20,7 @@ const FirmOnboardingTour: React.FC<FirmOnboardingTourProps> = ({
     <BaseTourComponent
       tourName="FIRM_ONBOARDING"
       tourSteps={steps}
-      userType="firm_admin"
+      userType="firm_admin" as UserType
       autoStart={autoStart}
       onComplete={onComplete}
       completionMessage={{

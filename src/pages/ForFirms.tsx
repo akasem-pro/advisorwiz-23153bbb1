@@ -64,7 +64,7 @@ const ForFirms: React.FC = () => {
       <BreadcrumbNav 
         items={[
           { name: 'Home', url: '/' },
-          { name: 'Financial Firms', url: '/firms' }
+          { name: 'Financial Firms', url: '/for-firms' }
         ]} 
       />
       
@@ -122,7 +122,7 @@ const ForFirms: React.FC = () => {
         title="Ready to Transform Your Firm's Digital Presence?"
         description="Join hundreds of financial firms using AdvisorWiz to streamline operations and grow their business."
         buttonText="Get Started Today"
-        buttonLink="/onboarding"
+        buttonLink="/contact"
       />
     </AppLayout>
   );

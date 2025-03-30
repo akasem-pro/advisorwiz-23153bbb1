@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import AppLayout from '../components/layout/AppLayout';
@@ -65,7 +64,7 @@ const Sitemap: React.FC = () => {
       links: [
         { name: 'Blog', path: '/blog' },
         { name: 'Careers', path: '/careers' },
-        { name: 'About Us', path: '/for-consumers' },
+        { name: 'About Us', path: '/about' },
       ]
     },
     {

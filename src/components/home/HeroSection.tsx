@@ -36,7 +36,7 @@ const HeroSection: React.FC = () => {
             <ConsistentButton 
               variant="primary" 
               size={isMobile ? "md" : "lg"}
-              onClick={() => navigate('/match')}
+              onClick={() => navigate('/for-consumers')}
               icon={<Search className="h-4 w-4" />}
               className="w-full sm:w-auto shadow-md hover:shadow-lg transition-all"
             >

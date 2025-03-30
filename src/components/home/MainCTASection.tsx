@@ -60,7 +60,7 @@ const MainCTASection: React.FC = () => {
             className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-6 h-auto font-medium shadow-md hover:shadow-lg transition-all group"
             onClick={handleGetStarted}
           >
-            <Link to="/onboarding">
+            <Link to="/for-consumers">
               Get Started Now
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
             </Link>
