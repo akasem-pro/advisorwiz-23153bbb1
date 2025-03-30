@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { IntegrationVerificationPanel } from '../components/admin/integrationVerification';
 import PageSEO from '../components/seo/PageSEO';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Info, AlertTriangle } from 'lucide-react';
+import { PRODUCTION_DOMAINS } from '../utils/mockAuthUtils';
 
 const VerifyIntegrationsPage: React.FC = () => {
   const [isPreviewEnvironment, setIsPreviewEnvironment] = useState(false);
@@ -14,26 +14,20 @@ const VerifyIntegrationsPage: React.FC = () => {
     // Mark component as mounted to prevent state updates after unmount
     setIsMounted(true);
     
-    // Improved environment detection logic
+    // Improved environment detection logic using the centralized domain list
     const checkEnvironment = () => {
       try {
         const hostname = window.location.hostname;
+        console.log('[VerifyIntegrations] Checking environment for hostname:', hostname);
         
-        // Define known production domains
-        const productionDomains = [
-          'advisorwiz.com',
-          'consultantwiz.com', // Added consultantwiz.com as a production domain
-          'app.advisorwiz.com',
-          'app.consultantwiz.com',
-          'production',
-          'localhost'
-        ];
-        
-        // Check if the hostname is a production domain or has a production suffix
+        // Check if the hostname exactly matches or ends with any production domain
         let isProduction = false;
-        for (const domain of productionDomains) {
+        let matchedDomain = '';
+        
+        for (const domain of PRODUCTION_DOMAINS) {
           if (hostname === domain || hostname.endsWith('.' + domain)) {
             isProduction = true;
+            matchedDomain = domain;
             break;
           }
         }
@@ -47,10 +41,11 @@ const VerifyIntegrationsPage: React.FC = () => {
         const isPreview = !isProduction && (hostname.includes('preview') || hostname.includes('lovableproject'));
           
         if (isMounted) {
-          console.log("[VerifyIntegrations] Environment detection:", { 
+          console.log("[VerifyIntegrations] Environment detection complete:", { 
             hostname, 
             isProduction,
             isPreview,
+            matchedDomain,
             url: window.location.href
           });
           

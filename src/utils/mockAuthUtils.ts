@@ -1,3 +1,4 @@
+
 /**
  * Comprehensive utilities to handle authentication in preview environments
  */
@@ -9,39 +10,49 @@ const STORAGE_KEYS = {
   MOCK_AUTH_TOKEN: 'mock_auth_token',
 };
 
+// List of known production domains - centralized here for consistency
+export const PRODUCTION_DOMAINS = [
+  'advisorwiz.com',
+  'consultantwiz.com',
+  'app.advisorwiz.com',
+  'app.consultantwiz.com',
+  'production',
+  'localhost'
+];
+
 /**
- * Improved environment detection with explicit production domain checks
+ * Enhanced environment detection with explicit production domain checks
+ * and better debugging to help identify issues
  */
 export const isPreviewEnvironment = (): boolean => {
   try {
     const hostname = window.location.hostname;
+    console.log('[Environment Detection] Checking hostname:', hostname);
     
-    // Define known production domains
-    const productionDomains = [
-      'advisorwiz.com',
-      'consultantwiz.com', // Added consultantwiz.com as a production domain
-      'app.advisorwiz.com',
-      'app.consultantwiz.com',
-      'production',
-      'localhost'
-    ];
-    
-    // Check if the hostname is a production domain or has a production suffix
-    for (const domain of productionDomains) {
+    // Check if the hostname exactly matches or ends with any production domain
+    for (const domain of PRODUCTION_DOMAINS) {
       if (hostname === domain || hostname.endsWith('.' + domain)) {
+        console.log('[Environment Detection] Production domain detected:', { hostname, matchedDomain: domain });
         return false;
       }
     }
     
     // If it's not explicitly a production domain, check if it looks like a production domain
     if (hostname.endsWith('.app') || !hostname.includes('.')) {
+      console.log('[Environment Detection] Production pattern detected:', hostname);
       return false;
     }
     
     // Consider everything else as preview/test
-    return hostname.includes('preview') || hostname.includes('lovableproject');
+    const isPreview = hostname.includes('preview') || hostname.includes('lovableproject');
+    console.log('[Environment Detection] Final determination:', { 
+      hostname, 
+      isPreview,
+      url: window.location.href
+    });
+    return isPreview;
   } catch (e) {
-    console.error('[MockAuth] Error checking environment:', e);
+    console.error('[Environment Detection] Error checking environment:', e);
     return false; // Default to production on error
   }
 };

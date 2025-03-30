@@ -1,6 +1,6 @@
-
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
+import { PRODUCTION_DOMAINS } from '../../utils/mockAuthUtils';
 
 // Use environment variables with fallbacks for development
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://gkymvotqrdecjjymmmef.supabase.co";
@@ -13,37 +13,28 @@ export { SUPABASE_URL, SUPABASE_ANON_KEY };
 const isPreviewEnvironment = () => {
   try {
     const hostname = window.location.hostname;
+    console.log('[Supabase Client] Checking environment for hostname:', hostname);
     
-    // Define known production domains
-    const productionDomains = [
-      'advisorwiz.com',
-      'consultantwiz.com', // Added consultantwiz.com as a production domain
-      'app.advisorwiz.com',
-      'app.consultantwiz.com',
-      'production',
-      'localhost'
-    ];
-    
-    // Check if the hostname is a production domain or has a production suffix
-    for (const domain of productionDomains) {
+    // Check if the hostname exactly matches or ends with any production domain
+    for (const domain of PRODUCTION_DOMAINS) {
       if (hostname === domain || hostname.endsWith('.' + domain)) {
-        console.log("[Supabase] Production domain detected:", hostname);
+        console.log("[Supabase Client] Production domain detected:", { hostname, matchedDomain: domain });
         return false;
       }
     }
     
     // If it's not explicitly a production domain, check if it looks like a production domain
     if (hostname.endsWith('.app') || !hostname.includes('.')) {
-      console.log("[Supabase] Production domain pattern detected:", hostname);
+      console.log("[Supabase Client] Production domain pattern detected:", hostname);
       return false;
     }
     
     // Consider everything else as preview/test
     const isPreview = hostname.includes('preview') || hostname.includes('lovableproject');
-    console.log("[Supabase] Environment detection:", { hostname, isPreview });
+    console.log("[Supabase Client] Environment detection result:", { hostname, isPreview });
     return isPreview;
   } catch (e) {
-    console.error("[Supabase] Error checking environment:", e);
+    console.error("[Supabase Client] Error checking environment:", e);
     return false; // Default to production on error
   }
 };

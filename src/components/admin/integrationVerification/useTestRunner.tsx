@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { 
   testAuthenticationFlow, 
@@ -7,8 +6,9 @@ import {
 } from '@/utils/integration-tests/verify-integration';
 import { TestResult } from './types';
 import { toast } from 'sonner';
+import { PRODUCTION_DOMAINS } from '@/utils/mockAuthUtils';
 
-export function useTestRunner(isPreviewEnvironment: boolean) {
+export function useTestRunner(forcePreviewMode: boolean) {
   const [mounted, setMounted] = useState(false);
   const [results, setResults] = useState<TestResult[]>([
     { name: 'Authentication Flow', status: 'idle', message: 'Not tested yet' },
@@ -16,15 +16,29 @@ export function useTestRunner(isPreviewEnvironment: boolean) {
     { name: 'Email Functionality', status: 'idle', message: 'Not tested yet' }
   ]);
   const [isRunningAll, setIsRunningAll] = useState(false);
-
+  
   useEffect(() => {
     setMounted(true);
+    
+    // Log environment detection information at component mount
+    const hostname = window.location.hostname;
+    const isHostnameInProductionList = PRODUCTION_DOMAINS.some(domain => 
+      hostname === domain || hostname.endsWith('.' + domain)
+    );
+    
+    console.log('[useTestRunner] Environment detection debug:', {
+      hostname,
+      url: window.location.href,
+      forcePreviewMode,
+      isHostnameInProductionList,
+      productionDomains: PRODUCTION_DOMAINS
+    });
+    
     return () => {
       setMounted(false);
     };
-  }, []);
+  }, [forcePreviewMode]);
 
-  // Update a test result without losing mounted state
   const updateTestResult = useCallback((index: number, result: Partial<TestResult>) => {
     if (!mounted) return;
     
@@ -91,16 +105,16 @@ export function useTestRunner(isPreviewEnvironment: boolean) {
   }, [mounted, updateTestResult]);
 
   const runAuthTest = useCallback(async () => {
-    await safeExecuteTest(testAuthenticationFlow, 0, 'Authentication Flow', isPreviewEnvironment);
-  }, [safeExecuteTest, isPreviewEnvironment]);
+    await safeExecuteTest(testAuthenticationFlow, 0, 'Authentication Flow', forcePreviewMode);
+  }, [safeExecuteTest, forcePreviewMode]);
 
   const runDatabaseTest = useCallback(async () => {
-    await safeExecuteTest(testDatabaseOperations, 1, 'Database Operations', isPreviewEnvironment);
-  }, [safeExecuteTest, isPreviewEnvironment]);
+    await safeExecuteTest(testDatabaseOperations, 1, 'Database Operations', forcePreviewMode);
+  }, [safeExecuteTest, forcePreviewMode]);
 
   const runEmailTest = useCallback(async () => {
-    await safeExecuteTest(testEmailFunctionality, 2, 'Email Functionality', isPreviewEnvironment);
-  }, [safeExecuteTest, isPreviewEnvironment]);
+    await safeExecuteTest(testEmailFunctionality, 2, 'Email Functionality', forcePreviewMode);
+  }, [safeExecuteTest, forcePreviewMode]);
 
   const runTestByIndex = useCallback(async (index: number) => {
     if (index === 0) await runAuthTest();
@@ -123,12 +137,12 @@ export function useTestRunner(isPreviewEnvironment: boolean) {
     if (!mounted) return;
     setIsRunningAll(false);
     
-    if (isPreviewEnvironment) {
+    if (forcePreviewMode) {
       toast.info("Tests showing warnings are expected in preview environments and do not indicate actual issues.", {
         duration: 8000,
       });
     }
-  }, [mounted, runAuthTest, runDatabaseTest, runEmailTest, isPreviewEnvironment]);
+  }, [mounted, runAuthTest, runDatabaseTest, runEmailTest, forcePreviewMode]);
 
   return {
     results,

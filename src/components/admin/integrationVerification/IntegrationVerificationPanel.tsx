@@ -7,19 +7,38 @@ import { PanelHeader } from './PanelHeader';
 import { TestItem } from './TestItem';
 import { useTestRunner } from './useTestRunner';
 import { IntegrationVerificationPanelProps } from './types';
+import { PRODUCTION_DOMAINS } from '@/utils/mockAuthUtils';
 
 const IntegrationVerificationPanel: React.FC<IntegrationVerificationPanelProps> = ({ forcePreviewMode = false }) => {
   const [mounted, setMounted] = useState(false);
-  const [isPreviewEnvironment, setIsPreviewEnvironment] = useState<boolean>(false);
+  const [isPreviewEnvironment, setIsPreviewEnvironment] = useState<boolean>(forcePreviewMode);
 
   useEffect(() => {
     // Mark component as mounted to prevent unmounting issues
     setMounted(true);
     
-    // Set the preview mode state
-    setIsPreviewEnvironment(forcePreviewMode);
-    
-    console.log("[IntegrationVerificationPanel] Component mounted with forcePreviewMode:", forcePreviewMode);
+    if (!forcePreviewMode) {
+      // Double-check environment detection
+      const hostname = window.location.hostname;
+      const isProduction = PRODUCTION_DOMAINS.some(domain => 
+        hostname === domain || hostname.endsWith('.' + domain)
+      ) || hostname.endsWith('.app') || !hostname.includes('.');
+      const isPreview = !isProduction && (hostname.includes('preview') || hostname.includes('lovableproject'));
+      
+      console.log('[IntegrationVerificationPanel] Environment detection:', { 
+        hostname, 
+        isProduction,
+        isPreview,
+        forcePreviewMode,
+        productionDomains: PRODUCTION_DOMAINS
+      });
+      
+      setIsPreviewEnvironment(isPreview);
+    } else {
+      // Use the forced preview mode
+      setIsPreviewEnvironment(true);
+      console.log('[IntegrationVerificationPanel] Using forced preview mode:', forcePreviewMode);
+    }
     
     // Cleanup function
     return () => {

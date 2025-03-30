@@ -7,28 +7,20 @@
 import { supabase, checkSupabaseConnection } from "../../integrations/supabase/client";
 import { toast } from "sonner";
 import { mockAuthTest, mockDatabaseTest, mockEmailTest } from "./mock-integration";
+import { PRODUCTION_DOMAINS } from "../../utils/mockAuthUtils";
 
-// Improved environment detection with more comprehensive checks
+// Improved environment detection with more comprehensive checks and debugging
 const isPreviewOrTestEnvironment = () => {
   try {
-    // Skip environment check for specific hostnames that are known production domains
     if (typeof window !== 'undefined') {
       const hostname = window.location.hostname;
+      console.log('[Integration Tests] Checking environment for hostname:', hostname);
       
-      // Define known production domains
-      const productionDomains = [
-        'advisorwiz.com',
-        'consultantwiz.com', // Added consultantwiz.com as a production domain
-        'app.advisorwiz.com',
-        'app.consultantwiz.com',
-        'production',
-        'localhost'
-      ];
-      
-      // Check if the hostname is a production domain or has a production suffix
-      for (const domain of productionDomains) {
+      // Check if the hostname exactly matches or ends with any production domain
+      let matchedDomain = '';
+      for (const domain of PRODUCTION_DOMAINS) {
         if (hostname === domain || hostname.endsWith('.' + domain)) {
-          console.log("[Integration Tests] Production domain detected:", hostname);
+          console.log("[Integration Tests] Production domain detected:", { hostname, matchedDomain: domain });
           return false;
         }
       }
@@ -66,9 +58,19 @@ export const testAuthenticationFlow = async (
   try {
     console.log("[Integration Test] Starting authentication flow test");
     console.log("[Integration Test] Preview mode:", forcePreviewMode);
-    console.log("[Integration Test] Environment detection:", { 
-      hostname: window.location.hostname,
-      isPreview: isPreviewOrTestEnvironment()
+    
+    // Additional hostname debugging
+    const hostname = window.location.hostname;
+    const isHostnameInProductionList = PRODUCTION_DOMAINS.some(domain => 
+      hostname === domain || hostname.endsWith('.' + domain)
+    );
+    
+    console.log("[Integration Test] Environment detection debug:", { 
+      hostname,
+      url: window.location.href,
+      isPreview: isPreviewOrTestEnvironment(),
+      isHostnameInProductionList,
+      productionDomains: PRODUCTION_DOMAINS
     });
     
     // If in preview environment or forced preview mode, return a mock result
@@ -196,6 +198,20 @@ export const testDatabaseOperations = async (
     console.log("[Integration Test] Starting database operations test");
     console.log("[Integration Test] Preview mode:", forcePreviewMode);
     
+    // Additional hostname debugging
+    const hostname = window.location.hostname;
+    const isHostnameInProductionList = PRODUCTION_DOMAINS.some(domain => 
+      hostname === domain || hostname.endsWith('.' + domain)
+    );
+    
+    console.log("[Integration Test] Environment detection debug:", { 
+      hostname,
+      url: window.location.href,
+      isPreview: isPreviewOrTestEnvironment(),
+      isHostnameInProductionList,
+      productionDomains: PRODUCTION_DOMAINS
+    });
+    
     // If in preview environment or forced preview mode, return a mock result
     if (forcePreviewMode || isPreviewOrTestEnvironment()) {
       console.log("[Integration Test] Preview/test environment detected, returning mock result");
@@ -318,6 +334,20 @@ export const testEmailFunctionality = async (
   try {
     console.log("[Integration Test] Starting email functionality test");
     console.log("[Integration Test] Preview mode:", forcePreviewMode);
+    
+    // Additional hostname debugging
+    const hostname = window.location.hostname;
+    const isHostnameInProductionList = PRODUCTION_DOMAINS.some(domain => 
+      hostname === domain || hostname.endsWith('.' + domain)
+    );
+    
+    console.log("[Integration Test] Environment detection debug:", { 
+      hostname,
+      url: window.location.href,
+      isPreview: isPreviewOrTestEnvironment(),
+      isHostnameInProductionList,
+      productionDomains: PRODUCTION_DOMAINS
+    });
     
     // If in preview environment or forced preview mode, return a mock result
     if (forcePreviewMode || isPreviewOrTestEnvironment()) {
