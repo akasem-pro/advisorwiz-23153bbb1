@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import IntegrationVerificationPanel from '../components/admin/IntegrationVerificationPanel';
+import { IntegrationVerificationPanel } from '../components/admin/integrationVerification';
 import PageSEO from '../components/seo/PageSEO';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Info, AlertTriangle } from 'lucide-react';
