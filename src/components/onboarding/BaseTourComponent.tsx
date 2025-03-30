@@ -6,11 +6,12 @@ import { tourStyles } from './OnboardingTourStyles';
 import { useToast } from '../../hooks/use-toast';
 import { TOUR_NAMES } from '../../hooks/onboarding/types';
 import { Step } from 'react-joyride';
+import { UserType } from '../../types/profileTypes';
 
 interface BaseTourComponentProps {
   tourName: keyof typeof TOUR_NAMES;
   tourSteps: Step[];
-  userType: string;
+  userType: UserType; // Ensure this is using the UserType from profileTypes
   autoStart?: boolean;
   onComplete?: () => void;
   completionMessage: {

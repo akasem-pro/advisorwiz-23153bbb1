@@ -1,4 +1,3 @@
-
 import { trackPerformance, storeAnalyticsMetric } from './core';
 
 // Local storage key for persisted metrics
@@ -189,12 +188,4 @@ export const initEnhancedPerformanceTracking = (): void => {
   
   // Log initialization
   console.log('Enhanced performance tracking initialized');
-  
-  // Return cleanup function
-  return () => {
-    if (flushTimer !== null) {
-      window.clearTimeout(flushTimer);
-    }
-    flushMetricsBuffer();
-  };
 };
