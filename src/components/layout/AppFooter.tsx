@@ -5,6 +5,7 @@ import { Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { cn } from '@/lib/utils';
 import { Separator } from "../ui/separator";
+import Logo from './Logo';
 
 const AppFooter: React.FC = () => {
   const { theme } = useTheme();
@@ -18,14 +19,7 @@ const AppFooter: React.FC = () => {
           {/* Column 1: Logo and description */}
           <div className="md:col-span-1">
             <div className="flex items-center mb-4">
-              <svg className="h-12 w-12" viewBox="0 0 100 100" fill="white">
-                <circle cx="50" cy="50" r="45" fill="currentColor" fillOpacity="0.1" stroke="currentColor" strokeWidth="2" />
-                <path d="M30 50 L45 65 L70 35" stroke="currentColor" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <div className="ml-3">
-                <h2 className="text-xl font-bold">AdvisorWiz</h2>
-                <p className="text-xs text-slate-300">YOUR ADVISOR NETWORK</p>
-              </div>
+              <Logo forceLightMode={true} />
             </div>
             <p className="text-sm text-slate-300 mb-6">
               Connecting consumers with trusted financial advisors through an innovative matching platform.
