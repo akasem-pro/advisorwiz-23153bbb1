@@ -169,7 +169,10 @@ const IntegrationVerificationPanel: React.FC = () => {
             <p className="text-sm text-muted-foreground">{test.message}</p>
             
             {(test.status === 'failed' || test.status === 'warning') && test.details && (
-              <Alert variant={test.status === 'warning' ? "warning" : "destructive"} className="mt-2">
+              <Alert 
+                variant={test.status === 'warning' ? "warning" : "destructive"} 
+                className="mt-2"
+              >
                 <AlertTitle>
                   {test.status === 'warning' ? 'Preview Environment Limitation' : 'Error Details'}
                 </AlertTitle>
