@@ -15,38 +15,61 @@ interface TestResult {
 }
 
 const IntegrationVerificationPanel: React.FC = () => {
+  const [mounted, setMounted] = useState(false);
   const [results, setResults] = useState<TestResult[]>([
     { name: 'Authentication Flow', status: 'idle', message: 'Not tested yet' },
     { name: 'Supabase Database Operations', status: 'idle', message: 'Not tested yet' },
     { name: 'Email Functionality', status: 'idle', message: 'Not tested yet' }
   ]);
   const [isRunningAll, setIsRunningAll] = useState(false);
-  const [isPreviewEnvironment, setIsPreviewEnvironment] = useState<boolean>(
-    typeof window !== 'undefined' && (
-      window.location.hostname.includes('preview') ||
-      window.location.hostname.includes('lovableproject') ||
-      window.location.hostname.includes('localhost') ||
-      window.location.hostname.includes('lovable.app')
-    )
-  );
+  const [isPreviewEnvironment, setIsPreviewEnvironment] = useState<boolean>(false);
 
   useEffect(() => {
-    // On component mount, warn about preview environment limitations if applicable
-    if (isPreviewEnvironment) {
-      console.log("Preview environment detected: network operations will be limited");
-    }
-  }, [isPreviewEnvironment]);
+    // Mark component as mounted to prevent unmounting issues
+    setMounted(true);
+    
+    // Check if we're in a preview environment
+    const checkEnvironment = () => {
+      const isPreview = typeof window !== 'undefined' && (
+        window.location.hostname.includes('preview') ||
+        window.location.hostname.includes('lovableproject') ||
+        window.location.hostname.includes('localhost') ||
+        window.location.hostname.includes('lovable.app')
+      );
+      
+      setIsPreviewEnvironment(isPreview);
+      
+      if (isPreview) {
+        console.log("Preview environment detected: network operations will be limited");
+      }
+    };
+    
+    checkEnvironment();
+    
+    // Cleanup function
+    return () => {
+      console.log('Integration verification panel unmounting');
+      setMounted(false);
+    };
+  }, []);
 
+  // Update a test result without losing mounted state
   const updateTestResult = (index: number, result: Partial<TestResult>) => {
+    if (!mounted) return;
+    
     setResults(prev => 
       prev.map((item, i) => i === index ? { ...item, ...result } : item)
     );
   };
 
   const runAuthTest = async () => {
+    if (!mounted) return;
+    
     updateTestResult(0, { status: 'running', message: 'Testing authentication flow...' });
     try {
       const result = await testAuthenticationFlow(isPreviewEnvironment);
+      
+      if (!mounted) return;
       
       if (isPreviewEnvironment) {
         // In preview environment, show as warning with explanation
@@ -63,6 +86,8 @@ const IntegrationVerificationPanel: React.FC = () => {
         });
       }
     } catch (error) {
+      if (!mounted) return;
+      
       console.error("[Authentication Test] Error:", error);
       
       updateTestResult(0, { 
@@ -76,9 +101,13 @@ const IntegrationVerificationPanel: React.FC = () => {
   };
 
   const runDatabaseTest = async () => {
+    if (!mounted) return;
+    
     updateTestResult(1, { status: 'running', message: 'Testing database operations...' });
     try {
       const result = await testDatabaseOperations(isPreviewEnvironment);
+      
+      if (!mounted) return;
       
       if (isPreviewEnvironment) {
         // In preview environment, show as warning with explanation
@@ -95,6 +124,8 @@ const IntegrationVerificationPanel: React.FC = () => {
         });
       }
     } catch (error) {
+      if (!mounted) return;
+      
       console.error("[Database Test] Error:", error);
       
       updateTestResult(1, { 
@@ -108,9 +139,13 @@ const IntegrationVerificationPanel: React.FC = () => {
   };
 
   const runEmailTest = async () => {
+    if (!mounted) return;
+    
     updateTestResult(2, { status: 'running', message: 'Testing email functionality...' });
     try {
       const result = await testEmailFunctionality(isPreviewEnvironment);
+      
+      if (!mounted) return;
       
       if (isPreviewEnvironment) {
         // In preview environment, show as warning with explanation
@@ -127,6 +162,8 @@ const IntegrationVerificationPanel: React.FC = () => {
         });
       }
     } catch (error) {
+      if (!mounted) return;
+      
       console.error("[Email Test] Error:", error);
       
       updateTestResult(2, { 
@@ -140,10 +177,18 @@ const IntegrationVerificationPanel: React.FC = () => {
   };
 
   const runAllTests = async () => {
+    if (!mounted) return;
+    
     setIsRunningAll(true);
     await runAuthTest();
+    
+    if (!mounted) return;
     await runDatabaseTest();
+    
+    if (!mounted) return;
     await runEmailTest();
+    
+    if (!mounted) return;
     setIsRunningAll(false);
     
     if (isPreviewEnvironment) {
@@ -152,8 +197,6 @@ const IntegrationVerificationPanel: React.FC = () => {
       });
     }
   };
-
-  // Removed duplicate declaration of updateTestResult function
 
   const renderStatusIcon = (status: string) => {
     switch (status) {

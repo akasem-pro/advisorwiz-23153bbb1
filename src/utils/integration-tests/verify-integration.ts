@@ -243,6 +243,7 @@ export const testEmailFunctionality = async (
  * Run all integration tests and display results
  */
 export const runAllIntegrationTests = async (): Promise<void> => {
+  // Determine if we're in a preview environment to force mocks
   const isInPreviewMode = isPreviewOrTestEnvironment();
   
   toast.info("Starting integration tests...");

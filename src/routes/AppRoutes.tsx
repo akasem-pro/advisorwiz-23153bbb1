@@ -1,6 +1,6 @@
 
 import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
-import { Fragment, useEffect } from 'react';
+import { useEffect } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import MobileLayout from '../components/layout/MobileLayout';
 import NotFound from '../pages/NotFound';
@@ -54,16 +54,11 @@ const AppRoutes = () => {
       <Routes>
         {/* Mobile Routes wrapped in MobileLayout */}
         <Route path="/m" element={<MobileLayout><Outlet /></MobileLayout>}>
-          {/* Spread the mobile routes directly */}
-          {MobileRoutes.map(route => (
-            <Fragment key={route.key}>{route}</Fragment>
-          ))}
+          {MobileRoutes}
         </Route>
         
         {/* Authentication Routes (no layout) */}
-        {AuthRoutes.map(route => (
-          <Fragment key={route.key}>{route}</Fragment>
-        ))}
+        {AuthRoutes}
         
         {/* Redirects for old auth routes */}
         <Route path="/login" element={<Navigate to="/signin" replace />} />
@@ -87,19 +82,12 @@ const AppRoutes = () => {
         </Route>
         
         {/* Utility Routes - includes verification page and other utility pages */}
-        {UtilityRoutes.map(route => (
-          <Fragment key={route.key}>{route}</Fragment>
-        ))}
+        {UtilityRoutes}
         
         {/* Main Web Routes */}
         <Route path="/" element={<Outlet />}>
-          {/* Spread the main routes and dashboard routes arrays */}
-          {MainRoutes.map(route => (
-            <Fragment key={route.key}>{route}</Fragment>
-          ))}
-          {DashboardRoutes.map(route => (
-            <Fragment key={route.key}>{route}</Fragment>
-          ))}
+          {MainRoutes}
+          {DashboardRoutes}
         </Route>
         
         {/* Not Found Route - must be last */}

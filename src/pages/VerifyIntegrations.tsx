@@ -1,17 +1,44 @@
-import React from 'react';
-import AppLayout from '../components/layout/AppLayout';
+
+import React, { useState, useEffect } from 'react';
 import IntegrationVerificationPanel from '../components/admin/IntegrationVerificationPanel';
 import PageSEO from '../components/seo/PageSEO';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
 
 const VerifyIntegrationsPage: React.FC = () => {
-  const isPreviewEnvironment = typeof window !== 'undefined' && (
-    window.location.hostname.includes('preview') ||
-    window.location.hostname.includes('lovableproject') ||
-    window.location.hostname.includes('localhost') ||
-    window.location.hostname.includes('lovable.app')
-  );
+  const [isPreviewEnvironment, setIsPreviewEnvironment] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    // Determine environment type
+    const checkEnvironment = () => {
+      const isPreview = typeof window !== 'undefined' && (
+        window.location.hostname.includes('preview') ||
+        window.location.hostname.includes('lovableproject') ||
+        window.location.hostname.includes('localhost') ||
+        window.location.hostname.includes('lovable.app')
+      );
+      setIsPreviewEnvironment(isPreview);
+      setIsLoading(false);
+    };
+    
+    checkEnvironment();
+    
+    // This ensures the component doesn't unmount immediately
+    return () => {
+      console.log("VerifyIntegrationsPage unmounting");
+    };
+  }, []);
+  
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <div className="flex justify-center items-center h-40">
+          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-teal-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -58,7 +85,7 @@ const VerifyIntegrationsPage: React.FC = () => {
             <div className="border rounded-md p-4">
               <h3 className="font-medium mb-2">1. Authentication Flow</h3>
               <ul className="list-disc pl-5 space-y-2">
-                <li>Navigate to the <a href="/sign-in" className="text-teal-600 hover:underline">Sign In page</a></li>
+                <li>Navigate to the <a href="/signin" className="text-teal-600 hover:underline">Sign In page</a></li>
                 <li>Test both sign-in and sign-up flows</li>
                 <li>Verify that after signing in, you are redirected appropriately</li>
                 <li>Test the sign-out functionality from the user menu</li>
