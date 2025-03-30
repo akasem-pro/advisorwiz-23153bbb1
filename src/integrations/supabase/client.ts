@@ -25,7 +25,8 @@ export const supabase = createClient<Database>(
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      storage: localStorage
+      storage: localStorage,
+      storageKey: 'supabase.auth.token'
     },
     global: {
       headers: {
@@ -37,19 +38,7 @@ export const supabase = createClient<Database>(
       params: {
         eventsPerSecond: 10
       }
-    },
-    // Add special options for preview environments
-    ...(isPreviewEnvironment ? {
-      // Add more lenient timeouts for preview environments
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storage: localStorage,
-        storageKey: 'supabase.auth.token',
-        flowType: 'implicit'
-      }
-    } : {})
+    }
   }
 );
 
@@ -71,18 +60,6 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
       console.log("[Supabase Debug] Preview environment detected, skipping detailed check");
       return true;
     }
-    
-    // Get browser diagnostic info
-    console.log("[Supabase Debug] Browser diagnostics:", {
-      userAgent: navigator.userAgent,
-      language: navigator.language,
-      cookiesEnabled: navigator.cookieEnabled,
-      doNotTrack: navigator.doNotTrack,
-      origin: window.location.origin,
-      href: window.location.href,
-      protocol: window.location.protocol,
-      viewport: `${window.innerWidth}x${window.innerHeight}`,
-    });
     
     // Try multiple endpoints for more reliable connection testing
     try {

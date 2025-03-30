@@ -2,11 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '../integrations/supabase/client';
 import * as dataLayer from '../lib/supabase/dataLayer';
-import { Session, User } from '@supabase/supabase-js';
 
 /**
  * Custom hook for using Supabase data with improved error handling and offline support
- * This provides a consistent interface for data operations
  */
 export const useSupabase = () => {
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
@@ -153,9 +151,6 @@ export const useSupabase = () => {
       });
     });
   }, [fetchData]);
-
-  // Keep other methods the same
-  // ... keep existing code
 
   return {
     isOnline,
