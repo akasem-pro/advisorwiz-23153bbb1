@@ -22,3 +22,6 @@ export interface OnboardingTourActions {
 }
 
 export type OnboardingTourHook = OnboardingTourState & OnboardingTourActions;
+
+// Add this type for the pricing page tour
+export type PricingUserType = 'consumer' | 'advisor' | 'enterprise';

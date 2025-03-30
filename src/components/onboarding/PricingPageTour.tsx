@@ -5,9 +5,10 @@ import { useOnboardingTour } from '../../hooks/onboarding/use-onboarding-tour';
 import { usePricingTourSteps } from '../../hooks/onboarding/use-pricing-tour-steps';
 import { tourStyles } from './OnboardingTourStyles';
 import { useToast } from '../../hooks/use-toast';
+import { PricingUserType } from '../../hooks/onboarding/types';
 
 interface PricingPageTourProps {
-  userType?: 'consumer' | 'advisor' | 'enterprise';
+  userType?: PricingUserType;
   autoStart?: boolean;
 }
 
@@ -26,7 +27,7 @@ const PricingPageTour: React.FC<PricingPageTourProps> = ({
     startTour, 
     setRun 
   } = useOnboardingTour(
-    userType, 
+    userType === 'enterprise' ? 'firm_admin' : userType, // Map 'enterprise' to 'firm_admin' for compatibility
     () => {
       toast({
         title: "Pricing Tour Complete!",

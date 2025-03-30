@@ -15,9 +15,10 @@ import TrustBadges from '../components/ui/TrustBadges';
 import FloatingSupportButton from '../components/support/FloatingSupportButton';
 import PricingPageTour from '../components/onboarding/PricingPageTour';
 import { useTrackPageView } from '../hooks/use-analytics';
+import { PricingUserType } from '../hooks/onboarding/types';
 
 const Pricing: React.FC = () => {
-  const [userType, setUserType] = useState<'consumer' | 'advisor' | 'enterprise'>('consumer');
+  const [userType, setUserType] = useState<PricingUserType>('consumer');
   
   // Track page view
   useTrackPageView('Pricing Page');

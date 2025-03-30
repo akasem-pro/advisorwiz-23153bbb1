@@ -1,11 +1,12 @@
 
 import { useCallback } from 'react';
 import { Step } from 'react-joyride';
+import { PricingUserType } from './types';
 
 /**
  * Custom hook that returns pricing page tour steps specific to each user type
  */
-export const usePricingTourSteps = (userType: 'consumer' | 'advisor' | 'enterprise' = 'consumer'): Step[] => {
+export const usePricingTourSteps = (userType: PricingUserType = 'consumer'): Step[] => {
   return useCallback(() => {
     // Common steps that apply to all user types
     const commonSteps: Step[] = [
@@ -18,7 +19,7 @@ export const usePricingTourSteps = (userType: 'consumer' | 'advisor' | 'enterpri
       {
         target: '.TabsList',
         content: 'You can switch between different user types to see the plans that are relevant to you.',
-        placement: 'bottom'
+        placement: 'bottom',
       }
     ];
 
