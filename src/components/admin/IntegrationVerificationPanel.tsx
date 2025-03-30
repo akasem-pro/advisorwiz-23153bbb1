@@ -153,11 +153,7 @@ const IntegrationVerificationPanel: React.FC = () => {
     }
   };
 
-  const updateTestResult = (index: number, result: Partial<TestResult>) => {
-    setResults(prev => 
-      prev.map((item, i) => i === index ? { ...item, ...result } : item)
-    );
-  };
+  // Removed duplicate declaration of updateTestResult function
 
   const renderStatusIcon = (status: string) => {
     switch (status) {
