@@ -14,7 +14,11 @@ interface TestResult {
   details?: any;
 }
 
-const IntegrationVerificationPanel: React.FC = () => {
+interface IntegrationVerificationPanelProps {
+  forcePreviewMode?: boolean;
+}
+
+const IntegrationVerificationPanel: React.FC<IntegrationVerificationPanelProps> = ({ forcePreviewMode = false }) => {
   const [mounted, setMounted] = useState(false);
   const [results, setResults] = useState<TestResult[]>([
     { name: 'Authentication Flow', status: 'idle', message: 'Not tested yet' },
@@ -28,30 +32,17 @@ const IntegrationVerificationPanel: React.FC = () => {
     // Mark component as mounted to prevent unmounting issues
     setMounted(true);
     
-    // Check if we're in a preview environment
-    const checkEnvironment = () => {
-      const isPreview = typeof window !== 'undefined' && (
-        window.location.hostname.includes('preview') ||
-        window.location.hostname.includes('lovableproject') ||
-        window.location.hostname.includes('localhost') ||
-        window.location.hostname.includes('lovable.app')
-      );
-      
-      setIsPreviewEnvironment(isPreview);
-      
-      if (isPreview) {
-        console.log("Preview environment detected: network operations will be limited");
-      }
-    };
+    // Set the preview mode state
+    setIsPreviewEnvironment(forcePreviewMode);
     
-    checkEnvironment();
+    console.log("[IntegrationVerificationPanel] Component mounted with forcePreviewMode:", forcePreviewMode);
     
     // Cleanup function
     return () => {
-      console.log('Integration verification panel unmounting');
+      console.log("[IntegrationVerificationPanel] Component unmounting");
       setMounted(false);
     };
-  }, []);
+  }, [forcePreviewMode]);
 
   // Update a test result without losing mounted state
   const updateTestResult = (index: number, result: Partial<TestResult>) => {
@@ -94,7 +85,7 @@ const IntegrationVerificationPanel: React.FC = () => {
         status: isPreviewEnvironment ? 'warning' : 'failed', 
         message: isPreviewEnvironment 
           ? 'Network connectivity is limited in preview environments. This is expected and not an actual issue.'
-          : 'Test threw an exception',
+          : 'Test threw an exception: ' + (error instanceof Error ? error.message : String(error)),
         details: error
       });
     }
@@ -132,7 +123,7 @@ const IntegrationVerificationPanel: React.FC = () => {
         status: isPreviewEnvironment ? 'warning' : 'failed',
         message: isPreviewEnvironment 
           ? 'Network connectivity is limited in preview environments. This is expected and not an actual issue.' 
-          : 'Test threw an exception',
+          : 'Test threw an exception: ' + (error instanceof Error ? error.message : String(error)),
         details: error
       });
     }
@@ -170,7 +161,7 @@ const IntegrationVerificationPanel: React.FC = () => {
         status: isPreviewEnvironment ? 'warning' : 'failed',
         message: isPreviewEnvironment 
           ? 'Network connectivity is limited in preview environments. This is expected and not an actual issue.' 
-          : 'Test threw an exception',
+          : 'Test threw an exception: ' + (error instanceof Error ? error.message : String(error)),
         details: error
       });
     }

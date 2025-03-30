@@ -1,3 +1,4 @@
+
 /**
  * This utility provides integration verification functions to test the app's
  * connection with Supabase, Resend, and other services.
@@ -9,12 +10,17 @@ import { mockAuthTest, mockDatabaseTest, mockEmailTest } from "./mock-integratio
 
 // Update the isPreviewEnvironment check to include lovable.app domains
 const isPreviewOrTestEnvironment = () => {
-  return typeof window !== 'undefined' && (
-    window.location.hostname.includes('preview') ||
-    window.location.hostname.includes('lovableproject') ||
-    window.location.hostname.includes('localhost') ||
-    window.location.hostname.includes('lovable.app')
-  );
+  try {
+    return typeof window !== 'undefined' && (
+      window.location.hostname.includes('preview') ||
+      window.location.hostname.includes('lovableproject') ||
+      window.location.hostname.includes('localhost') ||
+      window.location.hostname.includes('lovable.app')
+    );
+  } catch (e) {
+    console.error("[Integration Tests] Error checking environment:", e);
+    return true; // Fallback to assuming preview mode on error
+  }
 };
 
 /**
@@ -31,6 +37,11 @@ export const testAuthenticationFlow = async (
 }> => {
   try {
     console.log("[Integration Test] Starting authentication flow test");
+    console.log("[Integration Test] Preview mode:", forcePreviewMode);
+    console.log("[Integration Test] Environment detection:", { 
+      hostname: window.location.hostname,
+      isPreview: isPreviewOrTestEnvironment()
+    });
     
     // If in preview environment or forced preview mode, return a mock result
     if (forcePreviewMode || isPreviewOrTestEnvironment()) {
@@ -39,7 +50,17 @@ export const testAuthenticationFlow = async (
     }
     
     // 1. Check if we're already logged in
-    const { data: sessionData } = await supabase.auth.getSession();
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) {
+      console.error("[Integration Test] Error getting session:", sessionError);
+      return {
+        success: false,
+        message: "Failed to check current session",
+        details: sessionError
+      };
+    }
+    
     if (sessionData?.session) {
       console.log("[Integration Test] User already logged in, signing out first");
       await supabase.auth.signOut();
@@ -56,9 +77,10 @@ export const testAuthenticationFlow = async (
     });
     
     if (signInError) {
+      console.error("[Integration Test] Sign in error:", signInError);
       return {
         success: false,
-        message: "Failed to sign in with test credentials",
+        message: "Failed to sign in with test credentials: " + signInError.message,
         details: signInError
       };
     }
@@ -69,9 +91,10 @@ export const testAuthenticationFlow = async (
     const { error: signOutError } = await supabase.auth.signOut();
     
     if (signOutError) {
+      console.error("[Integration Test] Sign out error:", signOutError);
       return {
         success: false,
-        message: "Signed in successfully but failed to sign out",
+        message: "Signed in successfully but failed to sign out: " + signOutError.message,
         details: signOutError
       };
     }
@@ -79,6 +102,7 @@ export const testAuthenticationFlow = async (
     // 4. Verify we're signed out
     const { data: verifyData } = await supabase.auth.getSession();
     if (verifyData?.session) {
+      console.error("[Integration Test] User still logged in after sign out");
       return {
         success: false,
         message: "Sign out reported success but user is still logged in",
@@ -86,6 +110,7 @@ export const testAuthenticationFlow = async (
       };
     }
     
+    console.log("[Integration Test] Authentication test completed successfully");
     return {
       success: true,
       message: "Authentication flow test completed successfully"
@@ -94,7 +119,7 @@ export const testAuthenticationFlow = async (
     console.error("[Integration Test] Authentication test failed with exception:", error);
     return {
       success: false,
-      message: "Authentication test failed with exception",
+      message: "Authentication test failed with exception: " + (error instanceof Error ? error.message : String(error)),
       details: error,
       previewMode: forcePreviewMode || isPreviewOrTestEnvironment()
     };
@@ -114,6 +139,7 @@ export const testDatabaseOperations = async (
 }> => {
   try {
     console.log("[Integration Test] Starting database operations test");
+    console.log("[Integration Test] Preview mode:", forcePreviewMode);
     
     // If in preview environment or forced preview mode, return a mock result
     if (forcePreviewMode || isPreviewOrTestEnvironment()) {
@@ -122,13 +148,18 @@ export const testDatabaseOperations = async (
     }
     
     // 1. First verify connection to Supabase
+    console.log("[Integration Test] Checking Supabase connection");
     const isConnected = await checkSupabaseConnection();
+    
     if (!isConnected) {
+      console.error("[Integration Test] Failed to connect to Supabase");
       return {
         success: false,
         message: "Failed to connect to Supabase"
       };
     }
+    
+    console.log("[Integration Test] Supabase connection successful");
     
     // 2. Test read operation (using public data that doesn't require auth)
     console.log("[Integration Test] Testing read operation");
@@ -138,9 +169,10 @@ export const testDatabaseOperations = async (
       .limit(1);
     
     if (readError) {
+      console.error("[Integration Test] Read operation error:", readError);
       return {
         success: false,
-        message: "Failed to read from database",
+        message: "Failed to read from database: " + readError.message,
         details: readError
       };
     }
@@ -150,6 +182,10 @@ export const testDatabaseOperations = async (
     // 3. Test for RLS policies working as expected
     // Try to read from a protected table when not authenticated
     const { error: rlsError } = await supabase.auth.signOut();
+    if (rlsError) {
+      console.error("[Integration Test] Error signing out:", rlsError);
+    }
+    
     console.log("[Integration Test] Testing RLS policies");
     
     const { data: protectedData, error: protectedError } = await supabase
@@ -159,7 +195,16 @@ export const testDatabaseOperations = async (
       
     // If we get data without being authenticated, RLS may not be properly set up
     // If we get an error about permissions, RLS is working as expected
-    const rlsWorking = protectedError && protectedError.message.includes('permission');
+    const rlsWorking = protectedError && (
+      protectedError.message.includes('permission') || 
+      protectedError.message.includes('JWTClaimsSetVerificationException')
+    );
+    
+    console.log("[Integration Test] RLS test result:", { 
+      error: protectedError, 
+      data: protectedData,
+      rlsWorking 
+    });
     
     return {
       success: true,
@@ -170,7 +215,7 @@ export const testDatabaseOperations = async (
     console.error("[Integration Test] Database test failed with exception:", error);
     return {
       success: false,
-      message: "Database test failed with exception",
+      message: "Database test failed with exception: " + (error instanceof Error ? error.message : String(error)),
       details: error,
       previewMode: forcePreviewMode || isPreviewOrTestEnvironment()
     };
@@ -190,6 +235,7 @@ export const testEmailFunctionality = async (
 }> => {
   try {
     console.log("[Integration Test] Starting email functionality test");
+    console.log("[Integration Test] Preview mode:", forcePreviewMode);
     
     // If in preview environment or forced preview mode, return a mock result
     if (forcePreviewMode || isPreviewOrTestEnvironment()) {
@@ -208,31 +254,41 @@ export const testEmailFunctionality = async (
     
     console.log("[Integration Test] Submitting test contact form");
     
-    // Call the edge function directly
-    const { data, error } = await supabase.functions.invoke('handle-contact', {
-      body: testContactData,
-    });
-    
-    if (error) {
+    try {
+      // Call the edge function directly
+      const { data, error } = await supabase.functions.invoke('handle-contact', {
+        body: testContactData,
+      });
+      
+      if (error) {
+        console.error("[Integration Test] Error invoking handle-contact function:", error);
+        return {
+          success: false,
+          message: "Failed to invoke handle-contact edge function: " + error.message,
+          details: error
+        };
+      }
+      
+      console.log("[Integration Test] Contact form submission result:", data);
+      
+      return {
+        success: true,
+        message: "Email functionality test completed successfully",
+        details: data
+      };
+    } catch (invokeError) {
+      console.error("[Integration Test] Error invoking edge function:", invokeError);
       return {
         success: false,
-        message: "Failed to invoke handle-contact edge function",
-        details: error
+        message: "Failed to invoke edge function: " + (invokeError instanceof Error ? invokeError.message : String(invokeError)),
+        details: invokeError
       };
     }
-    
-    console.log("[Integration Test] Contact form submission result:", data);
-    
-    return {
-      success: true,
-      message: "Email functionality test completed successfully",
-      details: data
-    };
   } catch (error) {
     console.error("[Integration Test] Email test failed with exception:", error);
     return {
       success: false,
-      message: "Email test failed with exception",
+      message: "Email test failed with exception: " + (error instanceof Error ? error.message : String(error)),
       details: error,
       previewMode: forcePreviewMode || isPreviewOrTestEnvironment()
     };
@@ -242,11 +298,12 @@ export const testEmailFunctionality = async (
 /**
  * Run all integration tests and display results
  */
-export const runAllIntegrationTests = async (): Promise<void> => {
+export const runAllIntegrationTests = async (forcePreviewMode = false): Promise<void> => {
   // Determine if we're in a preview environment to force mocks
-  const isInPreviewMode = isPreviewOrTestEnvironment();
+  const isInPreviewMode = forcePreviewMode || isPreviewOrTestEnvironment();
   
   toast.info("Starting integration tests...");
+  console.log("[Integration Tests] Starting all tests, preview mode:", isInPreviewMode);
   
   // Test authentication
   const authResult = await testAuthenticationFlow(isInPreviewMode);

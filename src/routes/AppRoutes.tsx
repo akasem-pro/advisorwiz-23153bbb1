@@ -22,7 +22,6 @@ import Sitemap from '../pages/Sitemap';
 import Schedule from '../pages/Schedule';
 import Chat from '../pages/Chat';
 import ConsumerProfile from '../pages/ConsumerProfile';
-import Onboarding from '../pages/Onboarding';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -81,7 +80,7 @@ const AppRoutes = () => {
           <Route path="/consumer-profile" element={<ConsumerProfile />} />
         </Route>
         
-        {/* Utility Routes - includes verification page and other utility pages */}
+        {/* Utility Routes with their own layouts */}
         {UtilityRoutes}
         
         {/* Main Web Routes */}

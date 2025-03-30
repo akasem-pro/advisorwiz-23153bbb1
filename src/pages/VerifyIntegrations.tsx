@@ -3,30 +3,54 @@ import React, { useState, useEffect } from 'react';
 import IntegrationVerificationPanel from '../components/admin/IntegrationVerificationPanel';
 import PageSEO from '../components/seo/PageSEO';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Info } from 'lucide-react';
+import { Info, AlertTriangle } from 'lucide-react';
 
 const VerifyIntegrationsPage: React.FC = () => {
   const [isPreviewEnvironment, setIsPreviewEnvironment] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
   
   useEffect(() => {
-    // Determine environment type
+    // Mark component as mounted to prevent state updates after unmount
+    setIsMounted(true);
+    
+    // Determine environment type with improved domain detection
     const checkEnvironment = () => {
-      const isPreview = typeof window !== 'undefined' && (
-        window.location.hostname.includes('preview') ||
-        window.location.hostname.includes('lovableproject') ||
-        window.location.hostname.includes('localhost') ||
-        window.location.hostname.includes('lovable.app')
-      );
-      setIsPreviewEnvironment(isPreview);
-      setIsLoading(false);
+      try {
+        // Enhanced check to accurately detect preview vs production environments
+        const hostname = window.location.hostname;
+        
+        // Check for preview/test domains
+        const isPreview = hostname.includes('preview') ||
+          hostname.includes('lovableproject') ||
+          hostname.includes('localhost') ||
+          hostname.includes('lovable.app');
+          
+        if (isMounted) {
+          console.log("[VerifyIntegrations] Environment detection:", { 
+            hostname, 
+            isPreview,
+            url: window.location.href
+          });
+          
+          setIsPreviewEnvironment(isPreview);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("[VerifyIntegrations] Error detecting environment:", error);
+        if (isMounted) {
+          setIsPreviewEnvironment(true); // Fallback to preview mode on error
+          setIsLoading(false);
+        }
+      }
     };
     
     checkEnvironment();
     
-    // This ensures the component doesn't unmount immediately
+    // Cleanup function
     return () => {
-      console.log("VerifyIntegrationsPage unmounting");
+      console.log("[VerifyIntegrations] Component unmounting");
+      setIsMounted(false);
     };
   }, []);
   
@@ -49,7 +73,7 @@ const VerifyIntegrationsPage: React.FC = () => {
       />
       <h1 className="text-3xl font-semibold mb-4">Integration Verification</h1>
       
-      {isPreviewEnvironment && (
+      {isPreviewEnvironment ? (
         <Alert variant="warning" className="mb-6">
           <Info className="h-4 w-4" />
           <AlertTitle>Preview Environment Detected</AlertTitle>
@@ -67,6 +91,20 @@ const VerifyIntegrationsPage: React.FC = () => {
             </p>
           </AlertDescription>
         </Alert>
+      ) : (
+        <Alert variant="default" className="mb-6">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Production Environment</AlertTitle>
+          <AlertDescription>
+            <p className="mb-1">
+              This verification page is running in a production environment. 
+              All tests will attempt to connect to actual services.
+            </p>
+            <p>
+              Note: Test credentials and operations are used, but they will interact with real services.
+            </p>
+          </AlertDescription>
+        </Alert>
       )}
       
       <div className="grid grid-cols-1 gap-6">
@@ -76,7 +114,7 @@ const VerifyIntegrationsPage: React.FC = () => {
             Use the tools below to verify the integration between the app and external services like Supabase and Resend.
           </p>
           
-          <IntegrationVerificationPanel />
+          <IntegrationVerificationPanel forcePreviewMode={isPreviewEnvironment} />
         </div>
         
         <div className="mt-8">
