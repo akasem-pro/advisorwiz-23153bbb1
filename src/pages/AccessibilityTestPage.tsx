@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import AccessibilityDashboard from '../components/admin/AccessibilityDashboard';
@@ -47,7 +48,7 @@ const AccessibilityTestPage: React.FC = () => {
           </h2>
           
           <Tabs defaultValue="visual" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-4" aria-label="Accessibility feature categories">
               <TabsTrigger value="visual">Visual</TabsTrigger>
               <TabsTrigger value="keyboard">Keyboard</TabsTrigger>
               <TabsTrigger value="screen-reader">Screen Reader</TabsTrigger>

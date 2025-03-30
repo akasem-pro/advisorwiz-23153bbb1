@@ -112,7 +112,9 @@ const ConsistentButton = (props: ConsistentButtonProps) => {
   const accessibilityProps = {
     'aria-busy': loading,
     'aria-disabled': disabled || loading,
-    'aria-label': ariaLabel
+    'aria-label': ariaLabel,
+    // Never force tabindex="-1" without appropriate aria-hidden attribute
+    'tabIndex': disabled ? -1 : undefined
   };
 
   // Render link if href is provided

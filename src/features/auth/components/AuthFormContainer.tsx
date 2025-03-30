@@ -67,7 +67,7 @@ const AuthFormContainer: React.FC<AuthFormContainerProps> = ({
       </CardHeader>
       
       <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-4">
+        <TabsList className="grid w-full grid-cols-2 mb-4" aria-label="Authentication options">
           <TabsTrigger value="signin" className="text-sm sm:text-base py-2">Sign In</TabsTrigger>
           <TabsTrigger value="signup" className="text-sm sm:text-base py-2">Sign Up</TabsTrigger>
         </TabsList>

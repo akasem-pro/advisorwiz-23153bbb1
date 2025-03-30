@@ -6,12 +6,19 @@ import { AuditResult } from '../types';
  */
 export const checkKeyboardNavigation = (): AuditResult[] => {
   const results: AuditResult[] = [];
+  
+  // Check for interactive elements with tabindex=-1 but no aria-hidden
   const interactiveElements = document.querySelectorAll('a, button, [role="button"], [tabindex]');
   
   interactiveElements.forEach(element => {
     const tabindex = element.getAttribute('tabindex');
+    const ariaHidden = element.getAttribute('aria-hidden');
+    const role = element.getAttribute('role');
     
-    if (tabindex === '-1' && !element.hasAttribute('aria-hidden')) {
+    // Skip tab elements as they're handled by the TabsPrimitive component
+    if (role === 'tab') return;
+    
+    if (tabindex === '-1' && ariaHidden !== 'true') {
       results.push({
         pass: false,
         element: element as HTMLElement,
