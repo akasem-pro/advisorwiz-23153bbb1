@@ -1,6 +1,5 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { Step } from 'react-joyride';
 import { UserType } from '../../types/profileTypes';
 import { useTourSteps } from './use-tour-steps';
 import { useTourEvents } from './use-tour-events';

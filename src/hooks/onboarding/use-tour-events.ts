@@ -1,13 +1,13 @@
 
 import { useCallback } from 'react';
-import { CallBackProps, STATUS } from 'react-joyride';
+import { CallBackProps, Step, STATUS } from 'react-joyride';
 import { useToast } from '../use-toast';
 import { useTourScroll } from './use-tour-scroll';
 
 interface TourEventProps {
-  steps: CallBackProps['steps'];
-  setStepIndex: (index: number) => void;
-  setRun: (run: boolean) => void;
+  steps: Step[];  // Changed from CallBackProps['steps'] to Step[]
+  setStepIndex: React.Dispatch<React.SetStateAction<number>>;  // Changed to React.Dispatch type
+  setRun: React.Dispatch<React.SetStateAction<boolean>>;  // Changed to React.Dispatch type
   onComplete?: () => void;
   onSkip?: () => void;
 }
