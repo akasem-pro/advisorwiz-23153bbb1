@@ -34,6 +34,7 @@ const TabsTrigger = React.forwardRef<
       className
     )}
     {...props}
+    // Remove tabindex="-1" which was causing accessibility issues
   />
 ))
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName

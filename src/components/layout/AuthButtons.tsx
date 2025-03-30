@@ -21,8 +21,8 @@ const AuthButtons: React.FC = () => {
         to="/onboarding"
         className={cn(
           "text-sm px-4 py-1.5 rounded-md font-medium",
-          "bg-teal-500 hover:bg-teal-600 text-white shadow-sm",
-          "dark:bg-teal-600 dark:hover:bg-teal-700 transition-colors",
+          "bg-teal-700 hover:bg-teal-800 text-white shadow-sm", // Increased contrast from teal-500 to teal-700
+          "dark:bg-teal-700 dark:hover:bg-teal-800 transition-colors", // Increased contrast in dark mode too
           "focus:outline-none focus:ring-2 focus:ring-teal-500/40"
         )}
       >

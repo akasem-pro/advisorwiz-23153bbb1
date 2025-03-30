@@ -26,21 +26,21 @@ export const FloatingSupportButton: React.FC = () => {
               className="flex items-center justify-center bg-white dark:bg-navy-800 text-teal-600 dark:text-teal-400 p-3 rounded-full shadow-lg hover:bg-teal-50 dark:hover:bg-navy-700 transition-all"
               aria-label="Chat with support"
             >
-              <MessageCircle className="h-6 w-6" />
+              <MessageCircle className="h-6 w-6" aria-hidden="true" />
             </button>
             <a
               href="tel:+18005551234"
               className="flex items-center justify-center bg-white dark:bg-navy-800 text-blue-600 dark:text-blue-400 p-3 rounded-full shadow-lg hover:bg-blue-50 dark:hover:bg-navy-700 transition-all"
               aria-label="Call support"
             >
-              <PhoneCall className="h-6 w-6" />
+              <PhoneCall className="h-6 w-6" aria-hidden="true" />
             </a>
             <a
               href="mailto:support@advisorwiz.com"
               className="flex items-center justify-center bg-white dark:bg-navy-800 text-green-600 dark:text-green-400 p-3 rounded-full shadow-lg hover:bg-green-50 dark:hover:bg-navy-700 transition-all"
               aria-label="Email support"
             >
-              <Mail className="h-6 w-6" />
+              <Mail className="h-6 w-6" aria-hidden="true" />
             </a>
             <a
               href="#"
@@ -51,14 +51,14 @@ export const FloatingSupportButton: React.FC = () => {
               className="flex items-center justify-center bg-white dark:bg-navy-800 text-purple-600 dark:text-purple-400 p-3 rounded-full shadow-lg hover:bg-purple-50 dark:hover:bg-navy-700 transition-all"
               aria-label="Schedule video call"
             >
-              <Video className="h-6 w-6" />
+              <Video className="h-6 w-6" aria-hidden="true" />
             </a>
             <a
               href="/resources#faq"
               className="flex items-center justify-center bg-white dark:bg-navy-800 text-amber-600 dark:text-amber-400 p-3 rounded-full shadow-lg hover:bg-amber-50 dark:hover:bg-navy-700 transition-all"
               aria-label="View FAQ"
             >
-              <FileQuestion className="h-6 w-6" />
+              <FileQuestion className="h-6 w-6" aria-hidden="true" />
             </a>
           </div>
         )}
@@ -68,11 +68,11 @@ export const FloatingSupportButton: React.FC = () => {
           className={`flex items-center justify-center p-4 rounded-full shadow-lg transition-all ${
             isOpen 
               ? 'bg-slate-700 text-white hover:bg-slate-800 dark:bg-slate-200 dark:text-navy-900 dark:hover:bg-white' 
-              : 'bg-teal-600 text-white hover:bg-teal-700 dark:bg-teal-500 dark:hover:bg-teal-600'
+              : 'bg-teal-700 text-white hover:bg-teal-800 dark:bg-teal-700 dark:hover:bg-teal-800'
           }`}
           aria-label={isOpen ? 'Close support menu' : 'Open support menu'}
         >
-          {isOpen ? <X className="h-6 w-6" /> : <HelpCircle className="h-6 w-6" />}
+          {isOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <HelpCircle className="h-6 w-6" aria-hidden="true" />}
         </button>
       </div>
       
