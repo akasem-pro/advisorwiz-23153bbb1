@@ -73,6 +73,7 @@ export const useSignInOperation = (
         windowWidth: window.innerWidth,
         windowOrigin: window.location.origin,
         windowLocation: window.location.href,
+        hostname: window.location.hostname
       });
       
       if (error.message?.includes('Invalid login credentials')) {

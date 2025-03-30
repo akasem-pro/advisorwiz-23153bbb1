@@ -16,21 +16,30 @@ export const isPreviewEnvironment = (): boolean => {
   try {
     const hostname = window.location.hostname;
     
-    // Explicit checks for production domains
-    if (hostname.includes('advisorwiz.com') || 
-        hostname.includes('production') ||
-        hostname.endsWith('.app') ||
-        !hostname.includes('.') || // No subdomain - likely production
-        hostname === 'localhost') {
+    // Define known production domains
+    const productionDomains = [
+      'advisorwiz.com',
+      'consultantwiz.com', // Added consultantwiz.com as a production domain
+      'app.advisorwiz.com',
+      'app.consultantwiz.com',
+      'production',
+      'localhost'
+    ];
+    
+    // Check if the hostname is a production domain or has a production suffix
+    for (const domain of productionDomains) {
+      if (hostname === domain || hostname.endsWith('.' + domain)) {
+        return false;
+      }
+    }
+    
+    // If it's not explicitly a production domain, check if it looks like a production domain
+    if (hostname.endsWith('.app') || !hostname.includes('.')) {
       return false;
     }
     
     // Consider everything else as preview/test
-    return (
-      hostname.includes('preview') ||
-      hostname.includes('lovableproject') ||
-      hostname.includes('consultantwiz.com')
-    );
+    return hostname.includes('preview') || hostname.includes('lovableproject');
   } catch (e) {
     console.error('[MockAuth] Error checking environment:', e);
     return false; // Default to production on error

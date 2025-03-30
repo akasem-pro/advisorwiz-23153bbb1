@@ -19,20 +19,32 @@ const VerifyIntegrationsPage: React.FC = () => {
       try {
         const hostname = window.location.hostname;
         
-        // Explicit production domain checks
-        const isProduction = 
-          hostname.includes('advisorwiz.com') || 
-          hostname.includes('production') ||
-          hostname.endsWith('.app') ||
-          !hostname.includes('.') || // No subdomain - likely production
-          hostname === 'localhost';
+        // Define known production domains
+        const productionDomains = [
+          'advisorwiz.com',
+          'consultantwiz.com', // Added consultantwiz.com as a production domain
+          'app.advisorwiz.com',
+          'app.consultantwiz.com',
+          'production',
+          'localhost'
+        ];
+        
+        // Check if the hostname is a production domain or has a production suffix
+        let isProduction = false;
+        for (const domain of productionDomains) {
+          if (hostname === domain || hostname.endsWith('.' + domain)) {
+            isProduction = true;
+            break;
+          }
+        }
+        
+        // If not already identified as production, check if it looks like a production domain
+        if (!isProduction) {
+          isProduction = hostname.endsWith('.app') || !hostname.includes('.');
+        }
         
         // Not a production domain, so it's a preview
-        const isPreview = !isProduction && (
-          hostname.includes('preview') ||
-          hostname.includes('lovableproject') ||
-          hostname.includes('consultantwiz.com')
-        );
+        const isPreview = !isProduction && (hostname.includes('preview') || hostname.includes('lovableproject'));
           
         if (isMounted) {
           console.log("[VerifyIntegrations] Environment detection:", { 

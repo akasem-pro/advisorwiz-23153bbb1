@@ -39,14 +39,39 @@ export const useSignInHandler = () => {
       const from = location.state?.from || '/';
       console.log("[SignInHandler] Sign in attempt, will redirect to:", from);
       
-      // Check if we're in a preview environment
-      const isPreviewEnv = window.location.hostname.includes('preview') || 
-                           window.location.hostname.includes('lovableproject') ||
-                           window.location.hostname.includes('localhost');
+      // Check if we're in a preview environment using a more reliable method
+      const hostname = window.location.hostname;
+      
+      // Define known production domains
+      const productionDomains = [
+        'advisorwiz.com',
+        'consultantwiz.com',
+        'app.advisorwiz.com',
+        'app.consultantwiz.com',
+        'production',
+        'localhost'
+      ];
+      
+      // Check if the hostname is a production domain or has a production suffix
+      let isProduction = false;
+      for (const domain of productionDomains) {
+        if (hostname === domain || hostname.endsWith('.' + domain)) {
+          isProduction = true;
+          break;
+        }
+      }
+      
+      // If not explicitly a production domain, check if it looks like one
+      if (!isProduction) {
+        isProduction = hostname.endsWith('.app') || !hostname.includes('.');
+      }
+      
+      const isPreviewEnv = !isProduction && (hostname.includes('preview') || hostname.includes('lovableproject'));
       
       console.log("[Sign In] Environment check:", { 
-        isPreview: isPreviewEnv, 
-        hostname: window.location.hostname 
+        hostname,
+        isProduction,
+        isPreview: isPreviewEnv 
       });
       
       // PREVIEW MODE: Special handling for preview environments
@@ -87,6 +112,9 @@ export const useSignInHandler = () => {
           setMockUser(mockUser);
           
           toast.success("Successfully signed in!");
+          
+          // Navigate to the redirect destination
+          navigate(from);
           return true;
         } else {
           console.log("[Sign In] Mock authentication failed");
@@ -112,6 +140,8 @@ export const useSignInHandler = () => {
         return false;
       }
       
+      // On successful sign in, navigate to the redirect destination
+      navigate(from);
       return success;
     } catch (error: any) {
       handleAuthError(error, setFormError, true);
