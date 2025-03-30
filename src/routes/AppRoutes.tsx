@@ -75,7 +75,7 @@ const AppRoutes = () => {
         <Route path="/verify-integrations" element={<VerifyIntegrationsPage />} />
         
         {/* Admin and utility pages with AppLayout */}
-        <Route element={<AppLayout />}>
+        <Route element={<AppLayout><Outlet /></AppLayout>}>
           {/* Direct routes that need AppLayout */}
           <Route path="/team" element={<Team />} />
           <Route path="/blog/*" element={<Blog />} />
