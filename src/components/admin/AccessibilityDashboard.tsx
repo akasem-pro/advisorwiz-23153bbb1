@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { runAccessibilityAudit, generateAccessibilityReport } from '../../utils/accessibility/accessibilityAudit';
+import { runAccessibilityAudit, generateHTMLReport } from '../../utils/accessibility/accessibilityAudit';
 import { Button } from '../ui/button';
 import { RefreshCw, Download, CheckCircle, AlertTriangle, AlertCircle, Info } from 'lucide-react';
 import { toast } from 'sonner';
@@ -17,7 +17,7 @@ const AccessibilityDashboard: React.FC = () => {
     await new Promise(resolve => setTimeout(resolve, 100));
     
     try {
-      const report = generateAccessibilityReport();
+      const report = generateHTMLReport();
       setReportHtml(report);
       setLastScanDate(new Date().toLocaleString());
       
