@@ -24,7 +24,9 @@ const VerifyIntegrationsPage: React.FC = () => {
         const isPreview = hostname.includes('preview') ||
           hostname.includes('lovableproject') ||
           hostname.includes('localhost') ||
-          hostname.includes('lovable.app');
+          hostname.includes('lovable.app') ||
+          // Added consultantwiz.com to the preview list based on error messages
+          hostname.includes('consultantwiz.com');
           
         if (isMounted) {
           console.log("[VerifyIntegrations] Environment detection:", { 
@@ -52,7 +54,7 @@ const VerifyIntegrationsPage: React.FC = () => {
       console.log("[VerifyIntegrations] Component unmounting");
       setIsMounted(false);
     };
-  }, []);
+  }, [isMounted]);
   
   if (isLoading) {
     return (

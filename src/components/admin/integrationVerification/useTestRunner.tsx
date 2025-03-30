@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   testAuthenticationFlow, 
   testDatabaseOperations, 
@@ -25,132 +25,90 @@ export function useTestRunner(isPreviewEnvironment: boolean) {
   }, []);
 
   // Update a test result without losing mounted state
-  const updateTestResult = (index: number, result: Partial<TestResult>) => {
+  const updateTestResult = useCallback((index: number, result: Partial<TestResult>) => {
     if (!mounted) return;
     
     setResults(prev => 
       prev.map((item, i) => i === index ? { ...item, ...result } : item)
     );
-  };
+  }, [mounted]);
 
-  const runAuthTest = async () => {
+  // Enhanced error handling for test functions
+  const safeExecuteTest = useCallback(async (
+    testFunction: (isPreviewMode: boolean) => Promise<any>,
+    index: number,
+    testName: string,
+    isPreview: boolean
+  ) => {
     if (!mounted) return;
     
-    updateTestResult(0, { status: 'running', message: 'Testing authentication flow...' });
+    updateTestResult(index, { 
+      status: 'running', 
+      message: `Testing ${testName.toLowerCase()}...` 
+    });
+    
     try {
-      const result = await testAuthenticationFlow(isPreviewEnvironment);
+      // Add timeout to prevent hanging tests
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Test timed out after 10 seconds')), 10000);
+      });
+      
+      // Race the actual test against the timeout
+      const result = await Promise.race([
+        testFunction(isPreview),
+        timeoutPromise
+      ]) as any;
       
       if (!mounted) return;
       
-      if (isPreviewEnvironment) {
-        updateTestResult(0, { 
+      // If in preview mode, always return warning status
+      if (isPreview) {
+        updateTestResult(index, { 
           status: 'warning', 
           message: 'Network connectivity is limited in preview environments. This is expected behavior.',
-          details: result.details || { info: "Preview environment limitations prevent actual authentication flow testing" }
+          details: result?.details || { info: `Preview environment limitations prevent actual ${testName.toLowerCase()} testing` }
         });
       } else {
-        updateTestResult(0, { 
-          status: result.success ? 'success' : 'failed', 
-          message: result.message,
-          details: result.details
+        updateTestResult(index, { 
+          status: result?.success ? 'success' : 'failed', 
+          message: result?.message || `Unknown ${result?.success ? 'success' : 'error'} occurred`,
+          details: result?.details
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (!mounted) return;
       
-      console.error("[Authentication Test] Error:", error);
+      console.error(`[${testName} Test] Error:`, error);
       
-      updateTestResult(0, { 
-        status: isPreviewEnvironment ? 'warning' : 'failed', 
-        message: isPreviewEnvironment 
+      updateTestResult(index, { 
+        status: isPreview ? 'warning' : 'failed', 
+        message: isPreview 
           ? 'Network connectivity is limited in preview environments. This is expected and not an actual issue.'
-          : 'Test threw an exception: ' + (error instanceof Error ? error.message : String(error)),
+          : `Test error: ${error instanceof Error ? error.message : String(error)}`,
         details: error
       });
     }
-  };
+  }, [mounted, updateTestResult]);
 
-  const runDatabaseTest = async () => {
-    if (!mounted) return;
-    
-    updateTestResult(1, { status: 'running', message: 'Testing database operations...' });
-    try {
-      const result = await testDatabaseOperations(isPreviewEnvironment);
-      
-      if (!mounted) return;
-      
-      if (isPreviewEnvironment) {
-        updateTestResult(1, { 
-          status: 'warning', 
-          message: 'Network connectivity is limited in preview environments. This is expected behavior.',
-          details: result.details || { info: "Preview environment limitations prevent actual database operations testing" }
-        });
-      } else {
-        updateTestResult(1, { 
-          status: result.success ? 'success' : 'failed', 
-          message: result.message,
-          details: result.details
-        });
-      }
-    } catch (error) {
-      if (!mounted) return;
-      
-      console.error("[Database Test] Error:", error);
-      
-      updateTestResult(1, { 
-        status: isPreviewEnvironment ? 'warning' : 'failed',
-        message: isPreviewEnvironment 
-          ? 'Network connectivity is limited in preview environments. This is expected and not an actual issue.' 
-          : 'Test threw an exception: ' + (error instanceof Error ? error.message : String(error)),
-        details: error
-      });
-    }
-  };
+  const runAuthTest = useCallback(async () => {
+    await safeExecuteTest(testAuthenticationFlow, 0, 'Authentication Flow', isPreviewEnvironment);
+  }, [safeExecuteTest, isPreviewEnvironment]);
 
-  const runEmailTest = async () => {
-    if (!mounted) return;
-    
-    updateTestResult(2, { status: 'running', message: 'Testing email functionality...' });
-    try {
-      const result = await testEmailFunctionality(isPreviewEnvironment);
-      
-      if (!mounted) return;
-      
-      if (isPreviewEnvironment) {
-        updateTestResult(2, { 
-          status: 'warning', 
-          message: 'Network connectivity is limited in preview environments. This is expected behavior.',
-          details: result.details || { info: "Preview environment limitations prevent actual email functionality testing" }
-        });
-      } else {
-        updateTestResult(2, { 
-          status: result.success ? 'success' : 'failed', 
-          message: result.message,
-          details: result.details
-        });
-      }
-    } catch (error) {
-      if (!mounted) return;
-      
-      console.error("[Email Test] Error:", error);
-      
-      updateTestResult(2, { 
-        status: isPreviewEnvironment ? 'warning' : 'failed',
-        message: isPreviewEnvironment 
-          ? 'Network connectivity is limited in preview environments. This is expected and not an actual issue.' 
-          : 'Test threw an exception: ' + (error instanceof Error ? error.message : String(error)),
-        details: error
-      });
-    }
-  };
+  const runDatabaseTest = useCallback(async () => {
+    await safeExecuteTest(testDatabaseOperations, 1, 'Database Operations', isPreviewEnvironment);
+  }, [safeExecuteTest, isPreviewEnvironment]);
 
-  const runTestByIndex = async (index: number) => {
+  const runEmailTest = useCallback(async () => {
+    await safeExecuteTest(testEmailFunctionality, 2, 'Email Functionality', isPreviewEnvironment);
+  }, [safeExecuteTest, isPreviewEnvironment]);
+
+  const runTestByIndex = useCallback(async (index: number) => {
     if (index === 0) await runAuthTest();
     if (index === 1) await runDatabaseTest();
     if (index === 2) await runEmailTest();
-  };
+  }, [runAuthTest, runDatabaseTest, runEmailTest]);
 
-  const runAllTests = async () => {
+  const runAllTests = useCallback(async () => {
     if (!mounted) return;
     
     setIsRunningAll(true);
@@ -170,7 +128,7 @@ export function useTestRunner(isPreviewEnvironment: boolean) {
         duration: 8000,
       });
     }
-  };
+  }, [mounted, runAuthTest, runDatabaseTest, runEmailTest, isPreviewEnvironment]);
 
   return {
     results,

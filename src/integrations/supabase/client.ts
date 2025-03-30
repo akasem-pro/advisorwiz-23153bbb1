@@ -13,7 +13,8 @@ export { SUPABASE_URL, SUPABASE_ANON_KEY };
 const isPreviewEnvironment = typeof window !== 'undefined' && (
   window.location.hostname.includes('preview') ||
   window.location.hostname.includes('lovableproject') ||
-  window.location.hostname.includes('localhost')
+  window.location.hostname.includes('localhost') ||
+  window.location.hostname.includes('consultantwiz.com')
 );
 
 // Create a Supabase client with improved configuration
