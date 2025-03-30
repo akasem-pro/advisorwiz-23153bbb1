@@ -6,6 +6,7 @@
 
 import { supabase, checkSupabaseConnection } from "../../integrations/supabase/client";
 import { toast } from "sonner";
+import { mockAuthTest, mockDatabaseTest, mockEmailTest } from "./mock-integration";
 
 /**
  * Tests the authentication flow by attempting to sign in with test credentials
@@ -22,15 +23,10 @@ export const testAuthenticationFlow = async (
   try {
     console.log("[Integration Test] Starting authentication flow test");
     
-    // If in preview environment, return a mock success result
+    // If in preview environment, return a mock result
     if (isPreviewEnvironment) {
       console.log("[Integration Test] Preview environment detected, returning mock result");
-      return {
-        success: false,
-        previewMode: true,
-        message: "Authentication test running in preview environment with limited connectivity. In production, this would test actual authentication flows.",
-        details: { mocked: true, environment: "preview" }
-      };
+      return mockAuthTest();
     }
     
     // 1. Check if we're already logged in
@@ -110,15 +106,10 @@ export const testDatabaseOperations = async (
   try {
     console.log("[Integration Test] Starting database operations test");
     
-    // If in preview environment, return a mock success result
+    // If in preview environment, return a mock result
     if (isPreviewEnvironment) {
       console.log("[Integration Test] Preview environment detected, returning mock result");
-      return {
-        success: false,
-        previewMode: true,
-        message: "Database operations test running in preview environment with limited connectivity. In production, this would test actual database queries.",
-        details: { mocked: true, environment: "preview" }
-      };
+      return mockDatabaseTest();
     }
     
     // 1. First verify connection to Supabase
@@ -191,15 +182,10 @@ export const testEmailFunctionality = async (
   try {
     console.log("[Integration Test] Starting email functionality test");
     
-    // If in preview environment, return a mock success result
+    // If in preview environment, return a mock result
     if (isPreviewEnvironment) {
       console.log("[Integration Test] Preview environment detected, returning mock result");
-      return {
-        success: false,
-        previewMode: true,
-        message: "Email functionality test running in preview environment with limited connectivity. In production, this would test actual email sending.",
-        details: { mocked: true, environment: "preview" }
-      };
+      return mockEmailTest();
     }
     
     // Create test contact data
