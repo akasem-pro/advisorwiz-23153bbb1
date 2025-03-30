@@ -13,6 +13,16 @@ import AuthRoutes from './AuthRoutes';
 import AccessibilityTestPage from '../pages/AccessibilityTestPage';
 import { useLocation } from 'react-router-dom';
 import ContactUs from '../pages/ContactUs';
+import VerifyIntegrationsPage from '../pages/VerifyIntegrations';
+import Team from '../pages/Team';
+import Blog from '../pages/Blog';
+import Careers from '../pages/Careers';
+import Resources from '../pages/Resources';
+import DownloadApp from '../pages/DownloadApp';
+import Sitemap from '../pages/Sitemap';
+import Schedule from '../pages/Schedule';
+import Chat from '../pages/Chat';
+import ConsumerProfile from '../pages/ConsumerProfile';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -50,16 +60,33 @@ const AppRoutes = () => {
           ))}
         </Route>
         
-        {/* Contact page */}
-        <Route path="/contact" element={<ContactUs />} />
-        
         {/* Authentication Routes (no layout) */}
         {AuthRoutes.map(route => (
           <Fragment key={route.key}>{route}</Fragment>
         ))}
         
+        {/* Contact page */}
+        <Route path="/contact" element={<ContactUs />} />
+        
         {/* Accessibility test page */}
         <Route path="/accessibility-test" element={<AccessibilityTestPage />} />
+        
+        {/* Integration verification page */}
+        <Route path="/verify-integrations" element={<VerifyIntegrationsPage />} />
+        
+        {/* Admin and utility pages with AppLayout */}
+        <Route element={<AppLayout />}>
+          {/* Direct routes that need AppLayout */}
+          <Route path="/team" element={<Team />} />
+          <Route path="/blog/*" element={<Blog />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/download" element={<DownloadApp />} />
+          <Route path="/sitemap" element={<Sitemap />} />
+          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/consumer-profile" element={<ConsumerProfile />} />
+        </Route>
         
         {/* Main Web Routes */}
         <Route path="/" element={<Outlet />}>
@@ -71,6 +98,9 @@ const AppRoutes = () => {
             <Fragment key={route.key}>{route}</Fragment>
           ))}
         </Route>
+        
+        {/* Not Found Route - must be last */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
