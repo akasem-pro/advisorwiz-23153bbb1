@@ -13,6 +13,7 @@ import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 import PageSEO from '../components/seo/PageSEO';
 import TrustBadges from '../components/ui/TrustBadges';
 import FloatingSupportButton from '../components/support/FloatingSupportButton';
+import PricingPageTour from '../components/onboarding/PricingPageTour';
 import { useTrackPageView } from '../hooks/use-analytics';
 
 const Pricing: React.FC = () => {
@@ -77,6 +78,9 @@ const Pricing: React.FC = () => {
       </section>
       
       <FloatingSupportButton />
+      
+      {/* Add the pricing tour component */}
+      <PricingPageTour userType={userType} autoStart={true} />
     </AppLayout>
   );
 };

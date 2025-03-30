@@ -32,7 +32,7 @@ const PricingTrustSignals: React.FC = () => {
   ];
 
   return (
-    <div className="mt-16 py-8 px-4 rounded-xl bg-slate-50 dark:bg-navy-700">
+    <div className="mt-16 py-8 px-4 rounded-xl bg-slate-50 dark:bg-navy-700 pricing-trust-signals">
       <h3 className="text-xl font-bold text-center text-navy-900 dark:text-white mb-8">
         Trusted by Thousands of Financial Professionals
       </h3>

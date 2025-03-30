@@ -8,7 +8,7 @@ const ConsumerPlan: React.FC = () => {
   const navigate = useNavigate();
   
   return (
-    <div className="max-w-3xl mx-auto bg-white dark:bg-navy-800 rounded-xl shadow-md overflow-hidden mb-8">
+    <div className="max-w-3xl mx-auto bg-white dark:bg-navy-800 rounded-xl shadow-md overflow-hidden mb-8 consumer-plan">
       <div className="md:flex">
         <div className="md:w-1/3 bg-teal-600 dark:bg-teal-700 text-white p-6 flex flex-col justify-center">
           <h3 className="text-2xl font-bold mb-2">Consumer</h3>

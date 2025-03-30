@@ -34,7 +34,10 @@ const PlanCard: React.FC<PlanCardProps> = ({
   const [billingPeriod, setBillingPeriod] = React.useState<'monthly' | 'annually'>('annually');
 
   return (
-    <div className={`relative rounded-xl p-6 ${recommended ? 'border-2 border-teal-500' : 'border border-slate-200 dark:border-navy-600'} bg-white dark:bg-navy-800 shadow-sm transition-all hover:shadow-md`}>
+    <div 
+      className={`relative rounded-xl p-6 ${recommended ? 'border-2 border-teal-500' : 'border border-slate-200 dark:border-navy-600'} bg-white dark:bg-navy-800 shadow-sm transition-all hover:shadow-md`}
+      data-tier={name}
+    >
       {recommended && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-teal-500 text-white text-sm font-medium rounded-full flex items-center gap-1">
           <Star className="h-4 w-4" />
