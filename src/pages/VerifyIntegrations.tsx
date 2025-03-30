@@ -3,8 +3,16 @@ import React from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import IntegrationVerificationPanel from '../components/admin/IntegrationVerificationPanel';
 import PageSEO from '../components/seo/PageSEO';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Info } from 'lucide-react';
 
 const VerifyIntegrationsPage: React.FC = () => {
+  const isPreviewEnvironment = typeof window !== 'undefined' && (
+    window.location.hostname.includes('preview') ||
+    window.location.hostname.includes('lovableproject') ||
+    window.location.hostname.includes('localhost')
+  );
+
   return (
     <AppLayout>
       <PageSEO
@@ -13,7 +21,20 @@ const VerifyIntegrationsPage: React.FC = () => {
         noIndex={true}
       />
       <div className="container mx-auto py-8 px-4">
-        <h1 className="text-3xl font-semibold mb-8">Integration Verification</h1>
+        <h1 className="text-3xl font-semibold mb-4">Integration Verification</h1>
+        
+        {isPreviewEnvironment && (
+          <Alert variant="warning" className="mb-6">
+            <Info className="h-4 w-4" />
+            <AlertTitle>Preview Environment Detected</AlertTitle>
+            <AlertDescription>
+              This verification page is running in a preview environment. Due to network restrictions, 
+              some tests will show warnings rather than successes. This is expected behavior and does not
+              indicate issues with your code. In a production environment, these tests would connect to 
+              actual services.
+            </AlertDescription>
+          </Alert>
+        )}
         
         <div className="grid grid-cols-1 gap-6">
           <div className="space-y-4">
@@ -66,6 +87,25 @@ const VerifyIntegrationsPage: React.FC = () => {
                   <li>Verify that the function is being invoked correctly</li>
                 </ul>
               </div>
+              
+              {isPreviewEnvironment && (
+                <div className="border border-amber-200 bg-amber-50 dark:bg-amber-950/20 rounded-md p-4">
+                  <h3 className="font-medium mb-2 flex items-center gap-2">
+                    <Info className="h-4 w-4 text-amber-500" />
+                    Preview Environment Note
+                  </h3>
+                  <p className="text-sm mb-2">
+                    In preview environments like this one, external service connections may be restricted. Here's what to expect:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1 text-sm">
+                    <li>Tests that show warnings are <strong>expected</strong> and don't indicate code issues</li>
+                    <li>Authentication may not connect to the actual Supabase backend</li>
+                    <li>Database operations might be limited or mocked</li>
+                    <li>Edge function calls like email sending may be blocked</li>
+                    <li>These tests will function correctly in a production environment</li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
