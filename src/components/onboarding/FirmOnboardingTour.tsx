@@ -18,7 +18,7 @@ const FirmOnboardingTour: React.FC<FirmOnboardingTourProps> = ({
   
   return (
     <BaseTourComponent
-      tourName={TOUR_NAMES.FIRM_ONBOARDING}
+      tourName={TOUR_NAMES.FIRM_ONBOARDING as keyof typeof TOUR_NAMES}
       tourSteps={steps}
       userType={"firm_admin" as UserType}
       autoStart={autoStart}
