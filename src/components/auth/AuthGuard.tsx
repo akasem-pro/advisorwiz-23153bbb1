@@ -102,8 +102,8 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
     // Show toast to inform user
     toast.error("Please sign in to access this page");
     
-    // Redirect to login if not authenticated
-    return <Navigate to="/sign-in" state={{ from: destination }} replace />;
+    // Redirect to login if not authenticated - update to new route
+    return <Navigate to="/signin" state={{ from: destination }} replace />;
   }
 
   // If userTypes is provided, check if current user type is allowed

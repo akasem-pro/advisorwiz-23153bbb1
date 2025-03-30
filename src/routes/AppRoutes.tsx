@@ -1,5 +1,5 @@
 
-import { Routes, Route, Outlet } from 'react-router-dom';
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { Fragment, useEffect } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import MobileLayout from '../components/layout/MobileLayout';
@@ -22,6 +22,7 @@ import Sitemap from '../pages/Sitemap';
 import Schedule from '../pages/Schedule';
 import Chat from '../pages/Chat';
 import ConsumerProfile from '../pages/ConsumerProfile';
+import Onboarding from '../pages/Onboarding';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -63,6 +64,12 @@ const AppRoutes = () => {
         {AuthRoutes.map(route => (
           <Fragment key={route.key}>{route}</Fragment>
         ))}
+        
+        {/* Redirects for old auth routes */}
+        <Route path="/login" element={<Navigate to="/signin" replace />} />
+        <Route path="/sign-in" element={<Navigate to="/signin" replace />} />
+        <Route path="/sign-up" element={<Navigate to="/signup" replace />} />
+        <Route path="/onboarding" element={<Navigate to="/signup" replace />} />
         
         {/* Contact page */}
         <Route path="/contact" element={<ContactUs />} />
