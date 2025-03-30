@@ -25,7 +25,8 @@ const IntegrationVerificationPanel: React.FC = () => {
     typeof window !== 'undefined' && (
       window.location.hostname.includes('preview') ||
       window.location.hostname.includes('lovableproject') ||
-      window.location.hostname.includes('localhost')
+      window.location.hostname.includes('localhost') ||
+      window.location.hostname.includes('lovable.app')
     )
   );
 
@@ -150,6 +151,12 @@ const IntegrationVerificationPanel: React.FC = () => {
         duration: 8000,
       });
     }
+  };
+
+  const updateTestResult = (index: number, result: Partial<TestResult>) => {
+    setResults(prev => 
+      prev.map((item, i) => i === index ? { ...item, ...result } : item)
+    );
   };
 
   const renderStatusIcon = (status: string) => {

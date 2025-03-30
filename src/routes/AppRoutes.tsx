@@ -10,10 +10,9 @@ import MainRoutes from './MainRoutes';
 import DashboardRoutes from './DashboardRoutes';
 import MobileRoutes from './MobileRoutes';
 import AuthRoutes from './AuthRoutes';
-import AccessibilityTestPage from '../pages/AccessibilityTestPage';
+import UtilityRoutes from './UtilityRoutes';
 import { useLocation } from 'react-router-dom';
 import ContactUs from '../pages/ContactUs';
-import VerifyIntegrationsPage from '../pages/VerifyIntegrations';
 import Team from '../pages/Team';
 import Blog from '../pages/Blog';
 import Careers from '../pages/Careers';
@@ -68,11 +67,10 @@ const AppRoutes = () => {
         {/* Contact page */}
         <Route path="/contact" element={<ContactUs />} />
         
-        {/* Accessibility test page */}
-        <Route path="/accessibility-test" element={<AccessibilityTestPage />} />
-        
-        {/* Integration verification page */}
-        <Route path="/verify-integrations" element={<VerifyIntegrationsPage />} />
+        {/* Utility Routes - includes verification page and other utility pages */}
+        {UtilityRoutes.map(route => (
+          <Fragment key={route.key}>{route}</Fragment>
+        ))}
         
         {/* Admin and utility pages with AppLayout */}
         <Route element={<AppLayout><Outlet /></AppLayout>}>
