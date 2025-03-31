@@ -35,7 +35,7 @@ const AppointmentDetailsDialog: React.FC<AppointmentDetailsDialogProps> = ({
       onUpdateStatus(id, status);
       
       // Map the status_change to appropriate appointment event type
-      const eventAction = status as 'scheduled' | 'confirmed' | 'cancelled' | 'completed';
+      const eventAction = status as 'scheduled' | 'confirmed' | 'canceled' | 'completed';
       
       // Track appointment status change event
       trackAppointmentEvent(eventAction, id, { 
@@ -51,9 +51,9 @@ const AppointmentDetailsDialog: React.FC<AppointmentDetailsDialogProps> = ({
             updateLeadStatus(lead.id, 'appointment_scheduled', 'Appointment confirmed');
           } else if (status === 'completed') {
             updateLeadStatus(lead.id, 'appointment_completed', 'Appointment completed');
-          } else if (status === 'cancelled' && 
+          } else if (status === 'canceled' && 
                     (lead.status === 'appointment_scheduled' || lead.status === 'contacted')) {
-            updateLeadStatus(lead.id, 'contacted', 'Appointment cancelled');
+            updateLeadStatus(lead.id, 'contacted', 'Appointment canceled');
           }
         }
       }
@@ -91,7 +91,7 @@ const AppointmentDetailsDialog: React.FC<AppointmentDetailsDialogProps> = ({
             Close
           </Button>
           
-          {onUpdateStatus && userType === 'advisor' && appointment.status !== 'completed' && appointment.status !== 'cancelled' && (
+          {onUpdateStatus && userType === 'advisor' && appointment.status !== 'completed' && appointment.status !== 'canceled' && (
             <div className="flex gap-2">
               {appointment.status === 'pending' && (
                 <Button 
@@ -113,7 +113,7 @@ const AppointmentDetailsDialog: React.FC<AppointmentDetailsDialogProps> = ({
               
               <Button 
                 variant="destructive" 
-                onClick={() => handleStatusUpdate(appointment.id, 'cancelled')}
+                onClick={() => handleStatusUpdate(appointment.id, 'canceled')}
               >
                 Cancel
               </Button>

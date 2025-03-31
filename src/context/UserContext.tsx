@@ -7,6 +7,9 @@ import { useContext } from 'react';
 export * from '../types/userTypes';
 export * from './UserContextDefinition';
 
+// Export AppointmentCategory explicitly
+export { AppointmentCategory } from '../types/timeTypes';
+
 // Custom hook to use the user context
 export const useUser = () => useContext(UserContext);
 

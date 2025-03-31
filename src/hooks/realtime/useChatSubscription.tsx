@@ -54,12 +54,12 @@ export const useChatSubscription = ({
           // Add the message to the chat
           addMessage(targetChatId, {
             senderId: message.sender_id,
-            senderName: message.sender_name || "Unknown User",
             recipientId: message.recipient_id,
-            recipientName: message.recipient_name || "You",
             content: message.content,
             timestamp: message.created_at,
-            read: false
+            read: false,
+            senderName: message.sender_name || "Unknown User", // Use sender_name if available
+            recipientName: message.recipient_name || "You" // Use recipient_name if available
           });
           
           // Show a notification

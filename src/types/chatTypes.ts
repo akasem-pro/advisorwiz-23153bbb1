@@ -8,6 +8,8 @@ export interface ChatMessage {
   timestamp: string;
   read: boolean;
   readAt?: string;
+  senderName?: string;
+  recipientName?: string;
 }
 
 // Participant data for a chat
@@ -26,6 +28,7 @@ export interface Chat {
   createdAt: string;
   updatedAt: string;
   lastMessage?: ChatMessage;
+  lastUpdated?: string;
 }
 
 // Chat preview type (for displaying in lists)

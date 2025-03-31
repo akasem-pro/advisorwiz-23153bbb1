@@ -26,10 +26,10 @@ export const useChatManagement = ({
   
   const chat = chats.find(c => c.id === chatId);
   
-  // Find the other participant ID and name
+  // Find the other participant ID and name - compensate for potential missing senderName
   const otherParticipantId = chat?.participants.find(id => id !== currentUserId) || '';
   const otherParticipantName = chat?.messages.find(m => 
-    m.senderId === otherParticipantId
+    m.senderId === otherParticipantId && m.senderName
   )?.senderName || "Chat Participant";
   
   // Group messages by date for display
@@ -63,12 +63,12 @@ export const useChatManagement = ({
     
     addMessage(chatId, {
       senderId: currentUserId,
-      senderName: currentUserName,
       recipientId: otherParticipantId,
-      recipientName: otherParticipantName,
       content,
       timestamp: new Date().toISOString(),
-      read: false
+      read: false,
+      senderName: currentUserName,
+      recipientName: otherParticipantName
     });
   }, [chatId, currentUserId, currentUserName, otherParticipantId, otherParticipantName, addMessage, chat]);
   

@@ -16,7 +16,14 @@ export interface Appointment {
   updatedAt: string;
   meetingLink?: string;
   notes?: string;
-  category?: string; // Added this field
+  category?: string;
+  
+  // Adding these properties to maintain backward compatibility
+  date?: string;
+  startTime?: string;
+  endTime?: string;
+  location?: string;
+  categoryId?: string;
 }
 
 // Availability time slot
@@ -28,6 +35,7 @@ export interface TimeSlot {
   isAvailable: boolean;
   createdAt: string;
   updatedAt: string;
+  day: string; // Added this field to fix type errors
 }
 
 // Calendar event
@@ -40,4 +48,16 @@ export interface CalendarEvent {
   appointmentId?: string;
   isAppointment?: boolean;
   category?: string;
+}
+
+// Appointment Category
+export interface AppointmentCategory {
+  id: string;
+  label: string;
+  description?: string;
+  duration: number;
+  color?: string;
+  price?: number;
+  isDefault?: boolean;
+  advisorId?: string;
 }
