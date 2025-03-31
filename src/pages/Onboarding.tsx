@@ -77,15 +77,18 @@ const Onboarding: React.FC = () => {
     setIsRegistering(true);
     
     try {
-      // Perform registration with Supabase
-      const success = await signUp(email, password, selectedUserType as UserType);
+      const userTypeForSignup = selectedUserType === 'consumer' || 
+                                selectedUserType === 'advisor' || 
+                                selectedUserType === 'firm_admin' 
+                                ? selectedUserType 
+                                : 'consumer';
+      
+      const success = await signUp(email, password, userTypeForSignup);
       
       if (success) {
-        // Set user type and authentication state
         setUserType(selectedUserType);
         setIsAuthenticated(true);
         
-        // Redirect based on user type
         if (selectedUserType === 'consumer') {
           navigate('/consumer-profile');
         } else if (selectedUserType === 'advisor') {
@@ -110,6 +113,10 @@ const Onboarding: React.FC = () => {
 
   const handleSignIn = () => {
     navigate('/login');
+  };
+
+  const handleUserTypeSelection = (type: 'consumer' | 'advisor' | 'firm_admin') => {
+    setSelectedUserType(type);
   };
 
   return (
@@ -140,7 +147,7 @@ const Onboarding: React.FC = () => {
 
                     <OnboardingUserType
                       selectedUserType={selectedUserType}
-                      onSelect={setSelectedUserType}
+                      onSelect={handleUserTypeSelection}
                     />
                   </div>
                 ) : (

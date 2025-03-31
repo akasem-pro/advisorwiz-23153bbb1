@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { User, Briefcase, Building } from 'lucide-react';
+import { UserType } from '../../types/profileTypes';
 
 interface UserTypeOption {
   id: 'consumer' | 'advisor' | 'firm_admin';
@@ -10,7 +10,7 @@ interface UserTypeOption {
 }
 
 interface OnboardingUserTypeProps {
-  selectedUserType: 'consumer' | 'advisor' | 'firm_admin' | null;
+  selectedUserType: UserType;
   onSelect: (userType: 'consumer' | 'advisor' | 'firm_admin') => void;
 }
 
