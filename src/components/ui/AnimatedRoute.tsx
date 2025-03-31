@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useEffect, useState, useTransition } from 'react';
+import React, { ReactNode, useEffect, useState, useTransition, memo } from 'react';
 import { cn } from '@/lib/utils';
 
 type AnimationType = 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale' | 'none';
@@ -23,6 +23,7 @@ const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
   useEffect(() => {
     // Use startTransition to prevent suspension during animations
     const timeoutId = setTimeout(() => {
+      // Wrap the state update in startTransition to prevent suspension issues
       startTransition(() => {
         setIsVisible(true);
       });
@@ -33,7 +34,7 @@ const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
   
   // Don't apply animations if animation is set to none
   if (animation === 'none') {
-    return <div className={className}>{children}</div>;
+    return <>{children}</>;
   }
   
   const getAnimationClass = () => {
@@ -68,4 +69,5 @@ const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
   );
 };
 
-export default AnimatedRoute;
+// Memoize the component to prevent unnecessary re-renders
+export default memo(AnimatedRoute);

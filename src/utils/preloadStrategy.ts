@@ -11,20 +11,17 @@ const MEDIUM_PRIORITY_ROUTES = ['/for-advisors', '/for-consumers', '/pricing'];
  * Preload components for high priority routes
  */
 export const preloadHighPriorityRoutes = () => {
-  // Create a lightweight wrapper for requestIdleCallback with proper typing
-  const safeRequestIdleCallback = (callback: () => void) => {
+  // Use the built-in requestIdleCallback without redefining it
+  const scheduleIdleTask = (callback: () => void) => {
     if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      // TypeScript already has definitions for these APIs
-      window.requestIdleCallback(() => {
-        callback();
-      }, { timeout: 2000 });
+      window.requestIdleCallback(callback, { timeout: 2000 });
     } else {
       // Fallback to setTimeout
       setTimeout(callback, 100);
     }
   };
 
-  safeRequestIdleCallback(() => {
+  scheduleIdleTask(() => {
     HIGH_PRIORITY_ROUTES.forEach(route => {
       import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
         .catch(err => console.debug('Preloading failed for', route));
@@ -36,13 +33,10 @@ export const preloadHighPriorityRoutes = () => {
  * Preload medium priority routes after high priority ones
  */
 export const preloadMediumPriorityRoutes = () => {
-  // Create a lightweight wrapper for requestIdleCallback with proper typing
-  const safeRequestIdleCallback = (callback: () => void) => {
+  // Use the built-in requestIdleCallback without redefining it
+  const scheduleIdleTask = (callback: () => void) => {
     if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      // TypeScript already has definitions for these APIs
-      window.requestIdleCallback(() => {
-        callback();
-      }, { timeout: 4000 });
+      window.requestIdleCallback(callback, { timeout: 4000 });
     } else {
       // Fallback to setTimeout
       setTimeout(callback, 300);
@@ -51,7 +45,7 @@ export const preloadMediumPriorityRoutes = () => {
 
   // Delayed preloading for medium priority routes
   setTimeout(() => {
-    safeRequestIdleCallback(() => {
+    scheduleIdleTask(() => {
       MEDIUM_PRIORITY_ROUTES.forEach(route => {
         import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
           .catch(err => console.debug('Preloading failed for', route));

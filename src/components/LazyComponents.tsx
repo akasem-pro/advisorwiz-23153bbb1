@@ -45,7 +45,20 @@ export function withLazyLoading<P extends Record<string, unknown>>(
   // Start preloading immediately
   preloadModule();
   
-  const LazyComponent = React.lazy(importFn);
+  const LazyComponent = React.lazy(() => {
+    // Use a promise we can control to enhance error handling
+    return new Promise<{ default: React.ComponentType<P> }>((resolve, reject) => {
+      preloadModule()
+        .then(module => {
+          // Artificial small delay to ensure React has time to process other things
+          setTimeout(() => resolve(module), 10);
+        })
+        .catch(err => {
+          console.error("Failed to load lazy component:", err);
+          reject(err);
+        });
+    });
+  });
   
   // Create a functional component to wrap the lazy component with startTransition
   const WithLazyLoadingComponent = (props: React.PropsWithoutRef<P>) => {
@@ -54,7 +67,7 @@ export function withLazyLoading<P extends Record<string, unknown>>(
     React.useEffect(() => {
       // Pre-load the component when this wrapper mounts using startTransition
       startTransitionHook(() => {
-        preloadModule().catch(err => console.debug('Lazy component preloading failed'));
+        preloadModule().catch(err => console.debug('Lazy component preloading failed:', err));
       });
     }, []);
     
@@ -69,7 +82,7 @@ export function withLazyLoading<P extends Record<string, unknown>>(
   const componentName = importFn.toString().match(/import\(['"](.+?)['"]\)/)?.[1]?.split('/').pop() || 'LazyComponent';
   WithLazyLoadingComponent.displayName = `withLazyLoading(${componentName})`;
   
-  return WithLazyLoadingComponent;
+  return React.memo(WithLazyLoadingComponent);
 }
 
 // Enhanced utility to wrap state updates that might cause suspense
@@ -86,15 +99,36 @@ export function useSafeStateTransition<T>(initialState: T): [T, React.Dispatch<R
   return [state, setStateWithTransition, isPending];
 }
 
-// New utility for deferring non-critical operations
+// Enhanced utility for deferring non-critical operations
 export function deferOperation(operation: () => void, delay = 0) {
   if (typeof window !== 'undefined') {
-    if (typeof window.requestIdleCallback === 'function') {
+    if (window.requestIdleCallback) {
       window.requestIdleCallback(() => {
-        operation();
+        startTransition(() => {
+          operation();
+        });
       }, { timeout: 1000 + delay });
     } else {
-      setTimeout(operation, delay);
+      setTimeout(() => {
+        startTransition(() => {
+          operation();
+        });
+      }, delay);
     }
   }
+}
+
+// New utility to safely use Suspense components
+export function withSuspense<P extends {}>(
+  Component: React.ComponentType<P>,
+  FallbackComponent: React.ReactNode = <ComponentLoadingFallback />
+) {
+  const WithSuspense = (props: P) => (
+    <Suspense fallback={FallbackComponent}>
+      <Component {...props} />
+    </Suspense>
+  );
+  
+  WithSuspense.displayName = `withSuspense(${Component.displayName || Component.name || 'Component'})`;
+  return WithSuspense;
 }

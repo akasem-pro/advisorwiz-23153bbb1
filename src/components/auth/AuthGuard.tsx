@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useEffect, useState, useTransition } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { supabase } from '../../integrations/supabase/client';
@@ -21,6 +22,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   const { user } = useAuth();
   const location = useLocation();
   const [checking, setChecking] = useState(true);
+  const [isPending, startTransition] = useTransition();
   
   useEffect(() => {
     const verifyAuth = async () => {
@@ -29,8 +31,10 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
         
         if (user) {
           console.log("[AuthGuard] User authenticated via Auth context:", user.email);
-          setIsAuthenticated(true);
-          setChecking(false);
+          startTransition(() => {
+            setIsAuthenticated(true);
+            setChecking(false);
+          });
           return;
         }
         
@@ -40,33 +44,39 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
         
         if (isPreviewEnv && localStorage.getItem('mock_auth_user')) {
           console.log("[AuthGuard] Preview environment with mock user detected");
-          setIsAuthenticated(true);
-          setChecking(false);
+          startTransition(() => {
+            setIsAuthenticated(true);
+            setChecking(false);
+          });
           return;
         }
         
         const { data, error } = await supabase.auth.getUser();
         
-        if (error) {
-          console.error("[AuthGuard] Error checking authentication:", error);
-          setIsAuthenticated(false);
-        } else if (data?.user) {
-          console.log("[AuthGuard] User authenticated via Supabase:", data.user.email);
-          setIsAuthenticated(true);
-        } else {
-          console.log("[AuthGuard] No authenticated user found in Supabase");
-          setIsAuthenticated(false);
-        }
+        startTransition(() => {
+          if (error) {
+            console.error("[AuthGuard] Error checking authentication:", error);
+            setIsAuthenticated(false);
+          } else if (data?.user) {
+            console.log("[AuthGuard] User authenticated via Supabase:", data.user.email);
+            setIsAuthenticated(true);
+          } else {
+            console.log("[AuthGuard] No authenticated user found in Supabase");
+            setIsAuthenticated(false);
+          }
+          setChecking(false);
+        });
       } catch (err) {
         console.error("[AuthGuard] Exception during auth check:", err);
-        setIsAuthenticated(false);
-      } finally {
-        setChecking(false);
+        startTransition(() => {
+          setIsAuthenticated(false);
+          setChecking(false);
+        });
       }
     };
     
     verifyAuth();
-  }, [setIsAuthenticated, location.pathname, user]);
+  }, [setIsAuthenticated, location.pathname, user, startTransition]);
   
   if (checking) {
     return (
@@ -111,4 +121,4 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   return <>{children}</>;
 };
 
-export default AuthGuard;
+export default React.memo(AuthGuard);
