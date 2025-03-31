@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { UserProviderRefactored } from './context/UserProviderRefactored';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import AppRoutes from './routes/AppRoutes';
 import { initGA4 } from './utils/analytics/ga4Integration';
+import { CookieManager } from './components/cookie';
 
 // Initialize GA4 with your measurement ID
 // This should be called before the App function
@@ -33,6 +35,7 @@ function App() {
       <AuthProvider>
         <Router>
           <AppRoutes />
+          <CookieManager />
         </Router>
       </AuthProvider>
     </UserProviderRefactored>
