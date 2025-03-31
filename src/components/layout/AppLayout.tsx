@@ -24,24 +24,22 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   fullWidth = false,
   className = '',
   showTrustBadges = false,
-  contentClassName = '',
-  withoutPadding = false,
-  animation = 'none',
+  contentClassName,
+  withoutPadding = true,
+  animation = 'fade',
   animationDuration = 'normal',
   skipToContentId = 'main-content',
   hideFooter = false
 }) => {
-  console.log("AppLayout rendering with children:", children ? "Children exists" : "No children");
-  
   return (
     <BaseLayout
       header={<Header />}
-      footer={hideFooter ? null : undefined}
+      footer={hideFooter ? null : undefined} // Pass null to completely hide footer, undefined to use default
       showSocialProof={!hideSocialProof}
       showTrustBadges={showTrustBadges}
       fullWidth={fullWidth}
       className={className}
-      contentClassName={cn("pt-16 md:pt-20", contentClassName)}
+      contentClassName={cn("pt-24 md:pt-28", contentClassName)}
       withoutPadding={withoutPadding}
       animation={animation}
       animationDuration={animationDuration}

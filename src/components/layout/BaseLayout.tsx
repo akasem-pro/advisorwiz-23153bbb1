@@ -1,11 +1,12 @@
 
-import React, { ReactNode, useEffect, useState, useTransition, useRef } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
+import TrustBadges from '../ui/TrustBadges';
+import FloatingSupportButton from '../support/FloatingSupportButton';
 import { initializeTagManager, trackPageView } from '../../utils/tagManager';
 import { cn } from '@/lib/utils';
 import AppFooter from './AppFooter';
-import BaseLayoutContent from './BaseLayoutContent';
 
 export interface BaseLayoutProps {
   children: ReactNode;
@@ -35,72 +36,33 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   className = '',
   contentClassName = '',
   mobileNavbar,
-  animation = 'none', // Default to none to avoid animation issues
+  animation = 'fade',
   animationDuration = 'normal',
   headerClassName = '',
   mainClassName = '',
-  withoutPadding = false,
+  withoutPadding = true,
   skipToContentId
 }) => {
-  console.log("BaseLayout rendering with children:", children ? "Children exists" : "No children");
-  
   const location = useLocation();
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isPending, startTransition] = useTransition();
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
-  // Handle analytics with debouncing
+  // Handle analytics
   useEffect(() => {
-    let isMounted = true;
-    
-    // Wrap analytics initialization in startTransition to prevent suspension issues
-    startTransition(() => {
-      try {
-        // Initialize tag manager only once
-        if (isInitialLoad && isMounted) {
-          initializeTagManager();
-          setIsInitialLoad(false);
-        }
-        
-        // Debounce page view tracking to avoid performance impact
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-        }
-        
-        timerRef.current = setTimeout(() => {
-          if (isMounted) {
-            const pageTitle = document.title || 'AdvisorWiz';
-            trackPageView(pageTitle, location.pathname);
-          }
-        }, 300);
-      } catch (error) {
-        console.error("Error in analytics:", error);
-      }
-    });
-    
-    // Proper cleanup function that cancels the timer and prevents state updates after unmounting
-    return () => { 
-      isMounted = false;
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [location, isInitialLoad]);
-  
-  // Duration class - memoized to prevent unnecessary recalculations
-  const durationClass = React.useMemo(() => {
+    initializeTagManager();
+    const pageTitle = document.title || 'AdvisorWiz';
+    trackPageView(pageTitle, location.pathname);
+  }, [location]);
+
+  // Animation duration class
+  const getDurationClass = () => {
     switch (animationDuration) {
-      case 'fast': return "duration-200";
-      case 'slow': return "duration-500";
-      default: return "duration-300";
+      case 'fast': return 'duration-200';
+      case 'slow': return 'duration-500';
+      default: return 'duration-300';
     }
-  }, [animationDuration]);
+  };
   
-  // Determine what footer to render - memoized to prevent rerenders
-  const footerElement = React.useMemo(() => 
-    footer === null ? null : (footer || <AppFooter />),
-  [footer]);
+  // Determine what footer to render
+  const footerElement = footer === null ? null : (footer || <AppFooter />);
 
   const renderContent = () => (
     <div className={cn(
@@ -117,16 +79,30 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         {header}
       </header>
       
-      <BaseLayoutContent
-        children={children}
-        showTrustBadges={showTrustBadges}
-        fullWidth={fullWidth}
-        contentClassName={contentClassName}
-        withoutPadding={withoutPadding}
-        skipToContentId={skipToContentId}
-        isInitialLoad={isInitialLoad}
-      />
+      <main className={cn(
+        "flex-grow",
+        !withoutPadding && contentClassName,
+        mainClassName
+      )} id={skipToContentId}>
+        <div className={cn(
+          withoutPadding ? '' : contentClassName
+        )}>
+          {children}
+        </div>
+        
+        {showTrustBadges && (
+          <div className={cn(
+            fullWidth ? 'w-full' : 'container mx-auto',
+            'my-2'
+          )}>
+            <TrustBadges className="justify-center" />
+          </div>
+        )}
+      </main>
       
+      <FloatingSupportButton />
+      
+      {/* Single footer rendering logic */}
       {footerElement}
       
       {mobileNavbar}
@@ -140,11 +116,11 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   return (
     <AnimatedRoute 
       animation={animation} 
-      className={durationClass}
+      className={getDurationClass()}
     >
       {renderContent()}
     </AnimatedRoute>
   );
 };
 
-export default React.memo(BaseLayout);
+export default BaseLayout;

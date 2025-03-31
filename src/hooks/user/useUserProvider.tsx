@@ -9,16 +9,14 @@ import { useLeadManagement } from './useLeadManagement';
 import { useProfileInitialization } from './useProfileInitialization';
 import { useAuthStateManagement } from './useAuthStateManagement';
 import { useUserSettings } from './useUserSettings';
-import { useAuth } from '../../features/auth/context/AuthProvider';
+import { useAuth } from '../../components/auth/AuthContext';
 import { User } from '@supabase/supabase-js';
 
 /**
  * Main hook for the User Provider that combines all specialized hooks
  */
 export const useUserProvider = () => {
-  // Get auth user safely (might be undefined if AuthProvider isn't loaded yet)
-  const auth = useAuth();
-  const authUser = auth?.user || null;
+  const { user: authUser } = useAuth();
   
   // Map AuthUser to User type if needed
   const user: User | null = authUser ? {

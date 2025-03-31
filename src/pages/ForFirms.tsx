@@ -1,5 +1,5 @@
 
-import React, { Suspense, useState, useTransition } from 'react';
+import React from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import BreadcrumbNav from '../components/firms/BreadcrumbNav';
 import BenefitsSection from '../components/firms/BenefitsSection';
@@ -9,19 +9,8 @@ import PageFAQ from '../components/shared/PageFAQ';
 import PageCTA from '../components/shared/PageCTA';
 import { Users, BarChart, Shield } from 'lucide-react';
 import AppShareWidget from '../components/ui/AppShareWidget';
-import { SectionLoadingFallback, ErrorFallback } from '../components/LazyComponents';
 
 const ForFirms: React.FC = () => {
-  const [isPending, startTransition] = useTransition();
-  
-  // Ensure all state transitions use startTransition
-  const [contentLoaded, setContentLoaded] = useState(false);
-  React.useEffect(() => {
-    startTransition(() => {
-      setContentLoaded(true);
-    });
-  }, []);
-
   // How it works steps
   const steps = [
     {
@@ -70,111 +59,73 @@ const ForFirms: React.FC = () => {
     }
   ];
 
-  if (!contentLoaded) {
-    return <SectionLoadingFallback />;
-  }
-
   return (
-    <AppLayout animation="fade">
-      <ErrorBoundary>
-        <BreadcrumbNav 
-          items={[
-            { name: 'Home', url: '/' },
-            { name: 'Financial Firms', url: '/for-firms' }
-          ]} 
-        />
-      </ErrorBoundary>
+    <AppLayout>
+      <BreadcrumbNav 
+        items={[
+          { name: 'Home', url: '/' },
+          { name: 'Financial Firms', url: '/for-firms' }
+        ]} 
+      />
       
-      <Suspense fallback={<SectionLoadingFallback />}>
-        <PageHero 
-          title="Enterprise Solutions for Financial Firms"
-          subtitle="Streamline advisor management, ensure compliance, and increase client acquisition with our enterprise platform designed specifically for financial firms."
-          primaryCta={{
-            text: "Schedule a Demo",
-            link: "/contact",
-            icon: true
-          }}
-          secondaryCta={{
-            text: "View Enterprise Plans",
-            link: "/pricing"
-          }}
-          features={[
-            {
-              title: "Team Management",
-              description: "Centralize control of advisor profiles, leads, and client interactions.",
-              icon: <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" />
-            },
-            {
-              title: "Analytics Dashboard",
-              description: "Access comprehensive performance metrics and reporting tools.",
-              icon: <BarChart className="h-5 w-5 text-teal-600 dark:text-teal-400" />
-            },
-            {
-              title: "Compliance Controls",
-              description: "Implement governance tools that ensure regulatory compliance.",
-              icon: <Shield className="h-5 w-5 text-teal-600 dark:text-teal-400" />
-            }
-          ]}
-        />
-      </Suspense>
+      <PageHero 
+        title="Enterprise Solutions for Financial Firms"
+        subtitle="Streamline advisor management, ensure compliance, and increase client acquisition with our enterprise platform designed specifically for financial firms."
+        primaryCta={{
+          text: "Schedule a Demo",
+          link: "/contact",
+          icon: true
+        }}
+        secondaryCta={{
+          text: "View Enterprise Plans",
+          link: "/pricing"
+        }}
+        features={[
+          {
+            title: "Team Management",
+            description: "Centralize control of advisor profiles, leads, and client interactions.",
+            icon: <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+          },
+          {
+            title: "Analytics Dashboard",
+            description: "Access comprehensive performance metrics and reporting tools.",
+            icon: <BarChart className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+          },
+          {
+            title: "Compliance Controls",
+            description: "Implement governance tools that ensure regulatory compliance.",
+            icon: <Shield className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+          }
+        ]}
+      />
       
-      <Suspense fallback={<SectionLoadingFallback />}>
-        <BenefitsSection />
-      </Suspense>
+      <BenefitsSection />
       
-      <Suspense fallback={<SectionLoadingFallback />}>
-        <PageHowItWorks
-          title="How AdvisorWiz Works for Firms"
-          steps={steps}
-        />
-      </Suspense>
+      <PageHowItWorks
+        title="How AdvisorWiz Works for Firms"
+        steps={steps}
+      />
 
       {/* Add social sharing widget */}
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-sm mx-auto">
-          <Suspense fallback={<div className="h-12 w-full bg-slate-200 animate-pulse rounded"></div>}>
-            <AppShareWidget variant="standard" />
-          </Suspense>
+          <AppShareWidget variant="standard" />
         </div>
       </div>
       
-      <Suspense fallback={<SectionLoadingFallback />}>
-        <PageFAQ
-          title="Frequently Asked Questions"
-          faqs={faqs}
-        />
-      </Suspense>
+      <PageFAQ
+        title="Frequently Asked Questions"
+        faqs={faqs}
+      />
       
-      <Suspense fallback={<SectionLoadingFallback />}>
-        <PageCTA
-          title="Ready to Transform Your Firm's Digital Presence?"
-          description="Join hundreds of financial firms using AdvisorWiz to streamline operations and grow their business."
-          buttonText="Get Started Today"
-          buttonLink="/contact"
-        />
-      </Suspense>
+      <PageCTA
+        title="Ready to Transform Your Firm's Digital Presence?"
+        description="Join hundreds of financial firms using AdvisorWiz to streamline operations and grow their business."
+        buttonText="Get Started Today"
+        buttonLink="/contact"
+      />
     </AppLayout>
   );
 };
-
-// Simple error boundary component
-class ErrorBoundary extends React.Component<{children: React.ReactNode}> {
-  state = { hasError: false };
-  
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-  
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("ForFirms error:", error, errorInfo);
-  }
-  
-  render() {
-    if (this.state.hasError) {
-      return <ErrorFallback />;
-    }
-    return this.props.children;
-  }
-}
 
 export default ForFirms;

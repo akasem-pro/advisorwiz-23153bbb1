@@ -1,11 +1,11 @@
-
-import React, { useEffect, useState, useTransition, Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { supabase } from '../../integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 import { getEffectiveAuthStatus } from '../../utils/mockAuthUtils';
+import { AlertCircle } from 'lucide-react';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -21,24 +21,16 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   const { user } = useAuth();
   const location = useLocation();
   const [checking, setChecking] = useState(true);
-  const [isPending, startTransition] = useTransition();
   
   useEffect(() => {
-    let isMounted = true;
-    let authCheckPromise: Promise<void> | null = null;
-    
     const verifyAuth = async () => {
       try {
         console.log("[AuthGuard] Starting auth verification...");
         
-        if (user && isMounted) {
+        if (user) {
           console.log("[AuthGuard] User authenticated via Auth context:", user.email);
-          startTransition(() => {
-            if (isMounted) {
-              setIsAuthenticated(true);
-              setChecking(false);
-            }
-          });
+          setIsAuthenticated(true);
+          setChecking(false);
           return;
         }
         
@@ -46,70 +38,34 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
                              window.location.hostname.includes('lovableproject') ||
                              window.location.hostname.includes('localhost');
         
-        if (isPreviewEnv && localStorage.getItem('mock_auth_user') && isMounted) {
+        if (isPreviewEnv && localStorage.getItem('mock_auth_user')) {
           console.log("[AuthGuard] Preview environment with mock user detected");
-          startTransition(() => {
-            if (isMounted) {
-              setIsAuthenticated(true);
-              setChecking(false);
-            }
-          });
+          setIsAuthenticated(true);
+          setChecking(false);
           return;
         }
         
-        try {
-          const { data, error } = await supabase.auth.getUser();
-          
-          if (isMounted) {
-            startTransition(() => {
-              if (!isMounted) return;
-              
-              if (error) {
-                console.error("[AuthGuard] Error checking authentication:", error);
-                setIsAuthenticated(false);
-              } else if (data?.user) {
-                console.log("[AuthGuard] User authenticated via Supabase:", data.user.email);
-                setIsAuthenticated(true);
-              } else {
-                console.log("[AuthGuard] No authenticated user found in Supabase");
-                setIsAuthenticated(false);
-              }
-              setChecking(false);
-            });
-          }
-        } catch (e) {
-          console.error("[AuthGuard] Exception during Supabase auth check:", e);
-          if (isMounted) {
-            startTransition(() => {
-              if (isMounted) {
-                setIsAuthenticated(false);
-                setChecking(false);
-              }
-            });
-          }
+        const { data, error } = await supabase.auth.getUser();
+        
+        if (error) {
+          console.error("[AuthGuard] Error checking authentication:", error);
+          setIsAuthenticated(false);
+        } else if (data?.user) {
+          console.log("[AuthGuard] User authenticated via Supabase:", data.user.email);
+          setIsAuthenticated(true);
+        } else {
+          console.log("[AuthGuard] No authenticated user found in Supabase");
+          setIsAuthenticated(false);
         }
       } catch (err) {
         console.error("[AuthGuard] Exception during auth check:", err);
-        if (isMounted) {
-          startTransition(() => {
-            if (isMounted) {
-              setIsAuthenticated(false);
-              setChecking(false);
-            }
-          });
-        }
+        setIsAuthenticated(false);
+      } finally {
+        setChecking(false);
       }
     };
     
-    // Store the promise to handle cancellation properly
-    authCheckPromise = verifyAuth();
-    
-    // Cleanup function for unmount
-    return () => {
-      isMounted = false;
-      // No need to await or cancel the promise explicitly
-      // The isMounted check within the async function prevents state updates
-    };
+    verifyAuth();
   }, [setIsAuthenticated, location.pathname, user]);
   
   if (checking) {
@@ -135,19 +91,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   if (!effectiveIsAuthenticated) {
     const destination = location.pathname !== "/" ? location.pathname : undefined;
     
-    // Use a local function to show toast to avoid React hook issues
-    const showToast = () => {
-      toast.error("Please sign in to access this page");
-    };
-    
-    // Call the toast outside of render, but in a safe way
-    React.useEffect(() => {
-      let isMounted = true;
-      if (isMounted) {
-        showToast();
-      }
-      return () => { isMounted = false; };
-    }, []);
+    toast.error("Please sign in to access this page");
     
     return <Navigate to="/signin" state={{ from: destination }} replace />;
   }
@@ -164,16 +108,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
     }
   }
 
-  // Wrap children in Suspense to handle any potential suspending components
-  return (
-    <Suspense fallback={
-      <div className="flex h-screen w-full items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-teal-500"></div>
-      </div>
-    }>
-      {children}
-    </Suspense>
-  );
+  return <>{children}</>;
 };
 
-export default React.memo(AuthGuard);
+export default AuthGuard;

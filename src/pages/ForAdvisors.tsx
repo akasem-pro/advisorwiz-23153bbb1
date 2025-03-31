@@ -3,17 +3,41 @@ import React from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 import BenefitsSection from '../components/advisors/BenefitsSection';
-import FeaturesSection from '../components/advisors/FeaturesSection'; 
-import HeroSection from '../components/advisors/HeroSection';
+import PageHero from '../components/shared/PageHero';
+import PageHowItWorks from '../components/shared/PageHowItWorks';
 import PageFAQ from '../components/shared/PageFAQ';
 import PageCTA from '../components/shared/PageCTA';
+import { Check } from 'lucide-react';
 import ShareAndDownloadSection from '../components/marketing/ShareAndDownloadSection';
-import FAQSection from '../components/advisors/FAQSection';
 
 const ForAdvisors: React.FC = () => {
   const breadcrumbs = [
     { name: 'Home', url: '/' },
     { name: 'Advisors', url: '/for-advisors' }
+  ];
+
+  // How it works steps
+  const steps = [
+    {
+      number: 1,
+      title: "Create Your Advisor Profile",
+      description: "Sign up and build your professional profile, highlighting your expertise, credentials, and services. The more complete your profile, the better our matching algorithm works."
+    },
+    {
+      number: 2,
+      title: "Get Matched with Potential Clients",
+      description: "Our proprietary algorithm connects you with consumers who match your specialty, location, and expertise. You'll receive notifications when potential clients are interested in your services."
+    },
+    {
+      number: 3,
+      title: "Schedule Consultations",
+      description: "Use our integrated scheduling system to book appointments with interested prospects. You control your availability and consultation format (in-person, video call, or phone)."
+    },
+    {
+      number: 4,
+      title: "Grow Your Practice",
+      description: "Convert consultations into long-term client relationships. Our platform helps you track prospects, follow up, and expand your practice efficiently."
+    }
   ];
 
   // FAQs for advisors
@@ -40,30 +64,62 @@ const ForAdvisors: React.FC = () => {
     }
   ];
 
-  console.log("Rendering ForAdvisors page");
-
   return (
-    <AppLayout showTrustBadges={true} animation="none" contentClassName="p-0">
-      <div className="w-full">
-        <BreadcrumbNav items={breadcrumbs} />
-        
-        <HeroSection />
-        
-        <BenefitsSection />
-        
-        <FeaturesSection />
-        
-        <ShareAndDownloadSection variant="minimal" />
-        
-        <FAQSection faqs={faqs} />
-        
-        <PageCTA
-          title="Ready to Grow Your Advisory Practice?"
-          description="Join thousands of advisors who are expanding their client base through our platform."
-          buttonText="Get Started Now"
-          buttonLink="/contact"
-        />
-      </div>
+    <AppLayout>
+      <BreadcrumbNav items={breadcrumbs} />
+      
+      <PageHero 
+        title="Grow Your Advisory Practice with Qualified Leads"
+        subtitle="Connect with pre-screened clients who are actively seeking your expertise. Our advanced matching system pairs you with prospects most likely to benefit from your services."
+        primaryCta={{
+          text: "Join as an Advisor",
+          link: "/contact",
+          icon: true
+        }}
+        secondaryCta={{
+          text: "View Pricing Options",
+          link: "/pricing"
+        }}
+        features={[
+          {
+            title: "Qualified Leads",
+            description: "Connect with clients who are actively seeking financial advice and match your expertise.",
+            icon: <Check className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+          },
+          {
+            title: "Digital Presence",
+            description: "Showcase your expertise with a professionally designed profile that builds client trust.",
+            icon: <Check className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+          },
+          {
+            title: "Scheduling Tools",
+            description: "Manage appointments, consultations, and follow-ups with our integrated scheduling system.",
+            icon: <Check className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+          }
+        ]}
+      />
+      
+      <BenefitsSection />
+      
+      <PageHowItWorks
+        title="How It Works"
+        steps={steps}
+      />
+      
+      {/* Add Social Sharing Section */}
+      <ShareAndDownloadSection variant="minimal" />
+      
+      <PageFAQ
+        title="Frequently Asked Questions"
+        faqs={faqs}
+      />
+      
+      <PageCTA
+        title="Ready to Grow Your Advisory Practice?"
+        description="Join thousands of advisors who are expanding their client base through our platform."
+        buttonText="Get Started Now"
+        buttonLink="/contact"
+      />
     </AppLayout>
   );
 };

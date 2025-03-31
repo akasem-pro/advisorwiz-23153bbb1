@@ -29,18 +29,16 @@ export const UserProviderRefactored = ({ children }: { children: ReactNode }) =>
   return (
     <UserContext.Provider value={contextValue}>
       {children}
-      {activeCall && (
-        <CallModal 
-          callSession={activeCall} 
-          isOpen={isCallModalOpen}
-          onEnd={() => {
-            if (activeCall) {
-              endCall(activeCall.id);
-            }
-            closeCallModal();
-          }}
-        />
-      )}
+      <CallModal 
+        callSession={activeCall} 
+        isOpen={isCallModalOpen}
+        onEnd={() => {
+          if (activeCall) {
+            endCall(activeCall.id);
+          }
+          closeCallModal();
+        }}
+      />
     </UserContext.Provider>
   );
 };

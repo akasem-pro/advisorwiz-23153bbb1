@@ -5,7 +5,7 @@ import { useMatchingFilters } from './matching/useMatchingFilters';
 import { useMatchingMessages } from './matching/useMatchingMessages';
 import { useMatchingActions } from './matching/useMatchingActions';
 import { useMatchedProfiles } from './matching/useMatchedProfiles';
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect } from 'react';
 
 export const useMatchingInterface = () => {
   const {
@@ -60,30 +60,12 @@ export const useMatchingInterface = () => {
     setEmpty
   );
 
-  // Track component mounted state
-  const isMountedRef = useRef(true);
-  
-  // Set up unmount cleanup
+  // Load matched profiles when viewing matches changes or matches are updated
   useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-
-  // Memoize the loadProfilesIfNeeded callback to prevent infinite loops
-  const loadProfilesIfNeeded = useCallback(() => {
-    // Only proceed if the component is still mounted
-    if (viewingMatches && isMountedRef.current) {
+    if (viewingMatches) {
       loadMatchedProfiles();
     }
   }, [viewingMatches, loadMatchedProfiles]);
-  
-  useEffect(() => {
-    if (isMountedRef.current) {
-      loadProfilesIfNeeded();
-    }
-    // No explicit cleanup needed here as we're using isMountedRef
-  }, [loadProfilesIfNeeded, matches]);
 
   return {
     userType,

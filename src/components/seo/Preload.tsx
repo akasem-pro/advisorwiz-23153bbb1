@@ -14,7 +14,6 @@ interface PreloadProps {
   prefetch?: string[];
   prerender?: string[];
   dnsPrefetch?: string[];
-  criticalStyles?: string;
 }
 
 const Preload: React.FC<PreloadProps> = ({ 
@@ -22,16 +21,10 @@ const Preload: React.FC<PreloadProps> = ({
   preconnect = [], 
   prefetch = [],
   prerender = [],
-  dnsPrefetch = [],
-  criticalStyles
+  dnsPrefetch = [] 
 }) => {
   return (
     <Helmet>
-      {/* Inline critical CSS if provided */}
-      {criticalStyles && (
-        <style data-critical="true">{criticalStyles}</style>
-      )}
-
       {/* Preload critical resources */}
       {resources.map((resource, index) => (
         <link 
@@ -41,7 +34,9 @@ const Preload: React.FC<PreloadProps> = ({
           as={resource.as}
           type={resource.type}
           crossOrigin={resource.crossOrigin}
-          fetchPriority={resource.importance || "auto"}
+          // Note: React doesn't have a direct property for fetchpriority, 
+          // but we can use data attribute as a workaround that can be picked up by our performance utils
+          data-fetchpriority={resource.importance}
         />
       ))}
 
@@ -86,4 +81,4 @@ const Preload: React.FC<PreloadProps> = ({
   );
 };
 
-export default React.memo(Preload);
+export default Preload;

@@ -6,34 +6,24 @@ import { initEnhancedPerformanceTracking } from './performance/enhancedPerforman
 import { withPerformanceTracking } from './performance/functionTracking';
 
 /**
- * Initialize essential performance optimizations immediately
- * and defer non-critical ones
+ * Initialize all performance optimizations
  */
 export const initPerformanceOptimizations = () => {
-  // Critical optimizations that should run immediately
-  // These directly impact Core Web Vitals and initial rendering
-  implementResourceHints();
-  setupLazyLoading();
+  // Track Web Vitals metrics
+  trackWebVitals();
   
-  // Use deferred initialization for less critical optimizations
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(() => {
-      // Track Web Vitals metrics - slightly deferred to not impact FCP
-      trackWebVitals();
-      
-      // Initialize enhanced tracking system with lower priority
-      initEnhancedPerformanceTracking();
-      
-      // Log initialization
-      console.log('[Performance] Performance optimizations initialized');
-    }, { timeout: 3000 });
-  } else {
-    // Fallback for browsers without requestIdleCallback
-    setTimeout(() => {
-      trackWebVitals();
-      initEnhancedPerformanceTracking();
-    }, 1000);
-  }
+  // Implement resource hints (preconnect, etc.)
+  implementResourceHints();
+  
+  // Setup lazy loading and image optimizations
+  setupLazyLoading();
+  optimizeImagesForCWV();
+  
+  // Initialize enhanced tracking system
+  initEnhancedPerformanceTracking();
+  
+  // Log initialization
+  console.log('[Performance] Performance optimizations initialized');
   
   // Run optimization on DOMContentLoaded
   document.addEventListener('DOMContentLoaded', optimizeOnDOMContentLoaded);
@@ -46,11 +36,11 @@ export const initPerformanceOptimizations = () => {
  * Optimize performance when DOM is fully loaded
  */
 const optimizeOnDOMContentLoaded = () => {
-  // Optimize images for CWV (LCP, CLS)
-  optimizeImagesForCWV();
-  
-  // Defer non-critical scripts to improve TTI
+  // Defer non-critical scripts
   deferNonCriticalScripts();
+  
+  // Re-run image optimizations (for dynamically loaded content)
+  optimizeImagesForCWV();
 };
 
 /**

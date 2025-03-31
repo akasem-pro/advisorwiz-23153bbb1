@@ -7,7 +7,7 @@ import { useAuthActions } from '../hooks/useAuthActions';
 import { checkSupabaseConnection } from '../../../integrations/supabase/client';
 import { UserType } from '../../../types/profileTypes';
 
-type FeatureAuthContextType = {
+type AuthContextType = {
   session: Session | null;
   user: User | null;
   signIn: (email: string, password: string) => Promise<boolean>;
@@ -22,7 +22,7 @@ type FeatureAuthContextType = {
   setMockUser: (user: any) => void; 
 };
 
-const FeatureAuthContext = createContext<FeatureAuthContextType>({
+const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
   signIn: async () => false,
@@ -37,7 +37,7 @@ const FeatureAuthContext = createContext<FeatureAuthContextType>({
   setMockUser: () => {}
 });
 
-export const useAuth = () => useContext(FeatureAuthContext);
+export const useAuth = () => useContext(AuthContext);
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -215,8 +215,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   ]);
 
   return (
-    <FeatureAuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={contextValue}>
       {children}
-    </FeatureAuthContext.Provider>
+    </AuthContext.Provider>
   );
 };
