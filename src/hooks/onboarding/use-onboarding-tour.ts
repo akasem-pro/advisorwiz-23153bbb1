@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useRef } from 'react';
-import { Steps, Step } from 'react-joyride';
+import { Step } from 'react-joyride';
 import { UserType } from '../../types/profileTypes';
 import { useGeneralTourSteps } from './use-general-tour-steps';
 import { useConsumerTourSteps } from './use-consumer-tour-steps';

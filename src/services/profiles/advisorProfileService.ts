@@ -1,201 +1,146 @@
 
-import { AdvisorProfile } from '../../types/profileTypes';
-import { User } from '@supabase/supabase-js';
 import { supabase } from '../../integrations/supabase/client';
-import { toast } from 'sonner';
-import { fetchBaseProfile, updateBaseProfile } from './baseProfileService';
+import { AdvisorProfile, AdvisorProfileUpdate } from '../../types/profileTypes';
 
 /**
- * Fetch an advisor profile from Supabase
+ * Fetches an advisor profile by user ID
  */
-export const fetchAdvisorProfile = async (userId: string): Promise<AdvisorProfile | null> => {
+export const getAdvisorProfileById = async (userId: string): Promise<AdvisorProfile | null> => {
   try {
-    console.log(`[advisorProfileService] Fetching advisor profile for user ${userId}`);
-    
-    // First get the base profile data
-    const baseProfile = await fetchBaseProfile(userId);
-    
-    if (!baseProfile) {
-      console.log(`[advisorProfileService] No base profile found for ${userId}`);
-      return null;
-    }
-    
-    // Then get advisor specific data
-    const { data: advisorData, error: advisorError } = await supabase
-      .from('advisor_profiles')
+    // Fetch base user profile
+    const { data: userProfile, error: userError } = await supabase
+      .from('user_profiles')
       .select('*')
       .eq('id', userId)
       .single();
     
-    if (advisorError && advisorError.code !== 'PGRST116') {
-      console.error('[advisorProfileService] Error fetching advisor data:', advisorError);
+    if (userError) throw userError;
+    
+    // Fetch advisor specific profile
+    const { data: advisorProfile, error: advisorError } = await supabase
+      .from('advisor_profiles')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+    
+    if (advisorError) throw advisorError;
+    
+    if (!userProfile || !advisorProfile) {
+      console.error('Missing user or advisor profile data');
       return null;
     }
-
-    // If no advisor data exists, return minimal profile
-    if (!advisorData) {
-      const minimalAdvisorProfile: AdvisorProfile = {
-        id: userId,
-        name: `${baseProfile.first_name || ''} ${baseProfile.last_name || ''}`.trim(),
-        organization: '',
-        isAccredited: false,
-        website: '',
-        testimonials: [],
-        languages: ['english'],
-        pricing: {
-          hourlyRate: 0,
-          portfolioFee: 0
-        },
-        assetsUnderManagement: 0,
-        expertise: [],
-        specializations: [],
-        profilePicture: baseProfile.profile_picture || '',
-        matches: [],
-        chats: [],
-        availability: [],
-        chatEnabled: baseProfile.chat_enabled !== false,
-        appointmentCategories: [],
-        appointments: [],
-        onlineStatus: baseProfile.online_status || 'offline',
-        lastOnline: baseProfile.last_online || new Date().toISOString(),
-        showOnlineStatus: baseProfile.show_online_status !== false
-      };
-      return minimalAdvisorProfile;
-    }
     
-    // Create the advisor profile from the data
-    const advisorProfile: AdvisorProfile = {
-      id: userId,
-      name: `${baseProfile.first_name || ''} ${baseProfile.last_name || ''}`.trim(),
-      organization: advisorData.organization || '',
-      isAccredited: advisorData.is_accredited || false,
-      website: advisorData.website || '',
-      testimonials: Array.isArray(advisorData.testimonials) ? advisorData.testimonials : [],
-      languages: Array.isArray(advisorData.languages) ? advisorData.languages : ['english'],
-      pricing: {
-        hourlyRate: advisorData.hourly_rate || 0,
-        portfolioFee: advisorData.portfolio_fee || 0
-      },
-      assetsUnderManagement: advisorData.assets_under_management || 0,
-      expertise: Array.isArray(advisorData.expertise) ? advisorData.expertise : [],
-      specializations: Array.isArray(advisorData.specializations) ? advisorData.specializations : [],
-      profilePicture: baseProfile.profile_picture || advisorData.profile_picture || '',
-      matches: Array.isArray(advisorData.matches) ? advisorData.matches : [],
-      chats: Array.isArray(advisorData.chats) ? advisorData.chats : [],
-      availability: Array.isArray(advisorData.availability) ? advisorData.availability : [],
-      chatEnabled: baseProfile.chat_enabled !== false,
-      appointmentCategories: Array.isArray(advisorData.appointment_categories) ? advisorData.appointment_categories : [],
-      appointments: Array.isArray(advisorData.appointments) ? advisorData.appointments : [],
-      onlineStatus: baseProfile.online_status || 'offline',
-      lastOnline: baseProfile.last_online || new Date().toISOString(),
-      showOnlineStatus: baseProfile.show_online_status !== false
-    };
+    // Combine profiles with safe default values for potentially missing fields
+    return {
+      // Base user profile fields
+      id: userProfile.id,
+      email: userProfile.email,
+      firstName: userProfile.first_name,
+      lastName: userProfile.last_name,
+      phoneNumber: userProfile.phone_number,
+      addressLine1: userProfile.address_line1,
+      addressLine2: userProfile.address_line2,
+      city: userProfile.city,
+      state: userProfile.state,
+      zipCode: userProfile.zip_code,
+      country: userProfile.country,
+      profilePicture: userProfile.avatar_url || userProfile.profile_picture || '',
+      
+      // Advisor specific fields
+      name: `${userProfile.first_name} ${userProfile.last_name}`,
+      organization: advisorProfile.organization || '',
+      isAccredited: advisorProfile.is_accredited || false,
+      website: advisorProfile.website || '',
+      bio: advisorProfile.biography || '',
+      assetsUnderManagement: advisorProfile.assets_under_management || 0,
+      yearsOfExperience: advisorProfile.years_of_experience || 0,
+      languages: advisorProfile.languages || ['English'],
+      averageRating: advisorProfile.average_rating || 0,
+      ratingCount: advisorProfile.rating_count || 0,
+      certifications: advisorProfile.certifications || [],
+      expertise: advisorProfile.expertise || [],
+      availability: advisorProfile.availability || {},
+      preferredCommunication: advisorProfile.preferred_communication || 'email',
+      servicedLocations: advisorProfile.serviced_locations || [],
+      showOnlineStatus: advisorProfile.show_online_status || true,
+      
+      // Default values for fields not directly in the database
+      testimonials: advisorProfile.testimonials || [],
+      pricing: advisorProfile.pricing || { hourlyRate: 0, portfolioFee: 0 },
+      specializations: advisorProfile.specializations || [],
+      matches: advisorProfile.matches || [],
+      chats: advisorProfile.chats || [],
+      appointment_categories: advisorProfile.appointment_categories || [],
+      appointments: advisorProfile.appointments || []
+    } as AdvisorProfile;
     
-    return advisorProfile;
   } catch (error) {
-    console.error('[advisorProfileService] Unexpected error fetching advisor profile:', error);
+    console.error('Error fetching advisor profile:', error);
     return null;
   }
 };
 
 /**
- * Update an advisor profile
+ * Updates an advisor profile
  */
-export const updateAdvisorProfile = async (user: User, profileData: AdvisorProfile): Promise<boolean> => {
+export const updateAdvisorProfile = async (userId: string, updateData: AdvisorProfileUpdate): Promise<boolean> => {
   try {
-    console.log(`[advisorProfileService] Updating advisor profile for user ${user.id}`);
+    // Split the data into user profile and advisor profile updates
+    const { 
+      firstName, lastName, phoneNumber, addressLine1, addressLine2, city, state, zipCode, country, profilePicture,
+      ...advisorSpecificData 
+    } = updateData;
     
-    // First update the base profile
-    const baseUpdateSuccess = await updateBaseProfile(user, 'advisor', profileData);
-    
-    if (!baseUpdateSuccess) {
-      console.error('[advisorProfileService] Failed to update base profile');
-      return false;
+    // Update base user profile if relevant fields provided
+    if (firstName || lastName || phoneNumber || addressLine1 || addressLine2 || city || state || zipCode || country || profilePicture) {
+      const { error: userError } = await supabase
+        .from('user_profiles')
+        .update({
+          first_name: firstName,
+          last_name: lastName,
+          phone_number: phoneNumber,
+          address_line1: addressLine1,
+          address_line2: addressLine2,
+          city,
+          state,
+          zip_code: zipCode,
+          country,
+          avatar_url: profilePicture
+        })
+        .eq('id', userId);
+      
+      if (userError) throw userError;
     }
     
-    // Then update advisor specific data
-    const { error: advisorUpsertError } = await supabase
-      .from('advisor_profiles')
-      .upsert({
-        id: user.id,
-        organization: profileData.organization,
-        is_accredited: profileData.isAccredited,
-        website: profileData.website,
-        testimonials: profileData.testimonials || [],
-        languages: profileData.languages,
-        hourly_rate: profileData.pricing?.hourlyRate || 0,
-        portfolio_fee: profileData.pricing?.portfolioFee || 0,
-        assets_under_management: profileData.assetsUnderManagement,
-        expertise: profileData.expertise,
-        specializations: profileData.specializations || [],
-        availability: profileData.availability,
-        matches: profileData.matches || [],
-        chats: profileData.chats || [],
-        appointment_categories: profileData.appointmentCategories || [],
-        appointments: profileData.appointments || [],
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'id'
-      });
-    
-    if (advisorUpsertError) {
-      console.error('[advisorProfileService] Error updating advisor profile:', advisorUpsertError);
-      return false;
+    // Update advisor specific profile
+    if (Object.keys(advisorSpecificData).length > 0) {
+      // Map the frontend fields to database fields
+      const mappedAdvisorData = {
+        organization: advisorSpecificData.organization,
+        is_accredited: advisorSpecificData.isAccredited,
+        website: advisorSpecificData.website,
+        biography: advisorSpecificData.bio,
+        assets_under_management: advisorSpecificData.assetsUnderManagement,
+        years_of_experience: advisorSpecificData.yearsOfExperience,
+        languages: advisorSpecificData.languages,
+        certifications: advisorSpecificData.certifications,
+        expertise: advisorSpecificData.expertise,
+        preferred_communication: advisorSpecificData.preferredCommunication,
+        serviced_locations: advisorSpecificData.servicedLocations,
+        show_online_status: advisorSpecificData.showOnlineStatus
+      };
+      
+      const { error: advisorError } = await supabase
+        .from('advisor_profiles')
+        .update(mappedAdvisorData)
+        .eq('user_id', userId);
+      
+      if (advisorError) throw advisorError;
     }
     
     return true;
   } catch (error) {
-    console.error('[advisorProfileService] Unexpected error updating advisor profile:', error);
+    console.error('Error updating advisor profile:', error);
     return false;
-  }
-};
-
-/**
- * Initialize a new advisor profile
- */
-export const initializeAdvisorProfile = async (user: User): Promise<AdvisorProfile | null> => {
-  try {
-    console.log(`[advisorProfileService] Initializing advisor profile for user ${user.id}`);
-    
-    const defaultAdvisorProfile: AdvisorProfile = {
-      id: user.id,
-      name: user.user_metadata?.name || '',
-      organization: '',
-      isAccredited: false,
-      website: '',
-      testimonials: [],
-      languages: ['english'],
-      pricing: {
-        hourlyRate: 0,
-        portfolioFee: 0
-      },
-      assetsUnderManagement: 0,
-      expertise: [],
-      specializations: [],
-      profilePicture: '',
-      matches: [],
-      chats: [],
-      availability: [],
-      chatEnabled: true,
-      appointmentCategories: [],
-      appointments: [],
-      onlineStatus: 'online',
-      lastOnline: new Date().toISOString(),
-      showOnlineStatus: true
-    };
-    
-    // Update the profile in Supabase
-    const success = await updateAdvisorProfile(user, defaultAdvisorProfile);
-    
-    if (!success) {
-      toast.error('Failed to initialize advisor profile');
-      return null;
-    }
-    
-    return defaultAdvisorProfile;
-  } catch (error) {
-    console.error('[advisorProfileService] Unexpected error initializing advisor profile:', error);
-    toast.error('Unexpected error initializing advisor profile');
-    return null;
   }
 };
