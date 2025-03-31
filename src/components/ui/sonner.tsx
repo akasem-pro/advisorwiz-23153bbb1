@@ -18,24 +18,35 @@ const Toaster = ({ ...props }: ToasterProps) => {
   // Create a ref to access the toaster element after it's mounted
   const toasterRef = useRef<HTMLElement | null>(null);
   
-  // This effect sets up a MutationObserver to add aria-hidden to elements with tabindex="-1"
+  // This effect sets up a MutationObserver to handle accessibility issues
   useEffect(() => {
-    // Function to apply accessibility attributes
-    const applyAccessibilityAttributes = (container: HTMLElement | Document) => {
-      const elementsWithNegativeTabIndex = container.querySelectorAll('[tabindex="-1"]');
-      elementsWithNegativeTabIndex.forEach((el) => {
+    // Function to fix accessibility issues
+    const fixAccessibilityIssues = (container: HTMLElement | Document) => {
+      // Find elements with both aria-hidden and tabindex
+      const conflictingElements = container.querySelectorAll('[aria-hidden="true"][tabindex], [tabindex="-1"][aria-hidden="true"]');
+      
+      // Remove aria-hidden from elements that need to be focusable
+      conflictingElements.forEach((el) => {
+        if (el.hasAttribute('aria-hidden') && el.hasAttribute('tabindex')) {
+          // Remove aria-hidden to allow proper focus
+          el.removeAttribute('aria-hidden');
+        }
+      });
+
+      // For non-interactive elements with tabindex=-1, add aria-hidden if missing
+      const nonInteractiveElements = container.querySelectorAll('[tabindex="-1"]:not(button):not(a):not([role="button"]):not([role="tab"])');
+      nonInteractiveElements.forEach((el) => {
         if (!el.hasAttribute('aria-hidden')) {
           (el as HTMLElement).setAttribute('aria-hidden', 'true');
         }
       });
     };
 
-    // Setup a mutation observer to detect when the toaster adds new elements
+    // Setup a mutation observer to detect when new elements are added
     const observer = new MutationObserver((mutations) => {
       mutations.forEach(mutation => {
         if (mutation.addedNodes.length > 0) {
-          // Apply to the entire document since we can't directly access the Sonner component
-          applyAccessibilityAttributes(document);
+          fixAccessibilityIssues(document);
         }
       });
     });
@@ -47,7 +58,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
     });
 
     // Initial check for any existing elements
-    applyAccessibilityAttributes(document);
+    fixAccessibilityIssues(document);
 
     return () => {
       // Clean up observer on component unmount
