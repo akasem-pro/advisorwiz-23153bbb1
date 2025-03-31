@@ -6,7 +6,6 @@ import { supabase } from '../../integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 import { getEffectiveAuthStatus } from '../../utils/mockAuthUtils';
-import { AlertCircle } from 'lucide-react';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -31,14 +30,12 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
       try {
         console.log("[AuthGuard] Starting auth verification...");
         
-        if (user) {
+        if (user && isMounted) {
           console.log("[AuthGuard] User authenticated via Auth context:", user.email);
-          if (isMounted) {
-            startTransition(() => {
-              setIsAuthenticated(true);
-              setChecking(false);
-            });
-          }
+          startTransition(() => {
+            setIsAuthenticated(true);
+            setChecking(false);
+          });
           return;
         }
         
@@ -46,14 +43,12 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
                              window.location.hostname.includes('lovableproject') ||
                              window.location.hostname.includes('localhost');
         
-        if (isPreviewEnv && localStorage.getItem('mock_auth_user')) {
+        if (isPreviewEnv && localStorage.getItem('mock_auth_user') && isMounted) {
           console.log("[AuthGuard] Preview environment with mock user detected");
-          if (isMounted) {
-            startTransition(() => {
-              setIsAuthenticated(true);
-              setChecking(false);
-            });
-          }
+          startTransition(() => {
+            setIsAuthenticated(true);
+            setChecking(false);
+          });
           return;
         }
         
@@ -126,10 +121,15 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   if (!effectiveIsAuthenticated) {
     const destination = location.pathname !== "/" ? location.pathname : undefined;
     
-    // Use startTransition to avoid suspension during auth state change
-    startTransition(() => {
+    // Use a local function to show toast to avoid React hook issues
+    const showToast = () => {
       toast.error("Please sign in to access this page");
-    });
+    };
+    
+    // Call the toast outside of render, but in a safe way
+    React.useEffect(() => {
+      showToast();
+    }, []);
     
     return <Navigate to="/signin" state={{ from: destination }} replace />;
   }

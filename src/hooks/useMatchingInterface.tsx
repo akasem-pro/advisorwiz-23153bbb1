@@ -5,7 +5,7 @@ import { useMatchingFilters } from './matching/useMatchingFilters';
 import { useMatchingMessages } from './matching/useMatchingMessages';
 import { useMatchingActions } from './matching/useMatchingActions';
 import { useMatchedProfiles } from './matching/useMatchedProfiles';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 
 export const useMatchingInterface = () => {
   const {
@@ -61,11 +61,17 @@ export const useMatchingInterface = () => {
   );
 
   // Load matched profiles when viewing matches changes or matches are updated
-  useEffect(() => {
+  // Memoize the loadProfilesIfNeeded callback to prevent infinite loops
+  const loadProfilesIfNeeded = useCallback(() => {
     if (viewingMatches) {
       loadMatchedProfiles();
     }
   }, [viewingMatches, loadMatchedProfiles]);
+  
+  useEffect(() => {
+    loadProfilesIfNeeded();
+    // No cleanup needed for this effect
+  }, [loadProfilesIfNeeded, matches]);
 
   return {
     userType,

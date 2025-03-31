@@ -49,30 +49,34 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   
   // Handle analytics with debouncing
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
+    let isMounted = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     
     // Wrap analytics initialization in startTransition to prevent suspension issues
     startTransition(() => {
       try {
         // Initialize tag manager only once
-        if (isInitialLoad) {
+        if (isInitialLoad && isMounted) {
           initializeTagManager();
           setIsInitialLoad(false);
         }
         
         // Debounce page view tracking to avoid performance impact
         timer = setTimeout(() => {
-          const pageTitle = document.title || 'AdvisorWiz';
-          trackPageView(pageTitle, location.pathname);
+          if (isMounted) {
+            const pageTitle = document.title || 'AdvisorWiz';
+            trackPageView(pageTitle, location.pathname);
+          }
         }, 300);
       } catch (error) {
         console.error("Error in analytics:", error);
       }
     });
     
-    // Proper cleanup function that cancels the timer
+    // Proper cleanup function that cancels the timer and prevents state updates after unmounting
     return () => { 
-      clearTimeout(timer);
+      isMounted = false;
+      if (timer) clearTimeout(timer);
     };
   }, [location, isInitialLoad]);
   
@@ -80,16 +84,22 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   const [contentVisible, setContentVisible] = useState(false);
   
   useEffect(() => {
+    let isMounted = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    
     // Use startTransition for content visibility to avoid suspension
-    const timer = setTimeout(() => {
-      startTransition(() => {
-        setContentVisible(true);
-      });
+    timer = setTimeout(() => {
+      if (isMounted) {
+        startTransition(() => {
+          setContentVisible(true);
+        });
+      }
     }, 0);
     
     // Proper cleanup function
     return () => {
-      clearTimeout(timer);
+      isMounted = false;
+      if (timer) clearTimeout(timer);
     };
   }, []);
 

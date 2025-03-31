@@ -13,13 +13,38 @@ function App() {
     // Simulate loading delay, but use a smaller delay to improve perceived performance
     const timer = setTimeout(() => {
       // Wrap the state update in startTransition
-      startTransition(() => {
-        setLoading(false);
-      });
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        startTransition(() => {
+          setLoading(false);
+        });
+      } else {
+        // If document isn't ready yet, wait for it
+        const readyStateHandler = () => {
+          startTransition(() => {
+            setLoading(false);
+          });
+          document.removeEventListener('DOMContentLoaded', readyStateHandler);
+        };
+        document.addEventListener('DOMContentLoaded', readyStateHandler);
+        
+        // If DOMContentLoaded doesn't fire for some reason, still show the app
+        const backupTimer = setTimeout(() => {
+          startTransition(() => {
+            setLoading(false);
+          });
+        }, 1000);
+        
+        return () => {
+          clearTimeout(backupTimer);
+          document.removeEventListener('DOMContentLoaded', readyStateHandler);
+        };
+      }
     }, 300); // Reduced from 500ms to 300ms
 
     // Proper cleanup function
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   // Optimized loading spinner that doesn't cause layout shifts

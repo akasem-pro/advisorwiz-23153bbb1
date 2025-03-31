@@ -19,18 +19,24 @@ export const preloadHighPriorityRoutes = () => {
   
   const scheduleIdleTask = (callback: () => void) => {
     try {
+      let idleCallbackId: number | null = null;
+      let timeoutId: number | null = null;
+      
       if ('requestIdleCallback' in window) {
-        const id = window.requestIdleCallback(callback, { timeout: 2000 });
-        return () => {
-          if ('cancelIdleCallback' in window) {
-            window.cancelIdleCallback(id);
-          }
-        };
+        idleCallbackId = window.requestIdleCallback(callback, { timeout: 2000 });
       } else {
         // Fallback to setTimeout
-        const id = setTimeout(callback, 100);
-        return () => clearTimeout(id);
+        timeoutId = setTimeout(callback, 100) as unknown as number;
       }
+      
+      return () => {
+        if (idleCallbackId !== null && 'cancelIdleCallback' in window) {
+          window.cancelIdleCallback(idleCallbackId);
+        }
+        if (timeoutId !== null) {
+          clearTimeout(timeoutId);
+        }
+      };
     } catch (error) {
       console.error('Error scheduling idle task:', error);
       const id = setTimeout(callback, 100);
@@ -68,18 +74,24 @@ export const preloadMediumPriorityRoutes = () => {
   // Use the built-in requestIdleCallback without redefining it
   const scheduleIdleTask = (callback: () => void) => {
     try {
+      let idleCallbackId: number | null = null;
+      let timeoutId: number | null = null;
+      
       if ('requestIdleCallback' in window) {
-        const id = window.requestIdleCallback(callback, { timeout: 4000 });
-        return () => {
-          if ('cancelIdleCallback' in window) {
-            window.cancelIdleCallback(id);
-          }
-        };
+        idleCallbackId = window.requestIdleCallback(callback, { timeout: 4000 });
       } else {
         // Fallback to setTimeout
-        const id = setTimeout(callback, 300);
-        return () => clearTimeout(id);
+        timeoutId = setTimeout(callback, 300) as unknown as number;
       }
+      
+      return () => {
+        if (idleCallbackId !== null && 'cancelIdleCallback' in window) {
+          window.cancelIdleCallback(idleCallbackId);
+        }
+        if (timeoutId !== null) {
+          clearTimeout(timeoutId);
+        }
+      };
     } catch (error) {
       console.error('Error scheduling idle task:', error);
       const id = setTimeout(callback, 300);
@@ -88,7 +100,9 @@ export const preloadMediumPriorityRoutes = () => {
   };
 
   // Delayed preloading for medium priority routes
-  const timeoutId = setTimeout(() => {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  
+  timeoutId = setTimeout(() => {
     const cleanupFn = scheduleIdleTask(() => {
       MEDIUM_PRIORITY_ROUTES.forEach(route => {
         try {
@@ -109,12 +123,14 @@ export const preloadMediumPriorityRoutes = () => {
       });
     });
     
-    return () => {
-      if (cleanupFn) cleanupFn();
-    };
+    return cleanupFn;
   }, 3000);
   
-  return () => clearTimeout(timeoutId);
+  return () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  };
 };
 
 /**
@@ -163,14 +179,16 @@ export const initPreloadStrategy = () => {
   
   try {
     // Preload critical routes immediately for faster navigation
-    const highPriorityCleanup = preloadHighPriorityRoutes();
-    
-    // Then load medium priority routes
-    const mediumPriorityCleanup = preloadMediumPriorityRoutes();
-    
-    // Preload the current route and adjacent routes for better UX
+    let highPriorityCleanup: (() => void) | undefined;
+    let mediumPriorityCleanup: (() => void) | undefined;
     let adjacentRoutesCleanup: (() => void) | undefined;
     
+    highPriorityCleanup = preloadHighPriorityRoutes();
+    
+    // Then load medium priority routes
+    mediumPriorityCleanup = preloadMediumPriorityRoutes();
+    
+    // Preload the current route and adjacent routes for better UX
     const preloadAdjacentRoutes = () => {
       const currentPath = window.location.pathname;
       preloadRoute(currentPath);
@@ -186,14 +204,20 @@ export const initPreloadStrategy = () => {
     };
     
     // Schedule adjacent routes preloading
-    if ('requestIdleCallback' in window) {
-      const id = window.requestIdleCallback(preloadAdjacentRoutes, { timeout: 5000 });
-      adjacentRoutesCleanup = () => {
-        if ('cancelIdleCallback' in window) {
-          window.cancelIdleCallback(id);
-        }
-      };
-    } else {
+    try {
+      if ('requestIdleCallback' in window) {
+        const id = window.requestIdleCallback(preloadAdjacentRoutes, { timeout: 5000 });
+        adjacentRoutesCleanup = () => {
+          if ('cancelIdleCallback' in window) {
+            window.cancelIdleCallback(id);
+          }
+        };
+      } else {
+        const id = setTimeout(preloadAdjacentRoutes, 1000);
+        adjacentRoutesCleanup = () => clearTimeout(id);
+      }
+    } catch (error) {
+      console.error('Error scheduling adjacent routes preload:', error);
       const id = setTimeout(preloadAdjacentRoutes, 1000);
       adjacentRoutesCleanup = () => clearTimeout(id);
     }

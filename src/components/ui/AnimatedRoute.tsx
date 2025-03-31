@@ -22,18 +22,26 @@ const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
   
   useEffect(() => {
     // Use startTransition to prevent suspension issues
-    const timeoutId = setTimeout(() => {
+    let isMounted = true;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    
+    timeoutId = setTimeout(() => {
       // Wrap the state update in startTransition to prevent suspension issues
-      startTransition(() => {
-        setIsVisible(true);
-      });
+      if (isMounted) {
+        startTransition(() => {
+          setIsVisible(true);
+        });
+      }
     }, delay);
     
     // Proper cleanup function
     return () => {
-      clearTimeout(timeoutId);
+      isMounted = false;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
-  }, [delay, startTransition]);
+  }, [delay]);
   
   // Don't apply animations if animation is set to none
   if (animation === 'none') {
