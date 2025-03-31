@@ -36,9 +36,9 @@ if (typeof window !== 'undefined') {
     }
   };
 
-  // Store callback IDs for cleanup
-  let performanceImportId: number | null = null;
-  let preloadImportId: number | null = null;
+  // Store callback IDs for cleanup - update type to handle both browser and node environments
+  let performanceImportId: number | ReturnType<typeof setTimeout> | null = null;
+  let preloadImportId: number | ReturnType<typeof setTimeout> | null = null;
 
   // Import performance optimization utilities after initial render
   performanceImportId = safeRequestIdleCallback(() => {
@@ -66,7 +66,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('unload', () => {
     if (performanceImportId !== null) {
       if ('cancelIdleCallback' in window) {
-        window.cancelIdleCallback(performanceImportId);
+        window.cancelIdleCallback(performanceImportId as number);
       } else {
         clearTimeout(performanceImportId);
       }
@@ -74,7 +74,7 @@ if (typeof window !== 'undefined') {
     
     if (preloadImportId !== null) {
       if ('cancelIdleCallback' in window) {
-        window.cancelIdleCallback(preloadImportId);
+        window.cancelIdleCallback(preloadImportId as number);
       } else {
         clearTimeout(preloadImportId);
       }
