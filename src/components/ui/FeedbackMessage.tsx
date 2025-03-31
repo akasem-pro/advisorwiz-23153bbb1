@@ -9,11 +9,11 @@ const feedbackVariants = cva(
   {
     variants: {
       variant: {
-        success: "bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300",
-        warning: "bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-300",
-        error: "bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300",
-        info: "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300",
-        loading: "bg-purple-50 border-purple-200 text-purple-800 dark:bg-purple-900/20 dark:border-purple-800 dark:text-purple-300",
+        success: "bg-green-50 border-green-200 text-green-800 dark:bg-green-900/40 dark:border-green-800/60 dark:text-green-200",
+        warning: "bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900/40 dark:border-yellow-800/60 dark:text-yellow-200",
+        error: "bg-red-50 border-red-200 text-red-800 dark:bg-red-900/40 dark:border-red-800/60 dark:text-red-200",
+        info: "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/40 dark:border-blue-800/60 dark:text-blue-200",
+        loading: "bg-purple-50 border-purple-200 text-purple-800 dark:bg-purple-900/40 dark:border-purple-800/60 dark:text-purple-200",
       },
       size: {
         default: "text-sm",
@@ -69,20 +69,20 @@ const FeedbackMessage = React.forwardRef<HTMLDivElement, FeedbackMessageProps>(
     const getIcon = () => {
       if (icon) {
         const Icon = icon;
-        return <Icon className="h-5 w-5 mr-3 flex-shrink-0" />;
+        return <Icon className="h-5 w-5 mr-3 flex-shrink-0" aria-hidden="true" />;
       }
       
       switch (variant) {
         case "success":
-          return <CheckCircle2 className="h-5 w-5 mr-3 flex-shrink-0" />;
+          return <CheckCircle2 className="h-5 w-5 mr-3 flex-shrink-0" aria-hidden="true" />;
         case "warning":
-          return <AlertTriangle className="h-5 w-5 mr-3 flex-shrink-0" />;
+          return <AlertTriangle className="h-5 w-5 mr-3 flex-shrink-0" aria-hidden="true" />;
         case "error":
-          return <XCircle className="h-5 w-5 mr-3 flex-shrink-0" />;
+          return <XCircle className="h-5 w-5 mr-3 flex-shrink-0" aria-hidden="true" />;
         case "info":
         case "loading":
         default:
-          return <AlertCircle className="h-5 w-5 mr-3 flex-shrink-0" />;
+          return <AlertCircle className="h-5 w-5 mr-3 flex-shrink-0" aria-hidden="true" />;
       }
     };
     
@@ -104,10 +104,11 @@ const FeedbackMessage = React.forwardRef<HTMLDivElement, FeedbackMessageProps>(
               setVisible(false);
               onClose();
             }}
-            className="ml-3 opacity-70 hover:opacity-100 focus:outline-none"
+            className="ml-3 p-1.5 rounded-full bg-background/20 hover:bg-background/40 text-current focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-current"
             aria-label="Close feedback message"
+            type="button"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         )}
       </div>

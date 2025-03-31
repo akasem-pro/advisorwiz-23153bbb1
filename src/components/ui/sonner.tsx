@@ -1,3 +1,4 @@
+
 import { useTheme } from "next-themes"
 import { Toaster as Sonner } from "sonner"
 
@@ -19,7 +20,21 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+          closeButton:
+            "group-[.toast]:text-foreground group-[.toast]:opacity-90 group-[.toast]:hover:opacity-100 group-[.toast]:focus:ring-2 group-[.toast]:focus:ring-ring group-[.toast]:focus:outline-none",
         },
+      }}
+      closeButton={true}
+      // Fix tabindex accessibility issues
+      containerAriaLabel="Notifications"
+      // Make the toaster container have proper focus management
+      hotkey={["altKey", "KeyT"]}
+      // Make the toasts more accessible with proper ARIA roles
+      richColors={true}
+      // Improve contrast of elements
+      closeButtonProps={{
+        "aria-label": "Close notification",
+        className: "border border-border p-1 bg-background hover:bg-muted focus:ring-2 focus:outline-none rounded-md",
       }}
       {...props}
     />
