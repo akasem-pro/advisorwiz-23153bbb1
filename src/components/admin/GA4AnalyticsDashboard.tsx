@@ -6,20 +6,32 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { DatePickerWithRange } from "../ui/date-picker-with-range";
 import { format, subDays } from 'date-fns';
 import useGA4Analytics from '../../hooks/useGA4Analytics';
+import { DateRange } from 'react-day-picker';
 
 interface GA4AnalyticsDashboardProps {
   className?: string;
 }
 
 const GA4AnalyticsDashboard: React.FC<GA4AnalyticsDashboardProps> = ({ className }) => {
-  // Date range state
-  const [dateRange, setDateRange] = useState({
+  // Date range state - initialize both from and to as required
+  const [dateRange, setDateRange] = useState<DateRange | { from: Date; to: Date }>({
     from: subDays(new Date(), 30),
     to: new Date(),
   });
 
-  // Custom hook to fetch GA4 analytics
-  const analytics = useGA4Analytics(dateRange.from, dateRange.to);
+  // Handle date range changes safely
+  const handleDateRangeChange = (range: DateRange) => {
+    // Only update if both from and to are provided, or just from
+    if (range?.from) {
+      setDateRange(range);
+    }
+  };
+
+  // Custom hook to fetch GA4 analytics - only pass dates if they exist
+  const analytics = useGA4Analytics(
+    dateRange?.from, 
+    dateRange?.to
+  );
 
   // Mock data for charts - in a real implementation, this would use actual GA4 data
   const pageViewsData = [
@@ -55,7 +67,7 @@ const GA4AnalyticsDashboard: React.FC<GA4AnalyticsDashboardProps> = ({ className
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">GA4 Analytics Dashboard</h2>
         <DatePickerWithRange
-          onDateRangeChange={(range) => setDateRange(range)}
+          onDateRangeChange={handleDateRangeChange}
           dateRange={dateRange}
         />
       </div>

@@ -76,14 +76,19 @@ const MatchFeedback: React.FC<MatchFeedbackProps> = ({
         const advisorId = parts[1];
         const consumerId = parts[2];
         
-        // Track the feedback using analytics
+        // Track the feedback using analytics - using 'view' action type which is allowed
         await trackMatchingInteraction(
-          'feedback',
+          'view', // Changed from 'feedback' to 'view' which is an accepted action type
           advisorId,
           consumerId,
           0, // We don't have the score here, so we use 0
           matchId,
-          { feedback }
+          { 
+            action_subtype: 'feedback',  // Add a subtype to differentiate
+            is_helpful: isHelpful,
+            has_comment: !!comment.trim(),
+            feedback_details: feedback 
+          }
         );
       }
     }
