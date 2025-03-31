@@ -36,9 +36,12 @@ if (typeof window !== 'undefined') {
     }
   };
 
-  // Store callback IDs for cleanup - fixed type to handle both browser and node environments
-  let performanceImportId: ReturnType<typeof setTimeout> | null = null;
-  let preloadImportId: ReturnType<typeof setTimeout> | null = null;
+  // We need to use a more generic type that can handle both browser and node environments
+  type CallbackId = number | NodeJS.Timeout;
+  
+  // Store callback IDs for cleanup
+  let performanceImportId: CallbackId | null = null;
+  let preloadImportId: CallbackId | null = null;
 
   // Import performance optimization utilities after initial render
   performanceImportId = safeRequestIdleCallback(() => {
