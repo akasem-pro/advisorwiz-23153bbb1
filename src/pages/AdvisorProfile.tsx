@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AppLayout from '../components/layout/AppLayout';
-import { useUser, AdvisorProfile as AdvisorProfileType } from '../context/UserContext';
+import { useUser } from '../context/UserContext';
+import { AdvisorProfile as AdvisorProfileType } from '../types/profileTypes';
 import { 
   licensingBodies,
   experienceOptions,
@@ -22,6 +22,7 @@ import { ProfileFormActions } from '../components/profile/ProfileFormActions';
 import { useProfileSections } from '../hooks/useProfileSections';
 import { useAdvisorProfileForm } from '../hooks/useAdvisorProfileForm';
 import AdvisorOnboardingTour from '../components/onboarding/AdvisorOnboardingTour';
+import CommonProfileLayout from '../components/profile/CommonProfileLayout';
 
 const AdvisorProfile: React.FC = () => {
   const { advisorProfile, handleProfileUpdate, updateOnlineStatus } = useUser();
@@ -64,7 +65,6 @@ const AdvisorProfile: React.FC = () => {
       expertise: formData.expertise || [],
       profilePicture: formData.profilePicture || '',
       matches: formData.matches || [],
-      // Don't include compatibilityScores in the AdvisorProfileType
       chats: formData.chats || [],
       availability: formData.availability || [],
       chatEnabled: formData.chatEnabled || false,
@@ -88,63 +88,58 @@ const AdvisorProfile: React.FC = () => {
     navigate('/matches');
   };
 
+  const headerComponent = <ProfileHeader progress={progress} />;
+
   return (
-    <AppLayout>
-      <div className="pt-6">
-        <div className="container mx-auto px-4 py-6 md:py-12 max-w-4xl">
-          <div className="glass-card rounded-2xl overflow-hidden shadow-lg">
-            <div className="p-6 md:p-8">
-              <ProfileHeader progress={progress} />
+    <CommonProfileLayout
+      pageTitle="Advisor Profile"
+      headerComponent={headerComponent}
+    >
+      <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
+        {/* Profile Sections */}
+        <ProfileSectionManager 
+          sections={sections}
+          formData={formData}
+          handleChange={handleChange}
+          toggleSection={toggleSection}
+          handleVerifyEmail={handleVerifyEmail}
+          handleVerifyPhone={handleVerifyPhone}
+          isEmailVerified={isEmailVerified}
+          isPhoneVerified={isPhoneVerified}
+          handleExpertiseChange={handleExpertiseChange}
+          isExpertiseSelected={isExpertiseSelected}
+          handleMultiSelectChange={handleMultiSelectChange}
+          handlePictureChange={handlePictureChange}
+          handleSubscriptionSelect={handleSubscriptionSelect}
+          
+          // Data arrays
+          provincesOptions={provincesOptions}
+          licensingBodies={licensingBodies}
+          experienceOptions={experienceOptions}
+          serviceCategories={serviceCategories}
+          feeStructureOptions={feeStructureOptions}
+          minimumInvestmentOptions={minimumInvestmentOptions}
+          clientTypeOptions={clientTypeOptions}
+          meetingMethodOptions={meetingMethodOptions}
+          subscriptionPlans={subscriptionPlans}
+        />
 
-              <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
-                {/* Profile Sections */}
-                <ProfileSectionManager 
-                  sections={sections}
-                  formData={formData}
-                  handleChange={handleChange}
-                  toggleSection={toggleSection}
-                  handleVerifyEmail={handleVerifyEmail}
-                  handleVerifyPhone={handleVerifyPhone}
-                  isEmailVerified={isEmailVerified}
-                  isPhoneVerified={isPhoneVerified}
-                  handleExpertiseChange={handleExpertiseChange}
-                  isExpertiseSelected={isExpertiseSelected}
-                  handleMultiSelectChange={handleMultiSelectChange}
-                  handlePictureChange={handlePictureChange}
-                  handleSubscriptionSelect={handleSubscriptionSelect}
-                  
-                  // Data arrays
-                  provincesOptions={provincesOptions}
-                  licensingBodies={licensingBodies}
-                  experienceOptions={experienceOptions}
-                  serviceCategories={serviceCategories}
-                  feeStructureOptions={feeStructureOptions}
-                  minimumInvestmentOptions={minimumInvestmentOptions}
-                  clientTypeOptions={clientTypeOptions}
-                  meetingMethodOptions={meetingMethodOptions}
-                  subscriptionPlans={subscriptionPlans}
-                />
-
-                {/* Form Actions */}
-                <ProfileFormActions 
-                  handleSubmit={handleSubmit}
-                  handleContinue={handleContinue}
-                />
-              </form>
-              
-              {saved && (
-                <div className="mt-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded text-center">
-                  Profile saved successfully!
-                </div>
-              )}
-            </div>
-          </div>
+        {/* Form Actions */}
+        <ProfileFormActions 
+          handleSubmit={handleSubmit}
+          handleContinue={handleContinue}
+        />
+      </form>
+      
+      {saved && (
+        <div className="mt-4 p-3 bg-green-100 border border-green-300 text-green-700 rounded text-center">
+          Profile saved successfully!
         </div>
-      </div>
+      )}
 
       {/* Add the advisor onboarding tour */}
       <AdvisorOnboardingTour />
-    </AppLayout>
+    </CommonProfileLayout>
   );
 };
 

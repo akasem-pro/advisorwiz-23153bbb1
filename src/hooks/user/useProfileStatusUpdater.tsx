@@ -1,12 +1,9 @@
 
-import { useCallback } from 'react';
-import { 
-  ConsumerProfile, 
-  AdvisorProfile 
-} from '../../types/profileTypes';
+import { useState } from 'react';
+import { ConsumerProfile, AdvisorProfile } from '../../types/profileTypes';
 
 /**
- * Hook for updating profile status information
+ * Hook to handle updating user profile online status
  */
 export const useProfileStatusUpdater = (
   consumerProfile: ConsumerProfile | null,
@@ -14,24 +11,34 @@ export const useProfileStatusUpdater = (
   advisorProfile: AdvisorProfile | null,
   setAdvisorProfile: React.Dispatch<React.SetStateAction<AdvisorProfile | null>>
 ) => {
-  // Update online status for the appropriate profile
-  const updateOnlineStatus = useCallback((status: 'online' | 'offline' | 'away') => {
+  // Update online status and last online timestamp
+  const updateOnlineStatus = (status: 'online' | 'offline' | 'away') => {
+    const timestamp = new Date().toISOString();
+
     if (consumerProfile) {
-      setConsumerProfile({
-        ...consumerProfile,
-        onlineStatus: status,
-        lastOnline: new Date().toISOString()
-      });
-    } else if (advisorProfile) {
-      setAdvisorProfile({
-        ...advisorProfile,
-        onlineStatus: status,
-        lastOnline: new Date().toISOString()
+      setConsumerProfile(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          onlineStatus: status,
+          lastOnline: timestamp
+        };
       });
     }
-  }, [consumerProfile, setConsumerProfile, advisorProfile, setAdvisorProfile]);
 
-  return {
-    updateOnlineStatus
+    if (advisorProfile) {
+      setAdvisorProfile(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          onlineStatus: status,
+          lastOnline: timestamp
+        };
+      });
+    }
+
+    return true;
   };
+
+  return { updateOnlineStatus };
 };
