@@ -1,3 +1,4 @@
+
 import { ChatMessage, Chat } from '../types/chatTypes';
 // Keep the rest of the imports
 
@@ -52,7 +53,7 @@ export const mockChatMessages: ChatMessage[] = [
     id: 'msg6',
     senderId: 'advisor2',
     recipientId: 'user1',
-    content: 'Hi Sarah, I noticed you were interested in financial planning. I'd love to help!',
+    content: 'Hi Sarah, I noticed you were interested in financial planning. I\'d love to help!',
     timestamp: '2023-04-21T09:00:00Z',
     read: false,
     senderName: 'Emily Advisor'
