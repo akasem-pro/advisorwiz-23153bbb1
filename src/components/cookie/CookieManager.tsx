@@ -35,9 +35,10 @@ const CookieManager: React.FC = () => {
             variant="outline"
             size="icon"
             onClick={() => setShowSettings(true)}
-            className="rounded-full bg-white shadow-md"
+            className="rounded-full bg-white dark:bg-slate-800 shadow-md border border-slate-200 dark:border-slate-700"
+            aria-label="Cookie Settings"
           >
-            <Settings className="h-5 w-5" />
+            <Settings className="h-5 w-5 text-slate-700 dark:text-slate-300" />
             <span className="sr-only">Cookie Settings</span>
           </Button>
         </div>
