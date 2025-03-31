@@ -7,6 +7,7 @@ import AppRoutes from './routes/AppRoutes';
 import { CookieManager } from './components/cookie';
 import { TrackingManager } from './components/analytics';
 import { TrackingConfig } from './utils/analytics/trackers';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Tracking configuration for multiple services
 const trackingConfig: TrackingConfig = {
@@ -53,13 +54,15 @@ function App() {
 
   return (
     <Router>
-      <UserProviderRefactored>
-        <AuthProvider>
-          <AppRoutes />
-          <CookieManager />
-          <TrackingManager config={trackingConfig} />
-        </AuthProvider>
-      </UserProviderRefactored>
+      <ThemeProvider>
+        <UserProviderRefactored>
+          <AuthProvider>
+            <AppRoutes />
+            <CookieManager />
+            <TrackingManager config={trackingConfig} />
+          </AuthProvider>
+        </UserProviderRefactored>
+      </ThemeProvider>
     </Router>
   );
 }

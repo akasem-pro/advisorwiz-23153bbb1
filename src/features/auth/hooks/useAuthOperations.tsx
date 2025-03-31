@@ -20,7 +20,7 @@ export const useAuthOperations = (
   const { signOut } = useSignOutOperation(setLoading);
   const { signUp } = useSignUpOperation(setLoading, setMockUser);
   const { 
-    requestPasswordReset: resetPassword, 
+    resetPassword, 
     updatePassword, 
   } = usePasswordResetOperation(setLoading);
 
