@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import UserContext from './UserContextDefinition';
 import { 
@@ -227,11 +228,12 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
       advisorId,
       consumerId,
       consumerName,
-      status: 'new',
+      status: 'matched',  // Changed from 'new' to 'matched' which is a valid LeadStatus
       matchScore,
       createdAt: new Date().toISOString(),
-      source: source || 'matching',
-      notes: ''
+      updatedAt: new Date().toISOString(),  // Added missing required property
+      source: source || 'platform_match',   // Changed from 'matching' to valid 'platform_match'
+      history: []  // Added missing required property
     };
     
     setLeads(prev => [...prev, newLead]);
@@ -241,7 +243,15 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
   const updateLeadStatus = (leadId: string, status: LeadStatus, notes?: string): void => {
     setLeads(prev => prev.map(lead => 
       lead.id === leadId 
-        ? { ...lead, status, notes: notes || lead.notes } 
+        ? { 
+            ...lead, 
+            status, 
+            // Since notes property doesn't exist on Lead type, we need to handle this differently
+            // For now, we'll add the notes to history if provided
+            history: notes 
+              ? [...lead.history, { id: `event-${Date.now()}`, timestamp: new Date().toISOString(), status, notes }] 
+              : lead.history
+          } 
         : lead
     ));
   };
@@ -255,7 +265,7 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
   
   const getLeadStats = () => {
     const totalLeads = leads.length;
-    const activeLeads = leads.filter(lead => lead.status === 'active').length;
+    const activeLeads = leads.filter(lead => lead.status !== 'converted' && lead.status !== 'lost').length;
     const convertedLeads = leads.filter(lead => lead.status === 'converted').length;
     
     return {
@@ -310,7 +320,6 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
       updateCallStatus,
       activeCall,
       callMetrics,
-      isCallModalOpen,
       closeCallModal,
       endCall,
       leads,
