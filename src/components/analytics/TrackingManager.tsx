@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { TrackingConfig } from '../../utils/analytics/trackers';
-import { initializeGoogleAnalytics } from '../../utils/analytics/trackers/googleAnalytics';
+import { initializeGA4 } from '../../utils/analytics/trackers/googleAnalytics';
 import { initializeMetaPixel } from '../../utils/analytics/trackers/metaPixel';
 import { initializePinterestTag } from '../../utils/analytics/trackers/pinterestTag';
 import { initializeGoogleAdSense } from '../../utils/analytics/trackers/googleAdSense';
@@ -29,7 +29,7 @@ const TrackingManager: React.FC<TrackingManagerProps> = ({ config }) => {
     if (cookieSettings.hasConsent) {
       // Initialize Google Analytics if analytics cookies are allowed
       if (cookieSettings.analytics && config.googleAnalytics) {
-        initializeGoogleAnalytics(config.googleAnalytics);
+        initializeGA4(config.googleAnalytics);
       }
 
       // Initialize marketing trackers if marketing cookies are allowed
