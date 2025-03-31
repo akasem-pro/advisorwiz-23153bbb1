@@ -111,3 +111,8 @@
 .mobile-footer-link {
   @apply py-2 block;
 }
+
+/* Mobile footer disclaimer text */
+.mobile-footer-disclaimer {
+  @apply text-xs leading-relaxed px-4;
+}
