@@ -18,7 +18,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         position="top-right" 
         closeButton={true} 
         richColors={true}
-        // Remove the invalid 'accessibility' property and use valid props
         containerAriaLabel="Notifications"
         hotkey={["altKey", "KeyT"]}
       />

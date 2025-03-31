@@ -1,11 +1,18 @@
 
-import { useTheme } from "next-themes"
+import { useTheme as useNextTheme } from "next-themes"
 import { Toaster as Sonner } from "sonner"
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  // Use a try/catch to prevent errors when used outside ThemeProvider
+  let theme = "system";
+  try {
+    const { theme: nextTheme = "system" } = useNextTheme();
+    theme = nextTheme;
+  } catch (error) {
+    console.log("Theme context not available, defaulting to system theme");
+  }
 
   return (
     <Sonner
@@ -31,7 +38,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
       hotkey={["altKey", "KeyT"]}
       // Make the toasts more accessible with proper ARIA roles
       richColors={true}
-      // Improve contrast of elements - changing from closeButtonProps to use the proper API
       {...props}
     />
   )

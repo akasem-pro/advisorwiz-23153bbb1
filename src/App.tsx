@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { ThemeProvider } from './context/ThemeContext';
 import { UserProviderRefactored } from './context/UserProviderRefactored';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import AppRoutes from './routes/AppRoutes';
@@ -25,15 +24,13 @@ function App() {
   }
 
   return (
-    <ThemeProvider>
-      <UserProviderRefactored>
-        <AuthProvider>
-          <Router>
-            <AppRoutes />
-          </Router>
-        </AuthProvider>
-      </UserProviderRefactored>
-    </ThemeProvider>
+    <UserProviderRefactored>
+      <AuthProvider>
+        <Router>
+          <AppRoutes />
+        </Router>
+      </AuthProvider>
+    </UserProviderRefactored>
   );
 }
 
