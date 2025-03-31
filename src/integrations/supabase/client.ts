@@ -66,7 +66,7 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Improved connection checker with better diagnostics and reliability
+// Enhanced connection checker with better diagnostics and reliability
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
     console.log("[Supabase Debug] Starting connection check");
