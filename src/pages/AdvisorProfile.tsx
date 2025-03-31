@@ -62,6 +62,7 @@ const AdvisorProfile: React.FC = () => {
       },
       assetsUnderManagement: formData.assetsUnderManagement || 0,
       expertise: formData.expertise || [],
+      specializations: formData.specializations || [],
       profilePicture: formData.profilePicture || '',
       matches: formData.matches || [],
       // Don't include compatibilityScores in the AdvisorProfileType

@@ -1,4 +1,3 @@
-
 import { User } from '@supabase/supabase-js';
 import { UserType, ConsumerProfile, AdvisorProfile } from '../types/profileTypes';
 import { supabase } from '../integrations/supabase/client';
@@ -49,10 +48,10 @@ export async function initializeUserProfile(user: User, userType: UserType) {
           startTimelineValue = consumerData.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure';
         }
 
-        // Handle properties that might be missing in consumer data
-        const matches = consumerData?.matches || [];
-        const chats = consumerData?.chats || [];
-        const appointments = consumerData?.appointments || [];
+        // Define default empty arrays for properties that might be missing
+        const matches: string[] = [];
+        const chats: string[] = [];
+        const appointments: string[] = [];
         const status = consumerData?.status || 'new';
         
         // Convert from database format to app format
@@ -65,10 +64,10 @@ export async function initializeUserProfile(user: User, userType: UserType) {
           riskTolerance: (consumerData?.risk_tolerance as "low" | "medium" | "high") || 'medium',
           preferredCommunication: Array.isArray(consumerData?.preferred_communication) ? consumerData.preferred_communication : ['email'],
           preferredLanguage: Array.isArray(consumerData?.preferred_language) ? consumerData.preferred_language : ['english'],
-          matches: Array.isArray(matches) ? matches : [],
-          chats: Array.isArray(chats) ? chats : [],
+          matches: matches,
+          chats: chats,
           chatEnabled: existingProfile.chat_enabled !== false,
-          appointments: Array.isArray(appointments) ? appointments : [],
+          appointments: appointments,
           onlineStatus: existingProfile.online_status || 'offline',
           lastOnline: existingProfile.last_online || new Date().toISOString(),
           showOnlineStatus: existingProfile.show_online_status !== false,
@@ -86,15 +85,15 @@ export async function initializeUserProfile(user: User, userType: UserType) {
           console.error("Error fetching advisor data:", advisorError);
         }
 
-        // Handle properties that might be missing in advisor data
-        const testimonials = advisorData?.testimonials || [];
-        const pricing = advisorData?.pricing || {};
-        const expertise = advisorData?.expertise || [];
-        const matches = advisorData?.matches || [];
-        const chats = advisorData?.chats || [];
-        const appointmentCategories = advisorData?.appointment_categories || [];
-        const appointments = advisorData?.appointments || [];
-        const specializations = advisorData?.specializations || [];
+        // Define default empty arrays for properties that might be missing
+        const testimonials: { client: string; text: string }[] = [];
+        const pricing: { hourlyRate?: number; portfolioFee?: number } = {};
+        const expertise: any[] = [];
+        const matches: string[] = [];
+        const chats: string[] = [];
+        const appointmentCategories: any[] = [];
+        const appointments: string[] = [];
+        const specializations: string[] = [];
         
         const advisorProfile: AdvisorProfile = {
           id: user.id,
@@ -102,20 +101,20 @@ export async function initializeUserProfile(user: User, userType: UserType) {
           organization: advisorData?.organization || '',
           isAccredited: advisorData?.is_accredited !== false,
           website: advisorData?.website || '',
-          testimonials: Array.isArray(testimonials) ? testimonials : [],
+          testimonials: testimonials,
           languages: Array.isArray(advisorData?.languages) ? advisorData.languages : ['english'],
-          pricing: typeof pricing === 'object' ? pricing : {},
+          pricing: pricing,
           assetsUnderManagement: advisorData?.assets_under_management || 0,
-          expertise: Array.isArray(expertise) ? expertise : [],
-          matches: Array.isArray(matches) ? matches : [],
-          chats: Array.isArray(chats) ? chats : [],
+          expertise: Array.isArray(advisorData?.expertise) ? advisorData.expertise : [],
+          matches: matches,
+          chats: chats,
           chatEnabled: existingProfile.chat_enabled !== false,
-          appointmentCategories: Array.isArray(appointmentCategories) ? appointmentCategories : [],
-          appointments: Array.isArray(appointments) ? appointments : [],
+          appointmentCategories: appointmentCategories,
+          appointments: appointments,
           onlineStatus: existingProfile.online_status || 'offline',
           lastOnline: existingProfile.last_online || new Date().toISOString(),
           showOnlineStatus: existingProfile.show_online_status !== false,
-          specializations: Array.isArray(specializations) ? specializations : []
+          specializations: specializations
         };
         return advisorProfile;
       }

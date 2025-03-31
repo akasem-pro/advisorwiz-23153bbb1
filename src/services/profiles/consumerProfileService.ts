@@ -1,4 +1,3 @@
-
 import { ConsumerProfile } from '../../types/profileTypes';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../../integrations/supabase/client';
@@ -66,11 +65,11 @@ export const fetchConsumerProfile = async (userId: string): Promise<ConsumerProf
       startTimeline = consumerData.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure';
     }
     
-    // Combine the data into a consumer profile - Handle optional fields with default values
-    const status = consumerData.status || 'new';
-    const matches = consumerData.matches || [];
-    const chats = consumerData.chats || [];
-    const appointments = consumerData.appointments || [];
+    // Create default values for fields that don't exist in the database
+    const status = 'new'; // Default value
+    const matches: string[] = [];
+    const chats: string[] = [];
+    const appointments: string[] = [];
     
     const consumerProfile: ConsumerProfile = {
       id: userId,
@@ -81,10 +80,10 @@ export const fetchConsumerProfile = async (userId: string): Promise<ConsumerProf
       riskTolerance: consumerData.risk_tolerance || 'medium',
       preferredCommunication: Array.isArray(consumerData.preferred_communication) ? consumerData.preferred_communication : ['email'],
       preferredLanguage: Array.isArray(consumerData.preferred_language) ? consumerData.preferred_language : ['english'],
-      matches: Array.isArray(matches) ? matches : [],
-      chats: Array.isArray(chats) ? chats : [],
+      matches: matches,
+      chats: chats,
       chatEnabled: baseProfile.chat_enabled !== false,
-      appointments: Array.isArray(appointments) ? appointments : [],
+      appointments: appointments,
       onlineStatus: baseProfile.online_status || 'offline',
       lastOnline: baseProfile.last_online || new Date().toISOString(),
       showOnlineStatus: baseProfile.show_online_status !== false,

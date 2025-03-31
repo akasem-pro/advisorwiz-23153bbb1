@@ -1,91 +1,101 @@
 
 import { createContext } from 'react';
-import { 
-  UserType, 
-  ConsumerProfile, 
-  AdvisorProfile 
+import {
+  UserType,
+  ConsumerProfile,
+  AdvisorProfile
 } from '../types/profileTypes';
-import { Chat } from '../types/chatTypes';
-import { Appointment } from '../types/timeTypes';
-import { FinancialFirm } from '../types/firmTypes';
-import { MatchPreferences } from '../types/compatibilityTypes';
-import { Lead } from '../types/leadTypes';
-import { CallSession } from '../types/callTypes';
+import {
+  Chat,
+  ChatMessage
+} from '../types/chatTypes';
+import {
+  Appointment,
+  AppointmentStatus
+} from '../types/timeTypes';
+import {
+  ServiceCategory
+} from '../types/serviceTypes';
+import {
+  FinancialFirm
+} from '../types/firmTypes';
+import { CallSession, CallStatus, CallType, CallMetrics } from '../types/callTypes';
+import { Lead, LeadStatus, LeadStats, LeadSource } from '../types/leadTypes';
 
-/**
- * User context interface defining all properties and methods
- * available through useUser() hook
- */
-interface UserContextType {
-  // User profile state
+// Type for the user context
+export type UserContextType = {
   userType: UserType;
-  setUserType: React.Dispatch<React.SetStateAction<UserType>>;
+  setUserType: (type: UserType) => void;
   consumerProfile: ConsumerProfile | null;
-  setConsumerProfile: React.Dispatch<React.SetStateAction<ConsumerProfile | null>>;
+  setConsumerProfile: (profile: ConsumerProfile | null) => void;
   advisorProfile: AdvisorProfile | null;
-  setAdvisorProfile: React.Dispatch<React.SetStateAction<AdvisorProfile | null>>;
+  setAdvisorProfile: (profile: AdvisorProfile | null) => void;
   isAuthenticated: boolean;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-  
-  // Profile management
-  updateOnlineStatus: (status: 'online' | 'offline' | 'away') => void;
+  setIsAuthenticated: (value: boolean) => void;
   handleProfileUpdate: (profileData: any) => Promise<boolean>;
   saveProfileChanges: () => Promise<boolean>;
-  
-  // Communication (chats and messages)
   chats: Chat[];
-  setChats: React.Dispatch<React.SetStateAction<Chat[]>>;
-  addMessage: (chatId: string, senderId: string, text: string) => void;
+  setChats: (chats: Chat[]) => void;
+  addMessage: (chatId: string, message: Omit<ChatMessage, 'id'>) => void;
   markChatAsRead: (chatId: string, userId: string) => void;
-  
-  // Appointments
   appointments: Appointment[];
-  setAppointments: React.Dispatch<React.SetStateAction<Appointment[]>>;
-  addAppointment: (appointment: Appointment) => void;
-  updateAppointmentStatus: (appointmentId: string, status: string) => void;
-  
-  // Filtering operations
-  getFilteredAdvisors: (filters: any) => Promise<AdvisorProfile[]>;
-  getFilteredConsumers: (filters: any) => Promise<ConsumerProfile[]>;
-  
-  // Organizations
+  setAppointments: (appointments: Appointment[]) => void;
+  addAppointment: (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updateAppointmentStatus: (appointmentId: string, status: AppointmentStatus) => void;
+  getFilteredAdvisors: (filters: {
+    languages?: string[];
+    services?: ServiceCategory[];
+  }) => AdvisorProfile[];
+  getFilteredConsumers: (filters: {
+    startTimeline?: ConsumerProfile['startTimeline'][];
+    preferredLanguage?: string[];
+  }) => ConsumerProfile[];
+  updateOnlineStatus: (status: 'online' | 'offline' | 'away') => void;
   firms: FinancialFirm[];
-  setFirms: React.Dispatch<React.SetStateAction<FinancialFirm[]>>;
-  addFirm: (firm: FinancialFirm) => void;
-  getFirmByAdmin: (adminId: string) => Promise<FinancialFirm[]>;
-  
-  // Matching functionality
-  calculateCompatibilityScore: (advisorId: string) => number;
+  setFirms: (firms: FinancialFirm[]) => void;
+  addFirm: (firm: Omit<FinancialFirm, 'id' | 'createdAt'>) => void;
+  getFirmByAdmin: (adminId: string) => FinancialFirm[];
+  calculateCompatibilityScore: (advisorId: string, consumerId: string) => number;
   updateMatchPreferences: (preferences: MatchPreferences) => void;
-  matchPreferences: MatchPreferences | null;
-  getTopMatches: (limit?: number) => Promise<AdvisorProfile[] | ConsumerProfile[]>;
-  getRecommendedMatches: (limit?: number) => Promise<AdvisorProfile[] | ConsumerProfile[]>;
-  
-  // Call functionality
+  matchPreferences: MatchPreferences;
+  getTopMatches: (limit?: number) => (AdvisorProfile | ConsumerProfile)[];
+  getRecommendedMatches: () => (AdvisorProfile | ConsumerProfile)[];
   callSessions: CallSession[];
-  initiateCall: (otherUserId: string) => void;
-  updateCallStatus: (callId: string, status: string) => void;
+  initiateCall: (recipientId: string, type: CallType) => CallSession | null;
+  updateCallStatus: (callId: string, status: CallStatus) => void;
   activeCall: CallSession | null;
-  callMetrics: any;
+  callMetrics: CallMetrics[];
+  leads: Lead[];
+  addLead: (advisorId: string, consumerId: string, consumerName: string, matchScore: number, source?: LeadSource) => string;
+  updateLeadStatus: (leadId: string, status: LeadStatus, notes?: string) => void;
+  getLeadByConsumer: (consumerId: string, advisorId?: string) => Lead | null;
+  getLeadStats: () => LeadStats;
+  getAdvisorLeads: (advisorId: string) => Lead[];
   isCallModalOpen: boolean;
   closeCallModal: () => void;
   endCall: (callId: string) => void;
-  
-  // Lead management
-  leads: Lead[];
-  addLead: (lead: Lead) => void;
-  updateLeadStatus: (leadId: string, status: string) => void;
-  getLeadByConsumer: (consumerId: string) => Promise<Lead | undefined>;
-  getLeadStats: () => any;
-  getAdvisorLeads: (advisorId: string) => Promise<Lead[]>;
-}
+};
 
-/**
- * Default values for the context
- * These are placeholders used before the provider is initialized
- */
-const defaultContextValues: UserContextType = {
-  // User profile state
+// Expanded type for match preferences with weighting factors
+export type MatchPreferences = {
+  prioritizeLanguage?: boolean;
+  prioritizeAvailability?: boolean;
+  prioritizeExpertise?: boolean;
+  prioritizeLocation?: boolean;
+  minimumMatchScore?: number;
+  excludedCategories?: ServiceCategory[];
+  considerInteractionData?: boolean;
+  weightFactors?: {
+    language?: number;
+    expertise?: number;
+    availability?: number;
+    location?: number;
+    interaction?: number;
+  };
+};
+
+// Create the context with default values
+const UserContext = createContext<UserContextType>({
   userType: null,
   setUserType: () => {},
   consumerProfile: null,
@@ -94,63 +104,64 @@ const defaultContextValues: UserContextType = {
   setAdvisorProfile: () => {},
   isAuthenticated: false,
   setIsAuthenticated: () => {},
-  
-  // Profile management
-  updateOnlineStatus: () => {},
   handleProfileUpdate: async () => false,
   saveProfileChanges: async () => false,
-  
-  // Communication
   chats: [],
   setChats: () => {},
   addMessage: () => {},
   markChatAsRead: () => {},
-  
-  // Appointments
   appointments: [],
   setAppointments: () => {},
   addAppointment: () => {},
   updateAppointmentStatus: () => {},
-  
-  // Filtering
-  getFilteredAdvisors: async () => [],
-  getFilteredConsumers: async () => [],
-  
-  // Organizations
+  getFilteredAdvisors: () => [],
+  getFilteredConsumers: () => [],
+  updateOnlineStatus: () => {},
   firms: [],
   setFirms: () => {},
   addFirm: () => {},
-  getFirmByAdmin: async () => [],
-  
-  // Matching
+  getFirmByAdmin: () => [],
   calculateCompatibilityScore: () => 0,
   updateMatchPreferences: () => {},
-  matchPreferences: null,
-  getTopMatches: async () => [],
-  getRecommendedMatches: async () => [],
-  
-  // Calls
+  matchPreferences: {
+    prioritizeLanguage: true,
+    prioritizeAvailability: true,
+    prioritizeExpertise: true,
+    prioritizeLocation: false,
+    minimumMatchScore: 40,
+    considerInteractionData: true,
+    weightFactors: {
+      language: 50,
+      expertise: 50,
+      availability: 30,
+      location: 20,
+      interaction: 40
+    }
+  },
+  getTopMatches: () => [],
+  getRecommendedMatches: () => [],
   callSessions: [],
-  initiateCall: () => {},
+  initiateCall: () => null,
   updateCallStatus: () => {},
   activeCall: null,
-  callMetrics: null,
+  callMetrics: [],
+  leads: [],
+  addLead: () => "",
+  updateLeadStatus: () => {},
+  getLeadByConsumer: () => null,
+  getLeadStats: () => ({
+    totalLeads: 0,
+    activeLeads: 0,
+    convertedLeads: 0,
+    conversionRate: 0,
+    averageTimeToConversion: 0,
+    leadsByStatus: {} as Record<LeadStatus, number>,
+    leadsBySource: {} as Record<LeadSource, number>
+  }),
+  getAdvisorLeads: () => [],
   isCallModalOpen: false,
   closeCallModal: () => {},
-  endCall: () => {},
-  
-  // Leads
-  leads: [],
-  addLead: () => {},
-  updateLeadStatus: () => {},
-  getLeadByConsumer: async () => undefined,
-  getLeadStats: () => ({}),
-  getAdvisorLeads: async () => [],
-};
-
-/**
- * Create the context with default values
- */
-const UserContext = createContext<UserContextType>(defaultContextValues);
+  endCall: () => {}
+});
 
 export default UserContext;

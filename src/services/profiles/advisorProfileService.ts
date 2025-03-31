@@ -59,14 +59,15 @@ export const fetchAdvisorProfile = async (userId: string): Promise<AdvisorProfil
     }
     
     // Handle potentially missing fields with default values
-    const testimonials = advisorData.testimonials || [];
-    const pricing = advisorData.pricing || {};
-    const expertise = advisorData.expertise || [];
-    const specializations = advisorData.specializations || [];
-    const matches = advisorData.matches || [];
-    const chats = advisorData.chats || [];
-    const appointmentCategories = advisorData.appointment_categories || [];
-    const appointments = advisorData.appointments || [];
+    // We need to create our own properties since they don't exist in the database response
+    const testimonials: { client: string; text: string }[] = [];
+    const pricing: { hourlyRate?: number; portfolioFee?: number } = {};
+    const expertise = Array.isArray(advisorData.expertise) ? advisorData.expertise : [];
+    const specializations = Array.isArray(advisorData.specializations) ? advisorData.specializations : [];
+    const matches: string[] = [];
+    const chats: string[] = [];
+    const appointmentCategories: any[] = [];
+    const appointments: string[] = [];
     
     // Combine the data into an advisor profile
     const advisorProfile: AdvisorProfile = {
@@ -75,22 +76,22 @@ export const fetchAdvisorProfile = async (userId: string): Promise<AdvisorProfil
       organization: advisorData.organization || '',
       isAccredited: advisorData.is_accredited !== false,
       website: advisorData.website || '',
-      testimonials: Array.isArray(testimonials) ? testimonials : [],
+      testimonials: testimonials,
       languages: Array.isArray(advisorData.languages) ? advisorData.languages : ['english'],
-      pricing: typeof pricing === 'object' ? pricing : {},
+      pricing: pricing,
       assetsUnderManagement: advisorData.assets_under_management || 0,
-      expertise: Array.isArray(expertise) ? expertise : [],
-      specializations: Array.isArray(specializations) ? specializations : [],
+      expertise: expertise,
+      specializations: specializations,
       yearsOfExperience: advisorData.years_of_experience || 0,
       averageRating: advisorData.average_rating || 0,
       ratingCount: advisorData.rating_count || 0,
       biography: advisorData.biography || '',
       certifications: Array.isArray(advisorData.certifications) ? advisorData.certifications : [],
-      matches: Array.isArray(matches) ? matches : [],
-      chats: Array.isArray(chats) ? chats : [],
+      matches: matches,
+      chats: chats,
       chatEnabled: baseProfile.chat_enabled !== false,
-      appointmentCategories: Array.isArray(appointmentCategories) ? appointmentCategories : [],
-      appointments: Array.isArray(appointments) ? appointments : [],
+      appointmentCategories: appointmentCategories,
+      appointments: appointments,
       onlineStatus: baseProfile.online_status || 'offline',
       lastOnline: baseProfile.last_online || new Date().toISOString(),
       showOnlineStatus: baseProfile.show_online_status !== false
