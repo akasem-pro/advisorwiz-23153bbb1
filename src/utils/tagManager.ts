@@ -1,3 +1,4 @@
+
 // Type definition for window with dataLayer
 interface WindowWithDataLayer extends Window {
   dataLayer: any[];
@@ -122,7 +123,7 @@ export const trackUserInteraction = (
  * @param additionalParams Additional parameters to track
  */
 export const trackAppointmentEvent = (
-  action: 'scheduled' | 'confirmed' | 'cancelled' | 'completed' | 'rescheduled' | 'reminder_sent',
+  action: 'scheduled' | 'confirmed' | 'canceled' | 'completed' | 'rescheduled' | 'reminder_sent',
   appointmentId: string,
   additionalParams?: Record<string, any>
 ) => {
