@@ -51,14 +51,14 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
           <h3 className="font-medium text-navy-900 dark:text-white text-lg">{member.name}</h3>
           <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">{member.role}</p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-1 mb-3">
-            <div className="flex items-center text-xs text-slate-600 dark:text-slate-300">
-              <Mail className="h-3 w-3 mr-1" />
-              {member.email}
+          <div className="space-y-1 mb-3">
+            <div className="flex items-center justify-center sm:justify-start text-xs text-slate-600 dark:text-slate-300">
+              <Mail className="h-3 w-3 mr-1 flex-shrink-0" />
+              <span className="truncate">{member.email}</span>
             </div>
-            <div className="flex items-center text-xs text-slate-600 dark:text-slate-300">
-              <Phone className="h-3 w-3 mr-1" />
-              {member.phone}
+            <div className="flex items-center justify-center sm:justify-start text-xs text-slate-600 dark:text-slate-300">
+              <Phone className="h-3 w-3 mr-1 flex-shrink-0" />
+              <span>{member.phone}</span>
             </div>
           </div>
           
@@ -75,7 +75,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
         </div>
       </div>
       
-      <div className="flex justify-center sm:justify-end items-end mt-4 sm:mt-0 sm:self-end">
+      <div className="flex justify-center sm:justify-end items-end mt-4 sm:mt-0 sm:self-end sm:ml-auto">
         <Button 
           variant="outline" 
           size="sm" 
