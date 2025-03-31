@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState, useTransition } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
 import TrustBadges from '../ui/TrustBadges';
@@ -45,22 +45,26 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
 }) => {
   const location = useLocation();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isPending, startTransition] = useTransition();
   
   // Handle analytics with debouncing
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
     
-    // Initialize tag manager only once
-    if (isInitialLoad) {
-      initializeTagManager();
-      setIsInitialLoad(false);
-    }
-    
-    // Debounce page view tracking to avoid performance impact
-    timer = setTimeout(() => {
-      const pageTitle = document.title || 'AdvisorWiz';
-      trackPageView(pageTitle, location.pathname);
-    }, 300);
+    // Wrap analytics initialization in startTransition to prevent suspension issues
+    startTransition(() => {
+      // Initialize tag manager only once
+      if (isInitialLoad) {
+        initializeTagManager();
+        setIsInitialLoad(false);
+      }
+      
+      // Debounce page view tracking to avoid performance impact
+      timer = setTimeout(() => {
+        const pageTitle = document.title || 'AdvisorWiz';
+        trackPageView(pageTitle, location.pathname);
+      }, 300);
+    });
     
     return () => clearTimeout(timer);
   }, [location, isInitialLoad]);
@@ -68,9 +72,9 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   // Animation duration class with better performance
   const getDurationClass = React.useMemo(() => {
     switch (animationDuration) {
-      case 'fast': return 'duration-200';
-      case 'slow': return 'duration-500';
-      default: return 'duration-300';
+      case 'fast': return "duration-200";
+      case 'slow': return "duration-500";
+      default: return "duration-300";
     }
   }, [animationDuration]);
   

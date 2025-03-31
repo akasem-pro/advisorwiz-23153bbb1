@@ -1,5 +1,5 @@
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useTransition } from 'react';
 import { Skeleton } from './ui/skeleton';
 
 // Loading fallbacks for different component types
@@ -34,16 +34,41 @@ export function withLazyLoading<P extends Record<string, unknown>>(
 ) {
   const LazyComponent = React.lazy(importFn);
   
-  // Create a functional component to wrap the lazy component
-  const WithLazyLoadingComponent = (props: React.PropsWithoutRef<P>) => (
-    <Suspense fallback={<LoadingComponent />}>
-      <LazyComponent {...props} />
-    </Suspense>
-  );
+  // Create a functional component to wrap the lazy component with startTransition
+  const WithLazyLoadingComponent = (props: React.PropsWithoutRef<P>) => {
+    const [isPending, startTransition] = useTransition();
+    
+    React.useEffect(() => {
+      // Pre-load the component when this wrapper mounts
+      startTransition(() => {
+        importFn().catch(err => console.debug('Lazy component preloading failed'));
+      });
+    }, []);
+    
+    return (
+      <Suspense fallback={<LoadingComponent />}>
+        <LazyComponent {...props} />
+      </Suspense>
+    );
+  };
   
   // Set display name for better debugging
   const componentName = importFn.toString().match(/import\(['"](.+?)['"]\)/)?.[1]?.split('/').pop() || 'LazyComponent';
   WithLazyLoadingComponent.displayName = `withLazyLoading(${componentName})`;
   
   return WithLazyLoadingComponent;
+}
+
+// New utility to wrap state updates that might cause suspense
+export function useSafeStateTransition<T>(initialState: T): [T, React.Dispatch<React.SetStateAction<T>>, boolean] {
+  const [state, setState] = React.useState<T>(initialState);
+  const [isPending, startTransition] = useTransition();
+  
+  const setStateWithTransition = React.useCallback((value: React.SetStateAction<T>) => {
+    startTransition(() => {
+      setState(value);
+    });
+  }, []);
+  
+  return [state, setStateWithTransition, isPending];
 }

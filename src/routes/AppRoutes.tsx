@@ -1,6 +1,6 @@
 
-import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { Routes, Route, Outlet, Navigate, useNavigationType } from 'react-router-dom';
+import { useEffect, useTransition } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import MobileLayout from '../components/layout/MobileLayout';
 import NotFound from '../pages/NotFound';
@@ -49,14 +49,29 @@ const redirectRoutes = [
 
 const AppRoutes = () => {
   const location = useLocation();
+  const navigationType = useNavigationType();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-    console.log('Route changed:', location.pathname);
-    const pageClass = 'page-' + (location.pathname.split('/')[1] || 'home');
-    document.body.classList.add(pageClass);
+    // Use startTransition for route changes to prevent suspension issues
+    startTransition(() => {
+      window.scrollTo(0, 0);
+      console.log('Route changed:', location.pathname);
+      const pageClass = 'page-' + (location.pathname.split('/')[1] || 'home');
+      
+      // Clean up previous page classes
+      document.body.className = document.body.className
+        .split(' ')
+        .filter(cls => !cls.startsWith('page-'))
+        .join(' ');
+        
+      // Add new page class
+      document.body.classList.add(pageClass);
+    });
+    
+    // Return cleanup function
     return () => {
-      document.body.classList.remove(pageClass);
+      // Cleanup handled in the next effect
     };
   }, [location.pathname]);
 

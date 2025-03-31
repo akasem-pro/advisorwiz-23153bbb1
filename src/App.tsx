@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { UserProviderRefactored } from './context/UserProviderRefactored';
 import { AuthProvider } from './features/auth/context/AuthProvider';
@@ -7,11 +7,15 @@ import AppRoutes from './routes/AppRoutes';
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     // Simulate loading delay, but use a smaller delay to improve perceived performance
     const timer = setTimeout(() => {
-      setLoading(false);
+      // Wrap the state update in startTransition
+      startTransition(() => {
+        setLoading(false);
+      });
     }, 300); // Reduced from 500ms to 300ms
 
     return () => clearTimeout(timer);
