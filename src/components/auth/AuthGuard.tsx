@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
@@ -6,10 +7,11 @@ import { toast } from 'sonner';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 import { getEffectiveAuthStatus } from '../../utils/mockAuthUtils';
 import { AlertCircle } from 'lucide-react';
+import { UserType } from '../../types/profileTypes';
 
 interface AuthGuardProps {
   children: React.ReactNode;
-  userTypes?: ('consumer' | 'advisor' | 'firm_admin')[];
+  userTypes?: UserType[];
 }
 
 /**
@@ -105,6 +107,8 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
       return <Navigate to="/advisor-dashboard" replace />;
     } else if (userType === 'firm_admin') {
       return <Navigate to="/firm-dashboard" replace />;
+    } else if (userType === 'admin') {
+      return <Navigate to="/admin/analytics" replace />;
     }
   }
 
@@ -112,3 +116,4 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
 };
 
 export default AuthGuard;
+

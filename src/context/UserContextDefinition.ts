@@ -59,13 +59,11 @@ export type UserContextType = {
   matchPreferences: MatchPreferences;
   getTopMatches: (limit?: number) => (AdvisorProfile | ConsumerProfile)[];
   getRecommendedMatches: () => (AdvisorProfile | ConsumerProfile)[];
-  // New call functionality
   callSessions: CallSession[];
   initiateCall: (recipientId: string, type: CallType) => CallSession | null;
   updateCallStatus: (callId: string, status: CallStatus) => void;
   activeCall: CallSession | null;
   callMetrics: CallMetrics[];
-  // New lead tracking functionality
   leads: Lead[];
   addLead: (advisorId: string, consumerId: string, consumerName: string, matchScore: number, source?: LeadSource) => string;
   updateLeadStatus: (leadId: string, status: LeadStatus, notes?: string) => void;
