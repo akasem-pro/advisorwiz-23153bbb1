@@ -64,8 +64,10 @@ const ForAdvisors: React.FC = () => {
     }
   ];
 
+  console.log("Rendering ForAdvisors page");
+
   return (
-    <AppLayout>
+    <AppLayout showTrustBadges={true} animation="none">
       <BreadcrumbNav items={breadcrumbs} />
       
       <PageHero 
@@ -106,7 +108,6 @@ const ForAdvisors: React.FC = () => {
         steps={steps}
       />
       
-      {/* Add Social Sharing Section */}
       <ShareAndDownloadSection variant="minimal" />
       
       <PageFAQ
