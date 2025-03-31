@@ -98,3 +98,16 @@
 .safe-area-top {
   padding-top: env(safe-area-inset-top, 0px);
 }
+
+/* Mobile footer optimizations */
+.mobile-footer {
+  @apply pt-8 pb-20; /* Extra bottom padding for mobile nav */
+}
+
+.mobile-footer-heading {
+  @apply text-lg font-medium mb-3 text-white;
+}
+
+.mobile-footer-link {
+  @apply py-2 block;
+}
