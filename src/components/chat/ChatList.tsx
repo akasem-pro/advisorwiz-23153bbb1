@@ -2,7 +2,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
-import { Chat, useUser } from '../../context/UserContext';
+import { useUser } from '../../context/UserContext';
+import { Chat } from '../../types/chatTypes';
 import { cn } from '@/lib/utils';
 
 interface ChatListProps {

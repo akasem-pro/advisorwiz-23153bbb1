@@ -2,12 +2,12 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '../../integrations/supabase/client';
-import { Chat } from '../../types/userTypes';
+import { Chat, ChatMessage } from '../../types/chatTypes';
 
 interface UseChatSubscriptionProps {
   userId: string | undefined;
   chats: Chat[];
-  addMessage: (chatId: string, message: any) => void;
+  addMessage: (chatId: string, message: Omit<ChatMessage, 'id'>) => void;
 }
 
 /**

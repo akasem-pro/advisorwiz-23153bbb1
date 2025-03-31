@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Chat, ChatMessage } from '../types/userTypes';
+import { Chat, ChatMessage } from '../types/chatTypes';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 

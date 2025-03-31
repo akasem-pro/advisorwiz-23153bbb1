@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { format } from 'date-fns';
-import { Chat } from '../../types/userTypes';
+import { Chat, ChatMessage } from '../../types/chatTypes';
 import { useUser } from '../../context/UserContext';
 import { CallType } from '../../types/callTypes';
 import ChatHeader from './ChatHeader';

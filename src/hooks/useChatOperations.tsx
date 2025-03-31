@@ -1,5 +1,5 @@
 
-import { Chat, ChatMessage } from '../types/userTypes';
+import { Chat, ChatMessage } from '../types/chatTypes';
 import { 
   addMessageToChat, 
   markChatMessagesAsRead 

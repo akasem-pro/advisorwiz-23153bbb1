@@ -56,6 +56,13 @@ const Chat: React.FC = () => {
     }
   }, [userType, consumerProfile, advisorProfile]);
 
+  // Update selectedChatId when chatId changes from the URL
+  useEffect(() => {
+    if (chatId) {
+      setSelectedChatId(chatId);
+    }
+  }, [chatId]);
+
   return (
     <AppLayout>
       <div className="pt-6">

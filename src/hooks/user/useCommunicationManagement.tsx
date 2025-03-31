@@ -1,7 +1,11 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Chat, ChatMessage } from '../../types/chatTypes';
 import { Appointment, AppointmentStatus } from '../../types/timeTypes';
+import { 
+  addMessageToChat,
+  markChatMessagesAsRead 
+} from '../../services/chatService';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -14,59 +18,21 @@ export const useCommunicationManagement = () => {
   /**
    * Add a new message to a chat
    */
-  const addMessage = (chatId: string, senderId: string, text: string) => {
-    setChats(prevChats => {
-      return prevChats.map(chat => {
-        if (chat.id === chatId) {
-          // Create a properly typed ChatMessage
-          const newMessage: ChatMessage = {
-            id: uuidv4(),
-            senderId,
-            senderName: '', // This should be populated from somewhere
-            recipientId: chat.participants.find(p => p !== senderId) || '',
-            recipientName: '', // This should be populated from somewhere
-            content: text,
-            timestamp: new Date().toISOString(),
-            read: false
-          };
-          
-          return {
-            ...chat,
-            messages: [...chat.messages, newMessage],
-            lastUpdated: new Date().toISOString()
-          };
-        }
-        return chat;
-      });
-    });
-  };
+  const addMessage = useCallback((chatId: string, message: Omit<ChatMessage, 'id'>) => {
+    setChats(prevChats => addMessageToChat(prevChats, chatId, message));
+  }, []);
 
   /**
    * Mark all messages in a chat as read for a specific user
    */
-  const markChatAsRead = (chatId: string, userId: string) => {
-    setChats(prevChats => {
-      return prevChats.map(chat => {
-        if (chat.id === chatId) {
-          return {
-            ...chat,
-            messages: chat.messages.map(msg => {
-              if (msg.recipientId === userId && !msg.read) {
-                return { ...msg, read: true };
-              }
-              return msg;
-            })
-          };
-        }
-        return chat;
-      });
-    });
-  };
+  const markChatAsRead = useCallback((chatId: string, userId: string) => {
+    setChats(prevChats => markChatMessagesAsRead(prevChats, chatId, userId));
+  }, []);
 
   /**
    * Add a new appointment
    */
-  const addAppointment = (appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const addAppointment = useCallback((appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newAppointment: Appointment = {
       ...appointmentData,
       id: uuidv4(),
@@ -75,12 +41,12 @@ export const useCommunicationManagement = () => {
     };
     
     setAppointments(prev => [...prev, newAppointment]);
-  };
+  }, []);
 
   /**
    * Update an appointment's status
    */
-  const updateAppointmentStatus = (appointmentId: string, status: AppointmentStatus) => {
+  const updateAppointmentStatus = useCallback((appointmentId: string, status: AppointmentStatus) => {
     setAppointments(prev => {
       return prev.map(appointment => {
         if (appointment.id === appointmentId) {
@@ -93,15 +59,13 @@ export const useCommunicationManagement = () => {
         return appointment;
       });
     });
-  };
+  }, []);
 
   return {
-    chats,
-    setChats,
+    chats, setChats,
+    appointments, setAppointments,
     addMessage,
     markChatAsRead,
-    appointments,
-    setAppointments,
     addAppointment,
     updateAppointmentStatus
   };
