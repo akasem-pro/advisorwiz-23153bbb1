@@ -69,8 +69,8 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
     return () => clearTimeout(timer);
   }, [location, isInitialLoad]);
 
-  // Animation duration class with better performance
-  const getDurationClass = React.useMemo(() => {
+  // Animation duration class - memoized to prevent unnecessary recalculations
+  const durationClass = React.useMemo(() => {
     switch (animationDuration) {
       case 'fast': return "duration-200";
       case 'slow': return "duration-500";
@@ -119,8 +119,12 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         )}
       </main>
       
-      {/* Conditionally render to avoid reflows */}
-      {!isInitialLoad && <FloatingSupportButton />}
+      {/* Only render FloatingSupportButton after initial load */}
+      {!isInitialLoad && (
+        <React.Suspense fallback={null}>
+          <FloatingSupportButton />
+        </React.Suspense>
+      )}
       
       {/* Single footer rendering logic */}
       {footerElement}
@@ -136,7 +140,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   return (
     <AnimatedRoute 
       animation={animation} 
-      className={getDurationClass}
+      className={durationClass}
     >
       {renderContent()}
     </AnimatedRoute>

@@ -7,58 +7,56 @@
 const HIGH_PRIORITY_ROUTES = ['/signin', '/signup', '/'];
 const MEDIUM_PRIORITY_ROUTES = ['/for-advisors', '/for-consumers', '/pricing'];
 
-// We'll use the standard lib.dom.d.ts definitions instead of redefining them
-// This fixes the "Subsequent property declarations must have the same type" errors
-
 /**
  * Preload components for high priority routes
  */
 export const preloadHighPriorityRoutes = () => {
-  // Use requestIdleCallback for non-blocking preloading if available
-  if (typeof window.requestIdleCallback === 'function') {
-    window.requestIdleCallback((deadline) => {
-      if (deadline.timeRemaining() > 0 || deadline.didTimeout) {
-        HIGH_PRIORITY_ROUTES.forEach(route => {
-          import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
-            .catch(err => console.debug('Preloading failed for', route));
-        });
-      }
-    }, { timeout: 2000 });
-  } else {
-    // Fallback to setTimeout
-    setTimeout(() => {
-      HIGH_PRIORITY_ROUTES.forEach(route => {
-        import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
-          .catch(err => console.debug('Preloading failed for', route));
-      });
-    }, 100);
-  }
+  // Create a lightweight wrapper for requestIdleCallback with proper typing
+  const safeRequestIdleCallback = (callback: () => void) => {
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      // TypeScript already has definitions for these APIs
+      window.requestIdleCallback(() => {
+        callback();
+      }, { timeout: 2000 });
+    } else {
+      // Fallback to setTimeout
+      setTimeout(callback, 100);
+    }
+  };
+
+  safeRequestIdleCallback(() => {
+    HIGH_PRIORITY_ROUTES.forEach(route => {
+      import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
+        .catch(err => console.debug('Preloading failed for', route));
+    });
+  });
 };
 
 /**
  * Preload medium priority routes after high priority ones
  */
 export const preloadMediumPriorityRoutes = () => {
-  // Delayed preloading for medium priority routes
-  setTimeout(() => {
-    if (typeof window.requestIdleCallback === 'function') {
-      window.requestIdleCallback((deadline) => {
-        if (deadline.timeRemaining() > 0 || deadline.didTimeout) {
-          MEDIUM_PRIORITY_ROUTES.forEach(route => {
-            import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
-              .catch(err => console.debug('Preloading failed for', route));
-          });
-        }
+  // Create a lightweight wrapper for requestIdleCallback with proper typing
+  const safeRequestIdleCallback = (callback: () => void) => {
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      // TypeScript already has definitions for these APIs
+      window.requestIdleCallback(() => {
+        callback();
       }, { timeout: 4000 });
     } else {
       // Fallback to setTimeout
-      setTimeout(() => {
-        MEDIUM_PRIORITY_ROUTES.forEach(route => {
-          import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
-            .catch(err => console.debug('Preloading failed for', route));
-        });
-      }, 300);
+      setTimeout(callback, 300);
     }
+  };
+
+  // Delayed preloading for medium priority routes
+  setTimeout(() => {
+    safeRequestIdleCallback(() => {
+      MEDIUM_PRIORITY_ROUTES.forEach(route => {
+        import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
+          .catch(err => console.debug('Preloading failed for', route));
+      });
+    });
   }, 3000);
 };
 

@@ -1,5 +1,5 @@
 
-import React, { Suspense, useTransition } from 'react';
+import React, { Suspense, useTransition, startTransition } from 'react';
 import { Skeleton } from './ui/skeleton';
 
 // Loading fallbacks for different component types
@@ -27,21 +27,34 @@ export const ComponentLoadingFallback = () => (
   <Skeleton className="h-24 w-full" />
 );
 
-// Improved withLazyLoading HOC with better TypeScript support
+// Improved withLazyLoading HOC with better TypeScript support and suspension handling
 export function withLazyLoading<P extends Record<string, unknown>>(
   importFn: () => Promise<{ default: React.ComponentType<P> }>,
   LoadingComponent: React.ComponentType = ComponentLoadingFallback
 ) {
+  // Preload the module to reduce visible suspense
+  let modulePromise: Promise<{ default: React.ComponentType<P> }> | null = null;
+  
+  const preloadModule = () => {
+    if (!modulePromise) {
+      modulePromise = importFn();
+    }
+    return modulePromise;
+  };
+  
+  // Start preloading immediately
+  preloadModule();
+  
   const LazyComponent = React.lazy(importFn);
   
   // Create a functional component to wrap the lazy component with startTransition
   const WithLazyLoadingComponent = (props: React.PropsWithoutRef<P>) => {
-    const [isPending, startTransition] = useTransition();
+    const [isPending, startTransitionHook] = useTransition();
     
     React.useEffect(() => {
-      // Pre-load the component when this wrapper mounts
-      startTransition(() => {
-        importFn().catch(err => console.debug('Lazy component preloading failed'));
+      // Pre-load the component when this wrapper mounts using startTransition
+      startTransitionHook(() => {
+        preloadModule().catch(err => console.debug('Lazy component preloading failed'));
       });
     }, []);
     
@@ -59,16 +72,29 @@ export function withLazyLoading<P extends Record<string, unknown>>(
   return WithLazyLoadingComponent;
 }
 
-// New utility to wrap state updates that might cause suspense
+// Enhanced utility to wrap state updates that might cause suspense
 export function useSafeStateTransition<T>(initialState: T): [T, React.Dispatch<React.SetStateAction<T>>, boolean] {
   const [state, setState] = React.useState<T>(initialState);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransitionHook] = useTransition();
   
   const setStateWithTransition = React.useCallback((value: React.SetStateAction<T>) => {
-    startTransition(() => {
+    startTransitionHook(() => {
       setState(value);
     });
-  }, []);
+  }, [startTransitionHook]);
   
   return [state, setStateWithTransition, isPending];
+}
+
+// New utility for deferring non-critical operations
+export function deferOperation(operation: () => void, delay = 0) {
+  if (typeof window !== 'undefined') {
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(() => {
+        operation();
+      }, { timeout: 1000 + delay });
+    } else {
+      setTimeout(operation, delay);
+    }
+  }
 }

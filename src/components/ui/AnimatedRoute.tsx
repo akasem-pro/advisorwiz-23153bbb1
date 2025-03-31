@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState, useTransition } from 'react';
 import { cn } from '@/lib/utils';
 
 type AnimationType = 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale' | 'none';
@@ -18,20 +18,27 @@ const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
   delay = 0
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isPending, startTransition] = useTransition();
   
   useEffect(() => {
+    // Use startTransition to prevent suspension during animations
     const timeoutId = setTimeout(() => {
-      setIsVisible(true);
+      startTransition(() => {
+        setIsVisible(true);
+      });
     }, delay);
     
     return () => clearTimeout(timeoutId);
-  }, [delay]);
+  }, [delay, startTransition]);
+  
+  // Don't apply animations if animation is set to none
+  if (animation === 'none') {
+    return <div className={className}>{children}</div>;
+  }
   
   const getAnimationClass = () => {
-    if (animation === 'none') return '';
-    
     if (!isVisible) {
-      return 'opacity-0 ' + getInitialPosition();
+      return cn('opacity-0', getInitialPosition());
     }
     
     return 'opacity-100 transform-none transition-all duration-300 ease-out';
