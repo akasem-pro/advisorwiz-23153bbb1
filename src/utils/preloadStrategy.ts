@@ -20,18 +20,25 @@ export const preloadHighPriorityRoutes = () => {
   const scheduleIdleTask = (callback: () => void) => {
     try {
       if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(callback, { timeout: 2000 });
+        const id = window.requestIdleCallback(callback, { timeout: 2000 });
+        return () => {
+          if ('cancelIdleCallback' in window) {
+            window.cancelIdleCallback(id);
+          }
+        };
       } else {
         // Fallback to setTimeout
-        setTimeout(callback, 100);
+        const id = setTimeout(callback, 100);
+        return () => clearTimeout(id);
       }
     } catch (error) {
       console.error('Error scheduling idle task:', error);
-      setTimeout(callback, 100);
+      const id = setTimeout(callback, 100);
+      return () => clearTimeout(id);
     }
   };
 
-  scheduleIdleTask(() => {
+  return scheduleIdleTask(() => {
     HIGH_PRIORITY_ROUTES.forEach(route => {
       try {
         const componentName = routeToComponentName(route);
@@ -62,20 +69,27 @@ export const preloadMediumPriorityRoutes = () => {
   const scheduleIdleTask = (callback: () => void) => {
     try {
       if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(callback, { timeout: 4000 });
+        const id = window.requestIdleCallback(callback, { timeout: 4000 });
+        return () => {
+          if ('cancelIdleCallback' in window) {
+            window.cancelIdleCallback(id);
+          }
+        };
       } else {
         // Fallback to setTimeout
-        setTimeout(callback, 300);
+        const id = setTimeout(callback, 300);
+        return () => clearTimeout(id);
       }
     } catch (error) {
       console.error('Error scheduling idle task:', error);
-      setTimeout(callback, 300);
+      const id = setTimeout(callback, 300);
+      return () => clearTimeout(id);
     }
   };
 
   // Delayed preloading for medium priority routes
-  setTimeout(() => {
-    scheduleIdleTask(() => {
+  const timeoutId = setTimeout(() => {
+    const cleanupFn = scheduleIdleTask(() => {
       MEDIUM_PRIORITY_ROUTES.forEach(route => {
         try {
           const componentName = routeToComponentName(route);
@@ -94,7 +108,13 @@ export const preloadMediumPriorityRoutes = () => {
         }
       });
     });
+    
+    return () => {
+      if (cleanupFn) cleanupFn();
+    };
   }, 3000);
+  
+  return () => clearTimeout(timeoutId);
 };
 
 /**
@@ -143,12 +163,14 @@ export const initPreloadStrategy = () => {
   
   try {
     // Preload critical routes immediately for faster navigation
-    preloadHighPriorityRoutes();
+    const highPriorityCleanup = preloadHighPriorityRoutes();
     
     // Then load medium priority routes
-    preloadMediumPriorityRoutes();
+    const mediumPriorityCleanup = preloadMediumPriorityRoutes();
     
     // Preload the current route and adjacent routes for better UX
+    let adjacentRoutesCleanup: (() => void) | undefined;
+    
     const preloadAdjacentRoutes = () => {
       const currentPath = window.location.pathname;
       preloadRoute(currentPath);
@@ -165,11 +187,25 @@ export const initPreloadStrategy = () => {
     
     // Schedule adjacent routes preloading
     if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(preloadAdjacentRoutes, { timeout: 5000 });
+      const id = window.requestIdleCallback(preloadAdjacentRoutes, { timeout: 5000 });
+      adjacentRoutesCleanup = () => {
+        if ('cancelIdleCallback' in window) {
+          window.cancelIdleCallback(id);
+        }
+      };
     } else {
-      setTimeout(preloadAdjacentRoutes, 1000);
+      const id = setTimeout(preloadAdjacentRoutes, 1000);
+      adjacentRoutesCleanup = () => clearTimeout(id);
     }
+    
+    // Return proper cleanup
+    return () => {
+      if (highPriorityCleanup) highPriorityCleanup();
+      if (mediumPriorityCleanup) mediumPriorityCleanup();
+      if (adjacentRoutesCleanup) adjacentRoutesCleanup();
+    };
   } catch (error) {
     console.error("Error initializing preload strategy:", error);
+    return undefined;
   }
 };

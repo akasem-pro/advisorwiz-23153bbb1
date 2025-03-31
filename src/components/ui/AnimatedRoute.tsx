@@ -29,7 +29,10 @@ const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
       });
     }, delay);
     
-    return () => clearTimeout(timeoutId);
+    // Proper cleanup function
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [delay, startTransition]);
   
   // Don't apply animations if animation is set to none

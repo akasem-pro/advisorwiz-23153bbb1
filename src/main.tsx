@@ -5,12 +5,6 @@ import App from './App.tsx'
 import './styles/main.css'
 import { ThemeProvider } from './context/ThemeContext'
 import { Toaster } from './components/ui/sonner'
-import { initPerformanceOptimizations } from './utils/performanceTracking'
-import { initPreloadStrategy } from './utils/preloadStrategy'
-
-// Initialize performance optimizations once before rendering
-// This consolidates all performance-related initializations
-initPerformanceOptimizations();
 
 // Create React root with concurrent mode
 const root = ReactDOM.createRoot(document.getElementById('root')!);
@@ -27,12 +21,30 @@ root.render(
 
 // Initialize preloading after first render is complete
 // This ensures we don't block the main thread during initial load
-if ('requestIdleCallback' in window) {
-  requestIdleCallback(() => {
-    initPreloadStrategy();
-  }, { timeout: 1000 });
-} else {
-  setTimeout(() => {
-    initPreloadStrategy();
-  }, 1000);
+if (typeof window !== 'undefined') {
+  // Import performance optimization utilities after initial render
+  import('./utils/performanceTracking').then(({ initPerformanceOptimizations }) => {
+    initPerformanceOptimizations();
+  }).catch(error => {
+    console.error('Failed to load performance tracking:', error);
+  });
+
+  // Import and initialize preload strategy
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(() => {
+      import('./utils/preloadStrategy').then(({ initPreloadStrategy }) => {
+        initPreloadStrategy();
+      }).catch(error => {
+        console.error('Failed to initialize preload strategy:', error);
+      });
+    }, { timeout: 1000 });
+  } else {
+    setTimeout(() => {
+      import('./utils/preloadStrategy').then(({ initPreloadStrategy }) => {
+        initPreloadStrategy();
+      }).catch(error => {
+        console.error('Failed to initialize preload strategy:', error);
+      });
+    }, 1000);
+  }
 }

@@ -70,7 +70,10 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
       }
     });
     
-    return () => clearTimeout(timer);
+    // Proper cleanup function that cancels the timer
+    return () => { 
+      clearTimeout(timer);
+    };
   }, [location, isInitialLoad]);
   
   // Safer approach to managing content visibility
@@ -83,7 +86,11 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         setContentVisible(true);
       });
     }, 0);
-    return () => clearTimeout(timer);
+    
+    // Proper cleanup function
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   // Animation duration class - memoized to prevent unnecessary recalculations
