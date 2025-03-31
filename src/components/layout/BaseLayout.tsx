@@ -53,21 +53,38 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
     
     // Wrap analytics initialization in startTransition to prevent suspension issues
     startTransition(() => {
-      // Initialize tag manager only once
-      if (isInitialLoad) {
-        initializeTagManager();
-        setIsInitialLoad(false);
+      try {
+        // Initialize tag manager only once
+        if (isInitialLoad) {
+          initializeTagManager();
+          setIsInitialLoad(false);
+        }
+        
+        // Debounce page view tracking to avoid performance impact
+        timer = setTimeout(() => {
+          const pageTitle = document.title || 'AdvisorWiz';
+          trackPageView(pageTitle, location.pathname);
+        }, 300);
+      } catch (error) {
+        console.error("Error in analytics:", error);
       }
-      
-      // Debounce page view tracking to avoid performance impact
-      timer = setTimeout(() => {
-        const pageTitle = document.title || 'AdvisorWiz';
-        trackPageView(pageTitle, location.pathname);
-      }, 300);
     });
     
     return () => clearTimeout(timer);
   }, [location, isInitialLoad]);
+  
+  // Safer approach to managing content visibility
+  const [contentVisible, setContentVisible] = useState(false);
+  
+  useEffect(() => {
+    // Use startTransition for content visibility to avoid suspension
+    const timer = setTimeout(() => {
+      startTransition(() => {
+        setContentVisible(true);
+      });
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Animation duration class - memoized to prevent unnecessary recalculations
   const durationClass = React.useMemo(() => {
@@ -106,7 +123,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         <div className={cn(
           withoutPadding ? '' : contentClassName
         )}>
-          {children}
+          {contentVisible ? children : null}
         </div>
         
         {showTrustBadges && (

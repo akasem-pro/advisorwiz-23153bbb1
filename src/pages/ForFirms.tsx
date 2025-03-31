@@ -1,5 +1,5 @@
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useState, useTransition } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import BreadcrumbNav from '../components/firms/BreadcrumbNav';
 import BenefitsSection from '../components/firms/BenefitsSection';
@@ -9,9 +9,19 @@ import PageFAQ from '../components/shared/PageFAQ';
 import PageCTA from '../components/shared/PageCTA';
 import { Users, BarChart, Shield } from 'lucide-react';
 import AppShareWidget from '../components/ui/AppShareWidget';
-import { SectionLoadingFallback } from '../components/LazyComponents';
+import { SectionLoadingFallback, ErrorFallback } from '../components/LazyComponents';
 
 const ForFirms: React.FC = () => {
+  const [isPending, startTransition] = useTransition();
+  
+  // Ensure all state transitions use startTransition
+  const [contentLoaded, setContentLoaded] = useState(false);
+  React.useEffect(() => {
+    startTransition(() => {
+      setContentLoaded(true);
+    });
+  }, []);
+
   // How it works steps
   const steps = [
     {
@@ -60,14 +70,20 @@ const ForFirms: React.FC = () => {
     }
   ];
 
+  if (!contentLoaded) {
+    return <SectionLoadingFallback />;
+  }
+
   return (
-    <AppLayout>
-      <BreadcrumbNav 
-        items={[
-          { name: 'Home', url: '/' },
-          { name: 'Financial Firms', url: '/for-firms' }
-        ]} 
-      />
+    <AppLayout animation="fade">
+      <ErrorBoundary>
+        <BreadcrumbNav 
+          items={[
+            { name: 'Home', url: '/' },
+            { name: 'Financial Firms', url: '/for-firms' }
+          ]} 
+        />
+      </ErrorBoundary>
       
       <Suspense fallback={<SectionLoadingFallback />}>
         <PageHero 
@@ -140,5 +156,25 @@ const ForFirms: React.FC = () => {
     </AppLayout>
   );
 };
+
+// Simple error boundary component
+class ErrorBoundary extends React.Component<{children: React.ReactNode}> {
+  state = { hasError: false };
+  
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("ForFirms error:", error, errorInfo);
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return <ErrorFallback />;
+    }
+    return this.props.children;
+  }
+}
 
 export default ForFirms;

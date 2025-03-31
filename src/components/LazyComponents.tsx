@@ -1,6 +1,7 @@
 
-import React, { Suspense, useTransition, startTransition } from 'react';
+import React, { Suspense, useTransition, startTransition, useCallback } from 'react';
 import { Skeleton } from './ui/skeleton';
+import { AlertCircle } from 'lucide-react';
 
 // Loading fallbacks for different component types
 export const PageLoadingFallback = () => (
@@ -27,30 +28,37 @@ export const ComponentLoadingFallback = () => (
   <Skeleton className="h-24 w-full" />
 );
 
+// Error boundary component to catch suspense errors
+export const ErrorFallback = ({ error }: { error?: Error }) => (
+  <div className="p-4 border border-red-300 rounded bg-red-50 text-red-700 my-4">
+    <div className="flex items-center mb-2">
+      <AlertCircle className="h-5 w-5 mr-2" />
+      <h4 className="font-medium">Failed to load component</h4>
+    </div>
+    {error && <p className="text-sm">{error.message}</p>}
+    <button 
+      onClick={() => window.location.reload()} 
+      className="mt-2 px-3 py-1 bg-red-100 hover:bg-red-200 rounded text-sm"
+    >
+      Reload page
+    </button>
+  </div>
+);
+
 // Improved withLazyLoading HOC with better TypeScript support and suspension handling
 export function withLazyLoading<P extends Record<string, unknown>>(
   importFn: () => Promise<{ default: React.ComponentType<P> }>,
   LoadingComponent: React.ComponentType = ComponentLoadingFallback
 ) {
   // Preload the module to reduce visible suspense
-  let modulePromise: Promise<{ default: React.ComponentType<P> }> | null = null;
-  
-  const preloadModule = () => {
-    if (!modulePromise) {
-      modulePromise = importFn();
-    }
-    return modulePromise;
-  };
-  
-  // Start preloading immediately
-  preloadModule();
+  const modulePromise = preloadComponent(importFn);
   
   const LazyComponent = React.lazy(() => {
-    // Use a promise we can control to enhance error handling
     return new Promise<{ default: React.ComponentType<P> }>((resolve, reject) => {
-      preloadModule()
+      // Use the preloaded promise
+      modulePromise
         .then(module => {
-          // Artificial small delay to ensure React has time to process other things
+          // Small artificial delay to ensure smooth transitions
           setTimeout(() => resolve(module), 10);
         })
         .catch(err => {
@@ -67,13 +75,15 @@ export function withLazyLoading<P extends Record<string, unknown>>(
     React.useEffect(() => {
       // Pre-load the component when this wrapper mounts using startTransition
       startTransitionHook(() => {
-        preloadModule().catch(err => console.debug('Lazy component preloading failed:', err));
+        modulePromise.catch(err => console.debug('Lazy component preloading failed:', err));
       });
     }, []);
     
     return (
       <Suspense fallback={<LoadingComponent />}>
-        <LazyComponent {...props} />
+        <ErrorBoundary fallback={<ErrorFallback />}>
+          <LazyComponent {...props} />
+        </ErrorBoundary>
       </Suspense>
     );
   };
@@ -85,12 +95,21 @@ export function withLazyLoading<P extends Record<string, unknown>>(
   return React.memo(WithLazyLoadingComponent);
 }
 
+// Pre-load component and cache the promise
+function preloadComponent<T>(importFn: () => Promise<T>): Promise<T> {
+  // Start loading immediately
+  return importFn().catch(err => {
+    console.error("Failed to preload component:", err);
+    throw err;
+  });
+}
+
 // Enhanced utility to wrap state updates that might cause suspense
 export function useSafeStateTransition<T>(initialState: T): [T, React.Dispatch<React.SetStateAction<T>>, boolean] {
   const [state, setState] = React.useState<T>(initialState);
   const [isPending, startTransitionHook] = useTransition();
   
-  const setStateWithTransition = React.useCallback((value: React.SetStateAction<T>) => {
+  const setStateWithTransition = useCallback((value: React.SetStateAction<T>) => {
     startTransitionHook(() => {
       setState(value);
     });
@@ -102,30 +121,61 @@ export function useSafeStateTransition<T>(initialState: T): [T, React.Dispatch<R
 // Enhanced utility for deferring non-critical operations
 export function deferOperation(operation: () => void, delay = 0) {
   if (typeof window !== 'undefined') {
-    if (window.requestIdleCallback) {
-      window.requestIdleCallback(() => {
-        startTransition(() => {
-          operation();
-        });
-      }, { timeout: 1000 + delay });
-    } else {
-      setTimeout(() => {
-        startTransition(() => {
-          operation();
-        });
-      }, delay);
+    try {
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(() => {
+          startTransition(() => {
+            operation();
+          });
+        }, { timeout: 1000 + delay });
+      } else {
+        setTimeout(() => {
+          startTransition(() => {
+            operation();
+          });
+        }, delay);
+      }
+    } catch (error) {
+      console.error("Failed to defer operation:", error);
     }
   }
 }
 
+// Simple error boundary component
+class ErrorBoundary extends React.Component<{
+  children: React.ReactNode;
+  fallback: React.ReactNode;
+}> {
+  state = { hasError: false, error: null };
+  
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+  
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("Component error caught:", error, errorInfo);
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return React.isValidElement(this.props.fallback) 
+        ? React.cloneElement(this.props.fallback as React.ReactElement, { error: this.state.error })
+        : this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
 // New utility to safely use Suspense components
-export function withSuspense<P extends {}>(
+export function withSuspense<P extends object>(
   Component: React.ComponentType<P>,
   FallbackComponent: React.ReactNode = <ComponentLoadingFallback />
 ) {
-  const WithSuspense = (props: P) => (
+  const WithSuspense = (props: P & JSX.IntrinsicAttributes) => (
     <Suspense fallback={FallbackComponent}>
-      <Component {...props} />
+      <ErrorBoundary fallback={<ErrorFallback />}>
+        <Component {...props} />
+      </ErrorBoundary>
     </Suspense>
   );
   

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState, useTransition } from 'react';
+import React, { useEffect, useState, useTransition, Suspense } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { supabase } from '../../integrations/supabase/client';
@@ -25,16 +25,20 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   const [isPending, startTransition] = useTransition();
   
   useEffect(() => {
+    let isMounted = true;
+    
     const verifyAuth = async () => {
       try {
         console.log("[AuthGuard] Starting auth verification...");
         
         if (user) {
           console.log("[AuthGuard] User authenticated via Auth context:", user.email);
-          startTransition(() => {
-            setIsAuthenticated(true);
-            setChecking(false);
-          });
+          if (isMounted) {
+            startTransition(() => {
+              setIsAuthenticated(true);
+              setChecking(false);
+            });
+          }
           return;
         }
         
@@ -44,39 +48,60 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
         
         if (isPreviewEnv && localStorage.getItem('mock_auth_user')) {
           console.log("[AuthGuard] Preview environment with mock user detected");
-          startTransition(() => {
-            setIsAuthenticated(true);
-            setChecking(false);
-          });
+          if (isMounted) {
+            startTransition(() => {
+              setIsAuthenticated(true);
+              setChecking(false);
+            });
+          }
           return;
         }
         
-        const { data, error } = await supabase.auth.getUser();
-        
-        startTransition(() => {
-          if (error) {
-            console.error("[AuthGuard] Error checking authentication:", error);
-            setIsAuthenticated(false);
-          } else if (data?.user) {
-            console.log("[AuthGuard] User authenticated via Supabase:", data.user.email);
-            setIsAuthenticated(true);
-          } else {
-            console.log("[AuthGuard] No authenticated user found in Supabase");
-            setIsAuthenticated(false);
+        try {
+          const { data, error } = await supabase.auth.getUser();
+          
+          if (isMounted) {
+            startTransition(() => {
+              if (error) {
+                console.error("[AuthGuard] Error checking authentication:", error);
+                setIsAuthenticated(false);
+              } else if (data?.user) {
+                console.log("[AuthGuard] User authenticated via Supabase:", data.user.email);
+                setIsAuthenticated(true);
+              } else {
+                console.log("[AuthGuard] No authenticated user found in Supabase");
+                setIsAuthenticated(false);
+              }
+              setChecking(false);
+            });
           }
-          setChecking(false);
-        });
+        } catch (e) {
+          console.error("[AuthGuard] Exception during Supabase auth check:", e);
+          if (isMounted) {
+            startTransition(() => {
+              setIsAuthenticated(false);
+              setChecking(false);
+            });
+          }
+        }
       } catch (err) {
         console.error("[AuthGuard] Exception during auth check:", err);
-        startTransition(() => {
-          setIsAuthenticated(false);
-          setChecking(false);
-        });
+        if (isMounted) {
+          startTransition(() => {
+            setIsAuthenticated(false);
+            setChecking(false);
+          });
+        }
       }
     };
     
     verifyAuth();
-  }, [setIsAuthenticated, location.pathname, user, startTransition]);
+    
+    // Cleanup function for unmount
+    return () => {
+      isMounted = false;
+    };
+  }, [setIsAuthenticated, location.pathname, user]);
   
   if (checking) {
     return (
@@ -101,7 +126,10 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   if (!effectiveIsAuthenticated) {
     const destination = location.pathname !== "/" ? location.pathname : undefined;
     
-    toast.error("Please sign in to access this page");
+    // Use startTransition to avoid suspension during auth state change
+    startTransition(() => {
+      toast.error("Please sign in to access this page");
+    });
     
     return <Navigate to="/signin" state={{ from: destination }} replace />;
   }
@@ -118,7 +146,16 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
     }
   }
 
-  return <>{children}</>;
+  // Wrap children in Suspense to handle any potential suspending components
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-teal-500"></div>
+      </div>
+    }>
+      {children}
+    </Suspense>
+  );
 };
 
 export default React.memo(AuthGuard);
