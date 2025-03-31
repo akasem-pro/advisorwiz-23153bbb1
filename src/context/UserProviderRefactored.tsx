@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import UserContext from './UserContextDefinition';
 import { 
@@ -53,9 +54,6 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
     callMetrics,
     initiateCall,
     updateCallStatus,
-    isCallModalOpen,
-    closeCallModal,
-    endCall 
   } = useCallManagement(userId, userType as 'consumer' | 'advisor' | null);
   
   // Initialize profiles based on auth state
@@ -319,7 +317,6 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
       updateCallStatus,
       activeCall,
       callMetrics,
-      endCall,
       leads,
       addLead,
       updateLeadStatus,
