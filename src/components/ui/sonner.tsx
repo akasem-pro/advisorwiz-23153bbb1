@@ -30,6 +30,23 @@ const Toaster = ({ ...props }: ToasterProps) => {
     }
   }, []);
 
+  // Setup a callback ref to get the DOM element created by Sonner
+  const refCallback = (el: HTMLElement | null) => {
+    toasterRef.current = el;
+    
+    // Apply aria-hidden to elements with tabindex="-1" immediately
+    if (el) {
+      setTimeout(() => {
+        const elementsWithNegativeTabIndex = 
+          el.querySelectorAll('[tabindex="-1"]');
+        
+        elementsWithNegativeTabIndex.forEach((element) => {
+          (element as HTMLElement).setAttribute('aria-hidden', 'true');
+        });
+      }, 100); // Small delay to ensure DOM is ready
+    }
+  };
+
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
@@ -54,22 +71,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
       hotkey={["altKey", "KeyT"]}
       // Make the toasts more accessible with proper ARIA roles
       richColors={true}
-      // Use the ref callback to get access to the toaster element
-      ref={(el) => {
-        toasterRef.current = el;
-        
-        // Apply aria-hidden to elements with tabindex="-1" immediately
-        if (el) {
-          setTimeout(() => {
-            const elementsWithNegativeTabIndex = 
-              el.querySelectorAll('[tabindex="-1"]');
-            
-            elementsWithNegativeTabIndex.forEach((element) => {
-              (element as HTMLElement).setAttribute('aria-hidden', 'true');
-            });
-          }, 100); // Small delay to ensure DOM is ready
-        }
-      }}
+      // Since we can't directly use ref prop, we need to use onMount callback
+      onMount={refCallback}
       {...props}
     />
   )
