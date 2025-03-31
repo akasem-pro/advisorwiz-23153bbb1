@@ -52,15 +52,15 @@ function App() {
   }
 
   return (
-    <UserProviderRefactored>
-      <AuthProvider>
-        <Router>
+    <Router>
+      <UserProviderRefactored>
+        <AuthProvider>
           <AppRoutes />
           <CookieManager />
           <TrackingManager config={trackingConfig} />
-        </Router>
-      </AuthProvider>
-    </UserProviderRefactored>
+        </AuthProvider>
+      </UserProviderRefactored>
+    </Router>
   );
 }
 

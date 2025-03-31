@@ -20,11 +20,19 @@ export const useAuthOperations = (
   const { signOut } = useSignOutOperation(setLoading);
   const { signUp } = useSignUpOperation(setLoading, setMockUser);
   const { 
-    resetPassword, 
+    requestPasswordReset: resetPassword, 
     updatePassword, 
-    updateEmail, 
-    sendPasswordResetEmail 
   } = usePasswordResetOperation(setLoading);
+
+  // Mock functions that would be implemented in a real app
+  const updateEmail = async (newEmail: string): Promise<boolean> => {
+    console.log("Update email functionality to be implemented");
+    return Promise.resolve(false);
+  };
+  
+  const sendPasswordResetEmail = async (email: string): Promise<boolean> => {
+    return resetPassword(email);
+  };
   
   return {
     signIn,

@@ -17,7 +17,7 @@ export interface AuthContextType {
   checkNetworkStatus: () => Promise<boolean>;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string, userType: UserType) => Promise<boolean>;
-  signOut: () => Promise<boolean>; // Changed from void to boolean
+  signOut: () => Promise<boolean>; 
   resetPassword: (email: string) => Promise<boolean>;
   updatePassword: (newPassword: string) => Promise<boolean>;
   updateEmail: (newEmail: string) => Promise<boolean>;
