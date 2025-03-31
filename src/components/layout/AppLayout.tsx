@@ -25,16 +25,18 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   className = '',
   showTrustBadges = false,
   contentClassName,
-  withoutPadding = false, // Changed from true to false to ensure content gets padding
-  animation = 'fade',
+  withoutPadding = false,
+  animation = 'none', // Changed to none to eliminate animation issues
   animationDuration = 'normal',
   skipToContentId = 'main-content',
   hideFooter = false
 }) => {
+  console.log("AppLayout rendering with children:", children ? "Children exists" : "No children");
+  
   return (
     <BaseLayout
       header={<Header />}
-      footer={hideFooter ? null : undefined} // Pass null to completely hide footer, undefined to use default
+      footer={hideFooter ? null : undefined}
       showSocialProof={!hideSocialProof}
       showTrustBadges={showTrustBadges}
       fullWidth={fullWidth}

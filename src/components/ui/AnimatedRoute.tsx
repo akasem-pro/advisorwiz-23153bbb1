@@ -1,4 +1,3 @@
-
 import React, { ReactNode, useEffect, useState, useTransition, memo } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -17,13 +16,22 @@ const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
   className = '',
   delay = 0
 }) => {
-  const [isVisible, setIsVisible] = useState(false);
+  // Start with content visible by default
+  const [isVisible, setIsVisible] = useState(true);
   const [isPending, startTransition] = useTransition();
   
   useEffect(() => {
     // Use startTransition to prevent suspension issues
     let isMounted = true;
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    
+    // For no animation, we keep content visible
+    if (animation === 'none') {
+      return;
+    }
+    
+    // Otherwise, start invisible and animate in
+    setIsVisible(false);
     
     timeoutId = setTimeout(() => {
       // Wrap the state update in startTransition to prevent suspension issues
@@ -41,11 +49,11 @@ const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
         clearTimeout(timeoutId);
       }
     };
-  }, [delay]);
+  }, [delay, animation]);
   
   // Don't apply animations if animation is set to none
   if (animation === 'none') {
-    return <>{children}</>;
+    return <div className={className}>{children}</div>;
   }
   
   // Use a stable animation class to minimize style recalculation

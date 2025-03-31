@@ -8,15 +8,13 @@ import { OptimizedMainRoutes } from './OptimizedRoutes';
 const MainRoutes = OptimizedMainRoutes.map((route) => {
   // Clone the route but modify the element to be wrapped in AppLayout
   const { element, ...rest } = route.props;
+  
+  // Return the modified route with AppLayout wrapper
   return (
     <Route
       key={rest.path}
       {...rest}
-      element={
-        <AppLayout>
-          {element}
-        </AppLayout>
-      }
+      element={element} // No longer wrapping with AppLayout here since it's done in AppRoutes
     />
   );
 });

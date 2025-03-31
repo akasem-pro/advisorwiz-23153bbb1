@@ -10,30 +10,7 @@ import MobileRoutes from './MobileRoutes';
 import AuthRoutes from './AuthRoutes';
 import UtilityRoutes from './UtilityRoutes';
 import { useLocation } from 'react-router-dom';
-import ContactUs from '../pages/ContactUs';
-import Team from '../pages/Team';
-import Blog from '../pages/Blog';
-import Careers from '../pages/Careers';
-import Resources from '../pages/Resources';
-import DownloadApp from '../pages/DownloadApp';
-import Sitemap from '../pages/Sitemap';
-import Schedule from '../pages/Schedule';
-import Chat from '../pages/Chat';
-import ConsumerProfile from '../pages/ConsumerProfile';
-import OnboardingTour from '../components/onboarding/OnboardingTour';
-
-const contentPageRoutes = [
-  { path: 'contact', element: <ContactUs /> },
-  { path: 'team', element: <Team /> },
-  { path: 'blog/*', element: <Blog /> },
-  { path: 'careers', element: <Careers /> },
-  { path: 'resources', element: <Resources /> },
-  { path: 'download', element: <DownloadApp /> },
-  { path: 'sitemap', element: <Sitemap /> },
-  { path: 'schedule', element: <Schedule /> },
-  { path: 'chat', element: <Chat /> },
-  { path: 'consumer-profile', element: <ConsumerProfile /> }
-];
+import Terms from '../pages/Terms';
 
 // Redirects for auth paths and legacy dashboard paths
 const redirectRoutes = [
@@ -77,10 +54,6 @@ const AppRoutes = () => {
 
   return (
     <>
-      <div className="relative z-[9999]">
-        <OnboardingTour />
-      </div>
-      
       <Routes>
         <Route path="/m" element={<MobileLayout><Outlet /></MobileLayout>}>
           {MobileRoutes}
@@ -96,22 +69,17 @@ const AppRoutes = () => {
           />
         ))}
         
-        <Route path="/" element={<Outlet />}>
-          {contentPageRoutes.map((routeProps, index) => (
-            <Route 
-              key={`content-${index}`} 
-              path={routeProps.path} 
-              element={
-                <AppLayout hideFooter={true}>
-                  {routeProps.element}
-                </AppLayout>
-              } 
-            />
-          ))}
-          
+        {/* Main content routes */}
+        <Route path="/" element={<AppLayout><Outlet /></AppLayout>}>
+          {/* Directly use MainRoutes as they no longer include AppLayout wrapper */}
           {MainRoutes}
-          {DashboardRoutes}
         </Route>
+        
+        {/* Handle terms page separately for testing */}
+        <Route path="/terms" element={<AppLayout><Terms /></AppLayout>} />
+        
+        {/* Dashboard routes */}
+        {DashboardRoutes}
         
         {UtilityRoutes}
         
