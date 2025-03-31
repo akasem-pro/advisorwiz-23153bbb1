@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSignInForm } from './useSignInForm';
 import { useAuthFormSubmit } from './useAuthFormSubmit';
-import { useAuth } from '../context/AuthProvider';
+import { useAuth } from '../context/AuthProvider'; // Using the right import
 import { toast } from 'sonner';
 
 /**

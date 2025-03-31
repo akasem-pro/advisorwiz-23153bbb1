@@ -24,13 +24,13 @@ function App() {
   }
 
   return (
-    <UserProviderRefactored>
-      <AuthProvider>
+    <AuthProvider>
+      <UserProviderRefactored>
         <Router>
           <AppRoutes />
         </Router>
-      </AuthProvider>
-    </UserProviderRefactored>
+      </UserProviderRefactored>
+    </AuthProvider>
   );
 }
 

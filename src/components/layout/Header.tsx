@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
-import { useAuth } from '../../features/auth/context/AuthProvider';
+import { useAuth } from '../../features/auth/context/AuthProvider'; // Using the feature auth provider
 import Logo from './Logo';
 import NavigationMenu from './NavigationMenu';
 import { getEffectiveAuthStatus } from '../../utils/mockAuthUtils';
