@@ -36,9 +36,9 @@ if (typeof window !== 'undefined') {
     }
   };
 
-  // Store callback IDs for cleanup - update type to handle both browser and node environments
-  let performanceImportId: number | ReturnType<typeof setTimeout> | null = null;
-  let preloadImportId: number | ReturnType<typeof setTimeout> | null = null;
+  // Store callback IDs for cleanup - fixed type to handle both browser and node environments
+  let performanceImportId: ReturnType<typeof setTimeout> | null = null;
+  let preloadImportId: ReturnType<typeof setTimeout> | null = null;
 
   // Import performance optimization utilities after initial render
   performanceImportId = safeRequestIdleCallback(() => {
@@ -65,16 +65,16 @@ if (typeof window !== 'undefined') {
   // Clean up callbacks on page unload
   window.addEventListener('unload', () => {
     if (performanceImportId !== null) {
-      if ('cancelIdleCallback' in window) {
-        window.cancelIdleCallback(performanceImportId as number);
+      if ('requestIdleCallback' in window && typeof performanceImportId === 'number') {
+        window.cancelIdleCallback(performanceImportId);
       } else {
         clearTimeout(performanceImportId);
       }
     }
     
     if (preloadImportId !== null) {
-      if ('cancelIdleCallback' in window) {
-        window.cancelIdleCallback(preloadImportId as number);
+      if ('requestIdleCallback' in window && typeof preloadImportId === 'number') {
+        window.cancelIdleCallback(preloadImportId);
       } else {
         clearTimeout(preloadImportId);
       }

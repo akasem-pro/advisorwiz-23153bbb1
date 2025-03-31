@@ -40,7 +40,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   animationDuration = 'normal',
   headerClassName = '',
   mainClassName = '',
-  withoutPadding = true,
+  withoutPadding = false,
   skipToContentId
 }) => {
   const location = useLocation();
@@ -143,13 +143,27 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
       
       <main className={cn(
         "flex-grow",
-        !withoutPadding && contentClassName,
-        mainClassName
+        withoutPadding ? '' : mainClassName
       )} id={skipToContentId}>
         <div className={cn(
+          "container mx-auto px-4 py-8", // Added default container and padding
           withoutPadding ? '' : contentClassName
         )}>
-          {contentVisible ? children : null}
+          {contentVisible ? children : (
+            // Add a placeholder while content is loading
+            <div className="animate-pulse flex space-x-4 h-64">
+              <div className="flex-1 space-y-6 py-1">
+                <div className="h-4 bg-slate-200 dark:bg-navy-700 rounded w-3/4"></div>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="h-4 bg-slate-200 dark:bg-navy-700 rounded col-span-2"></div>
+                    <div className="h-4 bg-slate-200 dark:bg-navy-700 rounded col-span-1"></div>
+                  </div>
+                  <div className="h-4 bg-slate-200 dark:bg-navy-700 rounded"></div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         
         {showTrustBadges && (

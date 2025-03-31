@@ -14,7 +14,7 @@ const MainRoutes = OptimizedMainRoutes.map((route) => {
       {...rest}
       element={
         <AppLayout>
-          {route.props.element}
+          {element}
         </AppLayout>
       }
     />

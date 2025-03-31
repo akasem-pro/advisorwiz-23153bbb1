@@ -25,7 +25,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   className = '',
   showTrustBadges = false,
   contentClassName,
-  withoutPadding = true,
+  withoutPadding = false, // Changed from true to false to ensure content gets padding
   animation = 'fade',
   animationDuration = 'normal',
   skipToContentId = 'main-content',
