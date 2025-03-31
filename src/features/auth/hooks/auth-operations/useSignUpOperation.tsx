@@ -1,126 +1,84 @@
 
 import { toast } from 'sonner';
+import { User } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../../integrations/supabase/client';
-import { useProfileCreation } from '../useProfileCreation';
 import { UserType } from '../../../../types/profileTypes';
-import { useAuth } from '../../context/AuthProvider';
 
 /**
  * Custom hook for sign-up operation with improved error handling
  */
 export const useSignUpOperation = (
-  networkStatus: 'online' | 'offline' | 'checking', 
-  setLoading: (loading: boolean) => void
+  setLoading: (loading: boolean) => void,
+  setMockUser?: (user: User | null) => void
 ) => {
   const navigate = useNavigate();
-  const { createUserProfile } = useProfileCreation();
-  const { setMockUser } = useAuth();
 
   const signUp = async (
-    email: string, 
-    password: string, 
-    userType: UserType = 'consumer'
+    email: string,
+    password: string,
+    userType: UserType
   ): Promise<boolean> => {
-    if (networkStatus === 'offline') {
-      toast.error('You appear to be offline. Please check your internet connection.');
-      return false;
-    }
-    
     try {
       setLoading(true);
       
-      console.log("[Auth Debug] Starting sign up process with email:", email);
-      console.log("[Auth Debug] Network status:", networkStatus);
-      console.log("[Auth Debug] Redirect URL will be:", `${window.location.origin}`);
+      console.log('[Auth Debug] Starting sign up process with email:', email);
+      console.log('[Auth Debug] User type:', userType);
       
       // Check for preview environments
       const isPreviewEnv = window.location.hostname.includes('preview') || 
-                           window.location.hostname.includes('lovableproject') ||
-                           window.location.hostname.includes('localhost');
+                          window.location.hostname.includes('lovableproject') ||
+                          window.location.hostname.includes('localhost');
       
-      // For preview environments, simulate the signup process without email verification
-      if (isPreviewEnv) {
-        console.log("[Auth Debug] Preview environment detected, simulating signup");
-        
-        // Add a small delay to simulate network request
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Create a mock user for preview environments
+      if (isPreviewEnv && setMockUser) {
+        console.log('[Auth Debug] Preview environment detected, creating mock user');
         const mockUser = {
-          id: `mock-${Date.now()}`,
-          email: email,
-          created_at: new Date().toISOString(),
-          app_metadata: {},
-          user_metadata: {
-            name: email.split('@')[0],
-            avatar_url: '',
-            user_type: userType
-          },
+          id: 'mock-' + Math.random().toString(36).substring(2, 15),
+          email,
+          app_metadata: { provider: 'email' },
+          user_metadata: { user_type: userType },
           aud: 'authenticated',
-          role: 'authenticated'
-        };
+          created_at: new Date().toISOString()
+        } as unknown as User;
         
-        // Create profile for the mock user
-        await createUserProfile(mockUser as any, userType);
-        
-        // Update the AuthProvider's mock user state
         setMockUser(mockUser);
-        
-        // Store mock user in localStorage
         localStorage.setItem('mock_auth_user', JSON.stringify(mockUser));
-        
-        toast.success("Account created successfully! In a production environment, you would receive an email verification link.");
+        toast.success('Account created successfully! (Preview Mode)');
+        navigate('/');
         return true;
       }
       
-      // Real signup process for production
+      // Only allow valid user types for registration
+      const validUserType = (userType === 'consumer' || 
+                           userType === 'advisor' || 
+                           userType === 'firm_admin') 
+                           ? userType 
+                           : 'consumer';
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
-            user_type: userType
-          }
-        }
+            user_type: validUserType,
+          },
+        },
       });
       
       if (error) {
-        console.error("[Auth Debug] Sign up error:", error);
+        console.error('[Auth Debug] Sign up error details:', error);
         throw error;
       }
       
-      console.log("[Auth Debug] Sign up response:", data);
+      console.log('[Auth Debug] Sign up successful, user data:', {
+        id: data.user?.id,
+        email: data.user?.email
+      });
       
-      if (data.user) {
-        // Create profile for the new user
-        await createUserProfile(data.user, userType);
-        
-        if (data.session) {
-          // User was immediately signed in
-          toast.success("Account created successfully!");
-          navigate('/');
-          return true;
-        } else {
-          // Email confirmation is required
-          toast.success("Sign up successful! Please check your email to verify your account.");
-          return true;
-        }
-      } else {
-        throw new Error("Unknown error occurred during sign up");
-      }
-    } catch (error: any) {
-      console.error("[Auth Debug] Detailed sign up error:", error);
-      
-      if (error.message?.includes('already registered')) {
-        throw new Error('This email is already registered. Please sign in instead.');
-      } else if (!navigator.onLine || error.message?.includes('network') || 
-                 error.message?.includes('connection') || error.message?.includes('fetch')) {
-        throw new Error('Unable to connect to authentication service. Please check your connection and try again.');
-      } else {
-        throw error;
-      }
+      return true;
+    } catch (error) {
+      console.error('[Auth Debug] Error during sign up:', error);
+      throw error;
     } finally {
       setLoading(false);
     }

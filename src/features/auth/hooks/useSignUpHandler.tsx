@@ -67,6 +67,7 @@ export const useSignUpHandler = () => {
         setSignInEmail(email);
         return false;
       } else {
+        // Pass isSignIn as false for sign up context
         handleAuthError(error, setFormError, false);
         return false;
       }

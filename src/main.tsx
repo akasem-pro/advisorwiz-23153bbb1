@@ -1,20 +1,15 @@
 
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './styles/main.css'
-import { ThemeProvider } from './context/ThemeContext'
-import { Toaster } from './components/ui/sonner'
-import { initEnhancedPerformanceTracking } from './utils/performance/enhancedPerformanceTracking'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
+import { initializePerformanceTracking } from './utils/performance';
 
-// Initialize enhanced performance tracking
-initEnhancedPerformanceTracking();
+// Initialize performance tracking
+initializePerformanceTracking();
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <ThemeProvider>
-      <App />
-      <Toaster position="top-right" />
-    </ThemeProvider>
+    <App />
   </React.StrictMode>,
-)
+);
