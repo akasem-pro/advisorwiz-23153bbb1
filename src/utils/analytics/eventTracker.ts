@@ -2,6 +2,7 @@
 import { trackEvent as dataLayerTrackEvent } from '../tagManager';
 import { handleSupabaseError, ErrorSeverity } from '../errorHandling/supabaseErrorHandler';
 import { storeAnalyticsMetric } from '../performance/core';
+import { sendGA4Event, trackGA4UserInteraction } from './ga4Integration';
 
 // Define common user behavior events
 export enum UserBehaviorEvent {
@@ -62,6 +63,9 @@ export const trackUserBehavior = (
     // Track the event via tag manager
     dataLayerTrackEvent(event.toString(), properties || {});
     
+    // Track the event in GA4
+    sendGA4Event(event.toString(), properties || {});
+    
   } catch (error) {
     handleSupabaseError(
       'Failed to track user behavior', 
@@ -90,6 +94,15 @@ export const trackFeatureUsage = (
     
     // Track via tag manager
     dataLayerTrackEvent('feature_usage', trackingProperties);
+    
+    // Track via GA4
+    trackGA4UserInteraction(
+      'feature_usage',
+      featureName,
+      featureName,
+      undefined,
+      trackingProperties
+    );
     
   } catch (error) {
     handleSupabaseError(

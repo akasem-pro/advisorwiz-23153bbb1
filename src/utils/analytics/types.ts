@@ -1,5 +1,8 @@
 
-// Define common user behavior events for consistent tracking
+/**
+ * Enum of standard user behavior events tracked in the application
+ * These align with GA4 standard and recommended events
+ */
 export enum UserBehaviorEvent {
   // Page interaction events
   PAGE_VIEW = 'page_view',
@@ -37,52 +40,43 @@ export enum UserBehaviorEvent {
   SORT_APPLIED = 'sort_applied',
   
   // Preference events
-  PREFERENCE_UPDATED = 'preference_updated'
+  PREFERENCE_UPDATED = 'preference_updated',
+  
+  // Ecommerce events (GA4 standard)
+  ADD_TO_CART = 'add_to_cart',
+  PURCHASE = 'purchase',
+  BEGIN_CHECKOUT = 'begin_checkout',
+  VIEW_ITEM = 'view_item',
+  VIEW_ITEM_LIST = 'view_item_list',
+  
+  // Engagement events (GA4 standard)
+  SHARE = 'share',
+  EARN_VIRTUAL_CURRENCY = 'earn_virtual_currency',
+  SPEND_VIRTUAL_CURRENCY = 'spend_virtual_currency',
+  
+  // Content engagement (GA4 recommended)
+  SELECT_CONTENT = 'select_content',
+  VIEW_PROMOTION = 'view_promotion',
+  SELECT_PROMOTION = 'select_promotion'
 }
 
-// Match action types
-export type MatchAction = 
-  | 'view' 
-  | 'click' 
-  | 'contact' 
-  | 'schedule' 
-  | 'feedback' 
-  | 'view_explanation';
-
-// Analytics dimensions
-export interface AnalyticsDimension {
-  name: string;
-  value: string;
+/**
+ * Interface for GA4 Event parameters
+ */
+export interface GA4EventParams {
+  [key: string]: string | number | boolean | null | undefined;
 }
 
-// Performance metric types
-export interface PerformanceMetric {
-  name: string;
-  value: number;
-  dimensions?: AnalyticsDimension[];
-}
-
-// User engagement metric types
-export interface EngagementMetric {
-  eventType: string;
-  duration?: number;
-  pageDepth?: number;
-  interactions?: number;
-}
-
-// A/B testing metric types
-export interface ABTestMetric {
-  testId: string;
-  variantId: string;
-  metricName: string;
-  metricValue: number;
-}
-
-// Tooltip content interface
-export interface TooltipContent {
-  id: string;
-  title: string;
-  description: string;
-  section_key: string;
-  created_at?: string;
+/**
+ * Interface for GA4 Enhanced Ecommerce item
+ */
+export interface GA4EcommerceItem {
+  item_id: string;
+  item_name: string;
+  price?: number;
+  quantity?: number;
+  item_category?: string;
+  item_variant?: string;
+  item_brand?: string;
+  [key: string]: any;
 }

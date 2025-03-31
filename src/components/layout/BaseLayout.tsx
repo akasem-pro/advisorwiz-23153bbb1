@@ -5,6 +5,7 @@ import AnimatedRoute from '../ui/AnimatedRoute';
 import TrustBadges from '../ui/TrustBadges';
 import FloatingSupportButton from '../support/FloatingSupportButton';
 import { initializeTagManager, trackPageView } from '../../utils/tagManager';
+import { trackGA4PageView } from '../../utils/analytics/ga4Integration';
 import { cn } from '@/lib/utils';
 import AppFooter from './AppFooter';
 
@@ -49,7 +50,13 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   useEffect(() => {
     initializeTagManager();
     const pageTitle = document.title || 'AdvisorWiz';
+    
+    // Track page view with existing system
     trackPageView(pageTitle, location.pathname);
+    
+    // Track page view with GA4
+    trackGA4PageView(pageTitle, location.pathname);
+    
   }, [location]);
 
   // Animation duration class
