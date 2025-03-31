@@ -34,7 +34,7 @@ const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
       }
     }, delay);
     
-    // Proper cleanup function
+    // Proper cleanup function to prevent memory leaks and React error #310
     return () => {
       isMounted = false;
       if (timeoutId) {

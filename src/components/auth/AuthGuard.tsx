@@ -25,6 +25,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   
   useEffect(() => {
     let isMounted = true;
+    let authCheckPromise: Promise<void> | null = null;
     
     const verifyAuth = async () => {
       try {
@@ -33,8 +34,10 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
         if (user && isMounted) {
           console.log("[AuthGuard] User authenticated via Auth context:", user.email);
           startTransition(() => {
-            setIsAuthenticated(true);
-            setChecking(false);
+            if (isMounted) {
+              setIsAuthenticated(true);
+              setChecking(false);
+            }
           });
           return;
         }
@@ -46,8 +49,10 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
         if (isPreviewEnv && localStorage.getItem('mock_auth_user') && isMounted) {
           console.log("[AuthGuard] Preview environment with mock user detected");
           startTransition(() => {
-            setIsAuthenticated(true);
-            setChecking(false);
+            if (isMounted) {
+              setIsAuthenticated(true);
+              setChecking(false);
+            }
           });
           return;
         }
@@ -57,6 +62,8 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
           
           if (isMounted) {
             startTransition(() => {
+              if (!isMounted) return;
+              
               if (error) {
                 console.error("[AuthGuard] Error checking authentication:", error);
                 setIsAuthenticated(false);
@@ -74,8 +81,10 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
           console.error("[AuthGuard] Exception during Supabase auth check:", e);
           if (isMounted) {
             startTransition(() => {
-              setIsAuthenticated(false);
-              setChecking(false);
+              if (isMounted) {
+                setIsAuthenticated(false);
+                setChecking(false);
+              }
             });
           }
         }
@@ -83,18 +92,23 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
         console.error("[AuthGuard] Exception during auth check:", err);
         if (isMounted) {
           startTransition(() => {
-            setIsAuthenticated(false);
-            setChecking(false);
+            if (isMounted) {
+              setIsAuthenticated(false);
+              setChecking(false);
+            }
           });
         }
       }
     };
     
-    verifyAuth();
+    // Store the promise to handle cancellation properly
+    authCheckPromise = verifyAuth();
     
     // Cleanup function for unmount
     return () => {
       isMounted = false;
+      // No need to await or cancel the promise explicitly
+      // The isMounted check within the async function prevents state updates
     };
   }, [setIsAuthenticated, location.pathname, user]);
   
@@ -128,7 +142,11 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
     
     // Call the toast outside of render, but in a safe way
     React.useEffect(() => {
-      showToast();
+      let isMounted = true;
+      if (isMounted) {
+        showToast();
+      }
+      return () => { isMounted = false; };
     }, []);
     
     return <Navigate to="/signin" state={{ from: destination }} replace />;

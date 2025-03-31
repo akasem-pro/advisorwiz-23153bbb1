@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useEffect, useState, useTransition } from 'react';
+import React, { ReactNode, useEffect, useState, useTransition, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
 import TrustBadges from '../ui/TrustBadges';
@@ -46,11 +46,11 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   const location = useLocation();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isPending, startTransition] = useTransition();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // Handle analytics with debouncing
   useEffect(() => {
     let isMounted = true;
-    let timer: ReturnType<typeof setTimeout> | undefined;
     
     // Wrap analytics initialization in startTransition to prevent suspension issues
     startTransition(() => {
@@ -62,7 +62,11 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         }
         
         // Debounce page view tracking to avoid performance impact
-        timer = setTimeout(() => {
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+        
+        timerRef.current = setTimeout(() => {
           if (isMounted) {
             const pageTitle = document.title || 'AdvisorWiz';
             trackPageView(pageTitle, location.pathname);
@@ -76,7 +80,10 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
     // Proper cleanup function that cancels the timer and prevents state updates after unmounting
     return () => { 
       isMounted = false;
-      if (timer) clearTimeout(timer);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
     };
   }, [location, isInitialLoad]);
   
@@ -85,10 +92,10 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   
   useEffect(() => {
     let isMounted = true;
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    let visibilityTimer: ReturnType<typeof setTimeout> | null = null;
     
     // Use startTransition for content visibility to avoid suspension
-    timer = setTimeout(() => {
+    visibilityTimer = setTimeout(() => {
       if (isMounted) {
         startTransition(() => {
           setContentVisible(true);
@@ -99,7 +106,9 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
     // Proper cleanup function
     return () => {
       isMounted = false;
-      if (timer) clearTimeout(timer);
+      if (visibilityTimer) {
+        clearTimeout(visibilityTimer);
+      }
     };
   }, []);
 
@@ -154,7 +163,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
       </main>
       
       {/* Only render FloatingSupportButton after initial load */}
-      {!isInitialLoad && (
+      {!isInitialLoad && contentVisible && (
         <React.Suspense fallback={null}>
           <FloatingSupportButton />
         </React.Suspense>

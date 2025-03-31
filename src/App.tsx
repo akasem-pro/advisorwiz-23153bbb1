@@ -10,30 +10,39 @@ function App() {
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
+    // Track mounted state to prevent updates after unmount
+    let isMounted = true;
+    
     // Simulate loading delay, but use a smaller delay to improve perceived performance
     const timer = setTimeout(() => {
       // Wrap the state update in startTransition
       if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        startTransition(() => {
-          setLoading(false);
-        });
-      } else {
-        // If document isn't ready yet, wait for it
-        const readyStateHandler = () => {
+        if (isMounted) {
           startTransition(() => {
             setLoading(false);
           });
-          document.removeEventListener('DOMContentLoaded', readyStateHandler);
+        }
+      } else {
+        // If document isn't ready yet, wait for it
+        const readyStateHandler = () => {
+          if (isMounted) {
+            startTransition(() => {
+              setLoading(false);
+            });
+          }
         };
         document.addEventListener('DOMContentLoaded', readyStateHandler);
         
         // If DOMContentLoaded doesn't fire for some reason, still show the app
         const backupTimer = setTimeout(() => {
-          startTransition(() => {
-            setLoading(false);
-          });
+          if (isMounted) {
+            startTransition(() => {
+              setLoading(false);
+            });
+          }
         }, 1000);
         
+        // Clean up both the event listener and the backup timer
         return () => {
           clearTimeout(backupTimer);
           document.removeEventListener('DOMContentLoaded', readyStateHandler);
@@ -43,6 +52,7 @@ function App() {
 
     // Proper cleanup function
     return () => {
+      isMounted = false;
       clearTimeout(timer);
     };
   }, []);

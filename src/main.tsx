@@ -36,8 +36,12 @@ if (typeof window !== 'undefined') {
     }
   };
 
+  // Store callback IDs for cleanup
+  let performanceImportId: number | null = null;
+  let preloadImportId: number | null = null;
+
   // Import performance optimization utilities after initial render
-  const performanceImportId = safeRequestIdleCallback(() => {
+  performanceImportId = safeRequestIdleCallback(() => {
     import('./utils/performanceTracking')
       .then(({ initPerformanceOptimizations }) => {
         initPerformanceOptimizations();
@@ -48,7 +52,7 @@ if (typeof window !== 'undefined') {
   });
   
   // Import and initialize preload strategy
-  const preloadImportId = safeRequestIdleCallback(() => {
+  preloadImportId = safeRequestIdleCallback(() => {
     import('./utils/preloadStrategy')
       .then(({ initPreloadStrategy }) => {
         initPreloadStrategy();
@@ -57,4 +61,23 @@ if (typeof window !== 'undefined') {
         console.error('Failed to initialize preload strategy:', error);
       });
   }, 1500);
+
+  // Clean up callbacks on page unload
+  window.addEventListener('unload', () => {
+    if (performanceImportId !== null) {
+      if ('cancelIdleCallback' in window) {
+        window.cancelIdleCallback(performanceImportId);
+      } else {
+        clearTimeout(performanceImportId);
+      }
+    }
+    
+    if (preloadImportId !== null) {
+      if ('cancelIdleCallback' in window) {
+        window.cancelIdleCallback(preloadImportId);
+      } else {
+        clearTimeout(preloadImportId);
+      }
+    }
+  });
 }
