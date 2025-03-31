@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   BookText, 
@@ -26,35 +25,30 @@ interface AppointmentCategoryManagerProps {
 
 const DEFAULT_CATEGORIES: Omit<AppointmentCategory, 'id'>[] = [
   {
-    name: 'free_consultation',
     label: 'Free Consultation',
     description: 'A short introductory call to discuss your financial needs.',
     duration: 30,
     enabled: true
   },
   {
-    name: 'discovery_call',
     label: 'Discovery Call',
     description: 'An in-depth discussion to understand your financial situation.',
     duration: 60,
     enabled: true
   },
   {
-    name: 'investment_call',
     label: 'Investment Strategy',
     description: 'Review and discuss your investment portfolio and strategies.',
     duration: 60,
     enabled: true
   },
   {
-    name: 'tax_planning',
     label: 'Tax Planning',
     description: 'Consultation for tax optimization strategies.',
     duration: 60,
     enabled: true
   },
   {
-    name: 'business_entrepreneurship',
     label: 'Business & Entrepreneurship',
     description: 'Financial advice for business owners and entrepreneurs.',
     duration: 90,
@@ -71,7 +65,7 @@ const AppointmentCategoryManager: React.FC<AppointmentCategoryManagerProps> = ({
     advisorProfile?.appointmentCategories || 
     DEFAULT_CATEGORIES.map(cat => ({
       ...cat,
-      id: `cat-${cat.name}`
+      id: `cat-${cat.label.toLowerCase().replace(/ /g, '_')}`
     }))
   );
   const [saved, setSaved] = useState(false);
@@ -88,7 +82,7 @@ const AppointmentCategoryManager: React.FC<AppointmentCategoryManagerProps> = ({
 
   const handleUpdateCategoryField = (
     categoryId: string, 
-    field: keyof Omit<AppointmentCategory, 'id' | 'name'>, 
+    field: keyof Omit<AppointmentCategory, 'id'>, 
     value: string | number | boolean
   ) => {
     setCategories(prev => 
@@ -123,7 +117,7 @@ const AppointmentCategoryManager: React.FC<AppointmentCategoryManagerProps> = ({
   const resetToDefaults = () => {
     const defaultCats = DEFAULT_CATEGORIES.map(cat => ({
       ...cat,
-      id: `cat-${cat.name}`
+      id: `cat-${cat.label.toLowerCase().replace(/ /g, '_')}`
     }));
     
     setCategories(defaultCats);

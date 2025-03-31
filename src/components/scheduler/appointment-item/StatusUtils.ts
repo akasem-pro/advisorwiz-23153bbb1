@@ -18,6 +18,23 @@ export const getStatusClass = (status: AppointmentStatus) => {
   }
 };
 
+export const getStatusColor = (status: AppointmentStatus) => {
+  switch (status) {
+    case 'confirmed':
+      return 'bg-green-100 text-green-800';
+    case 'pending':
+      return 'bg-amber-100 text-amber-800';
+    case 'canceled':
+      return 'bg-red-100 text-red-800';
+    case 'completed':
+      return 'bg-blue-100 text-blue-800';
+    case 'rescheduled':
+      return 'bg-purple-100 text-purple-800';
+    default:
+      return 'bg-slate-100 text-slate-800';
+  }
+};
+
 export const getStatusIcon = (status: AppointmentStatus) => {
   // The actual implementation can be kept as is
   // Just ensuring the function is exported and has the right type

@@ -53,6 +53,7 @@ export interface CalendarEvent {
 // Appointment Category
 export interface AppointmentCategory {
   id: string;
+  name?: string;
   label: string;
   description?: string;
   duration: number;
@@ -60,6 +61,5 @@ export interface AppointmentCategory {
   price?: number;
   isDefault?: boolean;
   advisorId?: string;
-  enabled: boolean; // Added this field which was being used
+  enabled: boolean;
 }
-

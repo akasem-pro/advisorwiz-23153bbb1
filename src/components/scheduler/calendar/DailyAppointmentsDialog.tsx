@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { Appointment } from '../../../context/UserContext';
@@ -44,7 +43,7 @@ const DailyAppointmentsDialog: React.FC<DailyAppointmentsDialogProps> = ({
                 "p-3 rounded-lg border cursor-pointer hover:bg-slate-50",
                 appointment.status === 'confirmed' && "border-green-200",
                 appointment.status === 'pending' && "border-amber-200",
-                appointment.status === 'cancelled' && "border-red-200",
+                appointment.status === 'canceled' && "border-red-200",
                 appointment.status === 'completed' && "border-blue-200"
               )}
               onClick={() => onAppointmentClick(appointment)}
@@ -56,7 +55,7 @@ const DailyAppointmentsDialog: React.FC<DailyAppointmentsDialogProps> = ({
                   className={cn(
                     appointment.status === 'confirmed' && "bg-green-100 text-green-800",
                     appointment.status === 'pending' && "bg-amber-100 text-amber-800",
-                    appointment.status === 'cancelled' && "bg-red-100 text-red-800",
+                    appointment.status === 'canceled' && "bg-red-100 text-red-800",
                     appointment.status === 'completed' && "bg-blue-100 text-blue-800"
                   )}
                 >
