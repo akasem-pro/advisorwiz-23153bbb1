@@ -1,6 +1,6 @@
 
-import { trackGA4Event, trackGA4PageView, setGA4UserProperties } from '../../utils/analytics/ga4Integration';
 import { storeAnalyticsMetric } from '../../utils/performance/core';
+import { sendGA4Event, trackGA4PageView, setGA4UserProperties } from '../../utils/analytics/ga4Integration';
 import { supabase } from '../../integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -59,7 +59,7 @@ export const trackEvent = (
     
     // Track in Google Analytics
     if (opts.sendToGA4) {
-      trackGA4Event(eventName, properties);
+      sendGA4Event(eventName, properties);
     }
     
     // Store in internal metrics system
@@ -91,19 +91,45 @@ const storeEventInDatabase = async (
     const session = await supabase.auth.getSession();
     const userId = session?.data?.session?.user?.id;
     
-    // Create event data
-    const eventData = {
-      event_name: eventName,
-      properties: properties || {},
-      user_id: userId || null,
-      timestamp: new Date().toISOString(),
-      session_id: localStorage.getItem('session_id') || null,
-      url: window.location.href,
-      referrer: document.referrer || null
+    // Create metric data for analytics_metrics
+    const metricData = {
+      metric_type: eventName.split('_')[0] || 'event',
+      metric_name: eventName,
+      metric_value: properties?.value || 1,
+      metric_date: new Date().toISOString().split('T')[0],
+      dimension_name: 'event_name',
+      dimension_value: eventName
     };
     
-    // Store in Supabase
-    const { error } = await supabase.from('analytics_events').insert(eventData);
+    // Store in Supabase analytics_metrics
+    const { error } = await supabase.from('analytics_metrics').insert(metricData);
+    
+    // If there are additional properties, store them as separate dimensions
+    if (properties && !error) {
+      // Store userId as a dimension if available
+      if (userId) {
+        await supabase.from('analytics_metrics').insert({
+          metric_type: metricData.metric_type,
+          metric_name: metricData.metric_name,
+          metric_value: metricData.metric_value,
+          metric_date: metricData.metric_date,
+          dimension_name: 'user_id',
+          dimension_value: userId
+        });
+      }
+      
+      // Store page path if available
+      if (properties.page_path) {
+        await supabase.from('analytics_metrics').insert({
+          metric_type: metricData.metric_type,
+          metric_name: metricData.metric_name,
+          metric_value: metricData.metric_value,
+          metric_date: metricData.metric_date,
+          dimension_name: 'page_path',
+          dimension_value: properties.page_path
+        });
+      }
+    }
     
     if (error && process.env.NODE_ENV === 'development') {
       console.error('Failed to store event in database:', error);
@@ -200,18 +226,19 @@ const storeUserProperties = async (properties: Record<string, any>): Promise<voi
     
     if (!userId) return;
     
-    // Store in Supabase
-    const { error } = await supabase.from('user_analytics').upsert({
-      user_id: userId,
-      properties,
-      updated_at: new Date().toISOString()
-    }, {
-      onConflict: 'user_id'
+    // Store user properties as analytics metrics
+    Object.entries(properties).forEach(async ([key, value]) => {
+      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+        await supabase.from('analytics_metrics').insert({
+          metric_type: 'user_property',
+          metric_name: key,
+          metric_value: typeof value === 'number' ? value : 1,
+          metric_date: new Date().toISOString().split('T')[0],
+          dimension_name: 'property_name',
+          dimension_value: String(value)
+        });
+      }
     });
-    
-    if (error && process.env.NODE_ENV === 'development') {
-      console.error('Failed to store user properties:', error);
-    }
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
       console.error('Failed to store user properties:', error);

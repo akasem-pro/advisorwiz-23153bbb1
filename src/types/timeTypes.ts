@@ -1,40 +1,43 @@
 
-// Types related to time slots and availability
+// Appointment status enum
+export type AppointmentStatus = 'pending' | 'confirmed' | 'canceled' | 'completed' | 'rescheduled';
 
-// Time slot type for weekly availability
-export type TimeSlot = {
-  day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
-  startTime: string; // Format: "HH:MM" in 24-hour format
-  endTime: string; // Format: "HH:MM" in 24-hour format
-  isAvailable: boolean;
-};
-
-// Appointment status type
-export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
-
-// Appointment type
-export type Appointment = {
+// Appointment interface
+export interface Appointment {
   id: string;
   advisorId: string;
   consumerId: string;
-  categoryId: string;
-  title: string;
-  date: string; // ISO string format
-  startTime: string; // Format: "HH:MM" in 24-hour format
-  endTime: string; // Format: "HH:MM" in 24-hour format
+  title?: string;
+  description?: string;
   status: AppointmentStatus;
+  scheduledStart: string;
+  scheduledEnd: string;
+  createdAt: string;
+  updatedAt: string;
+  meetingLink?: string;
   notes?: string;
-  location?: string; // Could be 'video', 'phone', physical address, etc.
-  createdAt: string; // ISO string format
-  updatedAt: string; // ISO string format
-};
+  category?: string; // Added this field
+}
 
-// Appointment category type
-export type AppointmentCategory = {
+// Availability time slot
+export interface TimeSlot {
   id: string;
-  name: 'free_consultation' | 'discovery_call' | 'investment_call' | 'tax_planning' | 'business_entrepreneurship';
-  label: string;
-  description: string;
-  duration: number; // in minutes
-  enabled: boolean;
-};
+  userId: string;
+  startTime: string;
+  endTime: string;
+  isAvailable: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Calendar event
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  status?: AppointmentStatus;
+  appointmentId?: string;
+  isAppointment?: boolean;
+  category?: string;
+}

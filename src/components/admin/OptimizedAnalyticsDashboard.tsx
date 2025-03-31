@@ -9,6 +9,7 @@ import { DateRange } from 'react-day-picker';
 import { supabase } from '../../integrations/supabase/client';
 import { Button } from '../ui/button';
 import { RefreshCw, Download } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AnalyticsDashboardProps {
   className?: string;
@@ -78,42 +79,47 @@ const OptimizedAnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ classN
       const fromDate = dateRange.from.toISOString();
       const toDate = dateRange.to.toISOString();
       
-      // Fetch page views count
-      const { count: pageViews } = await supabase
-        .from('analytics_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('event_name', 'page_view')
-        .gte('timestamp', fromDate)
-        .lte('timestamp', toDate);
+      // Fetch page views count from analytics_metrics instead
+      const { data: pageViewsData } = await supabase
+        .from('analytics_metrics')
+        .select('*')
+        .eq('metric_type', 'page_view')
+        .gte('metric_date', fromDate.split('T')[0])
+        .lte('metric_date', toDate.split('T')[0]);
       
-      // Fetch unique users
-      const { data: uniqueUsers } = await supabase
-        .from('analytics_events')
-        .select('user_id')
-        .gte('timestamp', fromDate)
-        .lte('timestamp', toDate)
-        .not('user_id', 'is', null);
+      const pageViews = pageViewsData?.length || 0;
       
-      const uniqueUserIds = new Set(uniqueUsers?.map(item => item.user_id));
+      // Fetch unique users from analytics_metrics using dimension_name
+      const { data: uniqueUsersData } = await supabase
+        .from('analytics_metrics')
+        .select('dimension_value')
+        .eq('dimension_name', 'user_id')
+        .gte('metric_date', fromDate.split('T')[0])
+        .lte('metric_date', toDate.split('T')[0])
+        .not('dimension_value', 'is', null);
+      
+      const uniqueUserIds = new Set(uniqueUsersData?.map(item => item.dimension_value) || []);
       
       // Fetch total events
-      const { count: eventCount } = await supabase
-        .from('analytics_events')
-        .select('*', { count: 'exact', head: true })
-        .gte('timestamp', fromDate)
-        .lte('timestamp', toDate);
+      const { data: eventData } = await supabase
+        .from('analytics_metrics')
+        .select('*')
+        .gte('metric_date', fromDate.split('T')[0])
+        .lte('metric_date', toDate.split('T')[0]);
+      
+      const eventCount = eventData?.length || 0;
       
       // Calculate average time on page
       const { data: timeData } = await supabase
-        .from('analytics_events')
-        .select('properties')
-        .eq('event_name', 'page_time')
-        .gte('timestamp', fromDate)
-        .lte('timestamp', toDate);
+        .from('analytics_metrics')
+        .select('metric_value')
+        .eq('metric_type', 'page_time')
+        .gte('metric_date', fromDate.split('T')[0])
+        .lte('metric_date', toDate.split('T')[0]);
       
       let totalTime = 0;
-      const timeEntries = timeData?.filter(item => item.properties?.time_seconds) || [];
-      totalTime = timeEntries.reduce((sum, item) => sum + (item.properties?.time_seconds || 0), 0);
+      const timeEntries = timeData || [];
+      totalTime = timeEntries.reduce((sum, item) => sum + (item.metric_value || 0), 0);
       const avgTimeOnPage = timeEntries.length ? Math.round(totalTime / timeEntries.length) : 0;
       
       // Get page views by day
@@ -122,35 +128,33 @@ const OptimizedAnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ classN
       
       for (let i = 0; i < days; i++) {
         const date = subDays(dateRange.to, i);
-        const startOfDay = new Date(date.setHours(0, 0, 0, 0)).toISOString();
-        const endOfDay = new Date(date.setHours(23, 59, 59, 999)).toISOString();
+        const dateStr = format(date, 'yyyy-MM-dd');
         
-        const { count } = await supabase
-          .from('analytics_events')
-          .select('*', { count: 'exact', head: true })
-          .eq('event_name', 'page_view')
-          .gte('timestamp', startOfDay)
-          .lte('timestamp', endOfDay);
+        const { data: dayData } = await supabase
+          .from('analytics_metrics')
+          .select('*')
+          .eq('metric_type', 'page_view')
+          .eq('metric_date', dateStr);
         
         pageViewsByDay.unshift({
           name: format(date, 'MMM dd'),
-          value: count || 0
+          value: dayData?.length || 0
         });
       }
       
       // Get engagement by feature
       const { data: featureData } = await supabase
-        .from('analytics_events')
-        .select('properties')
-        .like('event_name', 'feature_%')
-        .gte('timestamp', fromDate)
-        .lte('timestamp', toDate);
+        .from('analytics_metrics')
+        .select('metric_name, metric_value, dimension_value')
+        .eq('metric_type', 'feature')
+        .gte('metric_date', fromDate.split('T')[0])
+        .lte('metric_date', toDate.split('T')[0]);
       
       const featureCounts: Record<string, number> = {};
       featureData?.forEach(item => {
-        const featureName = item.properties?.feature_name;
+        const featureName = item.dimension_value || item.metric_name;
         if (featureName) {
-          featureCounts[featureName] = (featureCounts[featureName] || 0) + 1;
+          featureCounts[featureName] = (featureCounts[featureName] || 0) + (item.metric_value || 1);
         }
       });
       
@@ -161,17 +165,17 @@ const OptimizedAnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ classN
       
       // Get conversions by type
       const { data: conversionData } = await supabase
-        .from('analytics_events')
-        .select('properties')
-        .eq('event_name', 'conversion')
-        .gte('timestamp', fromDate)
-        .lte('timestamp', toDate);
+        .from('analytics_metrics')
+        .select('dimension_value, metric_value')
+        .eq('metric_type', 'conversion')
+        .gte('metric_date', fromDate.split('T')[0])
+        .lte('metric_date', toDate.split('T')[0]);
       
       const conversionCounts: Record<string, number> = {};
       conversionData?.forEach(item => {
-        const conversionType = item.properties?.conversion_type;
+        const conversionType = item.dimension_value;
         if (conversionType) {
-          conversionCounts[conversionType] = (conversionCounts[conversionType] || 0) + 1;
+          conversionCounts[conversionType] = (conversionCounts[conversionType] || 0) + (item.metric_value || 1);
         }
       });
       
@@ -181,17 +185,18 @@ const OptimizedAnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ classN
       
       // Get top pages
       const { data: pagesData } = await supabase
-        .from('analytics_events')
-        .select('properties')
-        .eq('event_name', 'page_view')
-        .gte('timestamp', fromDate)
-        .lte('timestamp', toDate);
+        .from('analytics_metrics')
+        .select('dimension_value, metric_value')
+        .eq('metric_type', 'page_view')
+        .eq('dimension_name', 'page_path')
+        .gte('metric_date', fromDate.split('T')[0])
+        .lte('metric_date', toDate.split('T')[0]);
       
       const pageCounts: Record<string, number> = {};
       pagesData?.forEach(item => {
-        const path = item.properties?.page_path;
+        const path = item.dimension_value;
         if (path) {
-          pageCounts[path] = (pageCounts[path] || 0) + 1;
+          pageCounts[path] = (pageCounts[path] || 0) + (item.metric_value || 1);
         }
       });
       
@@ -202,8 +207,8 @@ const OptimizedAnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ classN
       
       // Update state with all fetched data
       setData({
-        pageViews: pageViews || 0,
-        events: eventCount || 0,
+        pageViews: pageViews,
+        events: eventCount,
         users: uniqueUserIds.size,
         avgEngagementTime: avgTimeOnPage,
         isLoading: false,
@@ -215,6 +220,7 @@ const OptimizedAnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ classN
       
     } catch (error) {
       console.error('Error fetching analytics data:', error);
+      toast.error('Failed to fetch analytics data');
       setData(prev => ({ ...prev, isLoading: false }));
     }
   };

@@ -1,3 +1,4 @@
+
 /**
  * Google Analytics 4 (GA4) Integration
  * Provides utilities for tracking events in GA4 format
@@ -59,6 +60,9 @@ export const sendGA4Event = (
     }
   }
 };
+
+// Export sendGA4Event as trackGA4Event for compatibility with existing code
+export const trackGA4Event = sendGA4Event;
 
 /**
  * Track page view in GA4

@@ -78,9 +78,9 @@ export const useCommunicationManagement = () => {
     const newChat: Chat = {
       id: uuidv4(),
       participants: [userId1, userId2],
-      participantNames: {
-        [userId1]: userName1,
-        [userId2]: userName2
+      participantData: {
+        [userId1]: { name: userName1 },
+        [userId2]: { name: userName2 }
       },
       messages: [],
       createdAt: new Date().toISOString(),
@@ -114,7 +114,7 @@ export const useCommunicationManagement = () => {
     // Track appointment creation
     trackEvent('appointment_created', {
       appointment_id: newAppointment.id,
-      appointment_type: appointmentData.type,
+      appointment_category: appointmentData.category,
       advisor_id: appointmentData.advisorId,
       consumer_id: appointmentData.consumerId
     });

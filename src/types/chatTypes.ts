@@ -1,22 +1,39 @@
 
-// Types related to chat functionality
-
-// Message type for the chat
-export type ChatMessage = {
+// Base chat message type
+export interface ChatMessage {
   id: string;
   senderId: string;
-  senderName: string;
   recipientId: string;
-  recipientName: string;
   content: string;
-  timestamp: string; // ISO string format
+  timestamp: string;
   read: boolean;
-};
+  readAt?: string;
+}
 
-// Chat type for conversations
-export type Chat = {
+// Participant data for a chat
+export interface ParticipantData {
+  name: string;
+  avatar?: string;
+  lastSeen?: string;
+}
+
+// Chat type definition
+export interface Chat {
   id: string;
   participants: string[];
+  participantData: Record<string, ParticipantData>;
   messages: ChatMessage[];
-  lastUpdated: string; // ISO string format
-};
+  createdAt: string;
+  updatedAt: string;
+  lastMessage?: ChatMessage;
+}
+
+// Chat preview type (for displaying in lists)
+export interface ChatPreview {
+  id: string;
+  participants: string[];
+  participantData: Record<string, ParticipantData>;
+  lastMessage?: ChatMessage;
+  unreadCount: number;
+  updatedAt: string;
+}
