@@ -30,7 +30,8 @@ export const initializeMetaPixel = (config: MetaPixelConfig): void => {
 
   try {
     // Initialize Facebook Pixel
-    !function(f: any, b: any, e: any, v: any, n: any, t: any, s: any) {
+    // Fixed IIFE to properly handle function expression evaluation
+    (function(f, b, e, v, n, t, s) {
       if (f.fbq) return;
       n = f.fbq = function() {
         n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
@@ -45,7 +46,7 @@ export const initializeMetaPixel = (config: MetaPixelConfig): void => {
       t.src = v;
       s = b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t, s);
-    }(
+    })(
       window,
       document,
       'script',
@@ -53,13 +54,13 @@ export const initializeMetaPixel = (config: MetaPixelConfig): void => {
     );
     
     // Initialize with pixel ID
-    (window as any).fbq('init', config.pixelId, {}, {
+    window.fbq('init', config.pixelId, {}, {
       autoConfig: config.advanced?.autoConfig !== false,
       debug: config.advanced?.debug === true
     });
     
     // Track initial page view
-    (window as any).fbq('track', 'PageView');
+    window.fbq('track', 'PageView');
     
     isInitialized = true;
     

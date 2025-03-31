@@ -1,21 +1,11 @@
-
 /**
  * Google Analytics 4 (GA4) Integration
  * Provides utilities for tracking events in GA4 format
  */
 
 // Define the gtag function as it's provided by the GA4 script
-interface Window {
-  gtag?: (...args: any[]) => void;
-  dataLayer?: any[];
-}
-
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-    dataLayer?: any[];
-  }
-}
+// Note: We are removing the Window interface declaration here
+// since it's already declared in trackers/index.ts
 
 /**
  * Initialize Google Analytics 4

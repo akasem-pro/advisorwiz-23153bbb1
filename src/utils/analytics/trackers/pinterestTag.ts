@@ -26,8 +26,8 @@ export const initializePinterestTag = (config: PinterestTagConfig): void => {
   if (isInitialized) return;
 
   try {
-    // Load Pinterest Tag script
-    !function(e: any) {
+    // Load Pinterest Tag script - Fixed IIFE to properly handle function expression evaluation
+    (function(e) {
       if (!window.pintrk) {
         window.pintrk = function() {
           window.pintrk.queue.push(Array.prototype.slice.call(arguments));
@@ -43,7 +43,7 @@ export const initializePinterestTag = (config: PinterestTagConfig): void => {
         const p = e.getElementsByTagName("script")[0];
         p.parentNode.insertBefore(n, p);
       }
-    }(document);
+    })(document);
     
     // Initialize with tag ID
     window.pintrk('load', config.tagId);
