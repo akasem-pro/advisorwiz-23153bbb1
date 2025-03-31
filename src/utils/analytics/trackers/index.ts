@@ -13,7 +13,7 @@ declare global {
   interface Window {
     dataLayer: any[];
     gtag?: (...args: any[]) => void;
-    fbq?: (...args: any[]) => void;
+    fbq?: any; // Changed to match the 'any' type in metaPixel.ts
     pintrk?: any;
     adsbygoogle: any[];
   }
