@@ -27,6 +27,8 @@ const BaseLayoutContent: React.FC<BaseLayoutContentProps> = ({
   showFloatingSupport = true,
   isInitialLoad
 }) => {
+  console.log("BaseLayoutContent rendering with children:", children ? "Children exists" : "No children");
+  
   return (
     <>
       <main className={cn(
@@ -35,7 +37,8 @@ const BaseLayoutContent: React.FC<BaseLayoutContentProps> = ({
       )} id={skipToContentId}>
         <div className={cn(
           "container mx-auto px-4 py-8",
-          withoutPadding ? '' : contentClassName
+          withoutPadding ? '' : 'py-4',
+          contentClassName
         )}>
           {children}
         </div>

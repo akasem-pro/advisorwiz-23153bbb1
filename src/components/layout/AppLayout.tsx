@@ -24,7 +24,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   fullWidth = false,
   className = '',
   showTrustBadges = false,
-  contentClassName,
+  contentClassName = '',
   withoutPadding = false,
   animation = 'none',
   animationDuration = 'normal',
@@ -41,7 +41,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       showTrustBadges={showTrustBadges}
       fullWidth={fullWidth}
       className={className}
-      contentClassName={cn("pt-24 md:pt-28", contentClassName)}
+      contentClassName={cn("pt-16 md:pt-20", contentClassName)}
       withoutPadding={withoutPadding}
       animation={animation}
       animationDuration={animationDuration}

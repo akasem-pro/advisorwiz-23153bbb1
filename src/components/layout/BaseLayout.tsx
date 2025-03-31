@@ -42,6 +42,8 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   withoutPadding = false,
   skipToContentId
 }) => {
+  console.log("BaseLayout rendering with children:", children ? "Children exists" : "No children");
+  
   const location = useLocation();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isPending, startTransition] = useTransition();
@@ -86,10 +88,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
     };
   }, [location, isInitialLoad]);
   
-  // Make content visible by default
-  const [contentVisible, setContentVisible] = useState(true);
-  
-  // Animation duration class - memoized to prevent unnecessary recalculations
+  // Duration class - memoized to prevent unnecessary recalculations
   const durationClass = React.useMemo(() => {
     switch (animationDuration) {
       case 'fast': return "duration-200";
@@ -125,11 +124,9 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         contentClassName={contentClassName}
         withoutPadding={withoutPadding}
         skipToContentId={skipToContentId}
-        contentVisible={contentVisible}
         isInitialLoad={isInitialLoad}
       />
       
-      {/* Single footer rendering logic */}
       {footerElement}
       
       {mobileNavbar}
