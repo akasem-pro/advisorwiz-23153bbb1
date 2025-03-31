@@ -2,7 +2,9 @@
 import React from 'react';
 import { Avatar } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
-import { Mail, Phone } from 'lucide-react';
+import { Mail, Phone, User, MessageCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface TeamMember {
   id: number;
@@ -20,6 +22,22 @@ interface TeamMemberCardProps {
 }
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
+  const navigate = useNavigate();
+  
+  const handleViewProfile = () => {
+    toast.info("Opening profile", {
+      description: `Viewing ${member.name}'s profile details`
+    });
+    navigate(`/team/member/${member.id}`);
+  };
+  
+  const handleSendMessage = () => {
+    toast.success("Message window opened", {
+      description: `You can now send a message to ${member.name}`
+    });
+    navigate(`/messages?recipient=${member.id}`);
+  };
+  
   return (
     <div 
       className="flex flex-col sm:flex-row p-4 bg-slate-50 dark:bg-navy-700 rounded-lg border border-slate-200 dark:border-navy-600"
@@ -58,8 +76,24 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ member }) => {
       </div>
       
       <div className="flex justify-center sm:justify-end items-end mt-4 sm:mt-0 sm:self-end">
-        <Button variant="outline" size="sm" className="text-xs px-2 mr-2">Profile</Button>
-        <Button variant="outline" size="sm" className="text-xs px-2 bg-teal-50 text-teal-600 border-teal-200 hover:bg-teal-100 dark:bg-teal-900/20 dark:text-teal-400 dark:border-teal-800 dark:hover:bg-teal-900/40">Message</Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="text-xs px-2 mr-2"
+          onClick={handleViewProfile}
+        >
+          <User className="h-3 w-3 mr-1" />
+          Profile
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="text-xs px-2 bg-teal-50 text-teal-600 border-teal-200 hover:bg-teal-100 dark:bg-teal-900/20 dark:text-teal-400 dark:border-teal-800 dark:hover:bg-teal-900/40"
+          onClick={handleSendMessage}
+        >
+          <MessageCircle className="h-3 w-3 mr-1" />
+          Message
+        </Button>
       </div>
     </div>
   );

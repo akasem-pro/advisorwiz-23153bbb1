@@ -25,7 +25,7 @@ const Team: React.FC = () => {
         description="Manage your financial advisory team members and view performance metrics"
       />
 
-      <ConsistentContainer className="px-4 py-8 pt-24">
+      <ConsistentContainer className="px-4 py-8 pt-28">
         <TeamHeader 
           title="Team Management" 
           description="Manage your advisors and team members" 
