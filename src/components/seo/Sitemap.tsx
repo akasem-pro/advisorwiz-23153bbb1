@@ -20,7 +20,7 @@ interface SitemapProps {
  */
 const Sitemap: React.FC<SitemapProps> = ({ sitemapUrl, links }) => {
   // Default links for all main pages if not provided
-  const defaultLinks = [
+  const defaultLinks: SitemapLinkProps[] = [
     { url: 'https://advisorwiz.com/' },
     { url: 'https://advisorwiz.com/about' },
     { url: 'https://advisorwiz.com/for-advisors' },

@@ -35,11 +35,16 @@ const contentPageRoutes = [
   { path: 'consumer-profile', element: <ConsumerProfile /> }
 ];
 
+// Redirects for auth paths and legacy dashboard paths
 const redirectRoutes = [
   { path: '/login', to: '/signin' },
   { path: '/sign-in', to: '/signin' },
   { path: '/sign-up', to: '/signup' },
-  { path: '/onboarding', to: '/signup' }
+  { path: '/onboarding', to: '/signup' },
+  // Add redirects for legacy dashboard paths
+  { path: '/advisor-dashboard', to: '/dashboard/advisor' },
+  { path: '/consumer-dashboard', to: '/dashboard/consumer' },
+  { path: '/firm-dashboard', to: '/dashboard/firm' }
 ];
 
 const AppRoutes = () => {
