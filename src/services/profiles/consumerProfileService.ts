@@ -20,7 +20,7 @@ export const getConsumerProfileById = async (userId: string): Promise<ConsumerPr
     const { data: consumerProfile, error: consumerError } = await supabase
       .from('consumer_profiles')
       .select('*')
-      .eq('user_id', userId)
+      .eq('id', userId)
       .single();
     
     if (consumerError) throw consumerError;
@@ -31,7 +31,7 @@ export const getConsumerProfileById = async (userId: string): Promise<ConsumerPr
     }
     
     // Combine profiles with safe default values for potentially missing fields
-    return {
+    const profile: ConsumerProfile = {
       id: userId,
       name: `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim(),
       email: userProfile.email || '',
@@ -40,9 +40,8 @@ export const getConsumerProfileById = async (userId: string): Promise<ConsumerPr
       status: 'active',
       investableAssets: consumerProfile.investable_assets || 0,
       riskTolerance: (consumerProfile.risk_tolerance as 'low' | 'medium' | 'high') || 'medium',
-      preferredCommunication: consumerProfile.preferred_communication ? 
-        [consumerProfile.preferred_communication] : [],
-      preferredLanguage: consumerProfile.languages || ['English'],
+      preferredCommunication: consumerProfile.preferred_communication || [],
+      preferredLanguage: consumerProfile.preferred_language || ['English'],
       financialGoals: consumerProfile.financial_goals || [],
       incomeRange: consumerProfile.income_bracket || '',
       investmentAmount: consumerProfile.investment_amount || 0,
@@ -57,11 +56,13 @@ export const getConsumerProfileById = async (userId: string): Promise<ConsumerPr
       profilePicture: userProfile.avatar_url || '',
       chatEnabled: userProfile.chat_enabled || false,
       appointments: [],
-      startTimeline: 'not_sure',
+      startTimeline: consumerProfile.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' || 'not_sure',
       onlineStatus: userProfile.online_status || 'offline',
       lastOnline: userProfile.last_online || new Date().toISOString(),
       showOnlineStatus: userProfile.show_online_status || true
     };
+    
+    return profile;
     
   } catch (error) {
     console.error('Error fetching consumer profile:', error);
@@ -116,13 +117,14 @@ export const updateConsumerProfile = async (userId: string, updateData: Consumer
       if ('preferredAdvisorSpecialties' in consumerSpecificData) mappedConsumerData.preferred_advisor_specialties = consumerSpecificData.preferredAdvisorSpecialties;
       if ('preferredCommunication' in consumerSpecificData && Array.isArray(consumerSpecificData.preferredCommunication)) {
         // Join array as string or take first value if needed
-        mappedConsumerData.preferred_communication = consumerSpecificData.preferredCommunication[0] || '';
+        mappedConsumerData.preferred_communication = consumerSpecificData.preferredCommunication;
       }
+      if ('startTimeline' in consumerSpecificData) mappedConsumerData.start_timeline = consumerSpecificData.startTimeline;
       
       const { error: consumerError } = await supabase
         .from('consumer_profiles')
         .update(mappedConsumerData)
-        .eq('user_id', userId);
+        .eq('id', userId);
       
       if (consumerError) throw consumerError;
     }

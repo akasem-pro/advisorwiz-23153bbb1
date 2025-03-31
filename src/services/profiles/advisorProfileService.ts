@@ -20,7 +20,7 @@ export const getAdvisorProfileById = async (userId: string): Promise<AdvisorProf
     const { data: advisorProfile, error: advisorError } = await supabase
       .from('advisor_profiles')
       .select('*')
-      .eq('user_id', userId)
+      .eq('id', userId)
       .single();
     
     if (advisorError) throw advisorError;
@@ -31,14 +31,13 @@ export const getAdvisorProfileById = async (userId: string): Promise<AdvisorProf
     }
     
     // Combine profiles with safe default values for potentially missing fields
-    return {
+    const profile: AdvisorProfile = {
       id: userId,
       name: `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim(),
-      email: userProfile.email || '',
       organization: advisorProfile.organization || '',
       isAccredited: advisorProfile.is_accredited || false,
       website: advisorProfile.website || '',
-      testimonials: advisorProfile.testimonials || [],
+      testimonials: [],
       languages: advisorProfile.languages || ['English'],
       pricing: {
         hourlyRate: advisorProfile.hourly_rate || 0,
@@ -46,7 +45,7 @@ export const getAdvisorProfileById = async (userId: string): Promise<AdvisorProf
       },
       assetsUnderManagement: advisorProfile.assets_under_management || 0,
       expertise: advisorProfile.expertise || [],
-      specializations: advisorProfile.specializations || [],
+      specializations: [],
       yearsOfExperience: advisorProfile.years_of_experience || 0,
       averageRating: advisorProfile.average_rating || 0,
       ratingCount: advisorProfile.rating_count || 0,
@@ -68,6 +67,8 @@ export const getAdvisorProfileById = async (userId: string): Promise<AdvisorProf
       lastOnline: userProfile.last_online || new Date().toISOString(),
       showOnlineStatus: userProfile.show_online_status || true
     };
+    
+    return profile;
     
   } catch (error) {
     console.error('Error fetching advisor profile:', error);
@@ -122,13 +123,12 @@ export const updateAdvisorProfile = async (userId: string, updateData: AdvisorPr
       if ('languages' in advisorSpecificData) mappedAdvisorData.languages = advisorSpecificData.languages;
       if ('certifications' in advisorSpecificData) mappedAdvisorData.certifications = advisorSpecificData.certifications;
       if ('expertise' in advisorSpecificData) mappedAdvisorData.expertise = advisorSpecificData.expertise;
-      if ('specializations' in advisorSpecificData) mappedAdvisorData.specializations = advisorSpecificData.specializations;
       if ('preferredCommunication' in advisorSpecificData) mappedAdvisorData.preferred_communication = advisorSpecificData.preferredCommunication;
       
       const { error: advisorError } = await supabase
         .from('advisor_profiles')
         .update(mappedAdvisorData)
-        .eq('user_id', userId);
+        .eq('id', userId);
       
       if (advisorError) throw advisorError;
     }

@@ -34,7 +34,7 @@ export const getConsumerProfile = async (userId: string): Promise<ConsumerProfil
     const { data: consumerProfile, error: consumerError } = await supabase
       .from('consumer_profiles')
       .select('*')
-      .eq('user_id', userId)
+      .eq('id', userId)
       .single();
     
     if (consumerError) throw consumerError;
@@ -42,15 +42,16 @@ export const getConsumerProfile = async (userId: string): Promise<ConsumerProfil
     if (!userProfile || !consumerProfile) return null;
     
     // Safely create a merged profile with default values for possibly missing properties
-    return {
+    const profile = {
       id: userId,
       name: `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim(),
       age: consumerProfile.age || 0,
       status: 'active',
       investableAssets: consumerProfile.investable_assets || 0,
       riskTolerance: (consumerProfile.risk_tolerance as 'low' | 'medium' | 'high') || 'medium',
-      preferredCommunication: consumerProfile.preferred_communication ? [consumerProfile.preferred_communication] : [],
-      preferredLanguage: consumerProfile.languages || ['English'],
+      preferredCommunication: consumerProfile.preferred_communication ? 
+        consumerProfile.preferred_communication as string[] : [],
+      preferredLanguage: consumerProfile.preferred_language || ['English'],
       matches: [],
       chats: [],
       profilePicture: userProfile.avatar_url || '',
@@ -60,8 +61,11 @@ export const getConsumerProfile = async (userId: string): Promise<ConsumerProfil
       lastOnline: new Date().toISOString(),
       showOnlineStatus: true,
       email: userProfile.email || '',
-      phone: userProfile.phone || ''
+      phone: userProfile.phone || '',
+      startTimeline: 'not_sure',
     } as ConsumerProfile;
+    
+    return profile;
   } catch (err) {
     console.error('Error fetching consumer profile:', err);
     return null;
@@ -82,7 +86,7 @@ export const getAdvisorProfile = async (userId: string): Promise<AdvisorProfile 
     const { data: advisorProfile, error: advisorError } = await supabase
       .from('advisor_profiles')
       .select('*')
-      .eq('user_id', userId)
+      .eq('id', userId)
       .single();
     
     if (advisorError) throw advisorError;
@@ -104,7 +108,7 @@ export const getAdvisorProfile = async (userId: string): Promise<AdvisorProfile 
       },
       assetsUnderManagement: advisorProfile.assets_under_management || 0,
       expertise: advisorProfile.expertise || [],
-      specializations: advisorProfile.specializations || [],
+      specializations: [],
       yearsOfExperience: advisorProfile.years_of_experience || 0,
       averageRating: advisorProfile.average_rating || 0,
       ratingCount: advisorProfile.rating_count || 0,
@@ -181,7 +185,7 @@ export const initializeUserProfile = async (
         const { error: consumerError } = await supabase
           .from('consumer_profiles')
           .insert({
-            user_id: user.id,
+            id: user.id,
             investment_amount: 0,
             investable_assets: 0,
             risk_tolerance: 'medium',
@@ -197,13 +201,12 @@ export const initializeUserProfile = async (
         const { error: advisorError } = await supabase
           .from('advisor_profiles')
           .insert({
-            user_id: user.id,
+            id: user.id,
             organization: '',
             is_accredited: false,
             assets_under_management: 0,
             years_of_experience: 0,
             expertise: [],
-            specializations: [],
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });

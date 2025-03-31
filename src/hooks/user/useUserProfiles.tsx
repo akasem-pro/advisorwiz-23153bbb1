@@ -11,6 +11,7 @@ import { updateConsumerProfile } from '../../services/profiles/consumerProfileSe
 import { updateAdvisorProfile } from '../../services/profiles/advisorProfileService';
 import { supabase } from '../../integrations/supabase/client';
 import { toast } from 'sonner';
+import { User } from '@supabase/supabase-js';
 
 /**
  * Hook to manage user profile state and operations
@@ -72,10 +73,10 @@ export const useUserProfiles = () => {
       
       if (userType === 'consumer' && consumerProfile) {
         console.log("[useUserProfiles] Saving consumer profile to Supabase:", consumerProfile);
-        success = await updateConsumerProfile(user, consumerProfile);
+        success = await updateConsumerProfile(user.id, consumerProfile);
       } else if (userType === 'advisor' && advisorProfile) {
         console.log("[useUserProfiles] Saving advisor profile to Supabase:", advisorProfile);
-        success = await updateAdvisorProfile(user, advisorProfile);
+        success = await updateAdvisorProfile(user.id, advisorProfile);
       } else {
         console.error("[useUserProfiles] Cannot save profile: Invalid user type or missing profile", {
           userType,
