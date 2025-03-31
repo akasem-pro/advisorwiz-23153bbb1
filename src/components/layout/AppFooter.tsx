@@ -92,7 +92,7 @@ const AppFooter: React.FC = () => {
         {/* Separator Line */}
         <Separator className="bg-navy-800 my-6" />
         
-        {/* Disclaimer text */}
+        {/* Disclaimer text - Updated to match image */}
         <div className="text-center text-slate-400 text-sm mb-6">
           <p className="mb-4">
             By using AdvisorWiz, you agree to our Terms & Conditions. AdvisorWiz connects consumers with financial advisors but does not provide financial advice. All advisors are independent professionals, and users are responsible for their own financial decisions.
@@ -102,10 +102,10 @@ const AppFooter: React.FC = () => {
           </p>
         </div>
         
-        {/* Copyright */}
+        {/* Copyright - Updated to show 2025 */}
         <div className="text-center">
           <p className="text-sm text-slate-400">
-            &copy; {currentYear} AdvisorWiz. All rights reserved.
+            © 2025 AdvisorWiz. All rights reserved.
           </p>
         </div>
       </div>
