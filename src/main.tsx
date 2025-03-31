@@ -14,13 +14,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider>
       <App />
-      <Toaster 
-        position="top-right" 
-        closeButton={true} 
-        richColors={true}
-        containerAriaLabel="Notifications"
-        hotkey={["altKey", "KeyT"]}
-      />
+      <Toaster position="top-right" />
     </ThemeProvider>
   </React.StrictMode>,
 )

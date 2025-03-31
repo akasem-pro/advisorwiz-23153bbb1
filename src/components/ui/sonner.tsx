@@ -32,6 +32,28 @@ const Toaster = ({ ...props }: ToasterProps) => {
         },
       }}
       closeButton={true}
+      // Fix tabindex accessibility issues by adding aria-hidden to elements with tabindex=-1
+      // This is done via custom props that get passed to Sonner
+      toasterProps={{
+        "aria-hidden": false, // Keep the main toaster visible to screen readers
+        style: {
+          // Additional styles as needed
+        },
+        // This function adds aria-hidden="true" to child elements with tabindex="-1"
+        ref: (toasterEl: HTMLElement | null) => {
+          if (toasterEl) {
+            // After render, find all elements with tabindex=-1 and set aria-hidden
+            setTimeout(() => {
+              const elementsWithNegativeTabIndex = 
+                toasterEl.querySelectorAll('[tabindex="-1"]');
+              
+              elementsWithNegativeTabIndex.forEach((el) => {
+                (el as HTMLElement).setAttribute('aria-hidden', 'true');
+              });
+            }, 100); // Small delay to ensure DOM is ready
+          }
+        },
+      }}
       // Fix tabindex accessibility issues
       containerAriaLabel="Notifications"
       // Make the toaster container have proper focus management
