@@ -45,19 +45,24 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
 }) => {
   const location = useLocation();
   
+  // Handle analytics
   useEffect(() => {
     initializeTagManager();
     const pageTitle = document.title || 'AdvisorWiz';
     trackPageView(pageTitle, location.pathname);
   }, [location]);
 
-  const getAnimationDurationClass = () => {
+  // Animation duration class
+  const getDurationClass = () => {
     switch (animationDuration) {
       case 'fast': return 'duration-200';
       case 'slow': return 'duration-500';
       default: return 'duration-300';
     }
   };
+  
+  // Determine what footer to render
+  const footerElement = footer === null ? null : (footer || <AppFooter />);
 
   const renderContent = () => (
     <div className={cn(
@@ -85,7 +90,6 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
           {children}
         </div>
         
-        {/* Only show TrustBadges in the main content if specifically requested */}
         {showTrustBadges && (
           <div className={cn(
             fullWidth ? 'w-full' : 'container mx-auto',
@@ -98,8 +102,8 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
       
       <FloatingSupportButton />
       
-      {/* Only render one footer - either the provided one (if not null) or the default */}
-      {footer === null ? null : (footer || <AppFooter />)}
+      {/* Single footer rendering logic */}
+      {footerElement}
       
       {mobileNavbar}
     </div>
@@ -112,7 +116,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   return (
     <AnimatedRoute 
       animation={animation} 
-      className={getAnimationDurationClass()}
+      className={getDurationClass()}
     >
       {renderContent()}
     </AnimatedRoute>

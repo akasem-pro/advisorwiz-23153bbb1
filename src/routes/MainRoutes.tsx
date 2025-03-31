@@ -1,5 +1,5 @@
 
-import { Route } from 'react-router-dom';
+import { createRoutes } from './routeHelpers';
 import AppLayout from '../components/layout/AppLayout';
 import Home from '../pages/Home';
 import AboutUs from '../pages/AboutUs';
@@ -12,54 +12,75 @@ import Terms from '../pages/Terms';
 import Disclaimer from '../pages/Disclaimer';
 import Cookies from '../pages/Cookies';
 
-// Always provide a unique key for each route for proper rendering
-const MainRoutes = [
-  <Route index element={<Home />} key="home" />,
-  <Route path="about" element={
-    <AppLayout hideFooter={true}>
-      <AboutUs />
-    </AppLayout>
-  } key="about" />,
-  <Route path="for-advisors" element={
-    <AppLayout hideFooter={true}>
-      <ForAdvisors />
-    </AppLayout>
-  } key="for-advisors" />,
-  <Route path="for-consumers" element={
-    <AppLayout hideFooter={true}>
-      <ForConsumers />
-    </AppLayout>
-  } key="for-consumers" />,
-  <Route path="for-firms" element={
-    <AppLayout hideFooter={true}>
-      <ForFirms />
-    </AppLayout>
-  } key="for-firms" />,
-  <Route path="pricing" element={
-    <AppLayout hideFooter={true}>
-      <Pricing />
-    </AppLayout>
-  } key="pricing" />,
-  <Route path="privacy" element={
-    <AppLayout hideFooter={true}>
-      <Privacy />
-    </AppLayout>
-  } key="privacy" />,
-  <Route path="terms" element={
-    <AppLayout hideFooter={true}>
-      <Terms />
-    </AppLayout>
-  } key="terms" />,
-  <Route path="disclaimer" element={
-    <AppLayout hideFooter={true}>
-      <Disclaimer />
-    </AppLayout>
-  } key="disclaimer" />,
-  <Route path="cookies" element={
-    <AppLayout hideFooter={true}>
-      <Cookies />
-    </AppLayout>
-  } key="cookies" />,
+// Create route configs with consistent layout pattern
+const routeConfigs = [
+  { 
+    path: '/', 
+    element: <Home />, 
+    key: 'home',
+    index: true
+  },
+  { 
+    path: 'about', 
+    element: <AboutUs />, 
+    key: 'about'
+  },
+  { 
+    path: 'for-advisors', 
+    element: <ForAdvisors />, 
+    key: 'for-advisors'
+  },
+  { 
+    path: 'for-consumers', 
+    element: <ForConsumers />, 
+    key: 'for-consumers'
+  },
+  { 
+    path: 'for-firms', 
+    element: <ForFirms />, 
+    key: 'for-firms'
+  },
+  { 
+    path: 'pricing', 
+    element: <Pricing />, 
+    key: 'pricing'
+  },
+  { 
+    path: 'privacy', 
+    element: <Privacy />, 
+    key: 'privacy'
+  },
+  { 
+    path: 'terms', 
+    element: <Terms />, 
+    key: 'terms' 
+  },
+  { 
+    path: 'disclaimer', 
+    element: <Disclaimer />, 
+    key: 'disclaimer'
+  },
+  { 
+    path: 'cookies', 
+    element: <Cookies />, 
+    key: 'cookies'
+  },
 ];
+
+// Apply consistent AppLayout to non-index routes
+const MainRoutes = routeConfigs.map(config => {
+  if (config.index) {
+    return createRoute(config);
+  }
+  
+  return createRoute({
+    ...config,
+    element: (
+      <AppLayout hideFooter={true}>
+        {config.element}
+      </AppLayout>
+    )
+  });
+});
 
 export default MainRoutes;

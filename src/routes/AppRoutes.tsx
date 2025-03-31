@@ -4,8 +4,6 @@ import { useEffect } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import MobileLayout from '../components/layout/MobileLayout';
 import NotFound from '../pages/NotFound';
-import SignIn from '../pages/SignIn';
-import OnboardingTour from '../components/onboarding/OnboardingTour';
 import MainRoutes from './MainRoutes';
 import DashboardRoutes from './DashboardRoutes';
 import MobileRoutes from './MobileRoutes';
@@ -23,10 +21,32 @@ import Schedule from '../pages/Schedule';
 import Chat from '../pages/Chat';
 import ConsumerProfile from '../pages/ConsumerProfile';
 
+// Group route definitions for better organization
+const contentPageRoutes = [
+  { path: 'contact', element: <ContactUs /> },
+  { path: 'team', element: <Team /> },
+  { path: 'blog/*', element: <Blog /> },
+  { path: 'careers', element: <Careers /> },
+  { path: 'resources', element: <Resources /> },
+  { path: 'download', element: <DownloadApp /> },
+  { path: 'sitemap', element: <Sitemap /> },
+  { path: 'schedule', element: <Schedule /> },
+  { path: 'chat', element: <Chat /> },
+  { path: 'consumer-profile', element: <ConsumerProfile /> }
+];
+
+// Auth redirect routes
+const redirectRoutes = [
+  { path: '/login', to: '/signin' },
+  { path: '/sign-in', to: '/signin' },
+  { path: '/sign-up', to: '/signup' },
+  { path: '/onboarding', to: '/signup' }
+];
+
 const AppRoutes = () => {
   const location = useLocation();
 
-  // Track page route changes for analytics or other purposes
+  // Track page route changes for analytics
   useEffect(() => {
     // Scroll to top on route change
     window.scrollTo(0, 0);
@@ -35,11 +55,12 @@ const AppRoutes = () => {
     console.log('Route changed:', location.pathname);
     
     // Apply page-specific body classes if needed
-    document.body.classList.add('page-' + location.pathname.split('/')[1] || 'home');
+    const pageClass = 'page-' + (location.pathname.split('/')[1] || 'home');
+    document.body.classList.add(pageClass);
     
     return () => {
       // Clean up any page-specific body classes
-      document.body.classList.remove('page-' + location.pathname.split('/')[1] || 'home');
+      document.body.classList.remove(pageClass);
     };
   }, [location.pathname]);
 
@@ -60,63 +81,28 @@ const AppRoutes = () => {
         {AuthRoutes}
         
         {/* Redirects for old auth routes */}
-        <Route path="/login" element={<Navigate to="/signin" replace />} />
-        <Route path="/sign-in" element={<Navigate to="/signin" replace />} />
-        <Route path="/sign-up" element={<Navigate to="/signup" replace />} />
-        <Route path="/onboarding" element={<Navigate to="/signup" replace />} />
+        {redirectRoutes.map((redirect, index) => (
+          <Route 
+            key={`redirect-${index}`} 
+            path={redirect.path} 
+            element={<Navigate to={redirect.to} replace />} 
+          />
+        ))}
         
         {/* Content pages */}
         <Route path="/" element={<Outlet />}>
-          <Route path="contact" element={
-            <AppLayout hideFooter={true}>
-              <ContactUs />
-            </AppLayout>
-          } />
-          <Route path="team" element={
-            <AppLayout hideFooter={true}>
-              <Team />
-            </AppLayout>
-          } />
-          <Route path="blog/*" element={
-            <AppLayout hideFooter={true}>
-              <Blog />
-            </AppLayout>
-          } />
-          <Route path="careers" element={
-            <AppLayout hideFooter={true}>
-              <Careers />
-            </AppLayout>
-          } />
-          <Route path="resources" element={
-            <AppLayout hideFooter={true}>
-              <Resources />
-            </AppLayout>
-          } />
-          <Route path="download" element={
-            <AppLayout hideFooter={true}>
-              <DownloadApp />
-            </AppLayout>
-          } />
-          <Route path="sitemap" element={
-            <AppLayout hideFooter={true}>
-              <Sitemap />
-            </AppLayout>
-          } />
-          <Route path="schedule" element={
-            <AppLayout hideFooter={true}>
-              <Schedule />
-            </AppLayout>
-          } />
-          <Route path="chat" element={
-            <AppLayout hideFooter={true}>
-              <Chat />
-            </AppLayout>
-          } />
-          <Route path="consumer-profile" element={
-            <AppLayout hideFooter={true}>
-              <ConsumerProfile />
-            </AppLayout>
-          } />
+          {/* Content page routes with consistent layout */}
+          {contentPageRoutes.map((routeProps, index) => (
+            <Route 
+              key={`content-${index}`} 
+              path={routeProps.path} 
+              element={
+                <AppLayout hideFooter={true}>
+                  {routeProps.element}
+                </AppLayout>
+              } 
+            />
+          ))}
           
           {/* Main Web Routes */}
           {MainRoutes}
