@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Joyride from 'react-joyride';
 import { useOnboardingTour } from '../../hooks/onboarding/use-onboarding-tour';
 import { useAdvisorTourSteps } from '../../hooks/onboarding/use-advisor-tour-steps';
@@ -17,6 +17,7 @@ const AdvisorOnboardingTour: React.FC<AdvisorOnboardingTourProps> = ({
 }) => {
   const { toast } = useToast();
   const steps = useAdvisorTourSteps();
+  const isMounted = useRef(true);
   
   // Use the base onboarding tour hook with advisor-specific configuration
   const { 
@@ -28,6 +29,8 @@ const AdvisorOnboardingTour: React.FC<AdvisorOnboardingTourProps> = ({
   } = useOnboardingTour(
     'advisor',
     () => {
+      if (!isMounted.current) return;
+      
       toast({
         title: "Profile Setup Tour Complete!",
         description: "You're now ready to start connecting with potential clients. Complete your profile to increase your visibility.",
@@ -42,6 +45,8 @@ const AdvisorOnboardingTour: React.FC<AdvisorOnboardingTourProps> = ({
       localStorage.setItem('hasSeenAdvisorOnboardingTour', 'true');
     },
     () => {
+      if (!isMounted.current) return;
+      
       toast({
         title: "Tour Skipped",
         description: "You can restart the tour anytime from your settings menu.",
@@ -58,17 +63,26 @@ const AdvisorOnboardingTour: React.FC<AdvisorOnboardingTourProps> = ({
     if (autoStart && !hasSeenTour) {
       // Small delay to ensure page is fully loaded
       const timer = setTimeout(() => {
-        startTour();
+        if (isMounted.current) {
+          startTour();
+        }
       }, 800);
       
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        isMounted.current = false;
+      };
     }
+    
+    return () => {
+      isMounted.current = false;
+    };
   }, [autoStart, startTour]);
 
   return (
     <>
       <button 
-        onClick={() => setRun(true)}
+        onClick={() => isMounted.current && setRun(true)}
         className="fixed bottom-16 right-4 z-50 bg-teal-600 hover:bg-teal-700 text-white rounded-full p-2 shadow-lg"
         aria-label="Start advisor profile setup tour"
       >

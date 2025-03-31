@@ -31,7 +31,7 @@ export const fetchAdvisorProfile = async (userId: string): Promise<AdvisorProfil
       console.error('[advisorProfileService] Error fetching advisor data:', advisorError);
       return null;
     }
-    
+
     // If no advisor data exists, return minimal profile
     if (!advisorData) {
       const minimalAdvisorProfile: AdvisorProfile = {
@@ -42,56 +42,50 @@ export const fetchAdvisorProfile = async (userId: string): Promise<AdvisorProfil
         website: '',
         testimonials: [],
         languages: ['english'],
-        pricing: {},
+        pricing: {
+          hourlyRate: 0,
+          portfolioFee: 0
+        },
         assetsUnderManagement: 0,
         expertise: [],
+        specializations: [],
+        profilePicture: baseProfile.profile_picture || '',
         matches: [],
         chats: [],
+        availability: [],
         chatEnabled: baseProfile.chat_enabled !== false,
         appointmentCategories: [],
         appointments: [],
         onlineStatus: baseProfile.online_status || 'offline',
         lastOnline: baseProfile.last_online || new Date().toISOString(),
-        showOnlineStatus: baseProfile.show_online_status !== false,
-        specializations: []
+        showOnlineStatus: baseProfile.show_online_status !== false
       };
       return minimalAdvisorProfile;
     }
     
-    // Handle potentially missing fields with default values
-    // We need to create our own properties since they don't exist in the database response
-    const testimonials: { client: string; text: string }[] = [];
-    const pricing: { hourlyRate?: number; portfolioFee?: number } = {};
-    const expertise = Array.isArray(advisorData.expertise) ? advisorData.expertise : [];
-    const specializations = Array.isArray(advisorData.specializations) ? advisorData.specializations : [];
-    const matches: string[] = [];
-    const chats: string[] = [];
-    const appointmentCategories: any[] = [];
-    const appointments: string[] = [];
-    
-    // Combine the data into an advisor profile
+    // Create the advisor profile from the data
     const advisorProfile: AdvisorProfile = {
       id: userId,
       name: `${baseProfile.first_name || ''} ${baseProfile.last_name || ''}`.trim(),
       organization: advisorData.organization || '',
-      isAccredited: advisorData.is_accredited !== false,
+      isAccredited: advisorData.is_accredited || false,
       website: advisorData.website || '',
-      testimonials: testimonials,
+      testimonials: Array.isArray(advisorData.testimonials) ? advisorData.testimonials : [],
       languages: Array.isArray(advisorData.languages) ? advisorData.languages : ['english'],
-      pricing: pricing,
+      pricing: {
+        hourlyRate: advisorData.hourly_rate || 0,
+        portfolioFee: advisorData.portfolio_fee || 0
+      },
       assetsUnderManagement: advisorData.assets_under_management || 0,
-      expertise: expertise,
-      specializations: specializations,
-      yearsOfExperience: advisorData.years_of_experience || 0,
-      averageRating: advisorData.average_rating || 0,
-      ratingCount: advisorData.rating_count || 0,
-      biography: advisorData.biography || '',
-      certifications: Array.isArray(advisorData.certifications) ? advisorData.certifications : [],
-      matches: matches,
-      chats: chats,
+      expertise: Array.isArray(advisorData.expertise) ? advisorData.expertise : [],
+      specializations: Array.isArray(advisorData.specializations) ? advisorData.specializations : [],
+      profilePicture: baseProfile.profile_picture || advisorData.profile_picture || '',
+      matches: Array.isArray(advisorData.matches) ? advisorData.matches : [],
+      chats: Array.isArray(advisorData.chats) ? advisorData.chats : [],
+      availability: Array.isArray(advisorData.availability) ? advisorData.availability : [],
       chatEnabled: baseProfile.chat_enabled !== false,
-      appointmentCategories: appointmentCategories,
-      appointments: appointments,
+      appointmentCategories: Array.isArray(advisorData.appointment_categories) ? advisorData.appointment_categories : [],
+      appointments: Array.isArray(advisorData.appointments) ? advisorData.appointments : [],
       onlineStatus: baseProfile.online_status || 'offline',
       lastOnline: baseProfile.last_online || new Date().toISOString(),
       showOnlineStatus: baseProfile.show_online_status !== false
@@ -127,18 +121,18 @@ export const updateAdvisorProfile = async (user: User, profileData: AdvisorProfi
         organization: profileData.organization,
         is_accredited: profileData.isAccredited,
         website: profileData.website,
-        testimonials: profileData.testimonials,
+        testimonials: profileData.testimonials || [],
         languages: profileData.languages,
-        pricing: profileData.pricing,
+        hourly_rate: profileData.pricing?.hourlyRate || 0,
+        portfolio_fee: profileData.pricing?.portfolioFee || 0,
         assets_under_management: profileData.assetsUnderManagement,
         expertise: profileData.expertise,
-        specializations: profileData.specializations,
-        years_of_experience: profileData.yearsOfExperience,
-        average_rating: profileData.averageRating,
-        rating_count: profileData.ratingCount,
-        biography: profileData.biography,
-        certifications: profileData.certifications,
-        // Additional fields for database compatibility
+        specializations: profileData.specializations || [],
+        availability: profileData.availability,
+        matches: profileData.matches || [],
+        chats: profileData.chats || [],
+        appointment_categories: profileData.appointmentCategories || [],
+        appointments: profileData.appointments || [],
         updated_at: new Date().toISOString()
       }, {
         onConflict: 'id'
@@ -171,18 +165,23 @@ export const initializeAdvisorProfile = async (user: User): Promise<AdvisorProfi
       website: '',
       testimonials: [],
       languages: ['english'],
-      pricing: {},
+      pricing: {
+        hourlyRate: 0,
+        portfolioFee: 0
+      },
       assetsUnderManagement: 0,
       expertise: [],
+      specializations: [],
+      profilePicture: '',
       matches: [],
       chats: [],
+      availability: [],
       chatEnabled: true,
       appointmentCategories: [],
       appointments: [],
       onlineStatus: 'online',
       lastOnline: new Date().toISOString(),
-      showOnlineStatus: true,
-      specializations: []
+      showOnlineStatus: true
     };
     
     // Update the profile in Supabase

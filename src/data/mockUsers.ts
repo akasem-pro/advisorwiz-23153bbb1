@@ -1,5 +1,5 @@
 
-import { ConsumerProfile, AdvisorProfile } from '../types/userTypes';
+import { ConsumerProfile, AdvisorProfile } from '../types/profileTypes';
 
 // Mock consumer data for filtering
 export const mockConsumers: ConsumerProfile[] = [

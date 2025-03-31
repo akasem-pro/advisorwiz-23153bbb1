@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -10,29 +10,26 @@ import { IntegrationVerificationPanelProps } from './types';
 import { PRODUCTION_DOMAINS } from '@/utils/mockAuthUtils';
 
 const IntegrationVerificationPanel: React.FC<IntegrationVerificationPanelProps> = ({ forcePreviewMode = false }) => {
-  const [mounted, setMounted] = useState(false);
   const [isPreviewEnvironment, setIsPreviewEnvironment] = useState<boolean>(forcePreviewMode);
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    // Mark component as mounted to prevent unmounting issues
-    setMounted(true);
+    // Double-check environment detection
+    const hostname = window.location.hostname;
+    const isProduction = PRODUCTION_DOMAINS.some(domain => 
+      hostname === domain || hostname.endsWith('.' + domain)
+    ) || hostname.endsWith('.app') || !hostname.includes('.');
+    const isPreview = !isProduction && (hostname.includes('preview') || hostname.includes('lovableproject'));
+    
+    console.log('[IntegrationVerificationPanel] Environment detection:', { 
+      hostname, 
+      isProduction,
+      isPreview,
+      forcePreviewMode,
+      productionDomains: PRODUCTION_DOMAINS
+    });
     
     if (!forcePreviewMode) {
-      // Double-check environment detection
-      const hostname = window.location.hostname;
-      const isProduction = PRODUCTION_DOMAINS.some(domain => 
-        hostname === domain || hostname.endsWith('.' + domain)
-      ) || hostname.endsWith('.app') || !hostname.includes('.');
-      const isPreview = !isProduction && (hostname.includes('preview') || hostname.includes('lovableproject'));
-      
-      console.log('[IntegrationVerificationPanel] Environment detection:', { 
-        hostname, 
-        isProduction,
-        isPreview,
-        forcePreviewMode,
-        productionDomains: PRODUCTION_DOMAINS
-      });
-      
       setIsPreviewEnvironment(isPreview);
     } else {
       // Use the forced preview mode
@@ -43,7 +40,7 @@ const IntegrationVerificationPanel: React.FC<IntegrationVerificationPanelProps> 
     // Cleanup function
     return () => {
       console.log("[IntegrationVerificationPanel] Component unmounting");
-      setMounted(false);
+      isMounted.current = false;
     };
   }, [forcePreviewMode]);
 

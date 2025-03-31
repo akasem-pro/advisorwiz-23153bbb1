@@ -1,3 +1,4 @@
+
 import { createContext } from 'react';
 import {
   UserType,
@@ -70,6 +71,9 @@ export type UserContextType = {
   getLeadByConsumer: (consumerId: string, advisorId?: string) => Lead | null;
   getLeadStats: () => LeadStats;
   getAdvisorLeads: (advisorId: string) => Lead[];
+  isCallModalOpen: boolean;
+  closeCallModal: () => void;
+  endCall: (callId: string) => void;
 };
 
 // Expanded type for match preferences with weighting factors
@@ -154,7 +158,10 @@ const UserContext = createContext<UserContextType>({
     leadsByStatus: {} as Record<LeadStatus, number>,
     leadsBySource: {} as Record<LeadSource, number>
   }),
-  getAdvisorLeads: () => []
+  getAdvisorLeads: () => [],
+  isCallModalOpen: false,
+  closeCallModal: () => {},
+  endCall: () => {}
 });
 
 export default UserContext;

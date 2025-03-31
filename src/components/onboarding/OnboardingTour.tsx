@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Joyride from 'react-joyride';
 import { UserType } from '../../types/profileTypes';
 import { useOnboardingTour } from '../../hooks/onboarding/use-onboarding-tour';
@@ -22,12 +22,13 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({
     onComplete,
     onSkip
   );
+  const isMounted = useRef(true);
 
   // Only render if there are steps and the tour should run
   if (!steps.length || !run) return null;
 
   // Add some styles to highlight active tour elements better
-  React.useEffect(() => {
+  useEffect(() => {
     const style = document.createElement('style');
     style.innerHTML = `
       .tour-highlight {
@@ -38,7 +39,10 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({
     document.head.appendChild(style);
     
     return () => {
-      document.head.removeChild(style);
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
+      }
+      isMounted.current = false;
     };
   }, []);
 

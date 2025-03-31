@@ -1,3 +1,4 @@
+
 import { ConsumerProfile } from '../../types/profileTypes';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../../integrations/supabase/client';
@@ -65,25 +66,19 @@ export const fetchConsumerProfile = async (userId: string): Promise<ConsumerProf
       startTimeline = consumerData.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure';
     }
     
-    // Create default values for fields that don't exist in the database
-    const status = 'new'; // Default value
-    const matches: string[] = [];
-    const chats: string[] = [];
-    const appointments: string[] = [];
-    
     const consumerProfile: ConsumerProfile = {
       id: userId,
       name: `${baseProfile.first_name || ''} ${baseProfile.last_name || ''}`.trim(),
       age: consumerData.age || 0,
-      status: status,
+      status: consumerData.status || 'new',
       investableAssets: consumerData.investable_assets || 0,
       riskTolerance: consumerData.risk_tolerance || 'medium',
       preferredCommunication: Array.isArray(consumerData.preferred_communication) ? consumerData.preferred_communication : ['email'],
       preferredLanguage: Array.isArray(consumerData.preferred_language) ? consumerData.preferred_language : ['english'],
-      matches: matches,
-      chats: chats,
+      matches: Array.isArray(consumerData.matches) ? consumerData.matches : [],
+      chats: Array.isArray(consumerData.chats) ? consumerData.chats : [],
       chatEnabled: baseProfile.chat_enabled !== false,
-      appointments: appointments,
+      appointments: Array.isArray(consumerData.appointments) ? consumerData.appointments : [],
       onlineStatus: baseProfile.online_status || 'offline',
       lastOnline: baseProfile.last_online || new Date().toISOString(),
       showOnlineStatus: baseProfile.show_online_status !== false,
@@ -118,7 +113,7 @@ export const updateConsumerProfile = async (user: User, profileData: ConsumerPro
       .upsert({
         id: user.id,
         age: profileData.age,
-        status: profileData.status,
+        status: profileData.status || 'new',
         investable_assets: profileData.investableAssets,
         risk_tolerance: profileData.riskTolerance,
         preferred_communication: profileData.preferredCommunication,
@@ -129,6 +124,9 @@ export const updateConsumerProfile = async (user: User, profileData: ConsumerPro
         income_bracket: profileData.incomeBracket,
         income_range: profileData.incomeRange,
         preferred_advisor_specialties: profileData.preferredAdvisorSpecialties,
+        matches: profileData.matches || [],
+        chats: profileData.chats || [],
+        appointments: profileData.appointments || [],
         // Required field for database compatibility
         start_timeline: profileData.startTimeline,
         has_advisor: profileData.hasAdvisor,
