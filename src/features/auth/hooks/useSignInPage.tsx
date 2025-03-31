@@ -1,165 +1,231 @@
 
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useSignInForm } from './useSignInForm';
-import { useAuthFormSubmit } from './useAuthFormSubmit';
-import { useAuth } from '../context/AuthProvider';
-import { useRetryHandler } from './useRetryHandler';
+import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSignInHandler } from './useSignInHandler';
 import { useSignUpHandler } from './useSignUpHandler';
+import { useNetworkStatus } from './useNetworkStatus';
+import { useAuth } from '../context/AuthProvider';
 import { toast } from 'sonner';
 
 /**
- * Custom hook for managing the Sign In page functionality
+ * Custom hook for managing sign in page state and operations with improved connection handling
  */
 export const useSignInPage = () => {
-  const { user, networkStatus, checkNetworkStatus } = useAuth();
+  // Form state
+  const [activeTab, setActiveTab] = useState('signin');
+  const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState('');
+  
+  // Sign in form state
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
+  const [errors, setErrors] = useState({
+    signInEmail: '',
+    signInPassword: '',
+    signUpEmail: '',
+    signUpPassword: '',
+    confirmPassword: ''
+  });
+  
+  // Sign up form state
+  const [signUpEmail, setSignUpEmail] = useState('');
+  const [signUpPassword, setSignUpPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
+  // Custom hooks
   const navigate = useNavigate();
-  const location = useLocation();
-  
-  // Get the redirect path from location state, default to home
-  const from = location.state?.from || '/';
-  
-  // Initialize form state using existing hooks
-  const formState = useSignInForm();
-  const { handleAuthError } = useAuthFormSubmit();
-  const { isRetrying, retryConnection, handleRetry } = useRetryHandler();
   const { handleSignIn } = useSignInHandler();
   const { handleSignUp } = useSignUpHandler();
+  const { networkStatus, checkNetworkStatus } = useNetworkStatus();
+  const { checkSupabaseConnection } = useAuth();
   
-  // Destructure form state for easier access
-  const {
-    setFormError,
-    setIsLoading,
-    setActiveTab,
-    setSignInEmail,
-    validateSignInForm,
-    validateSignUpForm
-  } = formState;
+  // Handle tab change
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    setFormError('');
+    resetErrors();
+  };
   
-  // Redirect if user is already authenticated
-  useEffect(() => {
-    if (user) {
-      console.log("[SignIn] User already authenticated, redirecting to:", from);
-      navigate(from);
+  // Reset form fields
+  const resetFields = () => {
+    if (activeTab === 'signin') {
+      setSignInPassword('');
+    } else {
+      setSignUpEmail('');
+      setSignUpPassword('');
+      setConfirmPassword('');
     }
-  }, [user, navigate, from]);
+    resetErrors();
+  };
+  
+  // Reset error messages
+  const resetErrors = () => {
+    setErrors({
+      signInEmail: '',
+      signInPassword: '',
+      signUpEmail: '',
+      signUpPassword: '',
+      confirmPassword: ''
+    });
+  };
+  
+  // Validate sign in form
+  const validateSignInForm = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+    
+    if (!signInEmail) {
+      newErrors.signInEmail = 'Email is required';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(signInEmail)) {
+      newErrors.signInEmail = 'Please enter a valid email';
+      isValid = false;
+    } else {
+      newErrors.signInEmail = '';
+    }
+    
+    if (!signInPassword) {
+      newErrors.signInPassword = 'Password is required';
+      isValid = false;
+    } else {
+      newErrors.signInPassword = '';
+    }
+    
+    setErrors(newErrors);
+    return isValid;
+  };
+  
+  // Validate sign up form
+  const validateSignUpForm = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+    
+    if (!signUpEmail) {
+      newErrors.signUpEmail = 'Email is required';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(signUpEmail)) {
+      newErrors.signUpEmail = 'Please enter a valid email';
+      isValid = false;
+    } else {
+      newErrors.signUpEmail = '';
+    }
+    
+    if (!signUpPassword) {
+      newErrors.signUpPassword = 'Password is required';
+      isValid = false;
+    } else if (signUpPassword.length < 6) {
+      newErrors.signUpPassword = 'Password must be at least 6 characters';
+      isValid = false;
+    } else {
+      newErrors.signUpPassword = '';
+    }
+    
+    if (!confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+      isValid = false;
+    } else if (confirmPassword !== signUpPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+      isValid = false;
+    } else {
+      newErrors.confirmPassword = '';
+    }
+    
+    setErrors(newErrors);
+    return isValid;
+  };
+  
+  // Connection retry handler with improved diagnostics
+  const handleConnectionRetry = useCallback(async () => {
+    setFormError('');
+    setIsLoading(true);
+    
+    try {
+      // First check browser network status
+      const isNetworkOnline = await checkNetworkStatus();
+      if (!isNetworkOnline) {
+        setFormError('Your device appears to be offline. Please check your internet connection.');
+        return false;
+      }
+      
+      // Then check Supabase connection specifically
+      console.log("[SignInPage] Testing connection to Supabase...");
+      const canConnectSupabase = await checkSupabaseConnection();
+      
+      if (!canConnectSupabase) {
+        setFormError('Could not connect to authentication service. Please check your connection and try again.');
+        toast.error('Connection to authentication service failed');
+        return false;
+      }
+      
+      toast.success('Connection successful');
+      setFormError('');
+      return true;
+    } catch (error) {
+      console.error("[SignInPage] Connection retry error:", error);
+      setFormError('Connection check failed. Please try again later.');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [checkNetworkStatus, checkSupabaseConnection]);
   
   // Handle sign in form submission
-  const handleSignInSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
-    if (e) {
-      e.preventDefault();
-    }
-    
-    try {
-      const success = await handleSignIn(
-        e, 
-        formState.signInEmail, 
-        formState.signInPassword, 
-        validateSignInForm, 
-        setFormError, 
-        setIsLoading
-      );
-      
-      if (success) {
-        console.log("[SignIn] Successfully signed in, redirecting to:", from);
-        navigate(from);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error("[SignIn] Error during sign in:", error);
-      setFormError('An unexpected error occurred during sign in.');
-      setIsLoading(false);
-      return false;
-    }
-  };
-  
-  // Handle sign up form submission
-  const handleSignUpSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
-    if (e) {
-      e.preventDefault();
-    }
-    
-    try {
-      const success = await handleSignUp(
-        e, 
-        formState.signUpEmail, 
-        formState.signUpPassword, 
-        validateSignUpForm, 
-        setFormError, 
-        setIsLoading, 
-        setActiveTab, 
-        setSignInEmail, 
-        () => {
-          formState.setSignUpEmail('');
-          formState.setSignUpPassword('');
-          formState.setConfirmPassword('');
-        }
-      );
-      
-      if (success) {
-        console.log("[SignUp] Successfully signed up, redirecting to:", from);
-        navigate(from);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error("[SignUp] Error during sign up:", error);
-      setFormError('An unexpected error occurred during sign up.');
-      setIsLoading(false);
-      return false;
-    }
-  };
-  
-  // Handler for retrying submission after network error
-  const handleRetrySubmit = async () => {
-    setFormError('');
-    
-    toast.loading('Preparing to retry...');
-    
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    await handleRetry(
-      formState.activeTab,
-      formState.signInEmail,
-      formState.signInPassword,
-      formState.signUpEmail,
-      formState.signUpPassword,
-      formState.confirmPassword,
-      handleSignInSubmit,
-      handleSignUpSubmit,
-      setFormError
+  const handleSignInSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    return handleSignIn(
+      e, 
+      signInEmail, 
+      signInPassword, 
+      validateSignInForm, 
+      setFormError, 
+      setIsLoading,
+      navigate
     );
   };
   
-  // Handler for retrying connection
-  const handleConnectionRetry = async () => {
-    try {
-      const connected = await retryConnection();
-      
-      if (connected) {
-        await handleRetrySubmit();
-      }
-    } catch (error) {
-      console.error("Error during retry flow:", error);
-      setFormError('Connection check failed. Please try again.');
-    }
+  // Handle sign up form submission
+  const handleSignUpSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    return handleSignUp(
+      e, 
+      signUpEmail,
+      signUpPassword, 
+      validateSignUpForm, 
+      setFormError, 
+      setIsLoading, 
+      setActiveTab,
+      setSignInEmail,
+      resetFields
+    );
   };
   
-  // Calculate disabled states
-  const isSignInDisabled = formState.isLoading;
-  const isSignUpDisabled = formState.isLoading;
+  // Determine if sign in button should be disabled
+  const isSignInDisabled = isLoading || networkStatus === 'checking';
+  
+  // Determine if sign up button should be disabled
+  const isSignUpDisabled = isLoading || networkStatus === 'checking';
   
   return {
-    formState,
+    formState: {
+      activeTab,
+      handleTabChange,
+      isLoading,
+      formError,
+      signInEmail,
+      setSignInEmail,
+      signInPassword,
+      setSignInPassword,
+      signUpEmail,
+      setSignUpEmail,
+      signUpPassword,
+      setSignUpPassword,
+      confirmPassword,
+      setConfirmPassword,
+      errors
+    },
     networkStatus,
-    isRetrying,
     handleSignInSubmit,
     handleSignUpSubmit,
     handleConnectionRetry,
     isSignInDisabled,
-    isSignUpDisabled,
-    from
+    isSignUpDisabled
   };
 };

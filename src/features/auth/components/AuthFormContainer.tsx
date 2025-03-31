@@ -59,6 +59,11 @@ const AuthFormContainer: React.FC<AuthFormContainerProps> = ({
   signInProps,
   signUpProps
 }) => {
+  // Determine if we need to show a connection error more prominently
+  const isConnectionError = formError.toLowerCase().includes('connect') || 
+                           formError.toLowerCase().includes('network') || 
+                           networkStatus === 'offline';
+
   return (
     <Card className="w-full shadow-md">
       <CardHeader className="px-4 sm:px-6 pt-8 pb-4">
@@ -76,7 +81,23 @@ const AuthFormContainer: React.FC<AuthFormContainerProps> = ({
           error={formError} 
           networkStatus={networkStatus} 
           onRetry={onRetry}
+          isRetrying={signInProps.isLoading || signUpProps.isLoading}
         />
+        
+        {isConnectionError && networkStatus !== 'checking' && (
+          <div className="px-4 text-center mb-2">
+            <button 
+              onClick={onRetry}
+              className="text-teal-600 hover:text-teal-500 text-sm font-medium flex items-center justify-center mx-auto"
+              disabled={signInProps.isLoading || signUpProps.isLoading}
+            >
+              <svg className="mr-1 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Check Connection Again
+            </button>
+          </div>
+        )}
         
         <TabsContent value="signin" className="mt-0">
           <SignInForm

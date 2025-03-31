@@ -45,7 +45,7 @@ const NetworkRetryButton: React.FC<NetworkRetryButtonProps> = ({
     setLocalIsConnecting(isConnecting);
   }, [isConnecting]);
   
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -58,34 +58,22 @@ const NetworkRetryButton: React.FC<NetworkRetryButtonProps> = ({
     console.log("[Network Retry Button] Button clicked, calling onRetry function");
     setLocalIsConnecting(true);
     
-    // Check if we're in a preview environment for special handling
-    const isPreviewEnv = window.location.hostname.includes('preview') || 
-                         window.location.hostname.includes('lovableproject') ||
-                         window.location.hostname.includes('localhost');
-    
-    // Always simulate success in preview environments
-    console.log("[Network Retry Button] Simulating successful retry");
-    
     // Show loading toast
     toast.loading("Checking connection...");
     
-    // Simulate connection check
-    setTimeout(() => {
+    // Call the retry function
+    try {
+      await onRetry();
+    } catch (error) {
+      console.error("[Network Retry Button] Error in retry function:", error);
+      toast.error("Connection check failed");
+    } finally {
       toast.dismiss();
-      toast.success("Connection verified!");
-      
-      // Call the retry function
-      try {
-        onRetry();
-      } catch (error) {
-        console.error("[Network Retry Button] Error in retry function:", error);
-      } finally {
-        // Reset local state after a short delay to give visual feedback
-        setTimeout(() => {
-          setLocalIsConnecting(false);
-        }, 500);
-      }
-    }, 1000);
+      // Reset local state after a short delay to give visual feedback
+      setTimeout(() => {
+        setLocalIsConnecting(false);
+      }, 500);
+    }
   };
   
   return (

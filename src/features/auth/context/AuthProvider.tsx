@@ -7,6 +7,7 @@ import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { useAuthOperations } from '../hooks/useAuthOperations';
 import { UserType } from '../../../types/profileTypes';
 import { Session, User } from '@supabase/supabase-js';
+import { toast } from 'sonner';
 
 // Define the context type
 export interface AuthContextType {
@@ -23,6 +24,7 @@ export interface AuthContextType {
   updateEmail: (newEmail: string) => Promise<boolean>;
   sendPasswordResetEmail: (email: string) => Promise<boolean>;
   setMockUser: (user: User | null) => void;
+  checkSupabaseConnection: () => Promise<boolean>;
 }
 
 // Create the context with default values
@@ -40,6 +42,7 @@ const AuthContext = createContext<AuthContextType>({
   updateEmail: async () => false,
   sendPasswordResetEmail: async () => false,
   setMockUser: () => {},
+  checkSupabaseConnection: async () => false,
 });
 
 // Custom hook to use the auth context
@@ -75,6 +78,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  // Function to check Supabase connection
+  const checkSupabaseConnection = async (): Promise<boolean> => {
+    try {
+      console.log("[AuthProvider] Testing Supabase connection...");
+      
+      // Try to ping Supabase with a lightweight request
+      const { data, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error("[AuthProvider] Supabase connection error:", error);
+        return false;
+      }
+      
+      console.log("[AuthProvider] Supabase connection successful");
+      return true;
+    } catch (err) {
+      console.error("[AuthProvider] Failed to test Supabase connection:", err);
+      return false;
+    }
+  };
+
   // Provide all auth functions and state to the context
   const value: AuthContextType = {
     user: mockUser || user,
@@ -90,6 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     updateEmail,
     sendPasswordResetEmail,
     setMockUser,
+    checkSupabaseConnection,
   };
   
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

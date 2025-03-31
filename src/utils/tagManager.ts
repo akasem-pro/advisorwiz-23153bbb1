@@ -117,6 +117,25 @@ export const trackUserInteraction = (
 };
 
 /**
+ * Track authentication events with more detailed information
+ * @param action Authentication action (e.g., 'attempt', 'success', 'failure')
+ * @param method Authentication method (e.g., 'email', 'google', 'facebook')
+ * @param additionalInfo Additional details like error messages
+ */
+export const trackAuthEvent = (
+  action: 'attempt' | 'success' | 'failure' | 'signup_attempt' | 'signup_success' | 'signup_failure' | 'logout',
+  method: 'email' | 'google' | 'facebook' | 'apple' | 'twitter' | 'other',
+  additionalInfo?: Record<string, any>
+) => {
+  trackEvent('auth_event', {
+    auth_action: action,
+    auth_method: method,
+    timestamp: new Date().toISOString(),
+    ...additionalInfo
+  });
+};
+
+/**
  * Track appointment-related events
  * @param action Action related to appointment (e.g., 'scheduled', 'cancelled')
  * @param appointmentId Unique identifier of the appointment
@@ -149,5 +168,24 @@ export const trackLeadEvent = (
     lead_action: action,
     lead_id: leadId,
     ...additionalParams
+  });
+};
+
+/**
+ * Track API or network connection issues
+ * @param endpoint The API endpoint or service name
+ * @param status Success or failure
+ * @param errorInfo Additional error information
+ */
+export const trackConnectionEvent = (
+  endpoint: string, 
+  status: 'success' | 'failure',
+  errorInfo?: Record<string, any>
+) => {
+  trackEvent('connection_event', {
+    endpoint,
+    status,
+    timestamp: new Date().toISOString(),
+    ...errorInfo
   });
 };
