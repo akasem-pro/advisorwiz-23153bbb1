@@ -7,29 +7,8 @@
 const HIGH_PRIORITY_ROUTES = ['/signin', '/signup', '/'];
 const MEDIUM_PRIORITY_ROUTES = ['/for-advisors', '/for-consumers', '/pricing'];
 
-// Type definition for requestIdleCallback to handle TypeScript errors
-interface RequestIdleCallbackOptions {
-  timeout: number;
-}
-
-// Define appropriate requestIdleCallback type
-type RequestIdleCallbackHandle = any;
-type RequestIdleCallbackDeadline = {
-  readonly didTimeout: boolean;
-  timeRemaining: () => number;
-};
-type RequestIdleCallbackFn = (deadline: RequestIdleCallbackDeadline) => void;
-
-// Define requestIdleCallback for TypeScript
-declare global {
-  interface Window {
-    requestIdleCallback: (
-      callback: RequestIdleCallbackFn,
-      opts?: RequestIdleCallbackOptions
-    ) => RequestIdleCallbackHandle;
-    cancelIdleCallback: (handle: RequestIdleCallbackHandle) => void;
-  }
-}
+// We'll use the standard lib.dom.d.ts definitions instead of redefining them
+// This fixes the "Subsequent property declarations must have the same type" errors
 
 /**
  * Preload components for high priority routes
