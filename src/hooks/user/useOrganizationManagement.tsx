@@ -1,6 +1,6 @@
 
 import React, { useCallback } from 'react';
-import { Firm } from '../../types/firmTypes';
+import { FinancialFirm } from '../../types/firmTypes';
 import { toast } from 'sonner';
 import { supabase } from '../../integrations/supabase/client';
 
@@ -11,7 +11,7 @@ export const useOrganizationManagement = () => {
   /**
    * Add a new firm
    */
-  const addFirm = useCallback(async (firm: Firm) => {
+  const addFirm = useCallback(async (firm: Omit<FinancialFirm, 'id' | 'createdAt'>) => {
     try {
       const { data, error } = await supabase
         .from('firms')
@@ -47,30 +47,51 @@ export const useOrganizationManagement = () => {
   }, []);
 
   /**
-   * Get firm by admin ID
+   * Get firm by admin ID - returning an array for compatibility
    */
-  const getFirmByAdmin = useCallback(async (adminId: string) => {
+  const getFirmByAdmin = useCallback(async (adminId: string): Promise<FinancialFirm[]> => {
     try {
       const { data, error } = await supabase
         .from('firms')
         .select('*')
-        .eq('admin_id', adminId)
-        .single();
+        .eq('admin_id', adminId);
 
       if (error) {
         console.error("[useOrganizationManagement] Error fetching firm by admin:", error);
-        return undefined;
+        return [];
       }
 
-      return data;
+      // Transform database records to FinancialFirm format
+      return data.map(firm => ({
+        id: firm.id,
+        name: firm.name,
+        description: firm.description || '',
+        website: firm.website || '',
+        logo: firm.logo,
+        industry: firm.industry,
+        size: firm.size,
+        city: firm.city,
+        state: firm.state,
+        country: firm.country || 'US',
+        assetsUnderManagement: firm.assets_under_management,
+        employeeCount: firm.employee_count,
+        adminId: firm.admin_id,
+        advisorIds: [], // This would need to be populated separately
+        createdAt: firm.created_at
+      }));
     } catch (error) {
       console.error("[useOrganizationManagement] Exception fetching firm by admin:", error);
-      return undefined;
+      return [];
     }
   }, []);
 
+  // Add state management for firms
+  const [firms, setFirms] = React.useState<FinancialFirm[]>([]);
+
   return {
     addFirm,
-    getFirmByAdmin
+    getFirmByAdmin,
+    firms,
+    setFirms
   };
 };

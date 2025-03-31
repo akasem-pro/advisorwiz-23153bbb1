@@ -39,7 +39,7 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
     id: user.id,
     email: user.email,
     app_metadata: {},
-    user_metadata: user.user_metadata || {},
+    user_metadata: user?.user_metadata || {},
     aud: 'authenticated',
     created_at: new Date().toISOString()
   } : null;
@@ -80,8 +80,17 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
   // Get organization management
   const {
     addFirm,
-    getFirmByAdmin
+    getFirmByAdmin,
+    firms: organizationFirms, 
+    setFirms: setOrganizationFirms
   } = useOrganizationManagement();
+  
+  // Sync firms state
+  React.useEffect(() => {
+    if (organizationFirms && organizationFirms.length > 0) {
+      setFirms(organizationFirms);
+    }
+  }, [organizationFirms, setFirms]);
   
   // Get user matching operations
   const {
@@ -110,7 +119,10 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
     activeCall,
     callMetrics,
     initiateCall,
-    updateCallStatus
+    updateCallStatus,
+    isCallModalOpen,
+    closeCallModal,
+    endCall
   } = useCallManagement(userId, userType as 'consumer' | 'advisor' | null);
   
   // Get lead management operations
@@ -164,7 +176,10 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
       updateLeadStatus,
       getLeadByConsumer,
       getLeadStats,
-      getAdvisorLeads
+      getAdvisorLeads,
+      isCallModalOpen,
+      closeCallModal,
+      endCall
     }}>
       {children}
     </UserContext.Provider>

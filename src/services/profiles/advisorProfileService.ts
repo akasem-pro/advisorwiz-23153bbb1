@@ -58,28 +58,29 @@ export const fetchAdvisorProfile = async (userId: string): Promise<AdvisorProfil
     }
     
     // Combine the data into an advisor profile
+    // Handle potentially missing fields from the database
     const advisorProfile: AdvisorProfile = {
       id: userId,
       name: `${baseProfile.first_name || ''} ${baseProfile.last_name || ''}`.trim(),
       organization: advisorData.organization || '',
       isAccredited: advisorData.is_accredited !== false,
       website: advisorData.website || '',
-      testimonials: advisorData.testimonials || [],
-      languages: advisorData.languages || ['english'],
-      pricing: advisorData.pricing || {},
+      testimonials: Array.isArray(advisorData.testimonials) ? advisorData.testimonials : [],
+      languages: Array.isArray(advisorData.languages) ? advisorData.languages : ['english'],
+      pricing: typeof advisorData.pricing === 'object' ? advisorData.pricing : {},
       assetsUnderManagement: advisorData.assets_under_management || 0,
-      expertise: advisorData.expertise || [],
-      specializations: advisorData.specializations || [],
+      expertise: Array.isArray(advisorData.expertise) ? advisorData.expertise : [],
+      specializations: Array.isArray(advisorData.specializations) ? advisorData.specializations : [],
       yearsOfExperience: advisorData.years_of_experience || 0,
       averageRating: advisorData.average_rating || 0,
       ratingCount: advisorData.rating_count || 0,
       biography: advisorData.biography || '',
-      certifications: advisorData.certifications || [],
-      matches: advisorData.matches || [],
-      chats: advisorData.chats || [],
+      certifications: Array.isArray(advisorData.certifications) ? advisorData.certifications : [],
+      matches: Array.isArray(advisorData.matches) ? advisorData.matches : [],
+      chats: Array.isArray(advisorData.chats) ? advisorData.chats : [],
       chatEnabled: baseProfile.chat_enabled !== false,
-      appointmentCategories: advisorData.appointment_categories || [],
-      appointments: advisorData.appointments || [],
+      appointmentCategories: Array.isArray(advisorData.appointment_categories) ? advisorData.appointment_categories : [],
+      appointments: Array.isArray(advisorData.appointments) ? advisorData.appointments : [],
       onlineStatus: baseProfile.online_status || 'offline',
       lastOnline: baseProfile.last_online || new Date().toISOString(),
       showOnlineStatus: baseProfile.show_online_status !== false
@@ -126,9 +127,7 @@ export const updateAdvisorProfile = async (user: User, profileData: AdvisorProfi
         rating_count: profileData.ratingCount,
         biography: profileData.biography,
         certifications: profileData.certifications,
-        // Omit location as it might be in a different table
-        // Omit compatibility_scores as it might be in a different table
-        // Omit fields that don't exist in the database schema
+        // Additional fields for database compatibility
         updated_at: new Date().toISOString()
       }, {
         onConflict: 'id'

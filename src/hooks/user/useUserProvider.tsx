@@ -2,7 +2,7 @@
 import { useUserProfiles } from './useUserProfiles';
 import { useCommunicationManagement } from './useCommunicationManagement';
 import { useOrganizationManagement } from './useOrganizationManagement';
-import { useFilterOperations } from './useFilterOperations';
+import { useFilterOperations } from '../useFilterOperations';
 import { useUserMatching } from './useUserMatching';
 import { useCallManagement } from './useCallManagement';
 import { useLeadManagement } from './useLeadManagement';

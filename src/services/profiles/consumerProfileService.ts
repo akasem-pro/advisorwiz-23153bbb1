@@ -55,6 +55,17 @@ export const fetchConsumerProfile = async (userId: string): Promise<ConsumerProf
       return minimalConsumerProfile;
     }
     
+    // Type cast for startTimeline
+    let startTimeline: 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' = 'not_sure';
+    
+    // Validate that the value is one of the allowed options
+    if (consumerData.start_timeline === 'immediately' || 
+        consumerData.start_timeline === 'next_3_months' || 
+        consumerData.start_timeline === 'next_6_months' || 
+        consumerData.start_timeline === 'not_sure') {
+      startTimeline = consumerData.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure';
+    }
+    
     // Combine the data into a consumer profile
     const consumerProfile: ConsumerProfile = {
       id: userId,
@@ -63,16 +74,16 @@ export const fetchConsumerProfile = async (userId: string): Promise<ConsumerProf
       status: consumerData.status || 'new',
       investableAssets: consumerData.investable_assets || 0,
       riskTolerance: consumerData.risk_tolerance || 'medium',
-      preferredCommunication: consumerData.preferred_communication || ['email'],
-      preferredLanguage: consumerData.preferred_language || ['english'],
-      matches: consumerData.matches || [],
-      chats: consumerData.chats || [],
+      preferredCommunication: Array.isArray(consumerData.preferred_communication) ? consumerData.preferred_communication : ['email'],
+      preferredLanguage: Array.isArray(consumerData.preferred_language) ? consumerData.preferred_language : ['english'],
+      matches: Array.isArray(consumerData.matches) ? consumerData.matches : [],
+      chats: Array.isArray(consumerData.chats) ? consumerData.chats : [],
       chatEnabled: baseProfile.chat_enabled !== false,
-      appointments: consumerData.appointments || [],
+      appointments: Array.isArray(consumerData.appointments) ? consumerData.appointments : [],
       onlineStatus: baseProfile.online_status || 'offline',
       lastOnline: baseProfile.last_online || new Date().toISOString(),
       showOnlineStatus: baseProfile.show_online_status !== false,
-      startTimeline: consumerData.start_timeline as "immediately" | "next_3_months" | "next_6_months" | "not_sure" || 'not_sure'
+      startTimeline: startTimeline
     };
     
     return consumerProfile;
@@ -114,8 +125,7 @@ export const updateConsumerProfile = async (user: User, profileData: ConsumerPro
         income_bracket: profileData.incomeBracket,
         income_range: profileData.incomeRange,
         preferred_advisor_specialties: profileData.preferredAdvisorSpecialties,
-        // Omit matches and chats if they are maintained elsewhere
-        // Omit appointments if they are maintained in a separate table
+        // Required field for database compatibility
         start_timeline: profileData.startTimeline,
         has_advisor: profileData.hasAdvisor,
         current_advisor_reason: profileData.currentAdvisorReason,

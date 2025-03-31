@@ -37,6 +37,17 @@ export async function initializeUserProfile(user: User, userType: UserType) {
           console.error("Error fetching consumer data:", consumerError);
         }
         
+        // Default values
+        let startTimelineValue: 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' = 'not_sure';
+        
+        // Validate that the value is one of the allowed options
+        if (consumerData?.start_timeline === 'immediately' || 
+            consumerData?.start_timeline === 'next_3_months' || 
+            consumerData?.start_timeline === 'next_6_months' || 
+            consumerData?.start_timeline === 'not_sure') {
+          startTimelineValue = consumerData.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure';
+        }
+        
         // Convert from database format to app format
         const consumerProfile: ConsumerProfile = {
           id: user.id,
@@ -45,16 +56,16 @@ export async function initializeUserProfile(user: User, userType: UserType) {
           status: consumerData?.status || 'new',
           investableAssets: consumerData?.investable_assets || 0,
           riskTolerance: (consumerData?.risk_tolerance as "low" | "medium" | "high") || 'medium',
-          preferredCommunication: consumerData?.preferred_communication || ['email'],
-          preferredLanguage: consumerData?.preferred_language || ['english'],
-          matches: consumerData?.matches || [],
-          chats: consumerData?.chats || [],
+          preferredCommunication: Array.isArray(consumerData?.preferred_communication) ? consumerData.preferred_communication : ['email'],
+          preferredLanguage: Array.isArray(consumerData?.preferred_language) ? consumerData.preferred_language : ['english'],
+          matches: Array.isArray(consumerData?.matches) ? consumerData.matches : [],
+          chats: Array.isArray(consumerData?.chats) ? consumerData.chats : [],
           chatEnabled: existingProfile.chat_enabled !== false,
-          appointments: consumerData?.appointments || [],
+          appointments: Array.isArray(consumerData?.appointments) ? consumerData.appointments : [],
           onlineStatus: existingProfile.online_status || 'offline',
           lastOnline: existingProfile.last_online || new Date().toISOString(),
           showOnlineStatus: existingProfile.show_online_status !== false,
-          startTimeline: consumerData?.start_timeline || 'not_sure'
+          startTimeline: startTimelineValue
         };
         return consumerProfile;
       } else if (userType === 'advisor') {
@@ -74,16 +85,16 @@ export async function initializeUserProfile(user: User, userType: UserType) {
           organization: advisorData?.organization || '',
           isAccredited: advisorData?.is_accredited !== false,
           website: advisorData?.website || '',
-          testimonials: advisorData?.testimonials || [],
-          languages: advisorData?.languages || ['english'],
-          pricing: advisorData?.pricing || {},
+          testimonials: Array.isArray(advisorData?.testimonials) ? advisorData.testimonials : [],
+          languages: Array.isArray(advisorData?.languages) ? advisorData.languages : ['english'],
+          pricing: typeof advisorData?.pricing === 'object' ? advisorData.pricing : {},
           assetsUnderManagement: advisorData?.assets_under_management || 0,
-          expertise: advisorData?.expertise || [],
-          matches: advisorData?.matches || [],
-          chats: advisorData?.chats || [],
+          expertise: Array.isArray(advisorData?.expertise) ? advisorData.expertise : [],
+          matches: Array.isArray(advisorData?.matches) ? advisorData.matches : [],
+          chats: Array.isArray(advisorData?.chats) ? advisorData.chats : [],
           chatEnabled: existingProfile.chat_enabled !== false,
-          appointmentCategories: advisorData?.appointment_categories || [],
-          appointments: advisorData?.appointments || [],
+          appointmentCategories: Array.isArray(advisorData?.appointment_categories) ? advisorData.appointment_categories : [],
+          appointments: Array.isArray(advisorData?.appointments) ? advisorData.appointments : [],
           onlineStatus: existingProfile.online_status || 'offline',
           lastOnline: existingProfile.last_online || new Date().toISOString(),
           showOnlineStatus: existingProfile.show_online_status !== false

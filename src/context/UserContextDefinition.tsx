@@ -7,7 +7,7 @@ import {
 } from '../types/profileTypes';
 import { Chat } from '../types/chatTypes';
 import { Appointment } from '../types/timeTypes';
-import { Firm } from '../types/firmTypes';
+import { FinancialFirm } from '../types/firmTypes';
 import { MatchPreferences } from '../types/compatibilityTypes';
 import { Lead } from '../types/leadTypes';
 import { CallSession } from '../types/callTypes';
@@ -49,10 +49,10 @@ interface UserContextType {
   getFilteredConsumers: (filters: any) => Promise<ConsumerProfile[]>;
   
   // Organizations
-  firms: Firm[];
-  setFirms: React.Dispatch<React.SetStateAction<Firm[]>>;
-  addFirm: (firm: Firm) => void;
-  getFirmByAdmin: (adminId: string) => Promise<Firm | undefined>;
+  firms: FinancialFirm[];
+  setFirms: React.Dispatch<React.SetStateAction<FinancialFirm[]>>;
+  addFirm: (firm: FinancialFirm) => void;
+  getFirmByAdmin: (adminId: string) => Promise<FinancialFirm[]>;
   
   // Matching functionality
   calculateCompatibilityScore: (advisorId: string) => number;
@@ -120,7 +120,7 @@ const defaultContextValues: UserContextType = {
   firms: [],
   setFirms: () => {},
   addFirm: () => {},
-  getFirmByAdmin: async () => undefined,
+  getFirmByAdmin: async () => [],
   
   // Matching
   calculateCompatibilityScore: () => 0,
