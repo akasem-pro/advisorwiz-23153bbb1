@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import UserContext from './UserContextDefinition';
 import { 
@@ -320,7 +319,6 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
       updateCallStatus,
       activeCall,
       callMetrics,
-      closeCallModal,
       endCall,
       leads,
       addLead,
