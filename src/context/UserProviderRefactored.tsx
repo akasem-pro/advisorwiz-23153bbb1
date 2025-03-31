@@ -4,7 +4,7 @@ import UserContext from './UserContextDefinition';
 import { useUserState } from '../hooks/useUserState';
 import { useUserProfiles } from '../hooks/user/useUserProfiles';
 import { useUserCommunication } from '../hooks/user/useUserCommunication';
-import { useFilterOperations } from '../hooks/user/useFilterOperations';
+import { useFilterOperations } from '../hooks/useFilterOperations';
 import { useOrganizationManagement } from '../hooks/user/useOrganizationManagement';
 import { useUserMatching } from '../hooks/user/useUserMatching';
 import { useCallManagement } from '../hooks/user/useCallManagement';
@@ -34,9 +34,19 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
   // Manage auth state
   useAuthStateManagement(setIsAuthenticated);
   
+  // Initialize profiles based on auth state - Convert AuthUser to User with required fields
+  const supabaseUser = user ? {
+    id: user.id,
+    email: user.email,
+    app_metadata: {},
+    user_metadata: user.user_metadata || {},
+    aud: 'authenticated',
+    created_at: new Date().toISOString()
+  } : null;
+  
   // Initialize profiles based on auth state
   const { initializeUserProfiles } = useProfileInitialization(
-    user,
+    supabaseUser,
     userType,
     setUserType,
     consumerProfile,
@@ -71,7 +81,7 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
   const {
     addFirm,
     getFirmByAdmin
-  } = useUserOrganizations();
+  } = useOrganizationManagement();
   
   // Get user matching operations
   const {
@@ -100,7 +110,7 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
     activeCall,
     callMetrics,
     initiateCall,
-    updateCallStatus,
+    updateCallStatus
   } = useCallManagement(userId, userType as 'consumer' | 'advisor' | null);
   
   // Get lead management operations

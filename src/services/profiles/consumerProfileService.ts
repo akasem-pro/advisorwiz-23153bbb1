@@ -24,12 +24,35 @@ export const fetchConsumerProfile = async (userId: string): Promise<ConsumerProf
     const { data: consumerData, error: consumerError } = await supabase
       .from('consumer_profiles')
       .select('*')
-      .eq('user_id', userId)
+      .eq('id', userId)
       .single();
     
-    if (consumerError) {
+    if (consumerError && consumerError.code !== 'PGRST116') {
       console.error('[consumerProfileService] Error fetching consumer data:', consumerError);
       return null;
+    }
+
+    // If no consumer data exists, return minimal profile
+    if (!consumerData) {
+      const minimalConsumerProfile: ConsumerProfile = {
+        id: userId,
+        name: `${baseProfile.first_name || ''} ${baseProfile.last_name || ''}`.trim(),
+        age: 0,
+        status: 'new',
+        investableAssets: 0,
+        riskTolerance: 'medium',
+        preferredCommunication: ['email'],
+        preferredLanguage: ['english'],
+        matches: [],
+        chats: [],
+        chatEnabled: baseProfile.chat_enabled !== false,
+        appointments: [],
+        onlineStatus: baseProfile.online_status || 'offline',
+        lastOnline: baseProfile.last_online || new Date().toISOString(),
+        showOnlineStatus: baseProfile.show_online_status !== false,
+        startTimeline: 'not_sure'
+      };
+      return minimalConsumerProfile;
     }
     
     // Combine the data into a consumer profile
@@ -49,7 +72,7 @@ export const fetchConsumerProfile = async (userId: string): Promise<ConsumerProf
       onlineStatus: baseProfile.online_status || 'offline',
       lastOnline: baseProfile.last_online || new Date().toISOString(),
       showOnlineStatus: baseProfile.show_online_status !== false,
-      startTimeline: consumerData.start_timeline || null
+      startTimeline: consumerData.start_timeline as "immediately" | "next_3_months" | "next_6_months" | "not_sure" || 'not_sure'
     };
     
     return consumerProfile;
@@ -78,7 +101,7 @@ export const updateConsumerProfile = async (user: User, profileData: ConsumerPro
     const { error: consumerUpsertError } = await supabase
       .from('consumer_profiles')
       .upsert({
-        user_id: user.id,
+        id: user.id,
         age: profileData.age,
         status: profileData.status,
         investable_assets: profileData.investableAssets,
@@ -91,15 +114,14 @@ export const updateConsumerProfile = async (user: User, profileData: ConsumerPro
         income_bracket: profileData.incomeBracket,
         income_range: profileData.incomeRange,
         preferred_advisor_specialties: profileData.preferredAdvisorSpecialties,
-        matches: profileData.matches,
-        chats: profileData.chats,
-        appointments: profileData.appointments,
+        // Omit matches and chats if they are maintained elsewhere
+        // Omit appointments if they are maintained in a separate table
         start_timeline: profileData.startTimeline,
         has_advisor: profileData.hasAdvisor,
         current_advisor_reason: profileData.currentAdvisorReason,
         updated_at: new Date().toISOString()
       }, {
-        onConflict: 'user_id'
+        onConflict: 'id'
       });
     
     if (consumerUpsertError) {
@@ -136,7 +158,8 @@ export const initializeConsumerProfile = async (user: User): Promise<ConsumerPro
       appointments: [],
       onlineStatus: 'online',
       lastOnline: new Date().toISOString(),
-      showOnlineStatus: true
+      showOnlineStatus: true,
+      startTimeline: 'not_sure'
     };
     
     // Update the profile in Supabase

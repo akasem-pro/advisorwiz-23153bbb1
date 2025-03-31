@@ -24,12 +24,37 @@ export const fetchAdvisorProfile = async (userId: string): Promise<AdvisorProfil
     const { data: advisorData, error: advisorError } = await supabase
       .from('advisor_profiles')
       .select('*')
-      .eq('user_id', userId)
+      .eq('id', userId)
       .single();
     
-    if (advisorError) {
+    if (advisorError && advisorError.code !== 'PGRST116') {
       console.error('[advisorProfileService] Error fetching advisor data:', advisorError);
       return null;
+    }
+    
+    // If no advisor data exists, return minimal profile
+    if (!advisorData) {
+      const minimalAdvisorProfile: AdvisorProfile = {
+        id: userId,
+        name: `${baseProfile.first_name || ''} ${baseProfile.last_name || ''}`.trim(),
+        organization: '',
+        isAccredited: false,
+        website: '',
+        testimonials: [],
+        languages: ['english'],
+        pricing: {},
+        assetsUnderManagement: 0,
+        expertise: [],
+        matches: [],
+        chats: [],
+        chatEnabled: baseProfile.chat_enabled !== false,
+        appointmentCategories: [],
+        appointments: [],
+        onlineStatus: baseProfile.online_status || 'offline',
+        lastOnline: baseProfile.last_online || new Date().toISOString(),
+        showOnlineStatus: baseProfile.show_online_status !== false
+      };
+      return minimalAdvisorProfile;
     }
     
     // Combine the data into an advisor profile
@@ -86,7 +111,7 @@ export const updateAdvisorProfile = async (user: User, profileData: AdvisorProfi
     const { error: advisorUpsertError } = await supabase
       .from('advisor_profiles')
       .upsert({
-        user_id: user.id,
+        id: user.id,
         organization: profileData.organization,
         is_accredited: profileData.isAccredited,
         website: profileData.website,
@@ -101,16 +126,12 @@ export const updateAdvisorProfile = async (user: User, profileData: AdvisorProfi
         rating_count: profileData.ratingCount,
         biography: profileData.biography,
         certifications: profileData.certifications,
-        location: profileData.location,
-        matches: profileData.matches,
-        compatibility_scores: profileData.compatibilityScores,
-        chats: profileData.chats,
-        availability: profileData.availability,
-        appointment_categories: profileData.appointmentCategories,
-        appointments: profileData.appointments,
+        // Omit location as it might be in a different table
+        // Omit compatibility_scores as it might be in a different table
+        // Omit fields that don't exist in the database schema
         updated_at: new Date().toISOString()
       }, {
-        onConflict: 'user_id'
+        onConflict: 'id'
       });
     
     if (advisorUpsertError) {

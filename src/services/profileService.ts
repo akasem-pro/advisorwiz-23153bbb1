@@ -25,44 +25,65 @@ export async function initializeUserProfile(user: User, userType: UserType) {
     if (existingProfile) {
       console.log("Found existing profile:", existingProfile);
       
-      // Convert from database format to app format
-      // This would be more complex in a real app
+      // Get additional data based on user type
       if (userType === 'consumer') {
+        const { data: consumerData, error: consumerError } = await supabase
+          .from('consumer_profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+          
+        if (consumerError && consumerError.code !== 'PGRST116') {
+          console.error("Error fetching consumer data:", consumerError);
+        }
+        
+        // Convert from database format to app format
         const consumerProfile: ConsumerProfile = {
           id: user.id,
           name: `${existingProfile.first_name || ''} ${existingProfile.last_name || ''}`.trim(),
-          age: existingProfile.age || 0,
-          status: existingProfile.status || 'new',
-          investableAssets: existingProfile.investable_assets || 0,
-          riskTolerance: existingProfile.risk_tolerance || 'medium',
-          preferredCommunication: existingProfile.preferred_communication || ['email'],
-          preferredLanguage: existingProfile.preferred_language || ['english'],
-          matches: existingProfile.matches || [],
-          chats: existingProfile.chats || [],
+          age: consumerData?.age || 0,
+          status: consumerData?.status || 'new',
+          investableAssets: consumerData?.investable_assets || 0,
+          riskTolerance: (consumerData?.risk_tolerance as "low" | "medium" | "high") || 'medium',
+          preferredCommunication: consumerData?.preferred_communication || ['email'],
+          preferredLanguage: consumerData?.preferred_language || ['english'],
+          matches: consumerData?.matches || [],
+          chats: consumerData?.chats || [],
           chatEnabled: existingProfile.chat_enabled !== false,
-          appointments: existingProfile.appointments || [],
+          appointments: consumerData?.appointments || [],
           onlineStatus: existingProfile.online_status || 'offline',
           lastOnline: existingProfile.last_online || new Date().toISOString(),
-          showOnlineStatus: existingProfile.show_online_status !== false
+          showOnlineStatus: existingProfile.show_online_status !== false,
+          startTimeline: consumerData?.start_timeline || 'not_sure'
         };
         return consumerProfile;
       } else if (userType === 'advisor') {
+        const { data: advisorData, error: advisorError } = await supabase
+          .from('advisor_profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+          
+        if (advisorError && advisorError.code !== 'PGRST116') {
+          console.error("Error fetching advisor data:", advisorError);
+        }
+        
         const advisorProfile: AdvisorProfile = {
           id: user.id,
           name: `${existingProfile.first_name || ''} ${existingProfile.last_name || ''}`.trim(),
-          organization: existingProfile.organization || '',
-          isAccredited: existingProfile.is_accredited !== false,
-          website: existingProfile.website || '',
-          testimonials: existingProfile.testimonials || [],
-          languages: existingProfile.languages || ['english'],
-          pricing: existingProfile.pricing || {},
-          assetsUnderManagement: existingProfile.assets_under_management || 0,
-          expertise: existingProfile.expertise || [],
-          matches: existingProfile.matches || [],
-          chats: existingProfile.chats || [],
+          organization: advisorData?.organization || '',
+          isAccredited: advisorData?.is_accredited !== false,
+          website: advisorData?.website || '',
+          testimonials: advisorData?.testimonials || [],
+          languages: advisorData?.languages || ['english'],
+          pricing: advisorData?.pricing || {},
+          assetsUnderManagement: advisorData?.assets_under_management || 0,
+          expertise: advisorData?.expertise || [],
+          matches: advisorData?.matches || [],
+          chats: advisorData?.chats || [],
           chatEnabled: existingProfile.chat_enabled !== false,
-          appointmentCategories: existingProfile.appointment_categories || [],
-          appointments: existingProfile.appointments || [],
+          appointmentCategories: advisorData?.appointment_categories || [],
+          appointments: advisorData?.appointments || [],
           onlineStatus: existingProfile.online_status || 'offline',
           lastOnline: existingProfile.last_online || new Date().toISOString(),
           showOnlineStatus: existingProfile.show_online_status !== false
@@ -91,7 +112,8 @@ export async function initializeUserProfile(user: User, userType: UserType) {
         appointments: [],
         onlineStatus: 'online',
         lastOnline: new Date().toISOString(),
-        showOnlineStatus: true
+        showOnlineStatus: true,
+        startTimeline: 'not_sure'
       };
       
       try {
@@ -104,8 +126,6 @@ export async function initializeUserProfile(user: User, userType: UserType) {
             last_name: newConsumerProfile.name.split(' ').slice(1).join(' '),
             email: user.email,
             user_type: 'consumer',
-            status: 'new',
-            risk_tolerance: 'medium',
             chat_enabled: true,
             online_status: 'online',
             last_online: new Date().toISOString(),
@@ -113,7 +133,22 @@ export async function initializeUserProfile(user: User, userType: UserType) {
           });
           
         if (insertError) {
-          console.error("Error creating consumer profile:", insertError);
+          console.error("Error creating profile record:", insertError);
+        } else {
+          // Insert consumer-specific data
+          const { error: consumerError } = await supabase
+            .from('consumer_profiles')
+            .insert({
+              id: user.id,
+              age: 0,
+              risk_tolerance: 'medium',
+              status: 'new',
+              start_timeline: 'not_sure'
+            });
+            
+          if (consumerError) {
+            console.error("Error creating consumer profile:", consumerError);
+          }
         }
       } catch (err) {
         console.error("Exception creating consumer profile:", err);
@@ -152,7 +187,6 @@ export async function initializeUserProfile(user: User, userType: UserType) {
             last_name: newAdvisorProfile.name.split(' ').slice(1).join(' '),
             email: user.email,
             user_type: 'advisor',
-            is_accredited: false,
             chat_enabled: true,
             online_status: 'online',
             last_online: new Date().toISOString(),
@@ -160,7 +194,21 @@ export async function initializeUserProfile(user: User, userType: UserType) {
           });
           
         if (insertError) {
-          console.error("Error creating advisor profile:", insertError);
+          console.error("Error creating profile record:", insertError);
+        } else {
+          // Insert advisor-specific data
+          const { error: advisorError } = await supabase
+            .from('advisor_profiles')
+            .insert({
+              id: user.id,
+              is_accredited: false,
+              organization: '',
+              assets_under_management: 0
+            });
+            
+          if (advisorError) {
+            console.error("Error creating advisor profile:", advisorError);
+          }
         }
       } catch (err) {
         console.error("Exception creating advisor profile:", err);
