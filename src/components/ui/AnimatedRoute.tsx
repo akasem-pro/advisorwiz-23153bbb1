@@ -21,20 +21,19 @@ const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
   const [isPending, startTransition] = useTransition();
   
   useEffect(() => {
-    // Use startTransition to prevent suspension issues
-    let isMounted = true;
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
-    
     // For no animation, we keep content visible
     if (animation === 'none') {
       return;
     }
     
-    // Otherwise, start invisible and animate in
+    // Otherwise handle animation transition
+    let isMounted = true;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    
+    // Start invisible for a brief moment then animate in
     setIsVisible(false);
     
     timeoutId = setTimeout(() => {
-      // Wrap the state update in startTransition to prevent suspension issues
       if (isMounted) {
         startTransition(() => {
           setIsVisible(true);
@@ -42,7 +41,7 @@ const AnimatedRoute: React.FC<AnimatedRouteProps> = ({
       }
     }, delay);
     
-    // Proper cleanup function to prevent memory leaks and React error #310
+    // Proper cleanup function
     return () => {
       isMounted = false;
       if (timeoutId) {

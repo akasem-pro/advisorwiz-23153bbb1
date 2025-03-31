@@ -36,7 +36,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   className = '',
   contentClassName = '',
   mobileNavbar,
-  animation = 'fade',
+  animation = 'none', // Default to none to avoid animation issues
   animationDuration = 'normal',
   headerClassName = '',
   mainClassName = '',
@@ -87,31 +87,9 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
     };
   }, [location, isInitialLoad]);
   
-  // Safer approach to managing content visibility
-  const [contentVisible, setContentVisible] = useState(false);
+  // Make content visible by default
+  const [contentVisible, setContentVisible] = useState(true);
   
-  useEffect(() => {
-    let isMounted = true;
-    let visibilityTimer: ReturnType<typeof setTimeout> | null = null;
-    
-    // Use startTransition for content visibility to avoid suspension
-    visibilityTimer = setTimeout(() => {
-      if (isMounted) {
-        startTransition(() => {
-          setContentVisible(true);
-        });
-      }
-    }, 0);
-    
-    // Proper cleanup function
-    return () => {
-      isMounted = false;
-      if (visibilityTimer) {
-        clearTimeout(visibilityTimer);
-      }
-    };
-  }, []);
-
   // Animation duration class - memoized to prevent unnecessary recalculations
   const durationClass = React.useMemo(() => {
     switch (animationDuration) {
@@ -146,24 +124,10 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         withoutPadding ? '' : mainClassName
       )} id={skipToContentId}>
         <div className={cn(
-          "container mx-auto px-4 py-8", // Added default container and padding
+          "container mx-auto px-4 py-8",
           withoutPadding ? '' : contentClassName
         )}>
-          {contentVisible ? children : (
-            // Add a placeholder while content is loading
-            <div className="animate-pulse flex space-x-4 h-64">
-              <div className="flex-1 space-y-6 py-1">
-                <div className="h-4 bg-slate-200 dark:bg-navy-700 rounded w-3/4"></div>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="h-4 bg-slate-200 dark:bg-navy-700 rounded col-span-2"></div>
-                    <div className="h-4 bg-slate-200 dark:bg-navy-700 rounded col-span-1"></div>
-                  </div>
-                  <div className="h-4 bg-slate-200 dark:bg-navy-700 rounded"></div>
-                </div>
-              </div>
-            </div>
-          )}
+          {children}
         </div>
         
         {showTrustBadges && (
@@ -177,7 +141,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
       </main>
       
       {/* Only render FloatingSupportButton after initial load */}
-      {!isInitialLoad && contentVisible && (
+      {!isInitialLoad && (
         <React.Suspense fallback={null}>
           <FloatingSupportButton />
         </React.Suspense>

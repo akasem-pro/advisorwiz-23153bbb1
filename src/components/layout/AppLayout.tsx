@@ -26,7 +26,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   showTrustBadges = false,
   contentClassName,
   withoutPadding = false,
-  animation = 'none', // Changed to none to eliminate animation issues
+  animation = 'none',
   animationDuration = 'normal',
   skipToContentId = 'main-content',
   hideFooter = false

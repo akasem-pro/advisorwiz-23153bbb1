@@ -69,9 +69,8 @@ const AppRoutes = () => {
           />
         ))}
         
-        {/* Main content routes */}
-        <Route path="/" element={<AppLayout><Outlet /></AppLayout>}>
-          {/* Directly use MainRoutes as they no longer include AppLayout wrapper */}
+        {/* Main content routes wrapped in AppLayout */}
+        <Route element={<AppLayout><Outlet /></AppLayout>}>
           {MainRoutes}
         </Route>
         
