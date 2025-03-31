@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
 import TrustBadges from '../ui/TrustBadges';
@@ -44,25 +44,40 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   skipToContentId
 }) => {
   const location = useLocation();
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   
-  // Handle analytics
+  // Handle analytics with debouncing
   useEffect(() => {
-    initializeTagManager();
-    const pageTitle = document.title || 'AdvisorWiz';
-    trackPageView(pageTitle, location.pathname);
-  }, [location]);
+    let timer: ReturnType<typeof setTimeout>;
+    
+    // Initialize tag manager only once
+    if (isInitialLoad) {
+      initializeTagManager();
+      setIsInitialLoad(false);
+    }
+    
+    // Debounce page view tracking to avoid performance impact
+    timer = setTimeout(() => {
+      const pageTitle = document.title || 'AdvisorWiz';
+      trackPageView(pageTitle, location.pathname);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, [location, isInitialLoad]);
 
-  // Animation duration class
-  const getDurationClass = () => {
+  // Animation duration class with better performance
+  const getDurationClass = React.useMemo(() => {
     switch (animationDuration) {
       case 'fast': return 'duration-200';
       case 'slow': return 'duration-500';
       default: return 'duration-300';
     }
-  };
+  }, [animationDuration]);
   
-  // Determine what footer to render
-  const footerElement = footer === null ? null : (footer || <AppFooter />);
+  // Determine what footer to render - memoized to prevent rerenders
+  const footerElement = React.useMemo(() => 
+    footer === null ? null : (footer || <AppFooter />),
+  [footer]);
 
   const renderContent = () => (
     <div className={cn(
@@ -100,7 +115,8 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         )}
       </main>
       
-      <FloatingSupportButton />
+      {/* Conditionally render to avoid reflows */}
+      {!isInitialLoad && <FloatingSupportButton />}
       
       {/* Single footer rendering logic */}
       {footerElement}
@@ -123,4 +139,4 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   );
 };
 
-export default BaseLayout;
+export default React.memo(BaseLayout);

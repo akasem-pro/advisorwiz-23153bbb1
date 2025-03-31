@@ -6,24 +6,34 @@ import { initEnhancedPerformanceTracking } from './performance/enhancedPerforman
 import { withPerformanceTracking } from './performance/functionTracking';
 
 /**
- * Initialize all performance optimizations
+ * Initialize essential performance optimizations immediately
+ * and defer non-critical ones
  */
 export const initPerformanceOptimizations = () => {
-  // Track Web Vitals metrics
-  trackWebVitals();
-  
-  // Implement resource hints (preconnect, etc.)
+  // Critical optimizations that should run immediately
+  // These directly impact Core Web Vitals and initial rendering
   implementResourceHints();
-  
-  // Setup lazy loading and image optimizations
   setupLazyLoading();
-  optimizeImagesForCWV();
   
-  // Initialize enhanced tracking system
-  initEnhancedPerformanceTracking();
-  
-  // Log initialization
-  console.log('[Performance] Performance optimizations initialized');
+  // Use deferred initialization for less critical optimizations
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => {
+      // Track Web Vitals metrics - slightly deferred to not impact FCP
+      trackWebVitals();
+      
+      // Initialize enhanced tracking system with lower priority
+      initEnhancedPerformanceTracking();
+      
+      // Log initialization
+      console.log('[Performance] Performance optimizations initialized');
+    }, { timeout: 3000 });
+  } else {
+    // Fallback for browsers without requestIdleCallback
+    setTimeout(() => {
+      trackWebVitals();
+      initEnhancedPerformanceTracking();
+    }, 1000);
+  }
   
   // Run optimization on DOMContentLoaded
   document.addEventListener('DOMContentLoaded', optimizeOnDOMContentLoaded);
@@ -36,11 +46,11 @@ export const initPerformanceOptimizations = () => {
  * Optimize performance when DOM is fully loaded
  */
 const optimizeOnDOMContentLoaded = () => {
-  // Defer non-critical scripts
-  deferNonCriticalScripts();
-  
-  // Re-run image optimizations (for dynamically loaded content)
+  // Optimize images for CWV (LCP, CLS)
   optimizeImagesForCWV();
+  
+  // Defer non-critical scripts to improve TTI
+  deferNonCriticalScripts();
 };
 
 /**

@@ -9,15 +9,18 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading delay
-    setTimeout(() => {
+    // Simulate loading delay, but use a smaller delay to improve perceived performance
+    const timer = setTimeout(() => {
       setLoading(false);
-    }, 500);
+    }, 300); // Reduced from 500ms to 300ms
+
+    return () => clearTimeout(timer);
   }, []);
 
+  // Optimized loading spinner that doesn't cause layout shifts
   if (loading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
+      <div className="fixed inset-0 flex items-center justify-center bg-slate-50 dark:bg-navy-900 z-50">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-teal-500"></div>
       </div>
     );
