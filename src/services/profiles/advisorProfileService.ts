@@ -1,6 +1,7 @@
 
 import { supabase } from '../../integrations/supabase/client';
-import { AdvisorProfile, AdvisorProfileUpdate } from '../../types/profileTypes';
+import { AdvisorProfile } from '../../types/profileTypes';
+import { toast } from 'sonner';
 
 /**
  * Fetches an advisor profile by user ID
@@ -79,7 +80,7 @@ export const getAdvisorProfileById = async (userId: string): Promise<AdvisorProf
 /**
  * Updates an advisor profile
  */
-export const updateAdvisorProfile = async (userId: string, updateData: AdvisorProfileUpdate): Promise<boolean> => {
+export const updateAdvisorProfile = async (userId: string, updateData: Partial<AdvisorProfile>): Promise<boolean> => {
   try {
     // Split the data into user profile and advisor profile updates
     const { 

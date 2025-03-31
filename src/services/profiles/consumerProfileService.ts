@@ -1,6 +1,6 @@
 
 import { supabase } from '../../integrations/supabase/client';
-import { ConsumerProfile, ConsumerProfileUpdate } from '../../types/profileTypes';
+import { ConsumerProfile } from '../../types/profileTypes';
 
 /**
  * Fetches a consumer profile by user ID
@@ -40,7 +40,8 @@ export const getConsumerProfileById = async (userId: string): Promise<ConsumerPr
       status: 'active',
       investableAssets: consumerProfile.investable_assets || 0,
       riskTolerance: (consumerProfile.risk_tolerance as 'low' | 'medium' | 'high') || 'medium',
-      preferredCommunication: consumerProfile.preferred_communication || [],
+      preferredCommunication: Array.isArray(consumerProfile.preferred_communication) ? 
+        consumerProfile.preferred_communication : [],
       preferredLanguage: consumerProfile.preferred_language || ['English'],
       financialGoals: consumerProfile.financial_goals || [],
       incomeRange: consumerProfile.income_bracket || '',
@@ -73,7 +74,7 @@ export const getConsumerProfileById = async (userId: string): Promise<ConsumerPr
 /**
  * Updates a consumer profile
  */
-export const updateConsumerProfile = async (userId: string, updateData: ConsumerProfileUpdate): Promise<boolean> => {
+export const updateConsumerProfile = async (userId: string, updateData: Partial<ConsumerProfile>): Promise<boolean> => {
   try {
     // Split the data into user profile and consumer profile updates
     const { 

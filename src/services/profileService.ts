@@ -42,28 +42,37 @@ export const getConsumerProfile = async (userId: string): Promise<ConsumerProfil
     if (!userProfile || !consumerProfile) return null;
     
     // Safely create a merged profile with default values for possibly missing properties
-    const profile = {
+    const profile: ConsumerProfile = {
       id: userId,
       name: `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim(),
       age: consumerProfile.age || 0,
       status: 'active',
       investableAssets: consumerProfile.investable_assets || 0,
       riskTolerance: (consumerProfile.risk_tolerance as 'low' | 'medium' | 'high') || 'medium',
-      preferredCommunication: consumerProfile.preferred_communication ? 
+      preferredCommunication: Array.isArray(consumerProfile.preferred_communication) ? 
         consumerProfile.preferred_communication as string[] : [],
       preferredLanguage: consumerProfile.preferred_language || ['English'],
+      financialGoals: consumerProfile.financial_goals || [],
+      incomeRange: consumerProfile.income_bracket || '',
+      investmentAmount: consumerProfile.investment_amount || 0,
+      preferredAdvisorSpecialties: consumerProfile.preferred_advisor_specialties || [],
+      location: {
+        city: userProfile.city || '',
+        state: userProfile.state || '',
+        country: userProfile.country || 'US'
+      },
       matches: [],
       chats: [],
       profilePicture: userProfile.avatar_url || '',
       chatEnabled: userProfile.chat_enabled || false,
       appointments: [],
-      onlineStatus: 'offline',
-      lastOnline: new Date().toISOString(),
-      showOnlineStatus: true,
+      startTimeline: consumerProfile.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' || 'not_sure',
+      onlineStatus: userProfile.online_status || 'offline',
+      lastOnline: userProfile.last_online || new Date().toISOString(),
+      showOnlineStatus: userProfile.show_online_status || true,
       email: userProfile.email || '',
-      phone: userProfile.phone || '',
-      startTimeline: 'not_sure',
-    } as ConsumerProfile;
+      phone: userProfile.phone || ''
+    };
     
     return profile;
   } catch (err) {
@@ -126,9 +135,9 @@ export const getAdvisorProfile = async (userId: string): Promise<AdvisorProfile 
       chatEnabled: userProfile.chat_enabled || false,
       appointmentCategories: [],
       appointments: [],
-      onlineStatus: 'offline',
-      lastOnline: new Date().toISOString(),
-      showOnlineStatus: true
+      onlineStatus: userProfile.online_status || 'offline',
+      lastOnline: userProfile.last_online || new Date().toISOString(),
+      showOnlineStatus: userProfile.show_online_status || true
     } as AdvisorProfile;
   } catch (err) {
     console.error('Error fetching advisor profile:', err);
