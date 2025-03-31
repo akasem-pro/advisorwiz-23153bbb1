@@ -1,8 +1,7 @@
-
-import { getWeightedCompatibilityScore } from '../../services/matching/weightedScoring';
+import { getWeightedCompatibilityScore, clearCompatibilityCache } from '../../services/matching/weightedScoring';
 import { trackMatchingInteraction } from '../../utils/analytics/matchTracker';
 import { mockAdvisors, mockConsumers } from '../../data/mockUsers';
-import { clearCompatibilityCache } from '../../services/matching/cache/compatibilityCache';
+import { clearCompatibilityCache as clearDirectCache } from '../../services/matching/cache/compatibilityCache';
 
 // Mock the analytics tracker to verify it's called correctly
 jest.mock('../../utils/analytics/matchTracker', () => ({
@@ -21,8 +20,9 @@ describe('Matching and Analytics Integration', () => {
   };
 
   beforeEach(() => {
-    // Clear caches and mocks before each test
+    // Clear caches before each test
     clearCompatibilityCache();
+    clearMatchCache();
     jest.clearAllMocks();
   });
 

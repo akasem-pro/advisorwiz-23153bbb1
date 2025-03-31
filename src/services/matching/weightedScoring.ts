@@ -12,12 +12,13 @@ import { trackMatchingInteraction } from '../../utils/analytics/matchTracker';
 import { MatchingStrategyContext } from './strategies/MatchingStrategyContext';
 import { MatchingStrategyFactory, MatchingStrategyType } from './strategies/MatchingStrategyFactory';
 
-// Cache management
+// Cache management - updated imports
 import { 
   getCachedResult, 
   cacheResult, 
   clearCompatibilityCache, 
-  getCompatibilityCacheStats 
+  getCompatibilityCacheStats,
+  checkCacheMaintenance
 } from './cache/compatibilityCache';
 
 // Create the strategy context with default strategy
@@ -75,6 +76,9 @@ const calculateWeightedCompatibilityScore = (
     }
     return cachedResult;
   }
+  
+  // Check if cache maintenance is needed
+  checkCacheMaintenance();
   
   // Get score from the strategy context
   const result = strategyContext.calculateCompatibilityScore(

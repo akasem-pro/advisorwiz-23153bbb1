@@ -27,7 +27,7 @@ describe('Match Caching System', () => {
     expect(firstResult.score).toBeGreaterThanOrEqual(0);
     
     // Second calculation, should use cache - we'll use a spy to verify
-    const cacheSpy = jest.spyOn(require('../../services/matching/cache/compatibilityCache'), 'getCachedResult');
+    const cacheSpy = jest.spyOn(require('../../services/matching/cache/operations/cacheOperations'), 'getCachedResult');
     
     getWeightedCompatibilityScore(advisorId, consumerId, defaultPreferences);
     
