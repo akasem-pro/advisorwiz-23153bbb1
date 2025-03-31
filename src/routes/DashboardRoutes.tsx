@@ -16,6 +16,7 @@ const LeadManagementPage = lazy(() => import('../pages/LeadManagementPage'));
 const AdvisorProfile = lazy(() => import('../pages/AdvisorProfile'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Team = lazy(() => import('../pages/Team'));
+const AdminAnalytics = lazy(() => import('../pages/AdminAnalytics'));
 
 // Export dashboard routes as an array of Route components
 const DashboardRoutes = [
@@ -59,6 +60,13 @@ const DashboardRoutes = [
     <AuthGuard userTypes={['firm_admin']}>
       <Suspense fallback={<PageLoadingFallback />}>
         <FirmDashboard />
+      </Suspense>
+    </AuthGuard>
+  } />,
+  <Route key="admin-analytics" path="admin/analytics" element={
+    <AuthGuard userTypes={['admin']}>
+      <Suspense fallback={<PageLoadingFallback />}>
+        <AdminAnalytics />
       </Suspense>
     </AuthGuard>
   } />,
