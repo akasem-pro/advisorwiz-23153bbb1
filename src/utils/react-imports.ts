@@ -1,11 +1,13 @@
 
 // Direct imports from React to avoid any potential issues with hook rules
-export { 
-  useState, 
-  useEffect, 
-  useContext, 
-  useCallback, 
-  useMemo, 
+import * as React from 'react';
+
+export const {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useMemo,
   useRef,
   createContext
-} from 'react';
+} = React;
