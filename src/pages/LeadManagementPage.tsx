@@ -1,11 +1,10 @@
 
 import React from 'react';
-import AppLayout from '../components/layout/AppLayout';
-import LeadManagement from '../components/lead/LeadManagement';
 import { useUser } from '../context/UserContext';
 import { Link } from 'react-router-dom';
 import PageSEO from '../components/seo/PageSEO';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
+import LeadManagement from '../components/lead/LeadManagement';
 
 const LeadManagementPage: React.FC = () => {
   const { userType, isAuthenticated } = useUser();
@@ -18,7 +17,7 @@ const LeadManagementPage: React.FC = () => {
   ];
   
   return (
-    <AppLayout>
+    <>
       <PageSEO 
         title="Lead Management | Track Your Prospect Pipeline"
         description="Track and manage your leads from match to conversion. Monitor your sales pipeline and improve conversion rates."
@@ -44,7 +43,7 @@ const LeadManagementPage: React.FC = () => {
           </div>
         )}
       </div>
-    </AppLayout>
+    </>
   );
 };
 

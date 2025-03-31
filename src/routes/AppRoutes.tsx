@@ -66,28 +66,65 @@ const AppRoutes = () => {
         <Route path="/onboarding" element={<Navigate to="/signup" replace />} />
         
         {/* Content pages */}
-        <Route element={<AppLayout><Outlet /></AppLayout>}>
-          {/* Direct routes with AppLayout */}
-          <Route path="/contact" element={<ContactUs />} />
-          <Route path="/team" element={<Team />} />
-          <Route path="/blog/*" element={<Blog />} />
-          <Route path="/careers" element={<Careers />} />
-          <Route path="/resources" element={<Resources />} />
-          <Route path="/download" element={<DownloadApp />} />
-          <Route path="/sitemap" element={<Sitemap />} />
-          <Route path="/schedule" element={<Schedule />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/consumer-profile" element={<ConsumerProfile />} />
+        <Route path="/" element={<Outlet />}>
+          <Route path="contact" element={
+            <AppLayout hideFooter={true}>
+              <ContactUs />
+            </AppLayout>
+          } />
+          <Route path="team" element={
+            <AppLayout hideFooter={true}>
+              <Team />
+            </AppLayout>
+          } />
+          <Route path="blog/*" element={
+            <AppLayout hideFooter={true}>
+              <Blog />
+            </AppLayout>
+          } />
+          <Route path="careers" element={
+            <AppLayout hideFooter={true}>
+              <Careers />
+            </AppLayout>
+          } />
+          <Route path="resources" element={
+            <AppLayout hideFooter={true}>
+              <Resources />
+            </AppLayout>
+          } />
+          <Route path="download" element={
+            <AppLayout hideFooter={true}>
+              <DownloadApp />
+            </AppLayout>
+          } />
+          <Route path="sitemap" element={
+            <AppLayout hideFooter={true}>
+              <Sitemap />
+            </AppLayout>
+          } />
+          <Route path="schedule" element={
+            <AppLayout hideFooter={true}>
+              <Schedule />
+            </AppLayout>
+          } />
+          <Route path="chat" element={
+            <AppLayout hideFooter={true}>
+              <Chat />
+            </AppLayout>
+          } />
+          <Route path="consumer-profile" element={
+            <AppLayout hideFooter={true}>
+              <ConsumerProfile />
+            </AppLayout>
+          } />
+          
+          {/* Main Web Routes */}
+          {MainRoutes}
+          {DashboardRoutes}
         </Route>
         
         {/* Utility Routes with their own layouts */}
         {UtilityRoutes}
-        
-        {/* Main Web Routes */}
-        <Route path="/" element={<Outlet />}>
-          {MainRoutes}
-          {DashboardRoutes}
-        </Route>
         
         {/* Not Found Route - must be last */}
         <Route path="*" element={<NotFound />} />

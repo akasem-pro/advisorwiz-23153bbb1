@@ -99,7 +99,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
       <FloatingSupportButton />
       
       {/* Only render one footer - either the provided one (if not null) or the default */}
-      {footer === null ? null : footer || <AppFooter />}
+      {footer === null ? null : (footer || <AppFooter />)}
       
       {mobileNavbar}
     </div>

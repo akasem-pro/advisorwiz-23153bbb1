@@ -16,47 +16,47 @@ import Cookies from '../pages/Cookies';
 const MainRoutes = [
   <Route index element={<Home />} key="home" />,
   <Route path="about" element={
-    <AppLayout>
+    <AppLayout hideFooter={true}>
       <AboutUs />
     </AppLayout>
   } key="about" />,
   <Route path="for-advisors" element={
-    <AppLayout>
+    <AppLayout hideFooter={true}>
       <ForAdvisors />
     </AppLayout>
   } key="for-advisors" />,
   <Route path="for-consumers" element={
-    <AppLayout>
+    <AppLayout hideFooter={true}>
       <ForConsumers />
     </AppLayout>
   } key="for-consumers" />,
   <Route path="for-firms" element={
-    <AppLayout>
+    <AppLayout hideFooter={true}>
       <ForFirms />
     </AppLayout>
   } key="for-firms" />,
   <Route path="pricing" element={
-    <AppLayout>
+    <AppLayout hideFooter={true}>
       <Pricing />
     </AppLayout>
   } key="pricing" />,
   <Route path="privacy" element={
-    <AppLayout>
+    <AppLayout hideFooter={true}>
       <Privacy />
     </AppLayout>
   } key="privacy" />,
   <Route path="terms" element={
-    <AppLayout>
+    <AppLayout hideFooter={true}>
       <Terms />
     </AppLayout>
   } key="terms" />,
   <Route path="disclaimer" element={
-    <AppLayout>
+    <AppLayout hideFooter={true}>
       <Disclaimer />
     </AppLayout>
   } key="disclaimer" />,
   <Route path="cookies" element={
-    <AppLayout>
+    <AppLayout hideFooter={true}>
       <Cookies />
     </AppLayout>
   } key="cookies" />,

@@ -1,5 +1,5 @@
+
 import React from 'react';
-import AppLayout from '../components/layout/AppLayout';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 
 const Privacy: React.FC = () => {
@@ -9,7 +9,7 @@ const Privacy: React.FC = () => {
   ];
 
   return (
-    <AppLayout>
+    <>
       <BreadcrumbNav items={breadcrumbs} />
       
       <div className="container mx-auto px-4 py-12">
@@ -26,7 +26,7 @@ const Privacy: React.FC = () => {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 };
 
