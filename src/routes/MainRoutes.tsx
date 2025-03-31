@@ -48,12 +48,12 @@ const routeConfigs = [
   { 
     path: 'privacy', 
     element: <Privacy />, 
-    key: 'privacy'
+    key: 'privacy' 
   },
   { 
     path: 'terms', 
     element: <Terms />, 
-    key: 'terms' 
+    key: 'terms'
   },
   { 
     path: 'disclaimer', 

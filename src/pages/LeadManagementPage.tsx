@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import PageSEO from '../components/seo/PageSEO';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 import LeadManagement from '../components/lead/LeadManagement';
+import AppLayout from '../components/layout/AppLayout';
 
 const LeadManagementPage: React.FC = () => {
   const { userType, isAuthenticated } = useUser();
@@ -17,7 +18,7 @@ const LeadManagementPage: React.FC = () => {
   ];
   
   return (
-    <>
+    <AppLayout>
       <PageSEO 
         title="Lead Management | Track Your Prospect Pipeline"
         description="Track and manage your leads from match to conversion. Monitor your sales pipeline and improve conversion rates."
@@ -32,18 +33,18 @@ const LeadManagementPage: React.FC = () => {
           <LeadManagement />
         ) : (
           <div className="text-center py-12">
-            <h2 className="text-2xl font-serif text-navy-900 mb-4">Access Restricted</h2>
-            <p className="text-slate-600 mb-6">
+            <h2 className="text-2xl font-serif text-navy-900 dark:text-slate-100 mb-4">Access Restricted</h2>
+            <p className="text-slate-600 dark:text-slate-300 mb-6">
               This feature is only available to financial advisors.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/onboarding" className="btn-primary">Get Started</Link>
+              <Link to="/signup" className="btn-primary">Get Started</Link>
               <Link to="/" className="btn-outline">Return Home</Link>
             </div>
           </div>
         )}
       </div>
-    </>
+    </AppLayout>
   );
 };
 

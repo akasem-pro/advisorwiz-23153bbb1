@@ -7,10 +7,13 @@ import MarketingChannelsWidget from '../components/marketing/MarketingChannelsWi
 import MobileAppPromotion from '../components/marketing/MobileAppPromotion';
 import PromotionalBanner from '../components/promotions/PromotionalBanner';
 import { trackAppStoreEvent } from '../utils/analytics/marketingHelper';
-import OnboardingTour from '../components/onboarding/OnboardingTour';
 import ConsistentSection from '../components/ui/design-system/ConsistentSection';
 import ConsistentContainer from '../components/ui/design-system/ConsistentContainer';
+import AppLayout from '../components/layout/AppLayout';
+import PageSEO from '../components/seo/PageSEO';
+import useLandingPageTracking from '../hooks/useLandingPageTracking';
 
+// Importing all required home sections
 import HeroSection from '../components/home/HeroSection';
 import HowItWorksSection from '../components/home/HowItWorksSection';
 import BenefitsSection from '../components/home/BenefitsSection';
@@ -18,16 +21,25 @@ import TestimonialsSection from '../components/home/TestimonialsSection';
 import FAQSection from '../components/home/FAQSection';
 import MainCTASection from '../components/home/MainCTASection';
 import PricingCTASection from '../components/home/PricingCTASection';
-import AppLayout from '../components/layout/AppLayout';
 
 const Home = () => {
   const isMobile = useIsMobile();
+  const { trackSectionView } = useLandingPageTracking();
   
-  // Show app review modal on the home page
+  // Track page view and sections
   useEffect(() => {
     // Track home page view for ASO
     trackAppStoreEvent('view', 'web', { page: 'home' });
-  }, []);
+    
+    // Track each section when the component mounts
+    trackSectionView('hero-section', 'Hero');
+    trackSectionView('benefits-section', 'Benefits');
+    trackSectionView('how-it-works-section', 'How It Works');
+    trackSectionView('testimonials-section', 'Testimonials');
+    trackSectionView('faq-section', 'FAQ');
+    trackSectionView('pricing-cta-section', 'Pricing CTA');
+    trackSectionView('main-cta-section', 'Main CTA');
+  }, [trackSectionView]);
 
   const handleReviewSubmitted = (rating: number, feedback?: string) => {
     console.log('Review submitted:', rating, feedback);
@@ -35,6 +47,13 @@ const Home = () => {
 
   return (
     <AppLayout fullWidth withoutPadding hideFooter={false}>
+      <PageSEO 
+        title="AdvisorWiz - Connecting Financial Advisors with Clients"
+        description="AdvisorWiz connects consumers with trusted financial advisors through an innovative matching platform."
+        keywords="financial advisor, matching platform, find advisor, financial planning"
+        canonicalUrl="https://advisorwiz.com/"
+      />
+      
       {/* Main Home Content */}
       <div className="overflow-hidden">
         {/* Promotional Banner - Only show on mobile */}
@@ -103,15 +122,13 @@ const Home = () => {
         <div id="pricing-section" className="scroll-mt-20">
           <PricingCTASection />
         </div>
-        
-        {/* Removing the Newsletter section that might be causing the duplicate footer */}
       </div>
       
       {/* Review Request Modal - Less intrusive */}
       <ReviewRequestModal 
-        sessionCount={3} /* Increased threshold so it shows less frequently */
-        minTimeOnSite={180} /* Increased time threshold */
-        pageVisitThreshold={4} /* Increased threshold */
+        sessionCount={3}
+        minTimeOnSite={180}
+        pageVisitThreshold={4}
         onReviewSubmitted={handleReviewSubmitted}
       />
       

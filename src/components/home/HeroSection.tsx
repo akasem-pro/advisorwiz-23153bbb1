@@ -5,7 +5,6 @@ import { ArrowRight, Search } from 'lucide-react';
 import ConsistentButton from '../ui/design-system/ConsistentButton';
 import HeroStatistics from './hero/HeroStatistics';
 import Heading from '../ui/design-system/Heading';
-import TooltipHelper from '../ui/TooltipHelper';
 import { useIsMobile } from '../../hooks/use-mobile';
 
 const HeroSection: React.FC = () => {
