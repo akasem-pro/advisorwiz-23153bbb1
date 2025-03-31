@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import UserContext from './UserContextDefinition';
 import { 
@@ -20,6 +19,9 @@ import {
   initializeAdvisorProfile 
 } from '../services/profiles/advisorProfileService';
 import { toast } from 'sonner';
+import { useCallManagement } from '../hooks/user/useCallManagement';
+import { CallSession, CallStatus, CallType } from '../types/callTypes';
+import { Lead, LeadStatus, LeadSource } from '../types/leadTypes';
 
 export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Basic user state
@@ -30,12 +32,31 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
   const [chats, setChats] = useState<any[]>([]);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [firms, setFirms] = useState<any[]>([]);
+  const [leads, setLeads] = useState<Lead[]>([]);
   
   // Get user settings hooks
   const { matchPreferences, updateMatchPreferences } = useUserSettings();
   
   // Get chat operations
   const { addMessage, markChatAsRead } = useChatOperations(chats, setChats);
+  
+  // Get userId based on profile type
+  const userId = userType === 'consumer' 
+    ? consumerProfile?.id 
+    : advisorProfile?.id;
+    
+  // Initialize call management
+  const { 
+    callSessions,
+    setCallSessions,
+    activeCall,
+    callMetrics,
+    initiateCall,
+    updateCallStatus,
+    isCallModalOpen,
+    closeCallModal,
+    endCall 
+  } = useCallManagement(userId, userType as 'consumer' | 'advisor' | null);
   
   // Initialize profiles based on auth state
   useEffect(() => {
@@ -198,6 +219,60 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
     return [];
   };
   
+  // Lead management functions
+  const addLead = (advisorId: string, consumerId: string, consumerName: string, matchScore: number, source?: LeadSource): string => {
+    const leadId = `lead-${Date.now()}`;
+    const newLead: Lead = {
+      id: leadId,
+      advisorId,
+      consumerId,
+      consumerName,
+      status: 'new',
+      matchScore,
+      createdAt: new Date().toISOString(),
+      source: source || 'matching',
+      notes: ''
+    };
+    
+    setLeads(prev => [...prev, newLead]);
+    return leadId;
+  };
+  
+  const updateLeadStatus = (leadId: string, status: LeadStatus, notes?: string): void => {
+    setLeads(prev => prev.map(lead => 
+      lead.id === leadId 
+        ? { ...lead, status, notes: notes || lead.notes } 
+        : lead
+    ));
+  };
+  
+  const getLeadByConsumer = (consumerId: string, advisorId?: string): Lead | null => {
+    return leads.find(lead => 
+      lead.consumerId === consumerId && 
+      (advisorId ? lead.advisorId === advisorId : true)
+    ) || null;
+  };
+  
+  const getLeadStats = () => {
+    const totalLeads = leads.length;
+    const activeLeads = leads.filter(lead => lead.status === 'active').length;
+    const convertedLeads = leads.filter(lead => lead.status === 'converted').length;
+    
+    return {
+      totalLeads,
+      activeLeads,
+      convertedLeads,
+      conversionRate: totalLeads ? (convertedLeads / totalLeads) * 100 : 0,
+      averageTimeToConversion: 0, // Would calculate based on timestamps
+      leadsByStatus: {} as Record<LeadStatus, number>,
+      leadsBySource: {} as Record<LeadSource, number>
+    };
+  };
+  
+  const getAdvisorLeads = (advisorId: string): Lead[] => {
+    return leads.filter(lead => lead.advisorId === advisorId);
+  };
+  
   return (
     <UserContext.Provider value={{
       userType,
@@ -229,7 +304,21 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
       updateMatchPreferences,
       matchPreferences,
       getTopMatches,
-      getRecommendedMatches
+      getRecommendedMatches,
+      callSessions,
+      initiateCall,
+      updateCallStatus,
+      activeCall,
+      callMetrics,
+      isCallModalOpen,
+      closeCallModal,
+      endCall,
+      leads,
+      addLead,
+      updateLeadStatus,
+      getLeadByConsumer,
+      getLeadStats,
+      getAdvisorLeads
     }}>
       {children}
     </UserContext.Provider>
