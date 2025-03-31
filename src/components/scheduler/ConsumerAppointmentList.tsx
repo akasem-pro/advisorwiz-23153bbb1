@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   CalendarCheck, 
@@ -37,17 +36,15 @@ const ConsumerAppointmentList: React.FC<ConsumerAppointmentListProps> = ({ appoi
   const [searchTerm, setSearchTerm] = useState('');
 
   const isUpcoming = (appointment: Appointment) => {
-    const appointmentDate = parseISO(appointment.date);
-    return isAfter(appointmentDate, new Date()) && appointment.status !== 'cancelled';
+    const appointmentDate = parseISO(appointment.date || appointment.scheduledStart);
+    return isAfter(appointmentDate, new Date()) && appointment.status !== 'canceled';
   };
 
   const filteredAppointments = appointments.filter(appointment => {
-    // Apply status filter
     const matchesStatus = 
       statusFilter === 'all' || 
       (statusFilter === 'upcoming' ? isUpcoming(appointment) : appointment.status === statusFilter);
     
-    // Apply search filter
     const matchesSearch = appointment.title.toLowerCase().includes(searchTerm.toLowerCase());
     
     return matchesStatus && matchesSearch;
@@ -66,7 +63,7 @@ const ConsumerAppointmentList: React.FC<ConsumerAppointmentListProps> = ({ appoi
   };
 
   const handleCancelAppointment = (appointmentId: string) => {
-    updateAppointmentStatus(appointmentId, 'cancelled');
+    updateAppointmentStatus(appointmentId, 'canceled');
     toast({
       title: 'Appointment cancelled',
       description: 'Your appointment has been cancelled.',
@@ -80,7 +77,7 @@ const ConsumerAppointmentList: React.FC<ConsumerAppointmentListProps> = ({ appoi
         return 'text-green-700 bg-green-100';
       case 'pending':
         return 'text-amber-700 bg-amber-100';
-      case 'cancelled':
+      case 'canceled':
         return 'text-red-700 bg-red-100';
       case 'completed':
         return 'text-blue-700 bg-blue-100';
@@ -131,8 +128,8 @@ const ConsumerAppointmentList: React.FC<ConsumerAppointmentListProps> = ({ appoi
             <DropdownMenuItem onClick={() => setStatusFilter('completed')}>
               Completed
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setStatusFilter('cancelled')}>
-              Cancelled
+            <DropdownMenuItem onClick={() => setStatusFilter('canceled')}>
+              Canceled
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -192,7 +189,6 @@ const ConsumerAppointmentList: React.FC<ConsumerAppointmentListProps> = ({ appoi
         </div>
       )}
 
-      {/* Appointment Details Dialog */}
       {selectedAppointment && (
         <Dialog open={showDetails} onOpenChange={setShowDetails}>
           <DialogContent className="max-w-md">
@@ -236,7 +232,7 @@ const ConsumerAppointmentList: React.FC<ConsumerAppointmentListProps> = ({ appoi
                 )}
               </div>
               
-              {selectedAppointment.status !== 'cancelled' && selectedAppointment.status !== 'completed' && (
+              {selectedAppointment.status !== 'canceled' && selectedAppointment.status !== 'completed' && (
                 <div className="pt-4 border-t">
                   <Button 
                     variant="outline" 

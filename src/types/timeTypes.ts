@@ -35,7 +35,7 @@ export interface TimeSlot {
   isAvailable: boolean;
   createdAt: string;
   updatedAt: string;
-  day: string; // Added this field to fix type errors
+  day: string; // Day of the week (e.g., "monday", "tuesday", etc.)
 }
 
 // Calendar event
@@ -60,4 +60,6 @@ export interface AppointmentCategory {
   price?: number;
   isDefault?: boolean;
   advisorId?: string;
+  enabled: boolean; // Added this field which was being used
 }
+

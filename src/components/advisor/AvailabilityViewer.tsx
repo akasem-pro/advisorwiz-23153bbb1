@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight, MessageCircle } from 'lucide-react';
@@ -84,18 +85,30 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
     
     const startTime = convertTo24Hour(startTimeStr);
     const endTime = convertTo24Hour(endTimeStr);
+
+    // Convert date to ISO string for the selected date
+    const scheduledStart = new Date(selectedDate);
+    const [startHours, startMinutes] = startTime.split(':').map(Number);
+    scheduledStart.setHours(startHours, startMinutes, 0);
+
+    const scheduledEnd = new Date(selectedDate);
+    const [endHours, endMinutes] = endTime.split(':').map(Number);
+    scheduledEnd.setHours(endHours, endMinutes, 0);
     
     const newAppointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'> = {
       advisorId: advisorId,
       consumerId: consumerProfile.id,
       category: 'cat-free_consultation',
       title: `Consultation with ${advisorName}`,
-      date: selectedDate.toISOString(),
-      startTime,
-      endTime,
+      scheduledStart: scheduledStart.toISOString(),
+      scheduledEnd: scheduledEnd.toISOString(),
       status: 'pending',
       notes: '',
-      location: 'video'
+      location: 'video',
+      // Add backward compatibility properties
+      date: selectedDate.toISOString(),
+      startTime,
+      endTime
     };
     
     addAppointment(newAppointment);
@@ -128,13 +141,16 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
       return;
     }
 
+    const timestamp = new Date().toISOString();
+    
     const newChat: Chat = {
       id: `chat-${Date.now()}`,
       participants: [consumerProfile.id, advisorId],
       messages: [],
-      updatedAt: new Date().toISOString(),
-      lastUpdated: new Date().toISOString(),
-      participantData: {}
+      updatedAt: timestamp,
+      lastUpdated: timestamp,
+      participantData: {},
+      createdAt: timestamp
     };
     
     setChats([...chats, newChat]);

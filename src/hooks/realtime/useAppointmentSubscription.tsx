@@ -45,24 +45,26 @@ export const useAppointmentSubscription = ({
             if (!payloadNew) return;
             
             // Create a new appointment object with safe property access
+            const scheduledStart = payloadNew.scheduled_start || new Date().toISOString();
+            const scheduledEnd = payloadNew.scheduled_end || new Date().toISOString();
+            
             const newAppointment: Appointment = {
               id: payloadNew.id || '',
-              categoryId: '', // Required field, providing a default empty string
+              category: payloadNew.category || '',
               title: payloadNew.title || 'Appointment',
-              date: payloadNew.scheduled_start || new Date().toISOString(),
-              startTime: payloadNew.scheduled_start 
-                ? new Date(payloadNew.scheduled_start).toLocaleTimeString() 
-                : '',
-              endTime: payloadNew.scheduled_end 
-                ? new Date(payloadNew.scheduled_end).toLocaleTimeString() 
-                : '',
+              scheduledStart,
+              scheduledEnd,
               advisorId: payloadNew.advisor_id || '',
               consumerId: payloadNew.consumer_id || '',
               status: (payloadNew.status as AppointmentStatus) || 'pending',
-              location: payloadNew.meeting_link || '',
               notes: payloadNew.notes || '',
               createdAt: payloadNew.created_at || new Date().toISOString(),
-              updatedAt: payloadNew.updated_at || new Date().toISOString()
+              updatedAt: payloadNew.updated_at || new Date().toISOString(),
+              // Add backward compatibility fields
+              date: scheduledStart,
+              startTime: new Date(scheduledStart).toLocaleTimeString(),
+              endTime: new Date(scheduledEnd).toLocaleTimeString(),
+              location: payloadNew.meeting_link || '',
             };
             
             // Update state with the new appointment
@@ -93,6 +95,12 @@ export const useAppointmentSubscription = ({
                 return {
                   ...item,
                   title: payloadNew.title || item.title,
+                  scheduledStart: payloadNew.scheduled_start || item.scheduledStart,
+                  scheduledEnd: payloadNew.scheduled_end || item.scheduledEnd,
+                  status: (payloadNew.status as AppointmentStatus) || item.status,
+                  notes: payloadNew.notes || item.notes,
+                  updatedAt: payloadNew.updated_at || new Date().toISOString(),
+                  // Update backward compatibility fields
                   date: payloadNew.scheduled_start || item.date,
                   startTime: payloadNew.scheduled_start 
                     ? new Date(payloadNew.scheduled_start).toLocaleTimeString() 
@@ -100,10 +108,7 @@ export const useAppointmentSubscription = ({
                   endTime: payloadNew.scheduled_end 
                     ? new Date(payloadNew.scheduled_end).toLocaleTimeString() 
                     : item.endTime,
-                  status: (payloadNew.status as AppointmentStatus) || item.status,
                   location: payloadNew.meeting_link || item.location,
-                  notes: payloadNew.notes || item.notes,
-                  updatedAt: payloadNew.updated_at || new Date().toISOString()
                 };
               }
               return item;

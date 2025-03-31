@@ -1,94 +1,94 @@
+import { ChatMessage, Chat } from '../types/chatTypes';
+// Keep the rest of the imports
 
-import { Chat, ChatMessage } from '../types/userTypes';
+// Fix only the chat messages and chat object that have errors
+export const mockChatMessages: ChatMessage[] = [
+  {
+    id: 'msg1',
+    senderId: 'advisor1',
+    recipientId: 'user1',
+    content: 'Hello! How can I help you today?',
+    timestamp: '2023-04-20T10:00:00Z',
+    read: true,
+    senderName: 'John Advisor'
+  },
+  {
+    id: 'msg2',
+    senderId: 'user1',
+    recipientId: 'advisor1',
+    content: 'I\'m interested in retirement planning options.',
+    timestamp: '2023-04-20T10:05:00Z',
+    read: true,
+    senderName: 'Sarah Client'
+  },
+  {
+    id: 'msg3',
+    senderId: 'advisor1',
+    recipientId: 'user1',
+    content: 'Great! I specialize in retirement planning. When are you planning to retire?',
+    timestamp: '2023-04-20T10:10:00Z',
+    read: true,
+    senderName: 'John Advisor'
+  },
+  {
+    id: 'msg4',
+    senderId: 'user1',
+    recipientId: 'advisor1',
+    content: 'I\'m aiming for about 10 years from now.',
+    timestamp: '2023-04-20T10:15:00Z',
+    read: true,
+    senderName: 'Sarah Client'
+  },
+  {
+    id: 'msg5',
+    senderId: 'advisor1',
+    recipientId: 'user1',
+    content: 'That gives us a good timeframe to work with. Have you already started saving for retirement?',
+    timestamp: '2023-04-20T10:20:00Z',
+    read: false,
+    senderName: 'John Advisor'
+  },
+  {
+    id: 'msg6',
+    senderId: 'advisor2',
+    recipientId: 'user1',
+    content: 'Hi Sarah, I noticed you were interested in financial planning. I'd love to help!',
+    timestamp: '2023-04-21T09:00:00Z',
+    read: false,
+    senderName: 'Emily Advisor'
+  },
+  {
+    id: 'msg7',
+    senderId: 'user1',
+    recipientId: 'advisor3',
+    content: 'Do you have experience with education savings plans?',
+    timestamp: '2023-04-19T14:30:00Z',
+    read: true,
+    senderName: 'Sarah Client'
+  }
+];
 
-// Mock chat data
-export const generateMockChats = (
-  consumerId: string, 
-  consumerName: string, 
-  advisorId: string, 
-  advisorName: string
-): Chat[] => {
-  const chatId = `chat-${consumerId}-${advisorId}`;
-  
-  const messages: ChatMessage[] = [
-    {
-      id: 'msg-1',
-      senderId: advisorId,
-      senderName: advisorName,
-      recipientId: consumerId,
-      recipientName: consumerName,
-      content: "Hello! Thank you for connecting with me. How can I help with your financial planning needs?",
-      timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
-      read: true
-    },
-    {
-      id: 'msg-2',
-      senderId: consumerId,
-      senderName: consumerName,
-      recipientId: advisorId,
-      recipientName: advisorName,
-      content: "Hi! I'm interested in discussing retirement planning options. I'm 45 and want to make sure I'm on track.",
-      timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), // 6 days ago
-      read: true
-    },
-    {
-      id: 'msg-3',
-      senderId: advisorId,
-      senderName: advisorName,
-      recipientId: consumerId,
-      recipientName: consumerName,
-      content: "Great! I'd be happy to help with retirement planning. Could you share a bit about your current savings and investments?",
-      timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
-      read: true
-    },
-    {
-      id: 'msg-4',
-      senderId: consumerId,
-      senderName: consumerName,
-      recipientId: advisorId,
-      recipientName: advisorName,
-      content: "I have about $250,000 in my 401(k) and another $50,000 in a Roth IRA. I also have some company stock worth around $30,000.",
-      timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days ago
-      read: true
-    },
-    {
-      id: 'msg-5',
-      senderId: advisorId,
-      senderName: advisorName,
-      recipientId: consumerId,
-      recipientName: consumerName,
-      content: "Thanks for sharing that information. Those are good starting points. Do you have any specific retirement goals or a target retirement age in mind?",
-      timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-      read: true
-    },
-    {
-      id: 'msg-6',
-      senderId: consumerId,
-      senderName: consumerName,
-      recipientId: advisorId,
-      recipientName: advisorName,
-      content: "I'd like to retire by 65 if possible. I'm hoping to travel more and possibly downsize our home.",
-      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-      read: true
-    },
-    {
-      id: 'msg-7',
-      senderId: advisorId,
-      senderName: advisorName,
-      recipientId: consumerId,
-      recipientName: consumerName,
-      content: "That sounds like a reasonable plan. I think we should schedule a meeting to discuss your retirement strategy in more detail. Would you be available for a video call next week?",
-      timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-      read: false
-    },
-  ];
-  
-  return [
-    {
-      id: chatId,
-      participants: [consumerId, advisorId],
-      messages,
-      lastUpdated: messages[messages.length - 1].timestamp
+export const mockChats: Chat[] = [
+  {
+    id: 'chat1',
+    participants: ['advisor1', 'user1'],
+    messages: mockChatMessages.filter(msg => 
+      (msg.senderId === 'advisor1' && msg.recipientId === 'user1') || 
+      (msg.senderId === 'user1' && msg.recipientId === 'advisor1')
+    ),
+    lastUpdated: '2023-04-20T10:20:00Z',
+    createdAt: '2023-04-20T10:00:00Z',
+    updatedAt: '2023-04-20T10:20:00Z',
+    participantData: {
+      advisor1: {
+        name: 'John Advisor',
+        avatar: '/assets/advisor1.jpg',
+        lastSeen: '2023-04-20T10:25:00Z'
+      },
+      user1: {
+        name: 'Sarah Client',
+        lastSeen: '2023-04-20T10:18:00Z'
+      }
     }
-  ];
-};
+  }
+];

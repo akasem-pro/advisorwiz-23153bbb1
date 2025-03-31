@@ -47,11 +47,15 @@ export const useMatchingMessages = () => {
       );
       
       if (!existingChat) {
+        const timestamp = new Date().toISOString();
         const newChat: Chat = {
           id: `chat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           participants: [currentUserId, profileId],
           messages: [],
-          lastUpdated: new Date().toISOString()
+          lastUpdated: timestamp,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          participantData: {}
         };
         
         const updatedChats = [...chats, newChat];

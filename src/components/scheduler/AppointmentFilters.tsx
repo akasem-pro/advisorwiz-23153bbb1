@@ -66,8 +66,8 @@ const AppointmentFilters: React.FC<AppointmentFiltersProps> = ({
             <DropdownMenuItem onClick={() => setStatusFilter('completed')}>
               Completed
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setStatusFilter('cancelled')}>
-              Cancelled
+            <DropdownMenuItem onClick={() => setStatusFilter('canceled')}>
+              Canceled
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
