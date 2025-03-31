@@ -2,6 +2,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface BreadcrumbItem {
   name: string;
@@ -14,35 +22,39 @@ interface BreadcrumbNavProps {
 
 const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({ items }) => {
   return (
-    <nav className="bg-slate-50 dark:bg-navy-900/50 py-3 border-b border-slate-200 dark:border-navy-800">
+    <div className="bg-slate-50 dark:bg-navy-900/50 py-3 border-b border-slate-200 dark:border-navy-800">
       <div className="container mx-auto px-4">
-        <ol className="flex flex-wrap items-center space-x-2 text-sm">
-          {items.map((item, index) => (
-            <React.Fragment key={item.url}>
-              {index > 0 && (
-                <li className="text-slate-400">
-                  <ChevronRight className="w-4 h-4" />
-                </li>
-              )}
-              <li>
-                {index === items.length - 1 ? (
-                  <span className="text-slate-700 dark:text-slate-200 font-medium">
-                    {item.name}
-                  </span>
-                ) : (
-                  <Link
-                    to={item.url}
-                    className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300"
-                  >
-                    {item.name}
-                  </Link>
+        <Breadcrumb>
+          <BreadcrumbList>
+            {items.map((item, index) => (
+              <React.Fragment key={item.url}>
+                {index > 0 && (
+                  <BreadcrumbSeparator>
+                    <ChevronRight className="w-4 h-4" />
+                  </BreadcrumbSeparator>
                 )}
-              </li>
-            </React.Fragment>
-          ))}
-        </ol>
+                <BreadcrumbItem>
+                  {index === items.length - 1 ? (
+                    <BreadcrumbPage className="text-slate-700 dark:text-slate-200 font-medium">
+                      {item.name}
+                    </BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink asChild>
+                      <Link 
+                        to={item.url}
+                        className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300"
+                      >
+                        {item.name}
+                      </Link>
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+              </React.Fragment>
+            ))}
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
-    </nav>
+    </div>
   );
 };
 
