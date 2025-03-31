@@ -9,7 +9,7 @@ export const getAdvisorProfileById = async (userId: string): Promise<AdvisorProf
   try {
     // Fetch base user profile
     const { data: userProfile, error: userError } = await supabase
-      .from('user_profiles')
+      .from('profiles')
       .select('*')
       .eq('id', userId)
       .single();
@@ -32,47 +32,42 @@ export const getAdvisorProfileById = async (userId: string): Promise<AdvisorProf
     
     // Combine profiles with safe default values for potentially missing fields
     return {
-      // Base user profile fields
-      id: userProfile.id,
-      email: userProfile.email,
-      firstName: userProfile.first_name,
-      lastName: userProfile.last_name,
-      phoneNumber: userProfile.phone_number,
-      addressLine1: userProfile.address_line1,
-      addressLine2: userProfile.address_line2,
-      city: userProfile.city,
-      state: userProfile.state,
-      zipCode: userProfile.zip_code,
-      country: userProfile.country,
-      profilePicture: userProfile.avatar_url || userProfile.profile_picture || '',
-      
-      // Advisor specific fields
-      name: `${userProfile.first_name} ${userProfile.last_name}`,
+      id: userId,
+      name: `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim(),
+      email: userProfile.email || '',
       organization: advisorProfile.organization || '',
       isAccredited: advisorProfile.is_accredited || false,
       website: advisorProfile.website || '',
-      bio: advisorProfile.biography || '',
-      assetsUnderManagement: advisorProfile.assets_under_management || 0,
-      yearsOfExperience: advisorProfile.years_of_experience || 0,
+      testimonials: advisorProfile.testimonials || [],
       languages: advisorProfile.languages || ['English'],
+      pricing: {
+        hourlyRate: advisorProfile.hourly_rate || 0,
+        portfolioFee: advisorProfile.portfolio_fee || 0
+      },
+      assetsUnderManagement: advisorProfile.assets_under_management || 0,
+      expertise: advisorProfile.expertise || [],
+      specializations: advisorProfile.specializations || [],
+      yearsOfExperience: advisorProfile.years_of_experience || 0,
       averageRating: advisorProfile.average_rating || 0,
       ratingCount: advisorProfile.rating_count || 0,
+      biography: advisorProfile.biography || '',
       certifications: advisorProfile.certifications || [],
-      expertise: advisorProfile.expertise || [],
-      availability: advisorProfile.availability || {},
-      preferredCommunication: advisorProfile.preferred_communication || 'email',
-      servicedLocations: advisorProfile.serviced_locations || [],
-      showOnlineStatus: advisorProfile.show_online_status || true,
-      
-      // Default values for fields not directly in the database
-      testimonials: advisorProfile.testimonials || [],
-      pricing: advisorProfile.pricing || { hourlyRate: 0, portfolioFee: 0 },
-      specializations: advisorProfile.specializations || [],
-      matches: advisorProfile.matches || [],
-      chats: advisorProfile.chats || [],
-      appointment_categories: advisorProfile.appointment_categories || [],
-      appointments: advisorProfile.appointments || []
-    } as AdvisorProfile;
+      location: {
+        city: userProfile.city || '',
+        state: userProfile.state || '',
+        country: userProfile.country || 'US'
+      },
+      matches: [],
+      chats: [],
+      profilePicture: userProfile.avatar_url || '',
+      availability: [],
+      chatEnabled: userProfile.chat_enabled || false,
+      appointmentCategories: [],
+      appointments: [],
+      onlineStatus: userProfile.online_status || 'offline',
+      lastOnline: userProfile.last_online || new Date().toISOString(),
+      showOnlineStatus: userProfile.show_online_status || true
+    };
     
   } catch (error) {
     console.error('Error fetching advisor profile:', error);
@@ -89,16 +84,16 @@ export const updateAdvisorProfile = async (userId: string, updateData: AdvisorPr
     const { 
       firstName, lastName, phoneNumber, addressLine1, addressLine2, city, state, zipCode, country, profilePicture,
       ...advisorSpecificData 
-    } = updateData;
+    } = updateData as any; // Using any to avoid complex type mapping
     
     // Update base user profile if relevant fields provided
     if (firstName || lastName || phoneNumber || addressLine1 || addressLine2 || city || state || zipCode || country || profilePicture) {
       const { error: userError } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .update({
           first_name: firstName,
           last_name: lastName,
-          phone_number: phoneNumber,
+          phone: phoneNumber,
           address_line1: addressLine1,
           address_line2: addressLine2,
           city,
@@ -115,20 +110,20 @@ export const updateAdvisorProfile = async (userId: string, updateData: AdvisorPr
     // Update advisor specific profile
     if (Object.keys(advisorSpecificData).length > 0) {
       // Map the frontend fields to database fields
-      const mappedAdvisorData = {
-        organization: advisorSpecificData.organization,
-        is_accredited: advisorSpecificData.isAccredited,
-        website: advisorSpecificData.website,
-        biography: advisorSpecificData.bio,
-        assets_under_management: advisorSpecificData.assetsUnderManagement,
-        years_of_experience: advisorSpecificData.yearsOfExperience,
-        languages: advisorSpecificData.languages,
-        certifications: advisorSpecificData.certifications,
-        expertise: advisorSpecificData.expertise,
-        preferred_communication: advisorSpecificData.preferredCommunication,
-        serviced_locations: advisorSpecificData.servicedLocations,
-        show_online_status: advisorSpecificData.showOnlineStatus
-      };
+      const mappedAdvisorData: any = {};
+      
+      // Only include properties that exist in the advisorSpecificData object
+      if ('organization' in advisorSpecificData) mappedAdvisorData.organization = advisorSpecificData.organization;
+      if ('isAccredited' in advisorSpecificData) mappedAdvisorData.is_accredited = advisorSpecificData.isAccredited;
+      if ('website' in advisorSpecificData) mappedAdvisorData.website = advisorSpecificData.website;
+      if ('biography' in advisorSpecificData) mappedAdvisorData.biography = advisorSpecificData.biography || advisorSpecificData.bio;
+      if ('assetsUnderManagement' in advisorSpecificData) mappedAdvisorData.assets_under_management = advisorSpecificData.assetsUnderManagement;
+      if ('yearsOfExperience' in advisorSpecificData) mappedAdvisorData.years_of_experience = advisorSpecificData.yearsOfExperience;
+      if ('languages' in advisorSpecificData) mappedAdvisorData.languages = advisorSpecificData.languages;
+      if ('certifications' in advisorSpecificData) mappedAdvisorData.certifications = advisorSpecificData.certifications;
+      if ('expertise' in advisorSpecificData) mappedAdvisorData.expertise = advisorSpecificData.expertise;
+      if ('specializations' in advisorSpecificData) mappedAdvisorData.specializations = advisorSpecificData.specializations;
+      if ('preferredCommunication' in advisorSpecificData) mappedAdvisorData.preferred_communication = advisorSpecificData.preferredCommunication;
       
       const { error: advisorError } = await supabase
         .from('advisor_profiles')

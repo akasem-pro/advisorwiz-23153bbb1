@@ -89,5 +89,9 @@ export type AdvisorProfile = {
   showOnlineStatus: boolean; // Toggle to show/hide online status
 };
 
+// Additional types for profile updates
+export type AdvisorProfileUpdate = Partial<AdvisorProfile>;
+export type ConsumerProfileUpdate = Partial<ConsumerProfile>;
+
 // User type - Updated to include 'admin'
 export type UserType = 'consumer' | 'advisor' | 'firm_admin' | 'admin' | null;

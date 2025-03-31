@@ -1,13 +1,13 @@
 
-import React from 'react';
-import Joyride from 'react-joyride';
+import React, { useEffect } from 'react';
+import Joyride, { EVENTS, STATUS } from 'react-joyride';
 import { useUser } from '../../context/UserContext';
 import { tourStyles } from './OnboardingTourStyles';
 import { useOnboardingTour } from '../../hooks/onboarding/use-onboarding-tour';
 import { UserType } from '../../types/profileTypes';
 
 interface UserOnboardingTourProps {
-  userType?: 'consumer' | 'advisor' | 'firm_admin';
+  userType?: UserType;
 }
 
 const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => {
@@ -17,10 +17,11 @@ const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => 
     stepIndex, 
     steps, 
     handleJoyrideCallback, 
-    startTour 
-  } = useOnboardingTour(userType as UserType);
+    startTour,
+    cleanup 
+  } = useOnboardingTour(userType);
   
-  React.useEffect(() => {
+  useEffect(() => {
     // Only show user onboarding tour for authenticated users
     if (isAuthenticated) {
       // Check if they've already seen this specific tour
@@ -37,6 +38,13 @@ const UserOnboardingTour: React.FC<UserOnboardingTourProps> = ({ userType }) => 
       }
     }
   }, [isAuthenticated, startTour]);
+
+  // Add cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cleanup();
+    };
+  }, [cleanup]);
 
   // Only render if there are steps and the tour should run
   if (!steps.length || !run) return null;

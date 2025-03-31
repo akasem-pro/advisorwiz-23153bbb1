@@ -9,7 +9,7 @@ export const getConsumerProfileById = async (userId: string): Promise<ConsumerPr
   try {
     // Fetch base user profile
     const { data: userProfile, error: userError } = await supabase
-      .from('user_profiles')
+      .from('profiles')
       .select('*')
       .eq('id', userId)
       .single();
@@ -32,36 +32,36 @@ export const getConsumerProfileById = async (userId: string): Promise<ConsumerPr
     
     // Combine profiles with safe default values for potentially missing fields
     return {
-      // Base user profile fields
-      id: userProfile.id,
-      email: userProfile.email,
-      firstName: userProfile.first_name,
-      lastName: userProfile.last_name,
-      phoneNumber: userProfile.phone_number,
-      addressLine1: userProfile.address_line1,
-      addressLine2: userProfile.address_line2,
-      city: userProfile.city,
-      state: userProfile.state,
-      zipCode: userProfile.zip_code,
-      country: userProfile.country,
-      profilePicture: userProfile.avatar_url || '',
-      
-      // Consumer specific fields
+      id: userId,
+      name: `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim(),
+      email: userProfile.email || '',
+      phone: userProfile.phone || '',
       age: consumerProfile.age || 0,
+      status: 'active',
+      investableAssets: consumerProfile.investable_assets || 0,
+      riskTolerance: (consumerProfile.risk_tolerance as 'low' | 'medium' | 'high') || 'medium',
+      preferredCommunication: consumerProfile.preferred_communication ? 
+        [consumerProfile.preferred_communication] : [],
+      preferredLanguage: consumerProfile.languages || ['English'],
+      financialGoals: consumerProfile.financial_goals || [],
       incomeRange: consumerProfile.income_bracket || '',
       investmentAmount: consumerProfile.investment_amount || 0,
-      investableAssets: consumerProfile.investable_assets || 0,
-      riskTolerance: consumerProfile.risk_tolerance || 'moderate',
-      financialGoals: consumerProfile.financial_goals || [],
       preferredAdvisorSpecialties: consumerProfile.preferred_advisor_specialties || [],
-      preferredCommunication: consumerProfile.preferred_communication || 'email',
-      
-      // Default values for fields not directly in the database
-      status: consumerProfile.status || 'active',
-      matches: consumerProfile.matches || [],
-      chats: consumerProfile.chats || [],
-      appointments: consumerProfile.appointments || []
-    } as ConsumerProfile;
+      location: {
+        city: userProfile.city || '',
+        state: userProfile.state || '',
+        country: userProfile.country || 'US'
+      },
+      matches: [],
+      chats: [],
+      profilePicture: userProfile.avatar_url || '',
+      chatEnabled: userProfile.chat_enabled || false,
+      appointments: [],
+      startTimeline: 'not_sure',
+      onlineStatus: userProfile.online_status || 'offline',
+      lastOnline: userProfile.last_online || new Date().toISOString(),
+      showOnlineStatus: userProfile.show_online_status || true
+    };
     
   } catch (error) {
     console.error('Error fetching consumer profile:', error);
@@ -76,18 +76,18 @@ export const updateConsumerProfile = async (userId: string, updateData: Consumer
   try {
     // Split the data into user profile and consumer profile updates
     const { 
-      firstName, lastName, phoneNumber, addressLine1, addressLine2, city, state, zipCode, country, profilePicture,
+      firstName, lastName, phone, addressLine1, addressLine2, city, state, zipCode, country, profilePicture,
       ...consumerSpecificData 
-    } = updateData;
+    } = updateData as any; // Using any to avoid complex type mapping
     
     // Update base user profile if relevant fields provided
-    if (firstName || lastName || phoneNumber || addressLine1 || addressLine2 || city || state || zipCode || country || profilePicture) {
+    if (firstName || lastName || phone || addressLine1 || addressLine2 || city || state || zipCode || country || profilePicture) {
       const { error: userError } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .update({
           first_name: firstName,
           last_name: lastName,
-          phone_number: phoneNumber,
+          phone,
           address_line1: addressLine1,
           address_line2: addressLine2,
           city,
@@ -104,16 +104,20 @@ export const updateConsumerProfile = async (userId: string, updateData: Consumer
     // Update consumer specific profile
     if (Object.keys(consumerSpecificData).length > 0) {
       // Map the frontend fields to database fields
-      const mappedConsumerData = {
-        age: consumerSpecificData.age,
-        income_bracket: consumerSpecificData.incomeRange,
-        investment_amount: consumerSpecificData.investmentAmount,
-        investable_assets: consumerSpecificData.investableAssets,
-        risk_tolerance: consumerSpecificData.riskTolerance,
-        financial_goals: consumerSpecificData.financialGoals,
-        preferred_advisor_specialties: consumerSpecificData.preferredAdvisorSpecialties,
-        preferred_communication: consumerSpecificData.preferredCommunication
-      };
+      const mappedConsumerData: any = {};
+      
+      // Only include properties that exist in the consumerSpecificData object
+      if ('age' in consumerSpecificData) mappedConsumerData.age = consumerSpecificData.age;
+      if ('incomeRange' in consumerSpecificData) mappedConsumerData.income_bracket = consumerSpecificData.incomeRange;
+      if ('investmentAmount' in consumerSpecificData) mappedConsumerData.investment_amount = consumerSpecificData.investmentAmount;
+      if ('investableAssets' in consumerSpecificData) mappedConsumerData.investable_assets = consumerSpecificData.investableAssets;
+      if ('riskTolerance' in consumerSpecificData) mappedConsumerData.risk_tolerance = consumerSpecificData.riskTolerance;
+      if ('financialGoals' in consumerSpecificData) mappedConsumerData.financial_goals = consumerSpecificData.financialGoals;
+      if ('preferredAdvisorSpecialties' in consumerSpecificData) mappedConsumerData.preferred_advisor_specialties = consumerSpecificData.preferredAdvisorSpecialties;
+      if ('preferredCommunication' in consumerSpecificData && Array.isArray(consumerSpecificData.preferredCommunication)) {
+        // Join array as string or take first value if needed
+        mappedConsumerData.preferred_communication = consumerSpecificData.preferredCommunication[0] || '';
+      }
       
       const { error: consumerError } = await supabase
         .from('consumer_profiles')
