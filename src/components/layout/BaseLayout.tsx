@@ -1,3 +1,4 @@
+
 import React, { ReactNode, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
@@ -108,7 +109,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
       
       <FloatingSupportButton />
       
-      {/* Footer rendering */}
+      {/* Single footer rendering logic */}
       {footerElement}
       
       {mobileNavbar}

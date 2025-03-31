@@ -34,7 +34,7 @@ const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
   };
 
   return (
-    <AppLayout hideFooter={false}>
+    <AppLayout>
       <PageSEO
         title={title}
         description={description}

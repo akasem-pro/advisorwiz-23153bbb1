@@ -35,25 +35,3 @@
 .__floater__body {
   max-width: 350px !important;
 }
-
-/* Footer styles */
-.footer-heading {
-  @apply text-xl font-semibold mb-4 text-white;
-}
-
-.footer-link {
-  @apply text-slate-300 hover:text-teal-400 transition-colors;
-}
-
-.footer-icon {
-  @apply text-teal-400 mr-3 flex-shrink-0;
-}
-
-.footer-contact-item {
-  @apply flex items-start;
-}
-
-.footer-social-icon {
-  @apply text-slate-300 hover:text-teal-400 transition-colors;
-}
-
