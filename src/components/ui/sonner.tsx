@@ -1,4 +1,3 @@
-
 import { useTheme as useNextTheme } from "next-themes"
 import { Toaster as Sonner } from "sonner"
 import { useEffect, useRef } from "react"
@@ -22,19 +21,36 @@ const Toaster = ({ ...props }: ToasterProps) => {
   useEffect(() => {
     // Function to fix accessibility issues
     const fixAccessibilityIssues = (container: HTMLElement | Document) => {
-      // Find elements with both aria-hidden and tabindex
-      const conflictingElements = container.querySelectorAll('[aria-hidden="true"][tabindex], [tabindex="-1"][aria-hidden="true"]');
+      // First, find all toaster-related elements with both aria-hidden and tabindex
+      const toasterElements = container.querySelectorAll('.toaster, .toaster *');
       
-      // Remove aria-hidden from elements that need to be focusable
-      conflictingElements.forEach((el) => {
-        if (el.hasAttribute('aria-hidden') && el.hasAttribute('tabindex')) {
-          // Remove aria-hidden to allow proper focus
-          el.removeAttribute('aria-hidden');
+      toasterElements.forEach(el => {
+        // If element has tabindex="0" or is interactive (like buttons, links), remove aria-hidden
+        if (
+          (el.getAttribute('tabindex') === '0' || 
+           el.tagName === 'BUTTON' || 
+           el.tagName === 'A' ||
+           el.getAttribute('role') === 'status')
+        ) {
+          if (el.hasAttribute('aria-hidden')) {
+            el.removeAttribute('aria-hidden');
+          }
+        }
+        
+        // For notification containers with negative tabindex, keep them focusable
+        // by removing aria-hidden if they need to be accessible
+        if (el.getAttribute('role') === 'status' && el.hasAttribute('aria-live')) {
+          if (el.hasAttribute('aria-hidden')) {
+            el.removeAttribute('aria-hidden');
+          }
         }
       });
 
-      // For non-interactive elements with tabindex=-1, add aria-hidden if missing
-      const nonInteractiveElements = container.querySelectorAll('[tabindex="-1"]:not(button):not(a):not([role="button"]):not([role="tab"])');
+      // Now handle tabindex=-1 elements that should remain unfocusable
+      const nonInteractiveElements = container.querySelectorAll(
+        '[tabindex="-1"]:not(button):not(a):not([role="button"]):not([role="tab"]):not([role="status"])'
+      );
+      
       nonInteractiveElements.forEach((el) => {
         if (!el.hasAttribute('aria-hidden')) {
           (el as HTMLElement).setAttribute('aria-hidden', 'true');
