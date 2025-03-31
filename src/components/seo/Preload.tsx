@@ -41,7 +41,7 @@ const Preload: React.FC<PreloadProps> = ({
           as={resource.as}
           type={resource.type}
           crossOrigin={resource.crossOrigin}
-          fetchpriority={resource.importance || "auto"}
+          fetchPriority={resource.importance || "auto"}
         />
       ))}
 

@@ -7,19 +7,53 @@
 const HIGH_PRIORITY_ROUTES = ['/signin', '/signup', '/'];
 const MEDIUM_PRIORITY_ROUTES = ['/for-advisors', '/for-consumers', '/pricing'];
 
+// Type definition for requestIdleCallback to handle TypeScript errors
+interface RequestIdleCallbackOptions {
+  timeout: number;
+}
+
+// Define appropriate requestIdleCallback type
+type RequestIdleCallbackHandle = any;
+type RequestIdleCallbackDeadline = {
+  readonly didTimeout: boolean;
+  timeRemaining: () => number;
+};
+type RequestIdleCallbackFn = (deadline: RequestIdleCallbackDeadline) => void;
+
+// Define requestIdleCallback for TypeScript
+declare global {
+  interface Window {
+    requestIdleCallback: (
+      callback: RequestIdleCallbackFn,
+      opts?: RequestIdleCallbackOptions
+    ) => RequestIdleCallbackHandle;
+    cancelIdleCallback: (handle: RequestIdleCallbackHandle) => void;
+  }
+}
+
 /**
  * Preload components for high priority routes
  */
 export const preloadHighPriorityRoutes = () => {
   // Use requestIdleCallback for non-blocking preloading if available
-  const preload = window.requestIdleCallback || setTimeout;
-  
-  preload(() => {
-    HIGH_PRIORITY_ROUTES.forEach(route => {
-      import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
-        .catch(err => console.debug('Preloading failed for', route));
-    });
-  }, { timeout: 2000 });
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback((deadline) => {
+      if (deadline.timeRemaining() > 0 || deadline.didTimeout) {
+        HIGH_PRIORITY_ROUTES.forEach(route => {
+          import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
+            .catch(err => console.debug('Preloading failed for', route));
+        });
+      }
+    }, { timeout: 2000 });
+  } else {
+    // Fallback to setTimeout
+    setTimeout(() => {
+      HIGH_PRIORITY_ROUTES.forEach(route => {
+        import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
+          .catch(err => console.debug('Preloading failed for', route));
+      });
+    }, 100);
+  }
 };
 
 /**
@@ -28,14 +62,24 @@ export const preloadHighPriorityRoutes = () => {
 export const preloadMediumPriorityRoutes = () => {
   // Delayed preloading for medium priority routes
   setTimeout(() => {
-    const preload = window.requestIdleCallback || setTimeout;
-    
-    preload(() => {
-      MEDIUM_PRIORITY_ROUTES.forEach(route => {
-        import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
-          .catch(err => console.debug('Preloading failed for', route));
-      });
-    }, { timeout: 4000 });
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback((deadline) => {
+        if (deadline.timeRemaining() > 0 || deadline.didTimeout) {
+          MEDIUM_PRIORITY_ROUTES.forEach(route => {
+            import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
+              .catch(err => console.debug('Preloading failed for', route));
+          });
+        }
+      }, { timeout: 4000 });
+    } else {
+      // Fallback to setTimeout
+      setTimeout(() => {
+        MEDIUM_PRIORITY_ROUTES.forEach(route => {
+          import(/* @vite-ignore */ `../pages/${routeToComponentName(route)}.tsx`)
+            .catch(err => console.debug('Preloading failed for', route));
+        });
+      }, 300);
+    }
   }, 3000);
 };
 

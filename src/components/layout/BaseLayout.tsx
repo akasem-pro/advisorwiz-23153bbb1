@@ -132,7 +132,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   return (
     <AnimatedRoute 
       animation={animation} 
-      className={getDurationClass()}
+      className={getDurationClass}
     >
       {renderContent()}
     </AnimatedRoute>
