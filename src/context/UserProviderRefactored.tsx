@@ -148,8 +148,9 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
     setFirms(prev => [...prev, firm]);
   };
   
-  const getFirmByAdmin = async (adminId: string) => {
-    return firms.find(firm => firm.adminId === adminId);
+  // Modified to return array directly instead of a Promise
+  const getFirmByAdmin = (adminId: string) => {
+    return firms.filter(firm => firm.adminId === adminId);
   };
   
   // Handle matching operations
@@ -185,13 +186,14 @@ export const UserProviderRefactored: React.FC<{ children: React.ReactNode }> = (
     }
   };
   
-  // Get recommended or top matches
-  const getTopMatches = async (limit = 5) => {
+  // Modified to return array directly instead of a Promise
+  const getTopMatches = (limit = 5): (ConsumerProfile | AdvisorProfile)[] => {
     // Placeholder for top matches
     return [];
   };
   
-  const getRecommendedMatches = async (limit = 5) => {
+  // Modified to return array directly instead of a Promise and match the expected signature
+  const getRecommendedMatches = (): (ConsumerProfile | AdvisorProfile)[] => {
     // Placeholder for recommended matches
     return [];
   };
