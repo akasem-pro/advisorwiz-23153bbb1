@@ -18,34 +18,42 @@ const Toaster = ({ ...props }: ToasterProps) => {
   // Create a ref to access the toaster element after it's mounted
   const toasterRef = useRef<HTMLElement | null>(null);
   
-  // This effect adds aria-hidden="true" to child elements with tabindex="-1"
+  // This effect sets up a MutationObserver to add aria-hidden to elements with tabindex="-1"
   useEffect(() => {
-    if (toasterRef.current) {
-      const elementsWithNegativeTabIndex = 
-        toasterRef.current.querySelectorAll('[tabindex="-1"]');
-      
+    // Function to apply accessibility attributes
+    const applyAccessibilityAttributes = (container: HTMLElement | Document) => {
+      const elementsWithNegativeTabIndex = container.querySelectorAll('[tabindex="-1"]');
       elementsWithNegativeTabIndex.forEach((el) => {
-        (el as HTMLElement).setAttribute('aria-hidden', 'true');
+        if (!el.hasAttribute('aria-hidden')) {
+          (el as HTMLElement).setAttribute('aria-hidden', 'true');
+        }
       });
-    }
-  }, []);
+    };
 
-  // Setup a callback ref to get the DOM element created by Sonner
-  const refCallback = (el: HTMLElement | null) => {
-    toasterRef.current = el;
-    
-    // Apply aria-hidden to elements with tabindex="-1" immediately
-    if (el) {
-      setTimeout(() => {
-        const elementsWithNegativeTabIndex = 
-          el.querySelectorAll('[tabindex="-1"]');
-        
-        elementsWithNegativeTabIndex.forEach((element) => {
-          (element as HTMLElement).setAttribute('aria-hidden', 'true');
-        });
-      }, 100); // Small delay to ensure DOM is ready
-    }
-  };
+    // Setup a mutation observer to detect when the toaster adds new elements
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        if (mutation.addedNodes.length > 0) {
+          // Apply to the entire document since we can't directly access the Sonner component
+          applyAccessibilityAttributes(document);
+        }
+      });
+    });
+
+    // Start observing the document body for changes
+    observer.observe(document.body, { 
+      childList: true, 
+      subtree: true 
+    });
+
+    // Initial check for any existing elements
+    applyAccessibilityAttributes(document);
+
+    return () => {
+      // Clean up observer on component unmount
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <Sonner
@@ -71,8 +79,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
       hotkey={["altKey", "KeyT"]}
       // Make the toasts more accessible with proper ARIA roles
       richColors={true}
-      // Since we can't directly use ref prop, we need to use onMount callback
-      onMount={refCallback}
       {...props}
     />
   )
