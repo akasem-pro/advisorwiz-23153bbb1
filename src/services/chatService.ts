@@ -1,58 +1,48 @@
 
-import { Chat, ChatMessage } from '../types/userTypes';
+import { Chat, ChatMessage } from '../types/chatTypes';
 
-export const addMessageToChat = (
-  chats: Chat[], 
-  chatId: string, 
-  message: Omit<ChatMessage, 'id'>
-): Chat[] => {
-  const chatIndex = chats.findIndex(chat => chat.id === chatId);
-  
-  if (chatIndex === -1) return chats;
-  
-  const newMessage: ChatMessage = {
-    ...message,
-    id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-  };
-  
-  const updatedChat = {
-    ...chats[chatIndex],
-    messages: [...chats[chatIndex].messages, newMessage],
-    lastUpdated: new Date().toISOString()
-  };
-  
-  const newChats = [...chats];
-  newChats[chatIndex] = updatedChat;
-  
-  return newChats;
-};
-
-export const markChatMessagesAsRead = (
+/**
+ * Add a message to a chat
+ */
+export function addMessageToChat(
   chats: Chat[],
-  chatId: string, 
-  userId: string
-): Chat[] => {
-  const chatIndex = chats.findIndex(chat => chat.id === chatId);
-  
-  if (chatIndex === -1) return chats;
-  
-  const updatedMessages = chats[chatIndex].messages.map(msg => {
-    if (msg.recipientId === userId && !msg.read) {
+  chatId: string,
+  messageData: Omit<ChatMessage, 'id'>
+): Chat[] {
+  return chats.map(chat => {
+    if (chat.id === chatId) {
+      const newMessage: ChatMessage = {
+        ...messageData,
+        id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      };
+      
       return {
-        ...msg,
-        read: true
+        ...chat,
+        messages: [...chat.messages, newMessage],
+        lastUpdated: new Date().toISOString()
       };
     }
-    return msg;
+    return chat;
   });
-  
-  const updatedChat = {
-    ...chats[chatIndex],
-    messages: updatedMessages
-  };
-  
-  const newChats = [...chats];
-  newChats[chatIndex] = updatedChat;
-  
-  return newChats;
-};
+}
+
+/**
+ * Mark all messages in a chat as read for a specific user
+ */
+export function markChatMessagesAsRead(
+  chats: Chat[],
+  chatId: string,
+  userId: string
+): Chat[] {
+  return chats.map(chat => {
+    if (chat.id === chatId) {
+      return {
+        ...chat,
+        messages: chat.messages.map(message => 
+          message.recipientId === userId ? { ...message, read: true } : message
+        )
+      };
+    }
+    return chat;
+  });
+}

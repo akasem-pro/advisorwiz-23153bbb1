@@ -1,128 +1,107 @@
 
-import { useState, useCallback, useEffect } from 'react';
-import { toast } from '@/hooks/use-toast';
-import { CallSession, CallType, CallStatus, CallMetrics } from '../types/callTypes';
-import { createCallSession, updateCallStatus, calculateCallMetrics } from '../services/callService';
+import { useState, useCallback } from 'react';
+import { CallSession, CallStatus, CallType, CallMetrics } from '../types/callTypes';
 
+/**
+ * Hook to handle call session management
+ */
 export const useCallManager = (
-  userId: string,
-  userType: 'consumer' | 'advisor' | 'firm_admin' | null,
+  userId: string, 
+  userType: 'consumer' | 'advisor',
   onMetricsUpdate?: (metrics: CallMetrics[]) => void
 ) => {
   const [callSessions, setCallSessions] = useState<CallSession[]>([]);
   const [activeCall, setActiveCall] = useState<CallSession | null>(null);
   const [callMetrics, setCallMetrics] = useState<CallMetrics[]>([]);
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
-  
-  // Initialize call session
-  const initiateCall = useCallback((recipientId: string, type: CallType) => {
-    if (!userId) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to make calls",
-        variant: "destructive"
-      });
-      return null;
-    }
+
+  const initiateCall = useCallback((recipientId: string, type: CallType = 'audio') => {
+    if (!userId) return null;
     
-    const newSession = createCallSession(userId, recipientId, type);
-    setCallSessions(prev => [...prev, newSession]);
-    setActiveCall(newSession);
+    const newCall: CallSession = {
+      id: `call-${Date.now()}`,
+      initiatorId: userId,
+      recipientId,
+      type,
+      status: 'initiated',
+      startTime: new Date().toISOString(),
+    };
+    
+    setCallSessions(prev => [...prev, newCall]);
+    setActiveCall(newCall);
     setIsCallModalOpen(true);
     
-    // Auto-connect after 1 second (simulating connection)
-    setTimeout(() => {
-      updateCall(newSession.id, 'connected');
-      toast({
-        title: "Call Connected",
-        description: `You are now in a ${type} call`
-      });
-    }, 1000);
-    
-    return newSession;
+    return newCall;
   }, [userId]);
-  
-  // Update call status
+
   const updateCall = useCallback((callId: string, status: CallStatus) => {
-    setCallSessions(prev => {
-      const updatedSessions = prev.map(session => {
-        if (session.id === callId) {
-          const updatedSession = updateCallStatus(session, status);
-          
-          // If this is the active call and it's ending, clear active call
-          if (activeCall?.id === callId && ['completed', 'missed', 'declined'].includes(status)) {
-            setActiveCall(null);
+    setCallSessions(prev => 
+      prev.map(call => 
+        call.id === callId 
+          ? {
+              ...call,
+              status,
+              endTime: ['completed', 'missed', 'declined'].includes(status) ? new Date().toISOString() : call.endTime,
+              duration: ['completed'].includes(status) && !call.duration ? 
+                Math.round((Date.now() - new Date(call.startTime).getTime()) / 1000) : call.duration
+            }
+          : call
+      )
+    );
+    
+    // Update active call if it's the one being updated
+    setActiveCall(prev => 
+      prev?.id === callId 
+        ? {
+            ...prev,
+            status,
+            endTime: ['completed', 'missed', 'declined'].includes(status) ? new Date().toISOString() : prev.endTime,
+            duration: ['completed'].includes(status) && !prev.duration ? 
+              Math.round((Date.now() - new Date(prev.startTime).getTime()) / 1000) : prev.duration
           }
-          
-          return updatedSession;
-        }
-        return session;
-      });
+        : prev
+    );
+    
+    // Close modal when call ends
+    if (['completed', 'missed', 'declined'].includes(status)) {
+      setIsCallModalOpen(false);
+      setActiveCall(null);
       
-      return updatedSessions;
-    });
-  }, [activeCall]);
-  
-  // Answer incoming call
-  const answerCall = useCallback((callId: string) => {
-    updateCall(callId, 'connected');
-  }, [updateCall]);
-  
-  // Decline incoming call
-  const declineCall = useCallback((callId: string) => {
-    updateCall(callId, 'declined');
-  }, [updateCall]);
-  
-  // End active call
+      // Update metrics
+      updateMetrics();
+    }
+  }, []);
+
+  const closeCallModal = useCallback(() => {
+    setIsCallModalOpen(false);
+  }, []);
+
   const endCall = useCallback((callId: string) => {
     updateCall(callId, 'completed');
-    toast({
-      title: "Call Ended",
-      description: "Your call has ended"
-    });
   }, [updateCall]);
-  
-  // Close call modal
-  const closeCallModal = useCallback(() => {
-    if (activeCall && ['initiated', 'connected'].includes(activeCall.status)) {
-      endCall(activeCall.id);
+
+  const updateMetrics = useCallback(() => {
+    // In a real implementation, this would calculate metrics from call sessions
+    // We just define the function shape here
+    const updatedMetrics: CallMetrics[] = [];
+    
+    // Notify callback if provided
+    if (onMetricsUpdate) {
+      onMetricsUpdate(updatedMetrics);
     }
-    setIsCallModalOpen(false);
-  }, [activeCall, endCall]);
-  
-  // Calculate metrics when call sessions change
-  useEffect(() => {
-    if (userType === 'advisor' && userId) {
-      // For advisors, calculate metrics for all consumers they've interacted with
-      const uniqueConsumerIds = [...new Set(
-        callSessions
-          .filter(session => session.initiatorId === userId || session.recipientId === userId)
-          .map(session => session.initiatorId === userId ? session.recipientId : session.initiatorId)
-      )];
-      
-      const newMetrics = uniqueConsumerIds.map(consumerId => 
-        calculateCallMetrics(userId, consumerId, callSessions)
-      );
-      
-      setCallMetrics(newMetrics);
-      
-      // Trigger callback if provided
-      if (onMetricsUpdate) {
-        onMetricsUpdate(newMetrics);
-      }
-    }
-  }, [callSessions, userId, userType, onMetricsUpdate]);
-  
+    
+    setCallMetrics(updatedMetrics);
+  }, [onMetricsUpdate]);
+
   return {
     callSessions,
+    setCallSessions,
     activeCall,
     callMetrics,
-    isCallModalOpen,
     initiateCall,
     updateCall,
-    answerCall,
-    declineCall,
-    endCall,
-    closeCallModal
+    isCallModalOpen,
+    closeCallModal,
+    endCall
   };
 };

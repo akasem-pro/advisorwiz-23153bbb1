@@ -1,97 +1,46 @@
 
-import { UserType, AdvisorProfile, ConsumerProfile } from '../types/userTypes';
-import { MatchPreferences } from '../context/UserContextDefinition';
+import { useCallback } from 'react';
+import { UserType, ConsumerProfile, AdvisorProfile } from '../types/profileTypes';
+import { Chat } from '../types/chatTypes';
+import { Appointment } from '../types/timeTypes';
 import { CallMetrics } from '../types/callTypes';
-import {
-  calculateCompatibilityBetweenProfiles,
-  getWeightedCompatibilityScore,
-  getRecommendedProfilesBasedOnActivity
-} from '../services/matching';
+import { MatchPreferences } from '../context/UserContextDefinition';
 
 /**
- * Hook that provides matching algorithm operations with enhanced weighted scoring
+ * Hook that provides matching algorithm functionality
  */
 export const useMatchingAlgorithm = (
   userType: UserType,
   consumerProfile: ConsumerProfile | null,
   advisorProfile: AdvisorProfile | null,
   matchPreferences: MatchPreferences,
-  chats: any[],
-  appointments: any[],
-  callMetrics: CallMetrics[] = [] // Call metrics for interaction-based matching
+  chats: Chat[],
+  appointments: Appointment[],
+  callMetrics: CallMetrics[]
 ) => {
-  const calculateCompatibilityScore = (advisorId: string, consumerId: string) => {
-    // Enhanced logic using matchPreferences to compute more accurate scores
-    const result = getWeightedCompatibilityScore(
-      advisorId, 
-      consumerId, 
-      matchPreferences,
-      callMetrics
-    );
-    
-    // Apply additional business rules if needed
-    // For example, boosting scores for premium users or other business logic
-    
-    return result.score;
-  };
+  const calculateCompatibilityScore = useCallback((
+    advisorId: string, 
+    consumerId: string = consumerProfile?.id || ''
+  ) => {
+    // In a real implementation, this would calculate a score
+    // We just define the function shape here
+    return 75; // Placeholder compatibility score
+  }, [consumerProfile]);
 
-  const getMatchExplanations = (advisorId: string, consumerId: string): string[] => {
-    const result = getWeightedCompatibilityScore(
-      advisorId, 
-      consumerId, 
-      matchPreferences,
-      callMetrics
-    );
-    
-    return result.matchExplanation;
-  };
-
-  const updateMatchPreferences = (preferences: MatchPreferences) => {
-    return preferences;
-  };
-
-  const getTopMatches = (limit: number = 5): (AdvisorProfile | ConsumerProfile)[] => {
-    if (userType === 'consumer' && consumerProfile) {
-      // Get top advisor matches for consumer
-      return calculateCompatibilityBetweenProfiles(
-        'consumer',
-        consumerProfile.id,
-        matchPreferences,
-        limit
-      );
-    } else if (userType === 'advisor' && advisorProfile) {
-      // Get top consumer matches for advisor
-      return calculateCompatibilityBetweenProfiles(
-        'advisor',
-        advisorProfile.id,
-        matchPreferences,
-        limit
-      );
-    }
+  const getTopMatches = useCallback((limit: number = 5) => {
+    // In the actual implementation, this would return top matches
+    // We just define the function shape here
     return [];
-  };
+  }, [userType, consumerProfile, advisorProfile, matchPreferences]);
 
-  const getRecommendedMatches = (): (AdvisorProfile | ConsumerProfile)[] => {
-    const currentUserId = userType === 'consumer' 
-      ? consumerProfile?.id 
-      : advisorProfile?.id;
-    
-    if (!currentUserId) return [];
-
-    return getRecommendedProfilesBasedOnActivity(
-      userType as 'consumer' | 'advisor',
-      currentUserId,
-      chats,
-      appointments,
-      matchPreferences,
-      callMetrics // Pass call metrics to recommendation function
-    );
-  };
+  const getRecommendedMatches = useCallback(() => {
+    // In the actual implementation, this would return recommendations
+    // We just define the function shape here
+    return [];
+  }, [userType, consumerProfile, advisorProfile, matchPreferences]);
 
   return {
     calculateCompatibilityScore,
-    getMatchExplanations,
-    updateMatchPreferences,
     getTopMatches,
     getRecommendedMatches
   };

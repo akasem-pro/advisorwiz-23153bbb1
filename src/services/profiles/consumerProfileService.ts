@@ -1,105 +1,105 @@
 
-import { supabase } from '../../integrations/supabase/client';
-import { User } from '@supabase/supabase-js';
 import { ConsumerProfile } from '../../types/profileTypes';
+import { User } from '@supabase/supabase-js';
+import { supabase } from '../../integrations/supabase/client';
+import { toast } from 'sonner';
 import { fetchBaseProfile, updateBaseProfile } from './baseProfileService';
 
 /**
- * Fetch consumer profile from Supabase
+ * Fetch a consumer profile from Supabase
  */
 export const fetchConsumerProfile = async (userId: string): Promise<ConsumerProfile | null> => {
   try {
     console.log(`[consumerProfileService] Fetching consumer profile for user ${userId}`);
     
-    // First get the base profile
-    const profileData = await fetchBaseProfile(userId);
-    if (!profileData) return null;
+    // First get the base profile data
+    const baseProfile = await fetchBaseProfile(userId);
     
-    // Get consumer-specific profile data
+    if (!baseProfile) {
+      console.log(`[consumerProfileService] No base profile found for ${userId}`);
+      return null;
+    }
+    
+    // Then get consumer specific data
     const { data: consumerData, error: consumerError } = await supabase
       .from('consumer_profiles')
       .select('*')
-      .eq('id', userId)
-      .maybeSingle();
+      .eq('user_id', userId)
+      .single();
     
-    if (consumerError && consumerError.code !== 'PGRST116') { // Not found error code
-      console.error('[consumerProfileService] Error fetching consumer profile:', consumerError);
+    if (consumerError) {
+      console.error('[consumerProfileService] Error fetching consumer data:', consumerError);
+      return null;
     }
     
-    // Map database data to our ConsumerProfile type
+    // Combine the data into a consumer profile
     const consumerProfile: ConsumerProfile = {
       id: userId,
-      name: profileData?.first_name || 'User',
-      age: consumerData?.age || 30,
-      status: 'employed',
-      investableAssets: consumerData?.investable_assets || 0,
-      riskTolerance: (consumerData?.risk_tolerance as 'low' | 'medium' | 'high') || 'medium',
-      preferredCommunication: consumerData?.preferred_communication || ['email'],
-      preferredLanguage: consumerData?.preferred_language || ['english'],
-      serviceNeeds: consumerData?.service_needs || [],
-      investmentAmount: consumerData?.investment_amount || 0,
-      financialGoals: consumerData?.financial_goals || [],
-      incomeBracket: consumerData?.income_bracket || '',
-      preferredAdvisorSpecialties: consumerData?.preferred_advisor_specialties || [],
-      // Check if languages exists on profileData, if not use an empty array
-      languages: (profileData as any)?.languages || [],
-      matches: [],
-      chats: [],
-      profilePicture: profileData?.avatar_url || '',
-      chatEnabled: profileData?.chat_enabled !== false,
-      appointments: [],
-      startTimeline: (consumerData?.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' | null) || 'not_sure',
-      onlineStatus: (profileData?.online_status as 'online' | 'offline' | 'away') || 'online',
-      lastOnline: profileData?.last_online || new Date().toISOString(),
-      showOnlineStatus: profileData?.show_online_status !== false,
-      email: profileData?.email || '',
-      phone: profileData?.phone || '',
+      name: `${baseProfile.first_name || ''} ${baseProfile.last_name || ''}`.trim(),
+      age: consumerData.age || 0,
+      status: consumerData.status || 'new',
+      investableAssets: consumerData.investable_assets || 0,
+      riskTolerance: consumerData.risk_tolerance || 'medium',
+      preferredCommunication: consumerData.preferred_communication || ['email'],
+      preferredLanguage: consumerData.preferred_language || ['english'],
+      matches: consumerData.matches || [],
+      chats: consumerData.chats || [],
+      chatEnabled: baseProfile.chat_enabled !== false,
+      appointments: consumerData.appointments || [],
+      onlineStatus: baseProfile.online_status || 'offline',
+      lastOnline: baseProfile.last_online || new Date().toISOString(),
+      showOnlineStatus: baseProfile.show_online_status !== false,
+      startTimeline: consumerData.start_timeline || null
     };
     
     return consumerProfile;
   } catch (error) {
-    console.error('[consumerProfileService] Unexpected error fetching profile:', error);
+    console.error('[consumerProfileService] Unexpected error fetching consumer profile:', error);
     return null;
   }
 };
 
 /**
- * Update consumer profile in Supabase
+ * Update a consumer profile
  */
-export const updateConsumerProfile = async (
-  user: User,
-  profileData: Partial<ConsumerProfile>
-) => {
+export const updateConsumerProfile = async (user: User, profileData: ConsumerProfile): Promise<boolean> => {
   try {
-    console.log(`[consumerProfileService] Updating consumer profile for user ${user.id}`, profileData);
+    console.log(`[consumerProfileService] Updating consumer profile for user ${user.id}`);
     
     // First update the base profile
-    const baseUpdated = await updateBaseProfile(user, 'consumer', profileData);
-    if (!baseUpdated) {
+    const baseUpdateSuccess = await updateBaseProfile(user, 'consumer', profileData);
+    
+    if (!baseUpdateSuccess) {
+      console.error('[consumerProfileService] Failed to update base profile');
       return false;
     }
     
-    // Update consumer-specific profile data
-    const consumerData: any = {
-      id: user.id,
-      age: profileData.age,
-      investable_assets: profileData.investableAssets,
-      risk_tolerance: profileData.riskTolerance,
-      preferred_communication: profileData.preferredCommunication,
-      preferred_language: profileData.preferredLanguage,
-      service_needs: profileData.serviceNeeds,
-      investment_amount: profileData.investmentAmount,
-      financial_goals: profileData.financialGoals,
-      income_bracket: profileData.incomeBracket,
-      preferred_advisor_specialties: profileData.preferredAdvisorSpecialties,
-      start_timeline: profileData.startTimeline,
-      updated_at: new Date().toISOString()
-    };
-    
+    // Then update consumer specific data
     const { error: consumerUpsertError } = await supabase
       .from('consumer_profiles')
-      .upsert(consumerData, {
-        onConflict: 'id'
+      .upsert({
+        user_id: user.id,
+        age: profileData.age,
+        status: profileData.status,
+        investable_assets: profileData.investableAssets,
+        risk_tolerance: profileData.riskTolerance,
+        preferred_communication: profileData.preferredCommunication,
+        preferred_language: profileData.preferredLanguage,
+        service_needs: profileData.serviceNeeds,
+        investment_amount: profileData.investmentAmount,
+        financial_goals: profileData.financialGoals,
+        income_bracket: profileData.incomeBracket,
+        income_range: profileData.incomeRange,
+        preferred_advisor_specialties: profileData.preferredAdvisorSpecialties,
+        matches: profileData.matches,
+        chats: profileData.chats,
+        appointments: profileData.appointments,
+        start_timeline: profileData.startTimeline,
+        has_advisor: profileData.hasAdvisor,
+        current_advisor_reason: profileData.currentAdvisorReason,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id'
       });
     
     if (consumerUpsertError) {
@@ -109,43 +109,24 @@ export const updateConsumerProfile = async (
     
     return true;
   } catch (error) {
-    console.error('[consumerProfileService] Unexpected error updating profile:', error);
+    console.error('[consumerProfileService] Unexpected error updating consumer profile:', error);
     return false;
   }
 };
 
 /**
- * Initialize consumer profile with default values
+ * Initialize a new consumer profile
  */
 export const initializeConsumerProfile = async (user: User): Promise<ConsumerProfile | null> => {
   try {
     console.log(`[consumerProfileService] Initializing consumer profile for user ${user.id}`);
     
-    // Check if profile already exists
-    const existingProfile = await fetchConsumerProfile(user.id);
-    
-    if (existingProfile) {
-      console.log('[consumerProfileService] Found existing profile', existingProfile);
-      return existingProfile;
-    }
-    
-    // Profile doesn't exist, create one
-    console.log('[consumerProfileService] No existing profile found, creating default profile');
-    
-    const email = user.email?.toLowerCase() || '';
-    let name = email.split('@')[0] || 'User';
-    
-    // Try to capitalize the name
-    if (name) {
-      name = name.charAt(0).toUpperCase() + name.slice(1);
-    }
-    
-    const profileData: Partial<ConsumerProfile> = {
+    const defaultConsumerProfile: ConsumerProfile = {
       id: user.id,
-      name,
-      age: 30,
-      status: 'employed',
-      investableAssets: 100000,
+      name: user.user_metadata?.name || '',
+      age: 0,
+      status: 'new',
+      investableAssets: 0,
       riskTolerance: 'medium',
       preferredCommunication: ['email'],
       preferredLanguage: ['english'],
@@ -153,22 +134,23 @@ export const initializeConsumerProfile = async (user: User): Promise<ConsumerPro
       chats: [],
       chatEnabled: true,
       appointments: [],
-      startTimeline: 'not_sure',
       onlineStatus: 'online',
       lastOnline: new Date().toISOString(),
-      showOnlineStatus: true,
-      email: email
+      showOnlineStatus: true
     };
     
-    const success = await updateConsumerProfile(user, profileData);
+    // Update the profile in Supabase
+    const success = await updateConsumerProfile(user, defaultConsumerProfile);
     
-    if (success) {
-      return profileData as ConsumerProfile;
-    } else {
+    if (!success) {
+      toast.error('Failed to initialize consumer profile');
       return null;
     }
+    
+    return defaultConsumerProfile;
   } catch (error) {
-    console.error('[consumerProfileService] Error initializing user profile:', error);
+    console.error('[consumerProfileService] Unexpected error initializing consumer profile:', error);
+    toast.error('Unexpected error initializing consumer profile');
     return null;
   }
 };
