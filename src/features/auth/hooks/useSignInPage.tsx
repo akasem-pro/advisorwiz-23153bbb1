@@ -4,13 +4,16 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useSignInForm } from './useSignInForm';
 import { useAuthFormSubmit } from './useAuthFormSubmit';
 import { useAuth } from '../context/AuthProvider';
+import { useRetryHandler } from './useRetryHandler';
+import { useSignInHandler } from './useSignInHandler';
+import { useSignUpHandler } from './useSignUpHandler';
 import { toast } from 'sonner';
 
 /**
  * Custom hook for managing the Sign In page functionality
  */
 export const useSignInPage = () => {
-  const { user } = useAuth();
+  const { user, networkStatus, checkNetworkStatus } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -19,14 +22,10 @@ export const useSignInPage = () => {
   
   // Initialize form state using existing hooks
   const formState = useSignInForm();
-  const {
-    networkStatus,
-    handleSignIn,
-    handleSignUp,
-    handleRetry,
-    retryConnection,
-    isRetrying
-  } = useAuthFormSubmit();
+  const { handleAuthError } = useAuthFormSubmit();
+  const { isRetrying, retryConnection, handleRetry } = useRetryHandler();
+  const { handleSignIn } = useSignInHandler();
+  const { handleSignUp } = useSignUpHandler();
   
   // Destructure form state for easier access
   const {
@@ -153,7 +152,6 @@ export const useSignInPage = () => {
   const isSignUpDisabled = formState.isLoading;
   
   return {
-    // Pass all necessary state and handlers to the component
     formState,
     networkStatus,
     isRetrying,

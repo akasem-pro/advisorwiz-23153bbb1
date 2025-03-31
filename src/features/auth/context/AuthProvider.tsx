@@ -17,7 +17,7 @@ export interface AuthContextType {
   checkNetworkStatus: () => Promise<boolean>;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string, userType: UserType) => Promise<boolean>;
-  signOut: () => Promise<boolean>;
+  signOut: () => Promise<boolean>; // Changed from void to boolean
   resetPassword: (email: string) => Promise<boolean>;
   updatePassword: (newPassword: string) => Promise<boolean>;
   updateEmail: (newEmail: string) => Promise<boolean>;
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // Provide all auth functions and state to the context
-  const value = {
+  const value: AuthContextType = {
     user: mockUser || user,
     session,
     loading,

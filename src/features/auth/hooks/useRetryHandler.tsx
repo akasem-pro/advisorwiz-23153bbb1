@@ -1,97 +1,74 @@
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../context/AuthProvider';
 import { toast } from 'sonner';
+import { useSignInHandler } from './useSignInHandler';
+import { useSignUpHandler } from './useSignUpHandler';
 
 /**
- * Hook for handling retry operations with improved error handling
+ * Hook for handling retry operations with auth forms
  */
 export const useRetryHandler = () => {
-  const { checkNetworkStatus } = useAuth();
   const [isRetrying, setIsRetrying] = useState(false);
-  
-  const handleRetry = useCallback(async (
+  const { checkNetworkStatus } = useAuth();
+  const { handleSignIn } = useSignInHandler();
+  const { handleSignUp } = useSignUpHandler();
+
+  const retryConnection = async (): Promise<boolean> => {
+    setIsRetrying(true);
+    toast.loading('Checking network connection...');
+    
+    try {
+      const isOnline = await checkNetworkStatus();
+      
+      if (isOnline) {
+        toast.success('Connection restored');
+        return true;
+      } else {
+        toast.error('Still offline. Please check your connection');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error checking connection:', error);
+      toast.error('Failed to check connection');
+      return false;
+    } finally {
+      setIsRetrying(false);
+    }
+  };
+
+  const handleRetry = async (
     activeTab: string,
     signInEmail: string,
     signInPassword: string,
     signUpEmail: string,
     signUpPassword: string,
     confirmPassword: string,
-    handleSignInSubmit: (e?: React.FormEvent<HTMLFormElement>) => Promise<boolean | void>,
-    handleSignUpSubmit: (e?: React.FormEvent<HTMLFormElement>) => Promise<boolean | void>,
+    handleSignInSubmit: () => Promise<boolean>,
+    handleSignUpSubmit: () => Promise<boolean>,
     setFormError: (error: string) => void
-  ) => {
-    // Clear any existing error message
+  ): Promise<boolean> => {
+    setIsRetrying(true);
     setFormError('');
     
-    if (isRetrying) {
-      console.log("[Retry Handler] Already retrying, ignoring duplicate request");
-      return;
-    }
-    
-    setIsRetrying(true);
-    console.log("[Retry Handler] Starting retry process");
-    
     try {
-      // Show loading toast - will be dismissed after completion
-      toast.loading('Checking connection...');
-      
-      // Log starting state
-      console.log("[Retry Handler] Active tab:", activeTab);
-      console.log("[Retry Handler] Credentials present:", {
-        signIn: !!signInEmail && !!signInPassword,
-        signUp: !!signUpEmail && !!signUpPassword && !!confirmPassword
-      });
-      
-      // Check if we're in a preview environment
-      const isPreviewEnv = window.location.hostname.includes('preview') || 
-                           window.location.hostname.includes('lovableproject') ||
-                           window.location.hostname.includes('localhost');
-      
-      // Attempt to check network status
-      let networkOk = true;
-      
-      if (!isPreviewEnv) {
-        // Only check real network in non-preview environments
-        networkOk = await checkNetworkStatus();
+      if (activeTab === 'signin') {
+        return await handleSignInSubmit();
       } else {
-        // In preview, simulate a network check with a delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-      
-      // Dismiss loading toast
-      toast.dismiss();
-      
-      if (networkOk) {
-        // Show success toast
-        toast.success('Connection ready! Retrying...');
-        
-        // Call the appropriate handler based on active tab
-        if (activeTab === 'signin' && signInEmail && signInPassword) {
-          console.log("[Retry Handler] Retrying sign in");
-          await handleSignInSubmit();
-        } else if (activeTab === 'signup' && signUpEmail && signUpPassword && confirmPassword) {
-          console.log("[Retry Handler] Retrying sign up");
-          await handleSignUpSubmit();
-        } else {
-          console.log("[Retry Handler] Missing credentials for retry");
-          setFormError('Please fill in all fields before retrying.');
-        }
-      } else {
-        // If network check failed, show error
-        toast.error('Connection check failed');
-        setFormError('Unable to connect to the server. Please check your internet connection and try again.');
+        return await handleSignUpSubmit();
       }
     } catch (error) {
-      console.error("[Retry Handler] Retry failed:", error);
-      toast.dismiss();
-      toast.error('Connection check failed');
-      setFormError('Connection check failed. Please try again later.');
+      console.error('Error during retry:', error);
+      setFormError('Retry failed. Please try again.');
+      return false;
     } finally {
       setIsRetrying(false);
-      console.log("[Retry Handler] Retry process completed");
     }
-  }, [isRetrying, checkNetworkStatus]);
-  
-  return { handleRetry, isRetrying };
+  };
+
+  return {
+    isRetrying,
+    retryConnection,
+    handleRetry
+  };
 };

@@ -9,7 +9,6 @@ import { useAuthCore } from './useAuthCore';
 export const useAuthFormSubmit = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState('');
-  const { networkStatus, checkNetworkStatus } = useAuth();
   const { handleAuthError } = useAuthCore();
 
   // Reset form error
@@ -17,6 +16,8 @@ export const useAuthFormSubmit = () => {
   
   // Check if auth system is ready to handle requests
   const checkAuthSystemReady = async (): Promise<boolean> => {
+    const { networkStatus, checkNetworkStatus } = useAuth();
+    
     if (networkStatus === 'offline') {
       setFormError('You appear to be offline. Please check your internet connection.');
       return false;

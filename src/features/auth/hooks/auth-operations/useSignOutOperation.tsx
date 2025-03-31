@@ -11,7 +11,7 @@ export const useSignOutOperation = (
 ) => {
   const navigate = useNavigate();
 
-  const signOut = async (): Promise<void> => {
+  const signOut = async (): Promise<boolean> => {
     try {
       setLoading(true);
       
@@ -21,10 +21,12 @@ export const useSignOutOperation = (
       console.log("[Auth Debug] Sign out successful");
       toast.success("Successfully signed out");
       navigate('/sign-in');
+      return true;
     } catch (error: any) {
       console.error("[Auth Debug] Error signing out:", error.message);
       console.error("[Auth Debug] Detailed sign out error:", error);
       toast.error("Failed to sign out. Please try again.");
+      return false;
     } finally {
       setLoading(false);
     }

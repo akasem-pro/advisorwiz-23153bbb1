@@ -6,18 +6,19 @@ import { toast } from 'sonner';
 /**
  * Hook for handling password reset operations
  */
-export const usePasswordResetOperation = () => {
+export const usePasswordResetOperation = (setLoading?: (loading: boolean) => void) => {
   const [isResetting, setIsResetting] = useState(false);
   
   /**
    * Request a password reset email
    */
-  const requestPasswordReset = async (email: string): Promise<boolean> => {
+  const resetPassword = async (email: string): Promise<boolean> => {
     if (!email) {
       toast.error('Please provide your email address');
       return false;
     }
     
+    if (setLoading) setLoading(true);
     setIsResetting(true);
     
     try {
@@ -50,9 +51,13 @@ export const usePasswordResetOperation = () => {
       toast.error('An error occurred. Please try again later.');
       return false;
     } finally {
+      if (setLoading) setLoading(false);
       setIsResetting(false);
     }
   };
+  
+  // Alias for resetPassword to maintain backwards compatibility
+  const sendPasswordResetEmail = resetPassword;
   
   /**
    * Update password with the reset token
@@ -63,6 +68,7 @@ export const usePasswordResetOperation = () => {
       return false;
     }
     
+    if (setLoading) setLoading(true);
     setIsResetting(true);
     
     try {
@@ -109,13 +115,63 @@ export const usePasswordResetOperation = () => {
       toast.error('An error occurred. Please try again later.');
       return false;
     } finally {
+      if (setLoading) setLoading(false);
+      setIsResetting(false);
+    }
+  };
+  
+  /**
+   * Update email address
+   */
+  const updateEmail = async (newEmail: string): Promise<boolean> => {
+    if (!newEmail) {
+      toast.error('Please provide a new email address');
+      return false;
+    }
+    
+    if (setLoading) setLoading(true);
+    setIsResetting(true);
+    
+    try {
+      // Check if we're in a preview environment
+      if (window.location.hostname.includes('preview') || 
+          window.location.hostname.includes('lovableproject') ||
+          window.location.hostname.includes('localhost')) {
+        
+        console.log("[Auth] Preview environment detected, simulating email update");
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        toast.success('Email has been updated successfully');
+        return true;
+      }
+      
+      const { error } = await supabase.auth.updateUser({
+        email: newEmail
+      });
+      
+      if (error) {
+        console.error("[Auth] Email update error:", error);
+        toast.error('Failed to update email. Please try again.');
+        return false;
+      }
+      
+      toast.success('Email update initiated. Please check your inbox for verification.');
+      return true;
+    } catch (error) {
+      console.error("[Auth] Email update error:", error);
+      toast.error('An error occurred. Please try again later.');
+      return false;
+    } finally {
+      if (setLoading) setLoading(false);
       setIsResetting(false);
     }
   };
   
   return {
     isResetting,
-    requestPasswordReset,
-    updatePassword
+    resetPassword,
+    updatePassword,
+    updateEmail,
+    sendPasswordResetEmail
   };
 };
