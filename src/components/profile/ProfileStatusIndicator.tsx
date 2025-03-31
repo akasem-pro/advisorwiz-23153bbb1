@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Badge } from '../ui/badge';
+import { cn } from '@/lib/utils';
 
 interface ProfileStatusIndicatorProps {
   status: 'online' | 'offline' | 'away';
@@ -13,39 +14,46 @@ export const ProfileStatusIndicator: React.FC<ProfileStatusIndicatorProps> = ({
   showStatusText = true,
   size = 'md'
 }) => {
-  const getStatusColor = () => {
-    switch (status) {
-      case 'online': return 'bg-green-500';
-      case 'away': return 'bg-amber-500';
-      case 'offline': 
-      default: return 'bg-slate-400';
-    }
-  };
-  
-  const getStatusText = () => {
-    switch (status) {
-      case 'online': return 'Online';
-      case 'away': return 'Away';
-      case 'offline': 
-      default: return 'Offline';
-    }
-  };
-  
-  const getSizeClasses = () => {
-    switch (size) {
-      case 'sm': return 'h-1.5 w-1.5';
-      case 'lg': return 'h-3 w-3';
-      case 'md':
-      default: return 'h-2 w-2';
-    }
-  };
+  // Memoize status values to prevent unnecessary recalculations
+  const statusInfo = React.useMemo(() => {
+    // Status color mapping
+    const colorMap = {
+      online: 'bg-green-500',
+      away: 'bg-amber-500',
+      offline: 'bg-slate-400'
+    };
+    
+    // Status text mapping
+    const textMap = {
+      online: 'Online',
+      away: 'Away',
+      offline: 'Offline'
+    };
+    
+    // Size mapping
+    const sizeMap = {
+      sm: 'h-1.5 w-1.5',
+      md: 'h-2 w-2',
+      lg: 'h-3 w-3'
+    };
+    
+    return {
+      color: colorMap[status],
+      text: textMap[status],
+      sizeClass: sizeMap[size]
+    };
+  }, [status, size]);
 
   return (
-    <div className="flex items-center space-x-1.5">
-      <div className={`rounded-full ${getStatusColor()} ${getSizeClasses()}`}></div>
+    <div className="flex items-center space-x-1.5" aria-label={`Status: ${statusInfo.text}`}>
+      <div 
+        className={cn("rounded-full", statusInfo.color, statusInfo.sizeClass)}
+        role="presentation"
+        aria-hidden="true"
+      ></div>
       {showStatusText && (
         <span className="text-xs text-slate-600 dark:text-slate-300">
-          {getStatusText()}
+          {statusInfo.text}
         </span>
       )}
     </div>

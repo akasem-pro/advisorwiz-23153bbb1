@@ -5,10 +5,11 @@ import App from './App.tsx'
 import './styles/main.css'
 import { ThemeProvider } from './context/ThemeContext'
 import { Toaster } from './components/ui/sonner'
-import { initEnhancedPerformanceTracking } from './utils/performance/enhancedPerformanceTracking'
+import { initPerformanceOptimizations } from './utils/performanceTracking'
 
-// Initialize enhanced performance tracking
-initEnhancedPerformanceTracking();
+// Initialize performance optimizations once before rendering
+// This consolidates all performance-related initializations
+initPerformanceOptimizations();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
