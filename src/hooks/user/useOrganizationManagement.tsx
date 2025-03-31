@@ -1,5 +1,5 @@
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FinancialFirm } from '../../types/firmTypes';
 import { toast } from 'sonner';
 import { supabase } from '../../integrations/supabase/client';
@@ -8,6 +8,9 @@ import { supabase } from '../../integrations/supabase/client';
  * Hook to manage organization-related functionality
  */
 export const useOrganizationManagement = () => {
+  // Add state management for firms
+  const [firms, setFirms] = useState<FinancialFirm[]>([]);
+
   /**
    * Add a new firm
    */
@@ -38,7 +41,29 @@ export const useOrganizationManagement = () => {
         return null;
       }
 
-      return data;
+      // Convert from database format to app format
+      const newFirm: FinancialFirm = {
+        id: data.id,
+        name: data.name,
+        description: data.description || '',
+        website: data.website || '',
+        logo: data.logo,
+        industry: data.industry,
+        size: data.size,
+        city: data.city,
+        state: data.state,
+        country: data.country || 'US',
+        assetsUnderManagement: data.assets_under_management,
+        employeeCount: data.employee_count,
+        adminId: data.admin_id,
+        advisorIds: [], // This would need to be populated separately
+        createdAt: data.created_at
+      };
+
+      // Update local state
+      setFirms(prev => [...prev, newFirm]);
+      
+      return newFirm;
     } catch (error) {
       console.error("[useOrganizationManagement] Exception adding firm:", error);
       toast.error("Failed to add firm due to an unexpected error");
@@ -47,7 +72,7 @@ export const useOrganizationManagement = () => {
   }, []);
 
   /**
-   * Get firm by admin ID - returning an array for compatibility
+   * Get firm by admin ID
    */
   const getFirmByAdmin = useCallback(async (adminId: string): Promise<FinancialFirm[]> => {
     try {
@@ -61,8 +86,12 @@ export const useOrganizationManagement = () => {
         return [];
       }
 
+      if (!data || data.length === 0) {
+        return [];
+      }
+
       // Transform database records to FinancialFirm format
-      return data.map(firm => ({
+      const firmsList = data.map(firm => ({
         id: firm.id,
         name: firm.name,
         description: firm.description || '',
@@ -79,14 +108,16 @@ export const useOrganizationManagement = () => {
         advisorIds: [], // This would need to be populated separately
         createdAt: firm.created_at
       }));
+      
+      // Update local state
+      setFirms(firmsList);
+      
+      return firmsList;
     } catch (error) {
       console.error("[useOrganizationManagement] Exception fetching firm by admin:", error);
       return [];
     }
   }, []);
-
-  // Add state management for firms
-  const [firms, setFirms] = React.useState<FinancialFirm[]>([]);
 
   return {
     addFirm,

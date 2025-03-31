@@ -41,27 +41,34 @@ export async function initializeUserProfile(user: User, userType: UserType) {
         let startTimelineValue: 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' = 'not_sure';
         
         // Validate that the value is one of the allowed options
-        if (consumerData?.start_timeline === 'immediately' || 
-            consumerData?.start_timeline === 'next_3_months' || 
-            consumerData?.start_timeline === 'next_6_months' || 
-            consumerData?.start_timeline === 'not_sure') {
+        if (consumerData && (
+            consumerData.start_timeline === 'immediately' || 
+            consumerData.start_timeline === 'next_3_months' || 
+            consumerData.start_timeline === 'next_6_months' || 
+            consumerData.start_timeline === 'not_sure')) {
           startTimelineValue = consumerData.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure';
         }
+
+        // Handle properties that might be missing in consumer data
+        const matches = consumerData?.matches || [];
+        const chats = consumerData?.chats || [];
+        const appointments = consumerData?.appointments || [];
+        const status = consumerData?.status || 'new';
         
         // Convert from database format to app format
         const consumerProfile: ConsumerProfile = {
           id: user.id,
           name: `${existingProfile.first_name || ''} ${existingProfile.last_name || ''}`.trim(),
           age: consumerData?.age || 0,
-          status: consumerData?.status || 'new',
+          status: status,
           investableAssets: consumerData?.investable_assets || 0,
           riskTolerance: (consumerData?.risk_tolerance as "low" | "medium" | "high") || 'medium',
           preferredCommunication: Array.isArray(consumerData?.preferred_communication) ? consumerData.preferred_communication : ['email'],
           preferredLanguage: Array.isArray(consumerData?.preferred_language) ? consumerData.preferred_language : ['english'],
-          matches: Array.isArray(consumerData?.matches) ? consumerData.matches : [],
-          chats: Array.isArray(consumerData?.chats) ? consumerData.chats : [],
+          matches: Array.isArray(matches) ? matches : [],
+          chats: Array.isArray(chats) ? chats : [],
           chatEnabled: existingProfile.chat_enabled !== false,
-          appointments: Array.isArray(consumerData?.appointments) ? consumerData.appointments : [],
+          appointments: Array.isArray(appointments) ? appointments : [],
           onlineStatus: existingProfile.online_status || 'offline',
           lastOnline: existingProfile.last_online || new Date().toISOString(),
           showOnlineStatus: existingProfile.show_online_status !== false,
@@ -78,6 +85,16 @@ export async function initializeUserProfile(user: User, userType: UserType) {
         if (advisorError && advisorError.code !== 'PGRST116') {
           console.error("Error fetching advisor data:", advisorError);
         }
+
+        // Handle properties that might be missing in advisor data
+        const testimonials = advisorData?.testimonials || [];
+        const pricing = advisorData?.pricing || {};
+        const expertise = advisorData?.expertise || [];
+        const matches = advisorData?.matches || [];
+        const chats = advisorData?.chats || [];
+        const appointmentCategories = advisorData?.appointment_categories || [];
+        const appointments = advisorData?.appointments || [];
+        const specializations = advisorData?.specializations || [];
         
         const advisorProfile: AdvisorProfile = {
           id: user.id,
@@ -85,19 +102,20 @@ export async function initializeUserProfile(user: User, userType: UserType) {
           organization: advisorData?.organization || '',
           isAccredited: advisorData?.is_accredited !== false,
           website: advisorData?.website || '',
-          testimonials: Array.isArray(advisorData?.testimonials) ? advisorData.testimonials : [],
+          testimonials: Array.isArray(testimonials) ? testimonials : [],
           languages: Array.isArray(advisorData?.languages) ? advisorData.languages : ['english'],
-          pricing: typeof advisorData?.pricing === 'object' ? advisorData.pricing : {},
+          pricing: typeof pricing === 'object' ? pricing : {},
           assetsUnderManagement: advisorData?.assets_under_management || 0,
-          expertise: Array.isArray(advisorData?.expertise) ? advisorData.expertise : [],
-          matches: Array.isArray(advisorData?.matches) ? advisorData.matches : [],
-          chats: Array.isArray(advisorData?.chats) ? advisorData.chats : [],
+          expertise: Array.isArray(expertise) ? expertise : [],
+          matches: Array.isArray(matches) ? matches : [],
+          chats: Array.isArray(chats) ? chats : [],
           chatEnabled: existingProfile.chat_enabled !== false,
-          appointmentCategories: Array.isArray(advisorData?.appointment_categories) ? advisorData.appointment_categories : [],
-          appointments: Array.isArray(advisorData?.appointments) ? advisorData.appointments : [],
+          appointmentCategories: Array.isArray(appointmentCategories) ? appointmentCategories : [],
+          appointments: Array.isArray(appointments) ? appointments : [],
           onlineStatus: existingProfile.online_status || 'offline',
           lastOnline: existingProfile.last_online || new Date().toISOString(),
-          showOnlineStatus: existingProfile.show_online_status !== false
+          showOnlineStatus: existingProfile.show_online_status !== false,
+          specializations: Array.isArray(specializations) ? specializations : []
         };
         return advisorProfile;
       }
@@ -185,7 +203,8 @@ export async function initializeUserProfile(user: User, userType: UserType) {
         appointments: [],
         onlineStatus: 'online',
         lastOnline: new Date().toISOString(),
-        showOnlineStatus: true
+        showOnlineStatus: true,
+        specializations: []
       };
       
       try {

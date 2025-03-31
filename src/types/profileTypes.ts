@@ -33,7 +33,7 @@ export type ConsumerProfile = {
   profilePicture?: string; // URL to profile picture
   chatEnabled: boolean; // New field for chat settings
   appointments: string[];
-  startTimeline: 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' | null; // When they want to start
+  startTimeline: 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure'; // When they want to start
   onlineStatus: 'online' | 'offline' | 'away'; // New field for online status
   lastOnline: string; // ISO string for last online time
   showOnlineStatus: boolean; // Toggle to show/hide online status
@@ -69,7 +69,7 @@ export type AdvisorProfile = {
   };
   assetsUnderManagement: number;
   expertise: ServiceCategory[]; // Now explicitly typed
-  specializations?: string[]; // New field for specific areas of expertise
+  specializations: string[]; // Required field for specializations
   yearsOfExperience?: number; // New field
   averageRating?: number; // New field
   ratingCount?: number; // New field
@@ -91,4 +91,3 @@ export type AdvisorProfile = {
 
 // User type - Updated to include 'admin'
 export type UserType = 'consumer' | 'advisor' | 'firm_admin' | 'admin' | null;
-

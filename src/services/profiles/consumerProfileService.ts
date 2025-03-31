@@ -66,20 +66,25 @@ export const fetchConsumerProfile = async (userId: string): Promise<ConsumerProf
       startTimeline = consumerData.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure';
     }
     
-    // Combine the data into a consumer profile
+    // Combine the data into a consumer profile - Handle optional fields with default values
+    const status = consumerData.status || 'new';
+    const matches = consumerData.matches || [];
+    const chats = consumerData.chats || [];
+    const appointments = consumerData.appointments || [];
+    
     const consumerProfile: ConsumerProfile = {
       id: userId,
       name: `${baseProfile.first_name || ''} ${baseProfile.last_name || ''}`.trim(),
       age: consumerData.age || 0,
-      status: consumerData.status || 'new',
+      status: status,
       investableAssets: consumerData.investable_assets || 0,
       riskTolerance: consumerData.risk_tolerance || 'medium',
       preferredCommunication: Array.isArray(consumerData.preferred_communication) ? consumerData.preferred_communication : ['email'],
       preferredLanguage: Array.isArray(consumerData.preferred_language) ? consumerData.preferred_language : ['english'],
-      matches: Array.isArray(consumerData.matches) ? consumerData.matches : [],
-      chats: Array.isArray(consumerData.chats) ? consumerData.chats : [],
+      matches: Array.isArray(matches) ? matches : [],
+      chats: Array.isArray(chats) ? chats : [],
       chatEnabled: baseProfile.chat_enabled !== false,
-      appointments: Array.isArray(consumerData.appointments) ? consumerData.appointments : [],
+      appointments: Array.isArray(appointments) ? appointments : [],
       onlineStatus: baseProfile.online_status || 'offline',
       lastOnline: baseProfile.last_online || new Date().toISOString(),
       showOnlineStatus: baseProfile.show_online_status !== false,
