@@ -2,6 +2,7 @@
 import { useAuth } from '../context/AuthProvider';
 import { useAuthCore } from './useAuthCore';
 import { toast } from 'sonner';
+import { UserType } from '../../../types/profileTypes';
 
 /**
  * Hook for handling sign up submissions
@@ -44,7 +45,7 @@ export const useSignUpHandler = () => {
       }
       
       console.log('Attempting signup with:', { email });
-      const success = await signUp(email, password);
+      const success = await signUp(email, password, 'consumer' as UserType);
       
       if (success) {
         // Switch to sign in tab
