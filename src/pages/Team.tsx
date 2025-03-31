@@ -7,6 +7,7 @@ import TeamMemberList from '../components/team/TeamMemberList';
 import TeamPerformance from '../components/team/TeamPerformance';
 import { teamMembers } from '../components/team/teamData';
 import ConsistentContainer from '../components/ui/design-system/ConsistentContainer';
+import AppLayout from '../components/layout/AppLayout';
 
 const Team: React.FC = () => {
   // Stats data for the stats cards
@@ -18,13 +19,13 @@ const Team: React.FC = () => {
   ];
 
   return (
-    <>
+    <AppLayout>
       <PageSEO 
         title="Team Management | AdvisorWiz"
         description="Manage your financial advisory team members and view performance metrics"
       />
 
-      <ConsistentContainer className="px-4 py-8">
+      <ConsistentContainer className="px-4 py-8 pt-8">
         <TeamHeader 
           title="Team Management" 
           description="Manage your advisors and team members" 
@@ -36,7 +37,7 @@ const Team: React.FC = () => {
         
         <TeamPerformance members={teamMembers} />
       </ConsistentContainer>
-    </>
+    </AppLayout>
   );
 };
 
