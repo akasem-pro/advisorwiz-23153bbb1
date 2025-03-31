@@ -1,74 +1,13 @@
 
 import { supabase } from '../../integrations/supabase/client';
 import { ConsumerProfile } from '../../types/profileTypes';
+import { getConsumerProfile } from '../profileService';
 
 /**
  * Fetches a consumer profile by user ID
  */
 export const getConsumerProfileById = async (userId: string): Promise<ConsumerProfile | null> => {
-  try {
-    // Fetch base user profile
-    const { data: userProfile, error: userError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    
-    if (userError) throw userError;
-    
-    // Fetch consumer specific profile
-    const { data: consumerProfile, error: consumerError } = await supabase
-      .from('consumer_profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    
-    if (consumerError) throw consumerError;
-    
-    if (!userProfile || !consumerProfile) {
-      console.error('Missing user or consumer profile data');
-      return null;
-    }
-    
-    // Combine profiles with safe default values for potentially missing fields
-    const profile: ConsumerProfile = {
-      id: userId,
-      name: `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim(),
-      email: userProfile.email || '',
-      phone: userProfile.phone || '',
-      age: consumerProfile.age || 0,
-      status: 'active',
-      investableAssets: consumerProfile.investable_assets || 0,
-      riskTolerance: (consumerProfile.risk_tolerance as 'low' | 'medium' | 'high') || 'medium',
-      preferredCommunication: Array.isArray(consumerProfile.preferred_communication) ? 
-        consumerProfile.preferred_communication : [],
-      preferredLanguage: consumerProfile.preferred_language || ['English'],
-      financialGoals: consumerProfile.financial_goals || [],
-      incomeRange: consumerProfile.income_bracket || '',
-      investmentAmount: consumerProfile.investment_amount || 0,
-      preferredAdvisorSpecialties: consumerProfile.preferred_advisor_specialties || [],
-      location: {
-        city: userProfile.city || '',
-        state: userProfile.state || '',
-        country: userProfile.country || 'US'
-      },
-      matches: [],
-      chats: [],
-      profilePicture: userProfile.avatar_url || '',
-      chatEnabled: userProfile.chat_enabled || false,
-      appointments: [],
-      startTimeline: consumerProfile.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' || 'not_sure',
-      onlineStatus: userProfile.online_status || 'offline',
-      lastOnline: userProfile.last_online || new Date().toISOString(),
-      showOnlineStatus: userProfile.show_online_status || true
-    };
-    
-    return profile;
-    
-  } catch (error) {
-    console.error('Error fetching consumer profile:', error);
-    return null;
-  }
+  return getConsumerProfile(userId);
 };
 
 /**

@@ -2,6 +2,7 @@
 import { supabase } from '../integrations/supabase/client';
 import { UserType, ConsumerProfile, AdvisorProfile } from '../types/profileTypes';
 import { User } from '@supabase/supabase-js';
+import { toast } from 'sonner';
 
 // Generic function to fetch a user profile by ID
 export const getUserProfile = async (userId: string) => {
@@ -147,7 +148,6 @@ export const getAdvisorProfile = async (userId: string): Promise<AdvisorProfile 
 
 /**
  * Initialize a user profile based on their authentication status
- * This is the function that was missing and causing the error
  */
 export const initializeUserProfile = async (
   user: User, 
@@ -242,5 +242,3 @@ export const initializeUserProfile = async (
     return null;
   }
 };
-
-// Additional profile-related functions can be added here
