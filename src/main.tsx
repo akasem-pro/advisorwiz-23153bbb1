@@ -17,13 +17,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <Toaster 
         position="top-right" 
         closeButton={true} 
-        richColors={true} 
-        toastOptions={{
-          accessibility: {
-            role: "status",
-            ariaLive: "polite"
-          }
-        }}
+        richColors={true}
+        // Remove the invalid 'accessibility' property and use valid props
+        containerAriaLabel="Notifications"
+        hotkey={["altKey", "KeyT"]}
       />
     </ThemeProvider>
   </React.StrictMode>,

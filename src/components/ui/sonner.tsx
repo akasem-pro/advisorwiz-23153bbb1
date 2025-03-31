@@ -31,11 +31,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       hotkey={["altKey", "KeyT"]}
       // Make the toasts more accessible with proper ARIA roles
       richColors={true}
-      // Improve contrast of elements
-      closeButtonProps={{
-        "aria-label": "Close notification",
-        className: "border border-border p-1 bg-background hover:bg-muted focus:ring-2 focus:outline-none rounded-md",
-      }}
+      // Improve contrast of elements - changing from closeButtonProps to use the proper API
       {...props}
     />
   )
