@@ -42,7 +42,7 @@ const AppFooter: React.FC = () => {
           
           {/* Column 2: Quick Links */}
           <div>
-            <h3 className="text-xl font-medium mb-5 text-teal-400">Quick Links</h3>
+            <h3 className="text-xl font-medium mb-5 text-white">Quick Links</h3>
             <ul className="space-y-3">
               <li><Link to="/" className="text-slate-300 hover:text-teal-400 transition-colors">Home</Link></li>
               <li><Link to="/about" className="text-slate-300 hover:text-teal-400 transition-colors">About Us</Link></li>
@@ -55,7 +55,7 @@ const AppFooter: React.FC = () => {
           
           {/* Column 3: Contact Us */}
           <div>
-            <h3 className="text-xl font-medium mb-5 text-teal-400">Contact Us</h3>
+            <h3 className="text-xl font-medium mb-5 text-white">Contact Us</h3>
             <ul className="space-y-4">
               <li className="flex items-start">
                 <MapPin className="w-5 h-5 text-teal-400 mr-3 mt-1 flex-shrink-0" />
@@ -74,7 +74,7 @@ const AppFooter: React.FC = () => {
           
           {/* Column 4: Legal */}
           <div>
-            <h3 className="text-xl font-medium mb-5 text-teal-400">Legal</h3>
+            <h3 className="text-xl font-medium mb-5 text-white">Legal</h3>
             <ul className="space-y-3">
               <li><Link to="/terms" className="text-slate-300 hover:text-teal-400 transition-colors">Terms of Service</Link></li>
               <li><Link to="/privacy" className="text-slate-300 hover:text-teal-400 transition-colors">Privacy Policy</Link></li>

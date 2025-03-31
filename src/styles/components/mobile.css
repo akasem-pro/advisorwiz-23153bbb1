@@ -105,7 +105,7 @@
 }
 
 .mobile-footer-heading {
-  @apply text-lg font-medium mb-3 text-teal-400;
+  @apply text-lg font-medium mb-3 text-white;
 }
 
 .mobile-footer-link {
