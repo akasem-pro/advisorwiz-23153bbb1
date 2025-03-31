@@ -21,7 +21,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
   children,
   contentClassName,
   showSocialProof = false,
-  showTrustBadges = false, // Default to false to avoid duplication
+  showTrustBadges = false,
   withoutPadding = true,
   animation = 'fade',
   animationDuration = 'normal',
@@ -33,7 +33,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
       header={<Header />}
       footer={hideFooter ? null : undefined} // Pass null to completely hide footer, undefined to use default
       mobileNavbar={<MobileNavbar />}
-      contentClassName={cn("pt-56 pb-14", contentClassName)}
+      contentClassName={cn("pt-56 pb-24", contentClassName)} // Increased bottom padding for footer visibility with navbar
       showSocialProof={showSocialProof}
       showTrustBadges={showTrustBadges}
       withoutPadding={withoutPadding}
