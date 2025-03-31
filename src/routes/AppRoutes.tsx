@@ -36,8 +36,10 @@ const contentPageRoutes = [
   { path: 'sitemap', element: <Sitemap /> },
   { path: 'schedule', element: <Schedule /> },
   { path: 'chat', element: <Chat /> },
+  { path: 'chat/:chatId', element: <Chat /> },
   { path: 'consumer-profile', element: <ConsumerProfile /> },
-  { path: 'messages', element: <Chat /> } // Add this to redirect message links to chat
+  { path: 'messages', element: <Chat /> }, // Basic chat route
+  { path: 'messages/:chatId', element: <Chat /> } // Route with specific chat ID
 ];
 
 const redirectRoutes = [

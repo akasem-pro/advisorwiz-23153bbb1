@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import ChatList from '../components/chat/ChatList';
 import ChatWindow from '../components/chat/ChatWindow';
 import { useUser } from '../context/UserContext';
@@ -11,6 +11,8 @@ import AppLayout from '../components/layout/AppLayout';
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
+  const [searchParams] = useSearchParams();
+  const recipientId = searchParams.get('recipient');
   const [selectedChatId, setSelectedChatId] = useState<string | null>(chatId || null);
   const { userType, consumerProfile, setConsumerProfile, advisorProfile, setAdvisorProfile } = useUser();
   
@@ -33,8 +35,19 @@ const Chat: React.FC = () => {
         chatEnabled: newState
       });
       toast.success(newState ? "Chat enabled successfully" : "Chat disabled");
+    } else {
+      toast.error("Please complete your profile to use chat");
     }
   };
+
+  useEffect(() => {
+    // If a recipient ID is provided in the URL, we should find or create a chat with this user
+    if (recipientId) {
+      // This would be expanded to actually find or create the chat with the recipient
+      console.log("Should initiate chat with recipient:", recipientId);
+      // For now, we just set it as selected if it matches any existing chat
+    }
+  }, [recipientId]);
 
   useEffect(() => {
     if (!userType || (userType === 'consumer' && !consumerProfile) || (userType === 'advisor' && !advisorProfile)) {
@@ -67,6 +80,7 @@ const Chat: React.FC = () => {
               <Switch 
                 checked={chatEnabled || false}
                 onCheckedChange={handleToggleChat}
+                className="data-[state=checked]:bg-teal-600"
               />
             </div>
           </div>
@@ -85,7 +99,7 @@ const Chat: React.FC = () => {
             </div>
           ) : (
             <div className="glass-card rounded-2xl overflow-hidden shadow-lg">
-              <div className="h-[600px] flex">
+              <div className="h-[600px] flex flex-col md:flex-row">
                 <div className="w-full md:w-1/3 border-r md:block bg-white">
                   {!selectedChatId && (
                     <ChatList onSelectChat={(id) => setSelectedChatId(id)} />
