@@ -18,7 +18,7 @@ export {
 export { getCompatibilityCacheStats } from './statistics/cacheStatistics';
 export { clearCache as clearCompatibilityCache } from './core/cacheStore';
 
-// Main function to check cache and handle maintenance if needed
+// Main function to check cache maintenance if needed
 import { getCacheSize, getLastCleanupTime } from './core/cacheStore';
 import { 
   CACHE_AUTO_CLEANUP_SIZE, 
