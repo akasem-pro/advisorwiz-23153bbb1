@@ -12,6 +12,8 @@ import UtilityRoutes from './UtilityRoutes';
 import { useLocation } from 'react-router-dom';
 import ContactUs from '../pages/ContactUs';
 import Team from '../pages/Team';
+import TeamInvite from '../pages/TeamInvite';
+import TeamMemberDetail from '../pages/TeamMemberDetail';
 import Blog from '../pages/Blog';
 import Careers from '../pages/Careers';
 import Resources from '../pages/Resources';
@@ -25,6 +27,8 @@ import OnboardingTour from '../components/onboarding/OnboardingTour';
 const contentPageRoutes = [
   { path: 'contact', element: <ContactUs /> },
   { path: 'team', element: <Team /> },
+  { path: 'team/invite', element: <TeamInvite /> },
+  { path: 'team/member/:memberId', element: <TeamMemberDetail /> },
   { path: 'blog/*', element: <Blog /> },
   { path: 'careers', element: <Careers /> },
   { path: 'resources', element: <Resources /> },
@@ -32,7 +36,8 @@ const contentPageRoutes = [
   { path: 'sitemap', element: <Sitemap /> },
   { path: 'schedule', element: <Schedule /> },
   { path: 'chat', element: <Chat /> },
-  { path: 'consumer-profile', element: <ConsumerProfile /> }
+  { path: 'consumer-profile', element: <ConsumerProfile /> },
+  { path: 'messages', element: <Chat /> } // Add this to redirect message links to chat
 ];
 
 const redirectRoutes = [

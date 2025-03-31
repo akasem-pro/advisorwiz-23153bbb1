@@ -14,7 +14,7 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({ title, description }) => {
   const navigate = useNavigate();
   
   const handleInviteClick = () => {
-    toast.success("Invitation form opened", {
+    toast.success("Opening invitation form", {
       description: "You can now invite a new advisor to your team"
     });
     navigate('/team/invite');

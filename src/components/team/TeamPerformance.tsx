@@ -2,6 +2,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface TeamMember {
   id: number;
@@ -19,6 +21,15 @@ interface TeamPerformanceProps {
 }
 
 const TeamPerformance: React.FC<TeamPerformanceProps> = ({ members }) => {
+  const navigate = useNavigate();
+  
+  const handleViewStats = (memberId: number, memberName: string) => {
+    toast.info("Opening detailed stats", {
+      description: `Viewing performance statistics for ${memberName}`
+    });
+    navigate(`/team/member/${memberId}`, { state: { showStats: true } });
+  };
+  
   return (
     <Card className="bg-white dark:bg-navy-800 border border-slate-200 dark:border-navy-700">
       <CardHeader>
@@ -46,7 +57,14 @@ const TeamPerformance: React.FC<TeamPerformanceProps> = ({ members }) => {
                   <td className="px-6 py-4">{Math.round((member.clients / (member.leads + member.clients)) * 100)}%</td>
                   <td className="px-6 py-4">{(4 + Math.random()).toFixed(1)}/5</td>
                   <td className="px-6 py-4">
-                    <Button variant="ghost" size="sm" className="text-xs px-2 text-blue-600 dark:text-blue-400">View Stats</Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-xs px-2 text-blue-600 dark:text-blue-400"
+                      onClick={() => handleViewStats(member.id, member.name)}
+                    >
+                      View Stats
+                    </Button>
                   </td>
                 </tr>
               ))}
