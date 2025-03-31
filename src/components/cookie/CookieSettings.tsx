@@ -4,8 +4,8 @@ import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Switch } from '../ui/switch';
 import { Link } from 'react-router-dom';
-import { ExternalLink, Shield } from 'lucide-react';
-import { getCookieSettings, trackCookieConsentEvent, CookieConsentEvent, updateCookieSettings } from '../../utils/analytics/trackers';
+import { ExternalLink, Shield, ToggleLeft, ToggleRight } from 'lucide-react';
+import { trackCookieConsentEvent, CookieConsentEvent, updateCookieSettings, getCookieSettings } from '../../utils/analytics/trackers';
 
 interface CookieSettingsProps {
   open: boolean;
@@ -72,7 +72,14 @@ const CookieSettings: React.FC<CookieSettingsProps> = ({ open, onOpenChange }) =
                 Required for the website to function properly
               </p>
             </div>
-            <Switch checked={settings.essential} disabled />
+            <div className="flex items-center">
+              <span className="text-xs mr-2 text-slate-500 dark:text-slate-400">Always On</span>
+              <Switch 
+                checked={settings.essential} 
+                disabled 
+                className="data-[state=checked]:bg-teal-600 data-[state=unchecked]:bg-slate-300"
+              />
+            </div>
           </div>
           
           <div className="flex items-center justify-between">
@@ -82,10 +89,16 @@ const CookieSettings: React.FC<CookieSettingsProps> = ({ open, onOpenChange }) =
                 Allow us to analyze website traffic and improve your experience
               </p>
             </div>
-            <Switch 
-              checked={settings.analytics} 
-              onCheckedChange={() => handleToggle('analytics')}
-            />
+            <div className="flex items-center">
+              <span className="text-xs mr-2 text-slate-500 dark:text-slate-400">
+                {settings.analytics ? 'On' : 'Off'}
+              </span>
+              <Switch 
+                checked={settings.analytics} 
+                onCheckedChange={() => handleToggle('analytics')}
+                className="data-[state=checked]:bg-teal-600 data-[state=unchecked]:bg-slate-300"
+              />
+            </div>
           </div>
           
           <div className="flex items-center justify-between">
@@ -95,10 +108,16 @@ const CookieSettings: React.FC<CookieSettingsProps> = ({ open, onOpenChange }) =
                 Help us deliver relevant advertisements
               </p>
             </div>
-            <Switch 
-              checked={settings.marketing} 
-              onCheckedChange={() => handleToggle('marketing')}
-            />
+            <div className="flex items-center">
+              <span className="text-xs mr-2 text-slate-500 dark:text-slate-400">
+                {settings.marketing ? 'On' : 'Off'}
+              </span>
+              <Switch 
+                checked={settings.marketing} 
+                onCheckedChange={() => handleToggle('marketing')}
+                className="data-[state=checked]:bg-teal-600 data-[state=unchecked]:bg-slate-300"
+              />
+            </div>
           </div>
           
           <div className="flex items-center justify-between">
@@ -108,10 +127,16 @@ const CookieSettings: React.FC<CookieSettingsProps> = ({ open, onOpenChange }) =
                 Remember your preferences and customize your experience
               </p>
             </div>
-            <Switch 
-              checked={settings.personalization} 
-              onCheckedChange={() => handleToggle('personalization')}
-            />
+            <div className="flex items-center">
+              <span className="text-xs mr-2 text-slate-500 dark:text-slate-400">
+                {settings.personalization ? 'On' : 'Off'}
+              </span>
+              <Switch 
+                checked={settings.personalization} 
+                onCheckedChange={() => handleToggle('personalization')}
+                className="data-[state=checked]:bg-teal-600 data-[state=unchecked]:bg-slate-300"
+              />
+            </div>
           </div>
         </div>
         
@@ -119,7 +144,7 @@ const CookieSettings: React.FC<CookieSettingsProps> = ({ open, onOpenChange }) =
           <Button variant="outline" onClick={() => onOpenChange(false)} className="border-slate-300 dark:border-slate-600">
             Cancel
           </Button>
-          <Button onClick={handleSave} className="bg-primary text-white">
+          <Button onClick={handleSave} className="bg-teal-600 hover:bg-teal-700 text-white">
             Save preferences
           </Button>
         </div>
