@@ -1,4 +1,3 @@
-
 import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import AppLayout from '../components/layout/AppLayout';
@@ -20,8 +19,8 @@ import Sitemap from '../pages/Sitemap';
 import Schedule from '../pages/Schedule';
 import Chat from '../pages/Chat';
 import ConsumerProfile from '../pages/ConsumerProfile';
+import OnboardingTour from '../components/onboarding/OnboardingTour';
 
-// Group route definitions for better organization
 const contentPageRoutes = [
   { path: 'contact', element: <ContactUs /> },
   { path: 'team', element: <Team /> },
@@ -35,7 +34,6 @@ const contentPageRoutes = [
   { path: 'consumer-profile', element: <ConsumerProfile /> }
 ];
 
-// Auth redirect routes
 const redirectRoutes = [
   { path: '/login', to: '/signin' },
   { path: '/sign-in', to: '/signin' },
@@ -46,41 +44,29 @@ const redirectRoutes = [
 const AppRoutes = () => {
   const location = useLocation();
 
-  // Track page route changes for analytics
   useEffect(() => {
-    // Scroll to top on route change
     window.scrollTo(0, 0);
-    
-    // You could add analytics tracking here
     console.log('Route changed:', location.pathname);
-    
-    // Apply page-specific body classes if needed
     const pageClass = 'page-' + (location.pathname.split('/')[1] || 'home');
     document.body.classList.add(pageClass);
-    
     return () => {
-      // Clean up any page-specific body classes
       document.body.classList.remove(pageClass);
     };
   }, [location.pathname]);
 
   return (
     <>
-      {/* Global onboarding tour - context-aware based on route */}
       <div className="relative z-[9999]">
         <OnboardingTour />
       </div>
       
       <Routes>
-        {/* Mobile Routes wrapped in MobileLayout */}
         <Route path="/m" element={<MobileLayout><Outlet /></MobileLayout>}>
           {MobileRoutes}
         </Route>
         
-        {/* Authentication Routes (no layout) */}
         {AuthRoutes}
         
-        {/* Redirects for old auth routes */}
         {redirectRoutes.map((redirect, index) => (
           <Route 
             key={`redirect-${index}`} 
@@ -89,9 +75,7 @@ const AppRoutes = () => {
           />
         ))}
         
-        {/* Content pages */}
         <Route path="/" element={<Outlet />}>
-          {/* Content page routes with consistent layout */}
           {contentPageRoutes.map((routeProps, index) => (
             <Route 
               key={`content-${index}`} 
@@ -104,15 +88,12 @@ const AppRoutes = () => {
             />
           ))}
           
-          {/* Main Web Routes */}
           {MainRoutes}
           {DashboardRoutes}
         </Route>
         
-        {/* Utility Routes with their own layouts */}
         {UtilityRoutes}
         
-        {/* Not Found Route - must be last */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

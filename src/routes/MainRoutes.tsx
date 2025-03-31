@@ -70,17 +70,18 @@ const routeConfigs = [
 // Apply consistent AppLayout to non-index routes
 const MainRoutes = routeConfigs.map(config => {
   if (config.index) {
-    return createRoute(config);
+    // Use createRoutes for single route as well
+    return createRoutes([config])[0];
   }
   
-  return createRoute({
+  return createRoutes([{
     ...config,
     element: (
       <AppLayout hideFooter={true}>
         {config.element}
       </AppLayout>
     )
-  });
+  }])[0];
 });
 
 export default MainRoutes;
