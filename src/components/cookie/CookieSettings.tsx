@@ -1,10 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Switch } from '../ui/switch';
 import { Link } from 'react-router-dom';
 import { ExternalLink, Shield } from 'lucide-react';
+import { getCookieSettings, trackCookieConsentEvent, CookieConsentEvent, updateCookieSettings } from '../../utils/analytics/trackers';
 
 interface CookieSettingsProps {
   open: boolean;
@@ -19,6 +20,22 @@ const CookieSettings: React.FC<CookieSettingsProps> = ({ open, onOpenChange }) =
     personalization: false,
   });
 
+  // Load settings when dialog opens
+  useEffect(() => {
+    if (open) {
+      const savedSettings = getCookieSettings();
+      setSettings({
+        essential: true,
+        analytics: savedSettings.analytics,
+        marketing: savedSettings.marketing,
+        personalization: savedSettings.personalization
+      });
+      
+      // Track settings opened event
+      trackCookieConsentEvent(CookieConsentEvent.SETTINGS_OPENED);
+    }
+  }, [open]);
+
   const handleToggle = (type: 'analytics' | 'marketing' | 'personalization') => {
     setSettings(prev => ({
       ...prev,
@@ -28,8 +45,9 @@ const CookieSettings: React.FC<CookieSettingsProps> = ({ open, onOpenChange }) =
 
   const handleSave = () => {
     // Save settings to localStorage
-    localStorage.setItem('cookie-settings', JSON.stringify(settings));
-    localStorage.setItem('cookie-consent', 'accepted');
+    updateCookieSettings(settings);
+    
+    // Close dialog
     onOpenChange(false);
   };
 
@@ -108,11 +126,7 @@ const CookieSettings: React.FC<CookieSettingsProps> = ({ open, onOpenChange }) =
         
         <div className="mt-4 text-sm text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-4">
           <p>
-            Keep Analytics setting turned on to see insights and metrics on your{' '}
-            <Link to="/admin/analytics" className="text-blue-600 dark:text-blue-400 inline-flex items-center hover:underline">
-              Dashboard
-              <ExternalLink className="ml-1 h-3 w-3" />
-            </Link>
+            Your selection will be saved for this browser and device. You can change your preferences at any time.
           </p>
         </div>
       </DialogContent>

@@ -4,13 +4,34 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { UserProviderRefactored } from './context/UserProviderRefactored';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import AppRoutes from './routes/AppRoutes';
-import { initGA4 } from './utils/analytics/ga4Integration';
 import { CookieManager } from './components/cookie';
+import { TrackingManager } from './components/analytics';
+import { TrackingConfig } from './utils/analytics/trackers';
 
-// Initialize GA4 with your measurement ID
-// This should be called before the App function
-const GA4_MEASUREMENT_ID = 'G-J7MEK2Q7YY'; // Replace with your actual GA4 measurement ID
-initGA4(GA4_MEASUREMENT_ID);
+// Tracking configuration for multiple services
+const trackingConfig: TrackingConfig = {
+  googleAnalytics: {
+    measurementId: 'G-J7MEK2Q7YY',
+    consentMode: true,
+    debug: process.env.NODE_ENV === 'development',
+  },
+  metaPixel: {
+    pixelId: '123456789012345',
+    advanced: {
+      debug: process.env.NODE_ENV === 'development'
+    }
+  },
+  pinterestTag: {
+    tagId: '2612345678901',
+    debug: process.env.NODE_ENV === 'development'
+  },
+  googleAdSense: {
+    adClient: 'ca-pub-1234567890123456',
+    options: {
+      pageLevelAds: true
+    }
+  }
+};
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -36,6 +57,7 @@ function App() {
         <Router>
           <AppRoutes />
           <CookieManager />
+          <TrackingManager config={trackingConfig} />
         </Router>
       </AuthProvider>
     </UserProviderRefactored>

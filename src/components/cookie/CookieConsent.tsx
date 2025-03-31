@@ -1,8 +1,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
-import { Sheet, SheetContent } from '../ui/sheet';
-import { trackUserBehavior } from '../../utils/analytics/eventTracker';
+import { Shield } from 'lucide-react';
+import { 
+  trackCookieConsentEvent, 
+  CookieConsentEvent,
+  updateCookieSettings
+} from '../../utils/analytics/trackers';
 
 const CookieConsent: React.FC = () => {
   const [showConsent, setShowConsent] = useState(false);
@@ -15,6 +19,8 @@ const CookieConsent: React.FC = () => {
     if (!hasConsent) {
       const timer = setTimeout(() => {
         setShowConsent(true);
+        // Track banner shown event
+        trackCookieConsentEvent(CookieConsentEvent.BANNER_SHOWN);
       }, 1500);
       
       return () => clearTimeout(timer);
@@ -22,14 +28,33 @@ const CookieConsent: React.FC = () => {
   }, []);
   
   const handleAccept = () => {
-    // Store consent in localStorage
-    localStorage.setItem('cookie-consent', 'accepted');
+    // Store consent in localStorage with default settings
+    updateCookieSettings({
+      essential: true,
+      analytics: true,
+      marketing: false,
+      personalization: false
+    });
+    
     setShowConsent(false);
     
     // Track the acceptance event
-    trackUserBehavior('cookie_consent_accepted', {
-      timestamp: new Date().toISOString()
+    trackCookieConsentEvent(CookieConsentEvent.CONSENT_ACCEPTED);
+  };
+  
+  const handleDecline = () => {
+    // Store minimal consent in localStorage
+    updateCookieSettings({
+      essential: true,
+      analytics: false,
+      marketing: false,
+      personalization: false
     });
+    
+    setShowConsent(false);
+    
+    // Track the decline event
+    trackCookieConsentEvent(CookieConsentEvent.CONSENT_DECLINED);
   };
   
   // If user has already given consent, don't render anything
@@ -38,22 +63,34 @@ const CookieConsent: React.FC = () => {
   }
   
   return (
-    <div className="fixed bottom-4 left-0 right-0 mx-auto w-full max-w-md px-4 z-50">
-      <div className="bg-slate-100 dark:bg-slate-900 rounded-lg shadow-lg overflow-hidden">
+    <div className="fixed bottom-4 left-0 right-0 mx-auto w-full max-w-lg px-4 z-50">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div className="p-6">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-            This website uses cookies.
-          </h3>
-          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            We use cookies to analyze website traffic and optimize your website experience. 
-            By accepting our use of cookies, your data will be aggregated with all other user data.
+          <div className="flex items-center gap-2 mb-3">
+            <Shield className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100">
+              This website uses cookies
+            </h3>
+          </div>
+          
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            We use cookies to enhance your browsing experience, analyze website traffic, and show personalized content. 
+            By accepting, you consent to our use of cookies as described in our cookie policy.
           </p>
-          <div className="mt-4">
+          
+          <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
             <Button 
               onClick={handleAccept}
-              className="w-full bg-black hover:bg-gray-800 text-white"
+              className="bg-black hover:bg-gray-800 text-white flex-1"
             >
-              Accept
+              Accept All
+            </Button>
+            <Button 
+              onClick={handleDecline}
+              variant="outline" 
+              className="border-gray-300 hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-700 flex-1"
+            >
+              Essential Only
             </Button>
           </div>
         </div>

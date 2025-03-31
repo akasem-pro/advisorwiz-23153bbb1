@@ -4,6 +4,7 @@ import CookieConsent from './CookieConsent';
 import CookieSettings from './CookieSettings';
 import { Button } from '../ui/button';
 import { Settings } from 'lucide-react';
+import { getCookieSettings } from '../../utils/analytics/trackers';
 
 const CookieManager: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
@@ -11,10 +12,20 @@ const CookieManager: React.FC = () => {
   
   useEffect(() => {
     // Check if user has already given consent
-    const consent = localStorage.getItem('cookie-consent');
-    if (consent) {
-      setHasConsent(true);
-    }
+    const cookieSettings = getCookieSettings();
+    setHasConsent(cookieSettings.hasConsent);
+    
+    // Listen for storage events (when settings are updated in another tab)
+    const handleStorageChange = () => {
+      const updatedSettings = getCookieSettings();
+      setHasConsent(updatedSettings.hasConsent);
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
   
   return (
