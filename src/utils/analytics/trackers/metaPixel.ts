@@ -14,6 +14,14 @@ interface MetaPixelConfig {
 
 let isInitialized = false;
 
+// Extend window interface to include Facebook Pixel properties
+declare global {
+  interface Window {
+    fbq?: any;
+    _fbq?: any;
+  }
+}
+
 /**
  * Initialize Meta (Facebook) Pixel with the given configuration
  * Only initializes if user has consented to marketing cookies
@@ -83,8 +91,8 @@ export const trackMetaPixelEvent = (
 ): void => {
   if (!isTrackingAllowed('marketing')) return;
   
-  if ((window as any).fbq) {
-    (window as any).fbq('track', eventName, parameters);
+  if (window.fbq) {
+    window.fbq('track', eventName, parameters);
   }
 };
 
@@ -99,7 +107,7 @@ export const trackMetaPixelCustomEvent = (
 ): void => {
   if (!isTrackingAllowed('marketing')) return;
   
-  if ((window as any).fbq) {
-    (window as any).fbq('trackCustom', eventName, parameters);
+  if (window.fbq) {
+    window.fbq('trackCustom', eventName, parameters);
   }
 };
