@@ -38,7 +38,7 @@
 
 /* Footer styles */
 .footer-heading {
-  @apply text-xl font-semibold mb-4 text-white;
+  @apply text-xl font-semibold mb-4 text-teal-400;
 }
 
 .footer-link {
@@ -56,4 +56,3 @@
 .footer-social-icon {
   @apply text-slate-300 hover:text-teal-400 transition-colors;
 }
-
