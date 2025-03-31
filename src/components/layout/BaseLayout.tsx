@@ -2,11 +2,10 @@
 import React, { ReactNode, useEffect, useState, useTransition, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
-import TrustBadges from '../ui/TrustBadges';
-import FloatingSupportButton from '../support/FloatingSupportButton';
 import { initializeTagManager, trackPageView } from '../../utils/tagManager';
 import { cn } from '@/lib/utils';
 import AppFooter from './AppFooter';
+import BaseLayoutContent from './BaseLayoutContent';
 
 export interface BaseLayoutProps {
   children: ReactNode;
@@ -119,33 +118,16 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
         {header}
       </header>
       
-      <main className={cn(
-        "flex-grow",
-        withoutPadding ? '' : mainClassName
-      )} id={skipToContentId}>
-        <div className={cn(
-          "container mx-auto px-4 py-8",
-          withoutPadding ? '' : contentClassName
-        )}>
-          {children}
-        </div>
-        
-        {showTrustBadges && (
-          <div className={cn(
-            fullWidth ? 'w-full' : 'container mx-auto',
-            'my-2'
-          )}>
-            <TrustBadges className="justify-center" />
-          </div>
-        )}
-      </main>
-      
-      {/* Only render FloatingSupportButton after initial load */}
-      {!isInitialLoad && (
-        <React.Suspense fallback={null}>
-          <FloatingSupportButton />
-        </React.Suspense>
-      )}
+      <BaseLayoutContent
+        children={children}
+        showTrustBadges={showTrustBadges}
+        fullWidth={fullWidth}
+        contentClassName={contentClassName}
+        withoutPadding={withoutPadding}
+        skipToContentId={skipToContentId}
+        contentVisible={contentVisible}
+        isInitialLoad={isInitialLoad}
+      />
       
       {/* Single footer rendering logic */}
       {footerElement}
