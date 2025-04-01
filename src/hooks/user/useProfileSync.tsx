@@ -82,7 +82,17 @@ export const useProfileSync = (
           .from('consumer_profiles')
           .upsert({ 
             id: userId,
-            ...consumerProfile 
+            age: consumerProfile.age,
+            investable_assets: consumerProfile.investableAssets,
+            risk_tolerance: consumerProfile.riskTolerance,
+            investment_amount: consumerProfile.investmentAmount,
+            preferred_communication: consumerProfile.preferredCommunication,
+            preferred_language: consumerProfile.preferredLanguage,
+            financial_goals: consumerProfile.financialGoals,
+            income_bracket: consumerProfile.incomeRange,
+            preferred_advisor_specialties: consumerProfile.preferredAdvisorSpecialties,
+            start_timeline: consumerProfile.startTimeline,
+            updated_at: new Date().toISOString()
           })
           .select()
           .single();
@@ -96,7 +106,18 @@ export const useProfileSync = (
           .from('advisor_profiles')
           .upsert({ 
             id: userId,
-            ...advisorProfile 
+            is_accredited: advisorProfile.isAccredited,
+            organization: advisorProfile.organization,
+            website: advisorProfile.website,
+            languages: advisorProfile.languages,
+            hourly_rate: advisorProfile.pricing?.hourlyRate,
+            portfolio_fee: advisorProfile.pricing?.portfolioFee,
+            assets_under_management: advisorProfile.assetsUnderManagement,
+            expertise: advisorProfile.expertise,
+            years_of_experience: advisorProfile.yearsOfExperience,
+            biography: advisorProfile.biography,
+            certifications: advisorProfile.certifications,
+            updated_at: new Date().toISOString()
           })
           .select()
           .single();
@@ -132,41 +153,136 @@ export const useProfileSync = (
       
       if (userType === 'consumer') {
         // Fetch consumer profile
-        const { data, error } = await supabase
+        const { data: consumerData, error: consumerError } = await supabase
           .from('consumer_profiles')
           .select('*')
           .eq('id', userId)
           .single();
           
-        if (error) {
-          if (error.code === 'PGRST116') {
+        if (consumerError) {
+          if (consumerError.code === 'PGRST116') {
             console.log("[ProfileSync] No consumer profile found, may need to create one");
           } else {
-            throw error;
+            throw consumerError;
           }
         }
         
-        if (data) {
-          setConsumerProfile(data as ConsumerProfile);
+        if (consumerData) {
+          // Fetch the base profile data for name and other fields
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
+            
+          if (profileError && profileError.code !== 'PGRST116') {
+            throw profileError;
+          }
+          
+          // Map from database schema to our application model
+          const mappedProfile: ConsumerProfile = {
+            id: userId,
+            name: profileData?.first_name && profileData?.last_name 
+              ? `${profileData.first_name} ${profileData.last_name}`
+              : 'New User',
+            age: consumerData.age || 0,
+            status: 'active',
+            investableAssets: consumerData.investable_assets || 0,
+            riskTolerance: consumerData.risk_tolerance || 'medium',
+            preferredCommunication: consumerData.preferred_communication || [],
+            preferredLanguage: consumerData.preferred_language || ['English'],
+            serviceNeeds: consumerData.service_needs,
+            investmentAmount: consumerData.investment_amount,
+            financialGoals: consumerData.financial_goals || [],
+            incomeRange: consumerData.income_bracket,
+            preferredAdvisorSpecialties: consumerData.preferred_advisor_specialties || [],
+            location: profileData ? {
+              city: profileData.city || '',
+              state: profileData.state || '',
+              country: profileData.country || 'US'
+            } : undefined,
+            matches: [],
+            chats: [],
+            profilePicture: profileData?.avatar_url,
+            chatEnabled: profileData?.chat_enabled ?? true,
+            appointments: [],
+            startTimeline: consumerData.start_timeline as 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure' || 'not_sure',
+            onlineStatus: (profileData?.online_status as 'online' | 'offline' | 'away') || 'offline',
+            lastOnline: profileData?.last_online || new Date().toISOString(),
+            showOnlineStatus: profileData?.show_online_status ?? true
+          };
+          
+          setConsumerProfile(mappedProfile);
         }
       } else if (userType === 'advisor' || userType === 'firm_admin') {
         // Fetch advisor profile
-        const { data, error } = await supabase
+        const { data: advisorData, error: advisorError } = await supabase
           .from('advisor_profiles')
           .select('*')
           .eq('id', userId)
           .single();
           
-        if (error) {
-          if (error.code === 'PGRST116') {
+        if (advisorError) {
+          if (advisorError.code === 'PGRST116') {
             console.log("[ProfileSync] No advisor profile found, may need to create one");
           } else {
-            throw error;
+            throw advisorError;
           }
         }
         
-        if (data) {
-          setAdvisorProfile(data as AdvisorProfile);
+        if (advisorData) {
+          // Fetch the base profile data for name and other fields
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
+            
+          if (profileError && profileError.code !== 'PGRST116') {
+            throw profileError;
+          }
+          
+          // Map from database schema to our application model
+          const mappedProfile: AdvisorProfile = {
+            id: userId,
+            name: profileData?.first_name && profileData?.last_name 
+              ? `${profileData.first_name} ${profileData.last_name}`
+              : 'New Advisor',
+            organization: advisorData.organization || '',
+            isAccredited: advisorData.is_accredited || false,
+            website: advisorData.website || '',
+            testimonials: [], // Not stored in the database yet
+            languages: advisorData.languages || ['English'],
+            pricing: {
+              hourlyRate: advisorData.hourly_rate,
+              portfolioFee: advisorData.portfolio_fee
+            },
+            assetsUnderManagement: advisorData.assets_under_management || 0,
+            expertise: advisorData.expertise || [],
+            specializations: [], // Not mapping from database yet
+            yearsOfExperience: advisorData.years_of_experience,
+            averageRating: advisorData.average_rating,
+            ratingCount: advisorData.rating_count,
+            biography: advisorData.biography,
+            certifications: advisorData.certifications,
+            location: profileData ? {
+              city: profileData.city || '',
+              state: profileData.state || '',
+              country: profileData.country || 'US'
+            } : undefined,
+            matches: [],
+            chats: [],
+            profilePicture: profileData?.avatar_url,
+            availability: [], // Not stored in the database yet
+            chatEnabled: profileData?.chat_enabled ?? true,
+            appointmentCategories: [], // Not stored in the database yet
+            appointments: [],
+            onlineStatus: (profileData?.online_status as 'online' | 'offline' | 'away') || 'offline',
+            lastOnline: profileData?.last_online || new Date().toISOString(),
+            showOnlineStatus: profileData?.show_online_status ?? true
+          };
+          
+          setAdvisorProfile(mappedProfile);
         }
       }
       

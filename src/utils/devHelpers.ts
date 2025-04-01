@@ -1,5 +1,5 @@
 
-import { setupMockAuth, clearMockAuth, isPreviewEnvironment } from './mockAuthUtils';
+import { isPreviewEnvironment, setupMockAuth, clearMockAuth } from './mockAuthUtils';
 
 /**
  * Development and testing helpers

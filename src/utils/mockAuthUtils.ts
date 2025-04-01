@@ -56,3 +56,32 @@ export const isPreviewEnvironment = (): boolean => {
     return false; // Default to production on error
   }
 };
+
+/**
+ * Set up mock authentication for testing
+ * @param userType Type of user to mock
+ */
+export const setupMockAuth = (userType: 'consumer' | 'advisor' | 'firm_admin' = 'consumer') => {
+  const mockUser = {
+    id: 'mock-user-id',
+    email: `mock-${userType}@example.com`,
+    user_metadata: {
+      name: `Mock ${userType.charAt(0).toUpperCase() + userType.slice(1)}`,
+      user_type: userType
+    }
+  };
+  
+  localStorage.setItem('mock_auth_user', JSON.stringify(mockUser));
+  localStorage.setItem('mock_user_type', userType);
+  
+  console.log(`[Mock Auth] Set up mock ${userType} user`);
+};
+
+/**
+ * Clear mock authentication
+ */
+export const clearMockAuth = () => {
+  localStorage.removeItem('mock_auth_user');
+  localStorage.removeItem('mock_user_type');
+  console.log('[Mock Auth] Cleared mock authentication');
+};

@@ -16,21 +16,23 @@ export const useRealtimeConnection = () => {
     // Try to establish initial connection
     const initializeConnection = async () => {
       try {
-        // Subscribe to connection status changes
-        const { data } = supabase.realtime.status((status) => {
-          console.log("[Realtime] Connection status changed:", status);
-          setIsConnected(status === 'CONNECTED');
-          
-          if (status === 'CONNECTED') {
-            setLastError(null);
-            setReconnectAttempts(0);
-          } else if (status === 'DISCONNECTED') {
-            setLastError('Disconnected from realtime service');
-          }
+        // Get initial connection status
+        setIsConnected(supabase.realtime.isConnected());
+
+        // Subscribe to connection state changes
+        const subscription = supabase.realtime.onConnected(() => {
+          console.log("[Realtime] Connection established");
+          setIsConnected(true);
+          setLastError(null);
+          setReconnectAttempts(0);
+        });
+
+        supabase.realtime.onDisconnected(() => {
+          console.log("[Realtime] Connection disconnected");
+          setIsConnected(false);
+          setLastError('Disconnected from realtime service');
         });
         
-        // Initial connection status
-        setIsConnected(supabase.realtime.isConnected());
       } catch (error) {
         console.error("[Realtime] Error initializing realtime connection:", error);
         setLastError(error instanceof Error ? error.message : 'Unknown error');
