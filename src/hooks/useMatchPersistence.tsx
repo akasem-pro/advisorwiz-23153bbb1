@@ -1,159 +1,122 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useSupabase } from './useSupabase';
 import { useUser } from '../context/UserContext';
-import { AdvisorProfile, ConsumerProfile } from '../types/userTypes';
-import { MatchPreferences } from '../context/UserContextDefinition';
-import { supabase } from '../integrations/supabase/client';
 import { 
-  getStoredCompatibilityScore, 
   storeCompatibilityScore, 
-  calculateAndStoreCompatibilityScores,
-  getTopMatchesFromDatabase
-} from '../services/matching/supabaseMatching';
-import { calculateMatchScore, getMatchExplanations } from '../utils/matchingAlgorithm';
+  getCompatibilityScore, 
+  getTopMatches as fetchTopMatches 
+} from '../services/matching/supabaseIntegration';
+import { MatchPreferences } from '../context/UserContextDefinition';
+import { toast } from 'sonner';
 
 /**
- * Hook for persisting match data to Supabase
+ * Hook for persisting match data to the database
  */
 export const useMatchPersistence = () => {
-  const { userType, advisorProfile, consumerProfile } = useUser();
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { userType, consumerProfile, advisorProfile } = useUser();
+  const { isOnline } = useSupabase();
+
+  // Store a compatibility score in the database
+  const persistCompatibilityScore = useCallback(async (
+    advisorId: string,
+    consumerId: string,
+    score: number,
+    explanations: string[]
+  ): Promise<boolean> => {
+    if (!isOnline) {
+      console.log('Offline - skipping persistence of compatibility score');
+      return false;
+    }
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const success = await storeCompatibilityScore(advisorId, consumerId, score, explanations);
+      
+      if (!success) {
+        setError('Failed to store compatibility score');
+        return false;
+      }
+      
+      return true;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error storing compatibility score';
+      setError(message);
+      console.error('Error persisting compatibility score:', err);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isOnline]);
   
-  // Get the current user's ID
-  const getCurrentUserId = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    return user?.id;
-  }, []);
-  
-  // Calculate and store match score
-  const calculateAndStoreMatch = useCallback(async (
+  // Get a compatibility score from the database
+  const getStoredCompatibilityScore = useCallback(async (
     advisorId: string,
     consumerId: string
-  ) => {
-    setIsProcessing(true);
+  ): Promise<{ score: number; explanations: string[] } | null> => {
+    if (!isOnline) {
+      console.log('Offline - skipping retrieval of compatibility score');
+      return null;
+    }
+    
+    setIsLoading(true);
     setError(null);
     
     try {
-      // First check if we already have this score cached
-      const existingScore = await getStoredCompatibilityScore(advisorId, consumerId);
-      
-      if (existingScore) {
-        return existingScore;
-      }
-      
-      // Get profiles if needed
-      let advisorProfile, consumerProfile;
-      
-      if (!advisorProfile) {
-        // Fetch advisor profile from database
-        const { data: advisorData, error: advisorError } = await supabase
-          .from('advisor_profiles')
-          .select('*')
-          .eq('id', advisorId)
-          .single();
-          
-        if (advisorError || !advisorData) {
-          throw new Error('Failed to fetch advisor profile');
-        }
-        
-        advisorProfile = advisorData;
-      }
-      
-      if (!consumerProfile) {
-        // Fetch consumer profile from database
-        const { data: consumerData, error: consumerError } = await supabase
-          .from('consumer_profiles')
-          .select('*')
-          .eq('id', consumerId)
-          .single();
-          
-        if (consumerError || !consumerData) {
-          throw new Error('Failed to fetch consumer profile');
-        }
-        
-        consumerProfile = consumerData;
-      }
-      
-      // Calculate score
-      const score = calculateMatchScore(advisorProfile as AdvisorProfile, consumerProfile as ConsumerProfile);
-      const explanations = getMatchExplanations(advisorProfile as AdvisorProfile, consumerProfile as ConsumerProfile);
-      
-      // Store in database
-      await storeCompatibilityScore(advisorId, consumerId, score, explanations);
-      
-      return { score, explanations };
+      const result = await getCompatibilityScore(advisorId, consumerId);
+      return result;
     } catch (err) {
-      console.error('Error calculating match:', err);
-      setError('Failed to calculate match score');
+      const message = err instanceof Error ? err.message : 'Unknown error retrieving compatibility score';
+      setError(message);
+      console.error('Error retrieving compatibility score:', err);
       return null;
     } finally {
-      setIsProcessing(false);
+      setIsLoading(false);
     }
-  }, []);
+  }, [isOnline]);
   
-  // Sync local matches with database
-  const syncMatches = useCallback(async (
-    targetProfiles: (AdvisorProfile | ConsumerProfile)[],
-    preferences: MatchPreferences
-  ) => {
-    if (!userType || (!advisorProfile && !consumerProfile)) return;
+  // Get top matches from the database
+  const getTopMatches = useCallback(async (
+    limit: number = 10
+  ): Promise<{ id: string; score: number; explanations: string[] }[]> => {
+    if (!userType || (!consumerProfile && !advisorProfile)) {
+      return [];
+    }
     
-    setIsProcessing(true);
+    if (!isOnline) {
+      toast.error('Cannot fetch top matches while offline');
+      return [];
+    }
+    
+    const userId = userType === 'consumer' ? consumerProfile?.id : advisorProfile?.id;
+    if (!userId) return [];
+    
+    setIsLoading(true);
     setError(null);
     
     try {
-      const userId = await getCurrentUserId();
-      if (!userId) {
-        throw new Error('User not authenticated');
-      }
-      
-      await calculateAndStoreCompatibilityScores(
-        userType as 'consumer' | 'advisor',
-        userId,
-        targetProfiles,
-        preferences
-      );
+      return await fetchTopMatches(userType as 'consumer' | 'advisor', userId, limit);
     } catch (err) {
-      console.error('Error syncing matches:', err);
-      setError('Failed to sync matches with database');
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [userType, advisorProfile, consumerProfile, getCurrentUserId]);
-  
-  // Get top matches from database
-  const getTopMatches = useCallback(async (limit: number = 10) => {
-    if (!userType) return [];
-    
-    setIsProcessing(true);
-    setError(null);
-    
-    try {
-      const userId = await getCurrentUserId();
-      if (!userId) {
-        throw new Error('User not authenticated');
-      }
-      
-      return await getTopMatchesFromDatabase(
-        userType as 'consumer' | 'advisor', 
-        userId, 
-        limit
-      );
-    } catch (err) {
-      console.error('Error getting top matches:', err);
-      setError('Failed to get top matches from database');
+      const message = err instanceof Error ? err.message : 'Unknown error fetching top matches';
+      setError(message);
+      console.error('Error fetching top matches:', err);
       return [];
     } finally {
-      setIsProcessing(false);
+      setIsLoading(false);
     }
-  }, [userType, getCurrentUserId]);
-  
+  }, [userType, consumerProfile, advisorProfile, isOnline]);
+
   return {
-    calculateAndStoreMatch,
-    syncMatches,
+    persistCompatibilityScore,
+    getStoredCompatibilityScore,
     getTopMatches,
-    isProcessing,
+    isLoading,
     error
   };
 };
+
+export default useMatchPersistence;

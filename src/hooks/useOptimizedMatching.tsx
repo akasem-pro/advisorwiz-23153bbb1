@@ -10,6 +10,10 @@ import {
   terminateWorker
 } from '../services/matching/workerService';
 import { getWeightedCompatibilityScore } from '../services/matching/weightedScoring';
+import { 
+  getStoredCompatibilityScore, 
+  persistCompatibilityScore 
+} from './useMatchPersistence';
 
 /**
  * Hook providing optimized matching algorithm functionality
@@ -145,14 +149,29 @@ export const useOptimizedMatching = (
    */
   const calculateCompatibilityScore = useCallback(
     async (advisorId: string, consumerId: string): Promise<number> => {
-      // Try immediate memoized result first
       try {
-        // Check if we already have a cached result
+        // First, try to get from database cache
+        const storedScore = await getStoredCompatibilityScore(advisorId, consumerId);
+        if (storedScore) {
+          return storedScore.score;
+        }
+        
+        // If not in database, try memoized cache
         const cachedResult = calculateCompatibilityMemoized(
           advisorId, 
           consumerId, 
           matchPreferences
         );
+        
+        // Store the result in the database for future use
+        persistCompatibilityScore(
+          advisorId, 
+          consumerId, 
+          cachedResult.score, 
+          cachedResult.matchExplanation
+        ).catch(err => {
+          console.error('Failed to persist compatibility score:', err);
+        });
         
         return cachedResult.score;
       } catch (error) {
@@ -164,6 +183,17 @@ export const useOptimizedMatching = (
             consumerId,
             matchPreferences
           );
+          
+          // Store the result in the database for future use
+          persistCompatibilityScore(
+            advisorId, 
+            consumerId, 
+            result.score, 
+            result.matchExplanation
+          ).catch(err => {
+            console.error('Failed to persist compatibility score:', err);
+          });
+          
           return result.score;
         } else {
           // Queue for batch processing as fallback
@@ -202,7 +232,7 @@ export const useOptimizedMatching = (
   );
   
   /**
-   * Get top matches with optimized batch processing
+   * Get top matches with optimized batch processing and database integration
    */
   const getTopMatches = useCallback(
     async (
@@ -211,7 +241,28 @@ export const useOptimizedMatching = (
       selfId: string,
       limit: number = 10
     ): Promise<Array<{ profile: AdvisorProfile | ConsumerProfile; score: number }>> => {
-      // Create an array of calculation tasks
+      // First try to get top matches from database
+      try {
+        const dbMatches = await getTopMatches(limit);
+        
+        if (dbMatches.length > 0) {
+          // Map the database matches to profiles
+          const matchedProfiles = dbMatches
+            .map(match => {
+              const profile = profiles.find(p => p.id === match.id);
+              return profile ? { profile, score: match.score } : null;
+            })
+            .filter(Boolean) as Array<{ profile: AdvisorProfile | ConsumerProfile; score: number }>;
+            
+          if (matchedProfiles.length > 0) {
+            return matchedProfiles;
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching matches from database, falling back to local calculation:', err);
+      }
+      
+      // Fall back to local calculation if database retrieval fails
       const calculationPromises = profiles.map(async (profile) => {
         const targetId = profile.id;
         const advisorId = userType === 'consumer' ? targetId : selfId;
