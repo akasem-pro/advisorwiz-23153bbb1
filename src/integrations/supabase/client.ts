@@ -1,7 +1,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
-import { PRODUCTION_DOMAINS } from '../../utils/mockAuthUtils';
+import { PRODUCTION_DOMAINS, isPreviewEnvironment } from '../../utils/mockAuthUtils';
 
 // Use environment variables with fallbacks for development
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://gkymvotqrdecjjymmmef.supabase.co";
@@ -9,36 +9,6 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJ
 
 // Export the URL and key for other components to use if needed
 export { SUPABASE_URL, SUPABASE_ANON_KEY };
-
-// Improved environment detection with explicitly defined production domains
-const isPreviewEnvironment = () => {
-  try {
-    const hostname = window.location.hostname;
-    console.log('[Supabase Client] Checking environment for hostname:', hostname);
-    
-    // Check if the hostname exactly matches or ends with any production domain
-    for (const domain of PRODUCTION_DOMAINS) {
-      if (hostname === domain || hostname.endsWith('.' + domain)) {
-        console.log("[Supabase Client] Production domain detected:", { hostname, matchedDomain: domain });
-        return false;
-      }
-    }
-    
-    // If it's not explicitly a production domain, check if it looks like a production domain
-    if (hostname.endsWith('.app') || !hostname.includes('.')) {
-      console.log("[Supabase Client] Production domain pattern detected:", hostname);
-      return false;
-    }
-    
-    // Consider everything else as preview/test
-    const isPreview = hostname.includes('preview') || hostname.includes('lovableproject');
-    console.log("[Supabase Client] Environment detection result:", { hostname, isPreview });
-    return isPreview;
-  } catch (e) {
-    console.error("[Supabase Client] Error checking environment:", e);
-    return false; // Default to production on error
-  }
-};
 
 // Create a Supabase client with improved configuration
 export const supabase = createClient<Database>(
@@ -79,7 +49,7 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     
     console.log("[Supabase Debug] Browser reports online status");
     
-    // Skip detailed check for preview environments but more careful detection
+    // Skip detailed check for preview environments but use consistent detection
     if (isPreviewEnvironment()) {
       console.log("[Supabase Debug] Preview environment detected, skipping detailed check");
       return true;

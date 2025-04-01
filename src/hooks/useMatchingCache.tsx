@@ -1,5 +1,5 @@
 
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useEffect, useState } from 'react';
 import { 
   clearCompatibilityCache, 
   getCompatibilityCacheStats, 
@@ -8,6 +8,7 @@ import {
 } from '../services/matching/cache/compatibilityCache';
 import { clearMatchCache, invalidateMatchCache } from '../utils/matchingAlgorithm';
 import { toast } from 'sonner';
+import { supabase } from '../integrations/supabase/client';
 
 /**
  * Hook for monitoring and managing the matching algorithm cache
@@ -21,6 +22,8 @@ import { toast } from 'sonner';
  * @returns An object with cache management functions and statistics
  */
 export const useMatchingCache = () => {
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
+  
   // Clear all caches (both scoring and match caches)
   const clearAllCaches = useCallback(() => {
     clearCompatibilityCache();
@@ -63,6 +66,37 @@ export const useMatchingCache = () => {
     }
   }, []);
   
+  // Check if we have connectivity to Supabase
+  const checkSupabaseConnectivity = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      return !error;
+    } catch (err) {
+      console.error('Error checking Supabase connectivity:', err);
+      return false;
+    }
+  }, []);
+
+  // Sync cache with Supabase if required
+  const syncCacheWithSupabase = useCallback(async () => {
+    const hasConnectivity = await checkSupabaseConnectivity();
+    
+    if (!hasConnectivity) {
+      console.log('No Supabase connectivity, skipping cache sync');
+      return;
+    }
+    
+    try {
+      console.log('Syncing match cache with Supabase...');
+      // Here we would implement logic to sync local cache with Supabase
+      // This is a placeholder for actual implementation
+      
+      setLastSyncTime(new Date());
+    } catch (error) {
+      console.error('Error syncing cache with Supabase:', error);
+    }
+  }, [checkSupabaseConnectivity]);
+  
   // Periodically optimize cache to maintain performance
   useEffect(() => {
     const cacheCleanupInterval = setInterval(() => {
@@ -72,14 +106,25 @@ export const useMatchingCache = () => {
       }
     }, 60 * 60 * 1000); // Run hourly
     
-    return () => clearInterval(cacheCleanupInterval);
-  }, [cacheStats.size]);
+    // Periodically sync with Supabase when online
+    const cacheSyncInterval = setInterval(() => {
+      if (navigator.onLine) {
+        syncCacheWithSupabase();
+      }
+    }, 30 * 60 * 1000); // Sync every 30 minutes
+    
+    return () => {
+      clearInterval(cacheCleanupInterval);
+      clearInterval(cacheSyncInterval);
+    };
+  }, [cacheStats.size, syncCacheWithSupabase]);
   
   return {
     clearAllCaches,
     invalidateUserCache,
     optimizeCache,
-    cacheStats
+    cacheStats,
+    lastSyncTime
   };
 };
 
