@@ -46,7 +46,8 @@ const redirectRoutes = [
   { path: '/login', to: '/signin' },
   { path: '/sign-in', to: '/signin' },
   { path: '/sign-up', to: '/signup' },
-  { path: '/onboarding', to: '/signup' }
+  { path: '/onboarding', to: '/signup' },
+  { path: '/menu', to: '/sitemap' } // Add redirect for mobile menu to sitemap
 ];
 
 const AppRoutes = () => {
@@ -89,7 +90,7 @@ const AppRoutes = () => {
               key={`content-${index}`} 
               path={routeProps.path} 
               element={
-                <AppLayout hideFooter={true}>
+                <AppLayout hideFooter={false}>
                   {routeProps.element}
                 </AppLayout>
               } 

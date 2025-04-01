@@ -13,15 +13,15 @@ interface MobileMenuProps {
 const navigationLinks = [
   {
     name: 'Firms',
-    path: '/firms',
+    path: '/for-firms',
   },
   {
     name: 'Advisors',
-    path: '/advisors',
+    path: '/for-advisors',
   },
   {
     name: 'Consumers',
-    path: '/consumers',
+    path: '/for-consumers',
   },
   {
     name: 'Resources',
@@ -72,7 +72,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isAuthenticated, onClose, onSig
         </button>
       ) : (
         <Link
-          to="/sign-in"
+          to="/signin"
           onClick={onClose}
           className="mt-3 w-full flex items-center justify-center px-3 py-2 text-sm text-navy-600 dark:text-slate-300 border border-navy-600 dark:border-slate-300 rounded-lg"
         >

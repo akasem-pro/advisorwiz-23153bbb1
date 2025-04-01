@@ -47,7 +47,8 @@ const AppFooter: React.FC = () => {
               <li><Link to="/" className="text-slate-300 hover:text-teal-400 transition-colors">Home</Link></li>
               <li><Link to="/about" className="text-slate-300 hover:text-teal-400 transition-colors">About Us</Link></li>
               <li><Link to="/for-advisors" className="text-slate-300 hover:text-teal-400 transition-colors">Advisors</Link></li>
-              <li><Link to="/for-consumers" className="text-slate-300 hover:text-teal-400 transition-colors">Consumer</Link></li>
+              <li><Link to="/for-consumers" className="text-slate-300 hover:text-teal-400 transition-colors">Consumers</Link></li>
+              <li><Link to="/for-firms" className="text-slate-300 hover:text-teal-400 transition-colors">Firms</Link></li>
               <li><Link to="/resources" className="text-slate-300 hover:text-teal-400 transition-colors">Resources</Link></li>
               <li><Link to="/pricing" className="text-slate-300 hover:text-teal-400 transition-colors">Pricing</Link></li>
               <li><Link to="/blog" className="text-slate-300 hover:text-teal-400 transition-colors">Blog</Link></li>
@@ -72,7 +73,7 @@ const AppFooter: React.FC = () => {
               </li>
               <li className="flex items-center">
                 <Mail className="w-5 h-5 text-teal-400 mr-3 flex-shrink-0" />
-                <span className="text-slate-300">info@advisorwiz.com</span>
+                <a href="mailto:info@advisorwiz.com" className="text-slate-300 hover:text-teal-400 transition-colors">info@advisorwiz.com</a>
               </li>
             </ul>
           </div>

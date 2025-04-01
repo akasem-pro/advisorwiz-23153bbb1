@@ -60,21 +60,21 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ className = '' }) => {
       />
       
       <NavItem 
-        to="/match" 
+        to="/matches" 
         icon={<Search className="h-5 w-5" />} 
         label="Find Advisor" 
-        isActive={isActive('/match')} 
+        isActive={isActive('/matches')} 
       />
       
       <NavItem 
-        to="/messages" 
+        to="/chat" 
         icon={<MessageCircle className="h-5 w-5" />} 
         label="Messages" 
-        isActive={isActive('/messages')} 
+        isActive={isActive('/chat')} 
       />
       
       <NavItem 
-        to="/profile" 
+        to="/consumer-profile" 
         icon={<User className="h-5 w-5" />} 
         label="Profile" 
         isActive={isActive('/profile')} 
