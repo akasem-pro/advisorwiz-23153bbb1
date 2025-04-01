@@ -9,7 +9,7 @@ import { initAnalytics } from './services/analytics/analyticsService';
 import { initPerformanceMonitoring } from './services/performance/performanceService';
 import { setupErrorHandling } from './utils/errorHandling';
 import { initMatchingWorker } from './services/matching/workerService';
-import { Toaster } from 'sonner';
+import { Toaster } from './components/ui/sonner';
 import './App.css';
 
 const App: React.FC = () => {
