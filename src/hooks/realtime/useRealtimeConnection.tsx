@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../integrations/supabase/client';
+import { CHANNEL_STATES } from '@supabase/supabase-js';
 
 /**
  * Hook for managing Supabase realtime connections
@@ -76,9 +77,9 @@ export const useRealtimeConnection = () => {
       // Subscribe and check the result
       const status = await channel.subscribe();
       
-      // Check if subscription was successful by checking the return status
-      // The channel.subscribe() method returns the channel object itself, so we need to check channel.state
-      const connected = channel.state === 'SUBSCRIBED';
+      // Check if subscription was successful by checking the channel state
+      // Using the proper type by checking against RealtimeChannel's state enum values
+      const connected = channel.state === CHANNEL_STATES.SUBSCRIBED;
       setIsConnected(connected);
       
       return connected;
