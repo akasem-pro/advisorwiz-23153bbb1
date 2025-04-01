@@ -73,11 +73,12 @@ export const useRealtimeConnection = () => {
       // Create a new channel to test the connection
       const channel = supabase.channel('reconnect_test');
       
-      // Subscribe and check the result - returns status as a string
-      const response = await channel.subscribe();
+      // Subscribe and check the result
+      const status = await channel.subscribe();
       
-      // Check if subscription was successful
-      const connected = response === 'SUBSCRIBED';
+      // Check if subscription was successful by checking the return status
+      // The channel.subscribe() method returns the channel object itself, so we need to check channel.state
+      const connected = channel.state === 'SUBSCRIBED';
       setIsConnected(connected);
       
       return connected;
