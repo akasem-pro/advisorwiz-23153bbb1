@@ -1,5 +1,6 @@
 
 import { toast } from 'sonner';
+import { logErrorAsync, flushErrorLogs } from './asyncErrorLogger';
 
 // Error categories for better organization
 export enum ErrorCategory {
@@ -52,7 +53,7 @@ export function createError(
 }
 
 /**
- * Handle an error with consistent formatting and logging
+ * Handle an error with consistent formatting and asynchronous logging
  */
 export function handleError(
   error: AppError | Error | string,
@@ -66,17 +67,25 @@ export function handleError(
       ? error as AppError
       : createError(error.message, ErrorCategory.UNKNOWN, ErrorSeverity.MEDIUM, error);
   
-  // Log the error if logging is enabled
+  // Log the error asynchronously if logging is enabled
   if (errorLoggingEnabled) {
-    console.error(`[${appError.category.toUpperCase()}] ${appError.message}`, {
-      severity: appError.severity,
-      timestamp: appError.timestamp,
-      context: appError.context,
-      originalError: appError.originalError
-    });
+    const logLevel = appError.severity === ErrorSeverity.FATAL || 
+                    appError.severity === ErrorSeverity.HIGH ? 'error' : 
+                    appError.severity === ErrorSeverity.MEDIUM ? 'warn' : 'info';
+                    
+    logErrorAsync(
+      `[${appError.category.toUpperCase()}] ${appError.message}`,
+      {
+        severity: appError.severity,
+        timestamp: appError.timestamp,
+        context: appError.context,
+        originalError: appError.originalError
+      },
+      logLevel
+    );
   }
   
-  // Show toast notification if requested
+  // Show toast notification if requested - this is synchronous and user-facing
   if (showToast) {
     toast.error(appError.message, {
       description: appError.severity === ErrorSeverity.HIGH || appError.severity === ErrorSeverity.FATAL
@@ -117,6 +126,7 @@ export function setErrorLoggingEnabled(enabled: boolean): void {
 
 /**
  * Create a safe wrapper for functions that might throw errors
+ * with asynchronous error logging
  */
 export function withErrorHandling<T extends (...args: any[]) => any>(
   fn: T,
@@ -140,6 +150,7 @@ export function withErrorHandling<T extends (...args: any[]) => any>(
 
 /**
  * Create a safe wrapper for async functions that might throw errors
+ * with asynchronous error logging
  */
 export function withAsyncErrorHandling<T extends (...args: any[]) => Promise<any>>(
   fn: T,
@@ -160,3 +171,26 @@ export function withAsyncErrorHandling<T extends (...args: any[]) => Promise<any
     }
   };
 }
+
+/**
+ * Initialize error handling system
+ * Setup global error handlers
+ */
+export function initErrorHandling(): void {
+  // Import and register global error handlers
+  const { registerGlobalErrorHandlers } = require('./asyncErrorLogger');
+  registerGlobalErrorHandlers();
+  
+  console.info('[Error Handling] Asynchronous error handling system initialized');
+}
+
+/**
+ * Flush all pending error logs
+ * Useful in shutdown scenarios or critical failures
+ */
+export function flushAllErrorLogs(): void {
+  flushErrorLogs();
+}
+
+// Export for use in other modules
+export { flushErrorLogs } from './asyncErrorLogger';

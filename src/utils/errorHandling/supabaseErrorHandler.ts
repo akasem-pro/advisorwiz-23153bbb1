@@ -1,5 +1,6 @@
 
 import { toast } from 'sonner';
+import { logErrorAsync } from './asyncErrorLogger';
 
 /**
  * Error severity levels for Supabase operations
@@ -12,7 +13,7 @@ export enum ErrorSeverity {
 }
 
 /**
- * Handles Supabase operation errors with appropriate logging and UI feedback
+ * Handles Supabase operation errors with asynchronous logging and UI feedback
  * 
  * @param message - The error message to display
  * @param shouldToast - Whether to show a toast notification
@@ -25,16 +26,17 @@ export const handleSupabaseError = (
   severity: ErrorSeverity = ErrorSeverity.ERROR,
   error?: any
 ): void => {
-  // Log the error with appropriate level
-  if (severity === ErrorSeverity.CRITICAL || severity === ErrorSeverity.ERROR) {
-    console.error(`[Supabase ${severity}]`, message, error);
-  } else if (severity === ErrorSeverity.WARNING) {
-    console.warn(`[Supabase ${severity}]`, message, error);
-  } else {
-    console.info(`[Supabase ${severity}]`, message, error);
-  }
+  // Log the error asynchronously with appropriate level
+  const logLevel = severity === ErrorSeverity.CRITICAL || severity === ErrorSeverity.ERROR ? 'error' :
+                  severity === ErrorSeverity.WARNING ? 'warn' : 'info';
+                  
+  logErrorAsync(
+    `[Supabase ${severity}] ${message}`, 
+    error,
+    logLevel
+  );
 
-  // Show toast notification if requested
+  // Show toast notification if requested - this happens synchronously
   if (shouldToast) {
     switch (severity) {
       case ErrorSeverity.ERROR:
@@ -61,4 +63,19 @@ export const SUPABASE_ERROR_MESSAGES = {
   NOT_FOUND: 'The requested resource could not be found.',
   SERVER: 'Server error. Please try again later.',
   UNKNOWN: 'An unknown error occurred. Please try again.',
+};
+
+/**
+ * Asynchronously log a Supabase operation for monitoring purposes
+ */
+export const logSupabaseOperation = (
+  operation: string,
+  details?: any,
+  isError: boolean = false
+): void => {
+  logErrorAsync(
+    `[Supabase Operation] ${operation}`,
+    details,
+    isError ? 'error' : 'info'
+  );
 };

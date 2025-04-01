@@ -7,14 +7,16 @@ import { UserProvider } from './context/UserContext';
 import { AuthProvider } from './components/auth/AuthContext';
 import { initAnalytics } from './services/analytics/analyticsService';
 import { initPerformanceMonitoring } from './services/performance/performanceService';
+import { setupErrorHandling } from './utils/errorHandling';
 import { Toaster } from 'sonner';
 import './App.css';
 
 const App: React.FC = () => {
   useEffect(() => {
-    // Initialize analytics and performance monitoring
+    // Initialize analytics, performance monitoring, and asynchronous error handling
     initAnalytics();
     initPerformanceMonitoring();
+    setupErrorHandling();
   }, []);
 
   return (
