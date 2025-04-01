@@ -47,3 +47,5 @@ export const useUserState = () => {
     matchPreferences, setMatchPreferences
   };
 };
+
+export default useUserState;

@@ -1,7 +1,7 @@
 
-// Direct imports from React to avoid any potential issues with hook rules
-import * as React from 'react';
+import React from 'react';
 
+// Direct re-exports from React to avoid any potential issues with hook rules
 export const {
   useState,
   useEffect,
