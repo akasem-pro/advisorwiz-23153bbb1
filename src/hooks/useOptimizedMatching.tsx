@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { AdvisorProfile, ConsumerProfile } from '../context/UserContext';
 import { MatchPreferences } from '../context/UserContextDefinition';
@@ -10,10 +11,7 @@ import {
   terminateWorker
 } from '../services/matching/workerService';
 import { getWeightedCompatibilityScore } from '../services/matching/weightedScoring';
-import { 
-  getStoredCompatibilityScore, 
-  persistCompatibilityScore 
-} from './useMatchPersistence';
+import { useMatchPersistence } from './useMatchPersistence';
 
 /**
  * Hook providing optimized matching algorithm functionality
@@ -23,6 +21,13 @@ export const useOptimizedMatching = (
 ) => {
   // Track if web worker is available and initialized
   const [workerAvailable, setWorkerAvailable] = useState(false);
+  
+  // Get database persistence functions
+  const { 
+    getStoredCompatibilityScore, 
+    persistCompatibilityScore, 
+    getTopMatches: fetchPersistentMatches 
+  } = useMatchPersistence();
   
   // Reference to batch queue for performance optimization
   const batchQueue = useRef<Array<{
@@ -205,7 +210,9 @@ export const useOptimizedMatching = (
       matchPreferences, 
       workerAvailable, 
       calculateCompatibilityMemoized, 
-      queueCompatibilityCalculation
+      queueCompatibilityCalculation,
+      getStoredCompatibilityScore,
+      persistCompatibilityScore
     ]
   );
   
@@ -243,7 +250,7 @@ export const useOptimizedMatching = (
     ): Promise<Array<{ profile: AdvisorProfile | ConsumerProfile; score: number }>> => {
       // First try to get top matches from database
       try {
-        const dbMatches = await getTopMatches(limit);
+        const dbMatches = await fetchPersistentMatches(limit);
         
         if (dbMatches.length > 0) {
           // Map the database matches to profiles
@@ -284,7 +291,7 @@ export const useOptimizedMatching = (
         .sort((a, b) => b.score - a.score)
         .slice(0, limit);
     },
-    [calculateCompatibilityScore]
+    [calculateCompatibilityScore, fetchPersistentMatches]
   );
   
   /**
@@ -303,24 +310,7 @@ export const useOptimizedMatching = (
   
   return {
     calculateCompatibilityScore,
-    getCompatibilityExplanations: useCallback(
-      (advisorId: string, consumerId: string): Promise<string[]> => {
-        // Always get the full explanation
-        if (workerAvailable) {
-          return calculateCompatibilityAsync(advisorId, consumerId, matchPreferences)
-            .then(result => result.matchExplanation);
-        }
-        
-        // Fallback to synchronous calculation
-        const result = calculateCompatibilityMemoized(
-          advisorId,
-          consumerId,
-          matchPreferences
-        );
-        return Promise.resolve(result.matchExplanation);
-      },
-      [matchPreferences, workerAvailable, calculateCompatibilityMemoized]
-    ),
+    getCompatibilityExplanations,
     getTopMatches,
     clearCache,
     getCacheStats,

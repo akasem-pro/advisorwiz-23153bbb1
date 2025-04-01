@@ -12,14 +12,14 @@ export const recordMatchingPerformance = async (
   inputSize?: number
 ): Promise<boolean> => {
   try {
-    const { data, error } = await supabase.rpc(
-      'record_matching_performance', 
-      {
-        p_function_name: functionName,
-        p_execution_time: executionTime,
-        p_input_size: inputSize
-      }
-    );
+    // Use direct table insert instead of RPC
+    const { error } = await supabase
+      .from('matching_performance')
+      .insert({
+        function_name: functionName,
+        execution_time: executionTime,
+        input_size: inputSize
+      });
 
     if (error) {
       console.error('Error recording performance:', error);
@@ -182,16 +182,18 @@ export const getTopMatches = async (
   limit: number = 10
 ): Promise<{ id: string; score: number; explanations: string[] }[]> => {
   try {
-    let query = supabase.from('compatibility_scores');
+    let query;
     
     if (userType === 'consumer') {
-      query = query
+      query = supabase
+        .from('compatibility_scores')
         .select('advisor_id, score, match_explanations')
         .eq('consumer_id', userId)
         .order('score', { ascending: false })
         .limit(limit);
     } else {
-      query = query
+      query = supabase
+        .from('compatibility_scores')
         .select('consumer_id, score, match_explanations')
         .eq('advisor_id', userId)
         .order('score', { ascending: false })

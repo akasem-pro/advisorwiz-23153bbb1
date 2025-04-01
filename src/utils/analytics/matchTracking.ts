@@ -1,7 +1,6 @@
 
 import { supabase } from '../../integrations/supabase/client';
-import { recordMatchHistory } from '../../services/matching/supabaseIntegration';
-import { submitMatchFeedback } from '../../services/matching/supabaseIntegration';
+import { recordMatchHistory, submitMatchFeedback } from '../../services/matching/supabaseIntegration';
 import { v4 as uuidv4 } from 'uuid';
 
 // Track match interaction (view, like, dismiss, etc.)
@@ -18,7 +17,7 @@ export const trackMatchInteraction = async (
     const finalMatchId = matchId || `match-${advisorId}-${consumerId}-${uuidv4().slice(0, 8)}`;
     
     // Record to user_interactions table
-    await supabase.from('user_interactions').insert({
+    const { error } = await supabase.from('user_interactions').insert({
       advisor_id: advisorId,
       consumer_id: consumerId,
       interaction_type: `match_${action}`,
@@ -28,6 +27,11 @@ export const trackMatchInteraction = async (
         ...additionalData 
       })
     });
+    
+    if (error) {
+      console.error('Failed to track match interaction:', error);
+      return false;
+    }
     
     return true;
   } catch (error) {

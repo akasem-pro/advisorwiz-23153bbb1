@@ -7,7 +7,6 @@ import {
   getCompatibilityScore, 
   getTopMatches as fetchTopMatches 
 } from '../services/matching/supabaseIntegration';
-import { MatchPreferences } from '../context/UserContextDefinition';
 import { toast } from 'sonner';
 
 /**
@@ -119,4 +118,5 @@ export const useMatchPersistence = () => {
   };
 };
 
+// Export both named and default export for flexibility
 export default useMatchPersistence;
