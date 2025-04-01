@@ -19,19 +19,29 @@ export const useRealtimeConnection = () => {
         // Get initial connection status
         setIsConnected(supabase.realtime.isConnected());
 
-        // Subscribe to connection state changes
-        const subscription = supabase.realtime.onConnected(() => {
-          console.log("[Realtime] Connection established");
-          setIsConnected(true);
-          setLastError(null);
-          setReconnectAttempts(0);
-        });
+        // Create a channel to monitor connection status
+        const statusChannel = supabase.channel('connection_status');
 
-        supabase.realtime.onDisconnected(() => {
-          console.log("[Realtime] Connection disconnected");
-          setIsConnected(false);
-          setLastError('Disconnected from realtime service');
-        });
+        // Subscribe to connection state changes through the channel
+        statusChannel
+          .on('presence', { event: 'sync' }, () => {
+            console.log("[Realtime] Connection synchronized");
+            setIsConnected(supabase.realtime.isConnected());
+          })
+          .on('system', { event: 'connected' }, () => {
+            console.log("[Realtime] Connection established");
+            setIsConnected(true);
+            setLastError(null);
+            setReconnectAttempts(0);
+          })
+          .on('system', { event: 'disconnected' }, () => {
+            console.log("[Realtime] Connection disconnected");
+            setIsConnected(false);
+            setLastError('Disconnected from realtime service');
+          })
+          .subscribe(status => {
+            console.log("[Realtime] Subscription status:", status);
+          });
         
       } catch (error) {
         console.error("[Realtime] Error initializing realtime connection:", error);
@@ -44,7 +54,8 @@ export const useRealtimeConnection = () => {
     
     // Cleanup on unmount
     return () => {
-      // No explicit cleanup needed as Supabase manages the connection
+      // Clean up any channels we've created
+      supabase.removeAllChannels();
     };
   }, []);
   
@@ -54,18 +65,20 @@ export const useRealtimeConnection = () => {
       setReconnectAttempts(prev => prev + 1);
       
       // Disconnect first to ensure a clean state
-      supabase.realtime.disconnect();
+      supabase.removeAllChannels();
       
       // Short delay before reconnecting
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Reconnect
-      supabase.realtime.connect();
+      // Create a new channel to test the connection
+      const channel = supabase.channel('reconnect_test');
+      const status = await channel.subscribe();
       
       // Update connection status
-      setIsConnected(supabase.realtime.isConnected());
+      const connected = status === 'SUBSCRIBED';
+      setIsConnected(connected);
       
-      return supabase.realtime.isConnected();
+      return connected;
     } catch (error) {
       console.error("[Realtime] Error during reconnection:", error);
       setLastError(error instanceof Error ? error.message : 'Failed to reconnect');
