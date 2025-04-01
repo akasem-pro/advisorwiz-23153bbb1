@@ -8,6 +8,7 @@ import { AuthProvider } from './components/auth/AuthContext';
 import { initAnalytics } from './services/analytics/analyticsService';
 import { initPerformanceMonitoring } from './services/performance/performanceService';
 import { setupErrorHandling } from './utils/errorHandling';
+import { initMatchingWorker } from './services/matching/workerService';
 import { Toaster } from 'sonner';
 import './App.css';
 
@@ -17,6 +18,11 @@ const App: React.FC = () => {
     initAnalytics();
     initPerformanceMonitoring();
     setupErrorHandling();
+    
+    // Initialize matching worker if supported
+    if (typeof Worker !== 'undefined') {
+      initMatchingWorker();
+    }
   }, []);
 
   return (
