@@ -15,10 +15,18 @@ interface CacheEntry<T> {
   lastAccessed: number;
 }
 
+// Define the type for the memoized function with additional properties
+export interface MemoizedFunction<T extends (...args: any[]) => any> {
+  (...args: Parameters<T>): ReturnType<T>;
+  clearCache: () => void;
+  getStats: () => { size: number; keys: string[] };
+  removeEntry: (key: string) => boolean;
+}
+
 export function memoize<T extends (...args: any[]) => any>(
   fn: T,
   options: MemoizeOptions = {}
-): T {
+): MemoizedFunction<T> {
   const {
     maxSize = 100,
     ttl = null,
@@ -75,27 +83,27 @@ export function memoize<T extends (...args: any[]) => any>(
     }
     
     return result;
-  }) as T;
+  }) as any; // Type as 'any' temporarily to add methods
   
   // Add cache control methods
-  const memoizedWithControls = Object.assign(memoized, {
-    clearCache: () => {
-      cache.clear();
-      accessOrder.length = 0;
-    },
-    getStats: () => ({
-      size: cache.size,
-      keys: Array.from(cache.keys())
-    }),
-    removeEntry: (key: string) => {
-      const deleted = cache.delete(key);
-      const index = accessOrder.indexOf(key);
-      if (index !== -1) accessOrder.splice(index, 1);
-      return deleted;
-    }
+  memoized.clearCache = () => {
+    cache.clear();
+    accessOrder.length = 0;
+  };
+  
+  memoized.getStats = () => ({
+    size: cache.size,
+    keys: Array.from(cache.keys())
   });
   
-  return memoizedWithControls;
+  memoized.removeEntry = (key: string) => {
+    const deleted = cache.delete(key);
+    const index = accessOrder.indexOf(key);
+    if (index !== -1) accessOrder.splice(index, 1);
+    return deleted;
+  };
+  
+  return memoized as MemoizedFunction<T>;
 }
 
 /**
@@ -105,4 +113,3 @@ export function createStableKey(obj: Record<string, any>): string {
   const sortedKeys = Object.keys(obj).sort();
   return sortedKeys.map(key => `${key}:${JSON.stringify(obj[key])}`).join('|');
 }
-

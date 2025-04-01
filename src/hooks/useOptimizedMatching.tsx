@@ -1,8 +1,7 @@
-
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { AdvisorProfile, ConsumerProfile } from '../context/UserContext';
 import { MatchPreferences } from '../context/UserContextDefinition';
-import { memoize, createStableKey } from '../utils/optimization/memoize';
+import { memoize, createStableKey, MemoizedFunction } from '../utils/optimization/memoize';
 import { 
   initMatchingWorker, 
   calculateCompatibilityAsync, 
@@ -51,7 +50,9 @@ export const useOptimizedMatching = (
   }, []);
   
   // Create a memoized version of the compatibility calculation function
-  const calculateCompatibilityMemoized = useRef(
+  const calculateCompatibilityMemoized = useRef<MemoizedFunction<
+    (advisorId: string, consumerId: string, prefs: MatchPreferences) => { score: number; matchExplanation: string[] }
+  >>(
     memoize(
       (advisorId: string, consumerId: string, prefs: MatchPreferences) => {
         return getWeightedCompatibilityScore(advisorId, consumerId, prefs);
@@ -251,7 +252,24 @@ export const useOptimizedMatching = (
   
   return {
     calculateCompatibilityScore,
-    getCompatibilityExplanations,
+    getCompatibilityExplanations: useCallback(
+      (advisorId: string, consumerId: string): Promise<string[]> => {
+        // Always get the full explanation
+        if (workerAvailable) {
+          return calculateCompatibilityAsync(advisorId, consumerId, matchPreferences)
+            .then(result => result.matchExplanation);
+        }
+        
+        // Fallback to synchronous calculation
+        const result = calculateCompatibilityMemoized(
+          advisorId,
+          consumerId,
+          matchPreferences
+        );
+        return Promise.resolve(result.matchExplanation);
+      },
+      [matchPreferences, workerAvailable, calculateCompatibilityMemoized]
+    ),
     getTopMatches,
     clearCache,
     getCacheStats,
