@@ -1,5 +1,5 @@
 
-import { useMemo, useCallback, useEffect } from 'react';
+import { useMemo, useCallback, useEffect, useRef } from 'react';
 import { 
   AdvisorProfile, 
   ConsumerProfile, 
@@ -10,7 +10,7 @@ import { CallMetrics } from '../types/callTypes';
 import { getWeightedCompatibilityScore, clearCompatibilityCache } from '../services/matching/weightedScoring';
 import { clearMatchCache } from '../utils/matchingAlgorithm';
 
-// New hook for optimizing the matching algorithm
+// Enhanced hook for optimizing the matching algorithm performance
 export const useMatchingOptimization = (
   userType: 'consumer' | 'advisor' | null,
   consumerProfile: ConsumerProfile | null,
@@ -18,24 +18,62 @@ export const useMatchingOptimization = (
   matchPreferences: MatchPreferences,
   callMetrics?: CallMetrics[]
 ) => {
-  // Clear caches when preferences change
+  // Store previous preferences for comparison
+  const prevPreferencesRef = useRef<MatchPreferences | null>(null);
+  
+  // Clear caches only when preferences meaningfully change
   useEffect(() => {
-    if (matchPreferences) {
+    if (!prevPreferencesRef.current || 
+        JSON.stringify(prevPreferencesRef.current) !== JSON.stringify(matchPreferences)) {
       // Clear both caches to ensure fresh results with new preferences
       clearCompatibilityCache();
       clearMatchCache();
+      prevPreferencesRef.current = matchPreferences;
     }
   }, [matchPreferences]);
 
-  // Memoize the calculate compatibility score function
+  // Cache calculation results for the current session
+  const calculationCache = useRef(new Map<string, {score: number, timestamp: number}>());
+
+  // Clean up stale cache entries periodically
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const now = Date.now();
+      const MAX_AGE = 5 * 60 * 1000; // 5 minutes
+      
+      // Remove stale entries
+      calculationCache.current.forEach((value, key) => {
+        if (now - value.timestamp > MAX_AGE) {
+          calculationCache.current.delete(key);
+        }
+      });
+    }, 60 * 1000); // Check every minute
+    
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Memoize the calculate compatibility score function with local cache
   const calculateCompatibilityScore = useCallback((advisorId: string, consumerId: string) => {
-    // Enhanced logic using matchPreferences to compute more accurate scores
+    const cacheKey = `${advisorId}_${consumerId}_${JSON.stringify(matchPreferences)}`;
+    
+    // Check local cache first for better performance
+    if (calculationCache.current.has(cacheKey)) {
+      return calculationCache.current.get(cacheKey)!.score;
+    }
+    
+    // If not in cache, perform calculation
     const result = getWeightedCompatibilityScore(
       advisorId, 
       consumerId, 
       matchPreferences,
       callMetrics
     );
+    
+    // Store in local cache
+    calculationCache.current.set(cacheKey, {
+      score: result.score,
+      timestamp: Date.now()
+    });
     
     return result.score;
   }, [matchPreferences, callMetrics]);
@@ -52,7 +90,7 @@ export const useMatchingOptimization = (
     return result.matchExplanation;
   }, [matchPreferences, callMetrics]);
 
-  // Memoize filtered consumer/advisor profiles that meet minimum criteria
+  // Optimized pre-filtering for eligible profiles
   const eligibleProfiles = useMemo(() => {
     const targetProfiles: Array<AdvisorProfile | ConsumerProfile> = [];
     const selfId = userType === 'consumer' ? consumerProfile?.id : advisorProfile?.id;
@@ -102,3 +140,5 @@ export const useMatchingOptimization = (
     eligibleProfiles
   };
 };
+
+export default useMatchingOptimization;

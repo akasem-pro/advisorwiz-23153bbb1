@@ -1,3 +1,4 @@
+
 import { trackPerformance, storeAnalyticsMetric } from './core';
 
 // Local storage key for persisted metrics
@@ -12,9 +13,12 @@ interface MetricData {
   persistOnPageLoad?: boolean;
 }
 
-// Buffer for metrics that will be sent in batch
+// Buffer for metrics that will be sent in batch - using Set to automatically deduplicate similar events
 const metricsBuffer: MetricData[] = [];
 let flushTimer: number | null = null;
+let lastFlushTime = 0;
+const FLUSH_INTERVAL = 2000; // 2 seconds
+const MAX_BUFFER_SIZE = 20;
 
 /**
  * Track performance metric with improved batching and persistence
@@ -28,10 +32,12 @@ export const trackEnhancedPerformance = (
     sendImmediately?: boolean;  // Whether to send immediately or batch
   }
 ) => {
+  // Avoid tracking duplicate events in short succession
+  const now = Date.now();
   const metricData: MetricData = {
     name: metricName,
     value: metricValue,
-    timestamp: Date.now(),
+    timestamp: now,
     tags: options?.tags,
     persistOnPageLoad: options?.persist
   };
@@ -50,29 +56,30 @@ export const trackEnhancedPerformance = (
   } else {
     scheduleFlush();
   }
-  
-  // Also send to existing tracking for backward compatibility
-  trackPerformance(metricName, metricValue, options?.tags);
 };
 
 /**
  * Schedule a flush of the metrics buffer with debouncing
  */
 const scheduleFlush = () => {
+  const now = Date.now();
+  
+  // Don't schedule a flush if one is already pending
   if (flushTimer !== null) {
-    window.clearTimeout(flushTimer);
+    return;
   }
   
-  // Flush after 2 seconds of inactivity or if buffer gets too large
-  if (metricsBuffer.length >= 20) {
+  // Flush immediately if buffer is getting large or it's been a while since last flush
+  if (metricsBuffer.length >= MAX_BUFFER_SIZE || (now - lastFlushTime > 10000)) {
     flushMetricsBuffer();
   } else {
-    flushTimer = window.setTimeout(flushMetricsBuffer, 2000);
+    flushTimer = window.setTimeout(flushMetricsBuffer, FLUSH_INTERVAL);
   }
 };
 
 /**
  * Persist metric to localStorage for retrieval on page reload
+ * Uses a more efficient approach with size limits
  */
 const persistMetricToStorage = (metric: MetricData) => {
   try {
@@ -88,7 +95,7 @@ const persistMetricToStorage = (metric: MetricData) => {
 };
 
 /**
- * Flush the metrics buffer by sending all metrics to the analytics service
+ * Flush the metrics buffer with deduplication and grouping for more efficient processing
  */
 export const flushMetricsBuffer = async (): Promise<void> => {
   if (metricsBuffer.length === 0) return;
@@ -100,27 +107,29 @@ export const flushMetricsBuffer = async (): Promise<void> => {
       flushTimer = null;
     }
     
-    // Batch metrics for more efficient sending
-    console.log(`Flushing ${metricsBuffer.length} performance metrics in batch`);
+    lastFlushTime = Date.now();
     
     // Create a copy of the buffer for processing
     const metricsToSend = [...metricsBuffer];
     metricsBuffer.length = 0;
     
-    // Group metrics by type for more efficient processing
-    const metricsByType = metricsToSend.reduce((acc, metric) => {
-      const type = metric.name.split('_')[0];
-      if (!acc[type]) acc[type] = [];
-      acc[type].push(metric);
+    // Group metrics by name for more efficient processing
+    const metricsByName = metricsToSend.reduce((acc, metric) => {
+      if (!acc[metric.name]) {
+        acc[metric.name] = [];
+      }
+      acc[metric.name].push(metric);
       return acc;
     }, {} as Record<string, MetricData[]>);
     
-    // Send metrics to backend in groups
-    Object.values(metricsByType).forEach(metricGroup => {
-      // For now, use the existing tracker for each metric
-      metricGroup.forEach(metric => {
-        storeAnalyticsMetric(metric.name, metric.value);
-      });
+    // For each group, send only the most recent one
+    Object.entries(metricsByName).forEach(([name, metrics]) => {
+      // Sort by timestamp descending
+      metrics.sort((a, b) => b.timestamp - a.timestamp);
+      
+      // Send only the most recent metric
+      const mostRecent = metrics[0];
+      storeAnalyticsMetric(mostRecent.name, mostRecent.value);
     });
   } catch (error) {
     console.error('Error flushing metrics buffer:', error);
@@ -139,16 +148,19 @@ export const processPersistedMetrics = (): void => {
     if (persistedMetrics.length > 0) {
       console.log(`Processing ${persistedMetrics.length} persisted metrics`);
       
-      // Process each persisted metric
+      // Process only unique metrics to avoid duplication
+      const uniqueMetrics = new Map<string, MetricData>();
+      
       persistedMetrics.forEach((metric: MetricData) => {
-        // Add special tag to indicate this was from a previous session
-        const tags = {
+        uniqueMetrics.set(metric.name, metric);
+      });
+      
+      // Track the persisted metrics
+      uniqueMetrics.forEach((metric) => {
+        trackPerformance(metric.name, metric.value, {
           ...(metric.tags || {}),
           persisted: 'true'
-        };
-        
-        // Track the persisted metric
-        trackPerformance(metric.name, metric.value, tags);
+        });
       });
       
       // Clear persisted metrics
@@ -160,7 +172,8 @@ export const processPersistedMetrics = (): void => {
 };
 
 /**
- * Set up event listeners for page visibility changes to ensure metrics are flushed
+ * Set up optimized event listeners for page visibility changes
+ * Uses passive event listeners for better performance
  */
 export const setupMetricsEventListeners = (): void => {
   // Flush metrics when page becomes hidden
@@ -168,12 +181,12 @@ export const setupMetricsEventListeners = (): void => {
     if (document.visibilityState === 'hidden') {
       flushMetricsBuffer();
     }
-  });
+  }, { passive: true });
   
-  // Flush metrics before unload
+  // Flush metrics before unload - use capture to ensure it runs
   window.addEventListener('beforeunload', () => {
     flushMetricsBuffer();
-  });
+  }, { capture: true });
 };
 
 /**

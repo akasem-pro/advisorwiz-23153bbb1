@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { LogOut, LogIn } from 'lucide-react';
 import { useIsMobile } from '../../hooks/use-mobile';
@@ -42,7 +42,8 @@ const navigationLinks = [
 ];
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ isAuthenticated, onClose, onSignOut }) => {
-  const isMobile = useIsMobile();
+  // We don't need to check isMobile here since this component is already conditionally rendered
+  // based on mobile detection in the parent component
   
   return (
     <div className="md:hidden bg-white dark:bg-navy-900 shadow-lg pt-1 pb-3 px-3 border-t border-slate-200 dark:border-navy-700">
@@ -84,4 +85,5 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isAuthenticated, onClose, onSig
   );
 };
 
-export default MobileMenu;
+// Memoize the component to prevent unnecessary re-renders
+export default memo(MobileMenu);

@@ -82,3 +82,5 @@ export const useMatchingCache = () => {
     cacheStats
   };
 };
+
+export default useMatchingCache;

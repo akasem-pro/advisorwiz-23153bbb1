@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Search, User, MessageCircle, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -12,7 +12,8 @@ interface NavItemProps {
   onClick?: () => void;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ to, icon, label, isActive, onClick }) => {
+// Memoize the NavItem component to prevent unnecessary re-renders
+const NavItem = memo<NavItemProps>(({ to, icon, label, isActive, onClick }) => {
   return (
     <Link
       to={to}
@@ -28,7 +29,9 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon, label, isActive, onClick })
       <span className="text-xs mt-1">{label}</span>
     </Link>
   );
-};
+});
+
+NavItem.displayName = 'NavItem';
 
 interface MobileNavbarProps {
   className?: string;
@@ -36,16 +39,23 @@ interface MobileNavbarProps {
 
 const MobileNavbar: React.FC<MobileNavbarProps> = ({ className = '' }) => {
   const location = useLocation();
-  const pathWithoutTrailingSlash = location.pathname.endsWith('/')
-    ? location.pathname.slice(0, -1)
-    : location.pathname;
   
-  const isActive = (path: string) => {
-    if (path === '/') {
-      return pathWithoutTrailingSlash === '' || pathWithoutTrailingSlash === '/';
-    }
-    return pathWithoutTrailingSlash === path || pathWithoutTrailingSlash.startsWith(`${path}/`);
-  };
+  // Memoize this calculation so it doesn't run on every render
+  const pathWithoutTrailingSlash = useMemo(() => {
+    return location.pathname.endsWith('/')
+      ? location.pathname.slice(0, -1)
+      : location.pathname;
+  }, [location.pathname]);
+  
+  // Memoize the isActive function
+  const isActive = useMemo(() => {
+    return (path: string) => {
+      if (path === '/') {
+        return pathWithoutTrailingSlash === '' || pathWithoutTrailingSlash === '/';
+      }
+      return pathWithoutTrailingSlash === path || pathWithoutTrailingSlash.startsWith(`${path}/`);
+    };
+  }, [pathWithoutTrailingSlash]);
   
   return (
     <div className={cn(
@@ -77,7 +87,7 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ className = '' }) => {
         to="/consumer-profile" 
         icon={<User className="h-5 w-5" />} 
         label="Profile" 
-        isActive={isActive('/profile')} 
+        isActive={isActive('/consumer-profile')} 
       />
       
       <NavItem 
@@ -90,4 +100,5 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({ className = '' }) => {
   );
 };
 
-export default MobileNavbar;
+// Memoize the entire component to prevent unnecessary re-renders
+export default memo(MobileNavbar);
