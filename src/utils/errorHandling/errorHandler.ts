@@ -1,6 +1,6 @@
 
 import { toast } from 'sonner';
-import { logErrorAsync, flushErrorLogs } from './asyncErrorLogger';
+import { logErrorAsync, flushErrorLogs, registerGlobalErrorHandlers } from './asyncErrorLogger';
 
 // Error categories for better organization
 export enum ErrorCategory {
@@ -177,8 +177,7 @@ export function withAsyncErrorHandling<T extends (...args: any[]) => Promise<any
  * Setup global error handlers
  */
 export function initErrorHandling(): void {
-  // Import and register global error handlers
-  const { registerGlobalErrorHandlers } = require('./asyncErrorLogger');
+  // Use imported function directly instead of requiring it
   registerGlobalErrorHandlers();
   
   console.info('[Error Handling] Asynchronous error handling system initialized');
