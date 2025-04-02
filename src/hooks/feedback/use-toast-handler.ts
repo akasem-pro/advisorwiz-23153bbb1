@@ -55,7 +55,7 @@ export const useToastHandler = () => {
     if (useEnhancedToast) {
       const toastMethod = getSonnerToastMethod(variant);
       
-      // Create a custom className that includes ARIA attributes and animation type
+      // Create a custom className that includes animation type
       const customClassName = `${options.animationType ? `animate-${options.animationType}` : ''} toast-${variant}`;
       
       sonnerToast[toastMethod](
@@ -65,15 +65,15 @@ export const useToastHandler = () => {
           duration: options.duration || 5000,
           action: options.action,
           onDismiss,
-          // Since we can't directly add role/aria-live attributes to sonner toast config,
-          // we'll add them via data attributes that can be styled/selected later
+          // Use the unstyled option when we have animation type
           unstyled: options.animationType ? true : false,
           className: customClassName,
-          // Use data attributes for ARIA information
-          // These can be targeted via CSS or JS later
-          // We'll use the data-* attributes to apply the correct ARIA attributes in CSS
-          "data-aria-role": ariaRole,
-          "data-aria-live": ariaLive
+          // Use the data property to add custom data attributes
+          // This is the proper way to add data attributes in sonner
+          data: {
+            ariaRole: ariaRole,
+            ariaLive: ariaLive
+          }
         }
       );
 
