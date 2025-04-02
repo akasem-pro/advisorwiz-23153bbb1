@@ -116,3 +116,79 @@
 .mobile-footer-disclaimer {
   @apply text-xs leading-relaxed px-4;
 }
+
+/* Responsive image optimizations */
+.mobile-responsive-img {
+  @apply w-full h-auto object-cover;
+  content-visibility: auto; /* Modern browsers: defer offscreen image rendering */
+}
+
+/* Core Web Vitals optimizations */
+.mobile-lcp-image {
+  @apply w-full;
+  content-visibility: auto;
+  contain: content;
+  loading: eager; /* Prioritize loading for LCP images */
+}
+
+/* CSS containment for better performance */
+.mobile-contain {
+  contain: content;
+}
+
+/* Mobile skeleton loaders for perceived performance */
+.mobile-skeleton {
+  @apply rounded bg-slate-200 dark:bg-navy-700 animate-pulse;
+}
+
+.mobile-skeleton-text {
+  @apply h-4 rounded w-3/4 bg-slate-200 dark:bg-navy-700 animate-pulse mb-2;
+}
+
+.mobile-skeleton-image {
+  @apply h-32 rounded w-full bg-slate-200 dark:bg-navy-700 animate-pulse mb-2;
+}
+
+/* Mobile first optimizations for CSS grid layouts */
+.mobile-grid {
+  @apply grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 md:gap-4;
+}
+
+/* Mobile card grid */
+.mobile-card-grid {
+  @apply grid gap-3;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+/* Mobile touch friendly interactive elements */
+.mobile-interactive {
+  @apply transition-transform active:scale-95 touch-manipulation;
+}
+
+/* Prevent CLS (Cumulative Layout Shift) on images */
+.mobile-aspect-container {
+  @apply relative w-full overflow-hidden;
+}
+
+.mobile-aspect-square {
+  @apply aspect-square;
+}
+
+.mobile-aspect-video {
+  @apply aspect-video;
+}
+
+.mobile-aspect-portrait {
+  aspect-ratio: 2/3;
+}
+
+/* Mobile optimized fixed header */
+.mobile-fixed-header {
+  @apply fixed top-0 left-0 right-0 z-40 bg-white/95 dark:bg-navy-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-navy-700;
+  height: env(safe-area-inset-top, 0px);
+}
+
+/* Mobile friendly lists */
+.mobile-list-item {
+  @apply py-3 px-2 border-b border-slate-200 dark:border-navy-700 flex items-center gap-3;
+}
