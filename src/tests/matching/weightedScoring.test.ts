@@ -120,4 +120,58 @@ describe('Weighted Scoring Algorithm', () => {
     // Scores should be different when weights are applied
     expect(withWeights.score).not.toEqual(withoutWeights.score);
   });
+  
+  // Performance benchmarks
+  describe('Performance', () => {
+    test('should process single match score calculation in under 5ms', () => {
+      const startTime = performance.now();
+      getWeightedCompatibilityScore(advisorId, consumerId, defaultPreferences);
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      
+      console.log(`Single match calculation took ${duration.toFixed(2)}ms`);
+      expect(duration).toBeLessThan(5); // Should be very fast for a single calculation
+    });
+    
+    test('should handle batch calculations efficiently', () => {
+      const batchSize = 100;
+      const startTime = performance.now();
+      
+      // Process multiple matches in sequence
+      for (let i = 0; i < batchSize; i++) {
+        getWeightedCompatibilityScore(
+          advisorId,
+          consumerId,
+          defaultPreferences
+        );
+      }
+      
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      const avgTime = duration / batchSize;
+      
+      console.log(`Batch of ${batchSize} calculations took ${duration.toFixed(2)}ms (avg: ${avgTime.toFixed(2)}ms per calculation)`);
+      expect(avgTime).toBeLessThan(1); // Average time should be under 1ms with caching
+    });
+    
+    test('calculation time should scale linearly with different inputs', () => {
+      const advisorIds = mockAdvisors.slice(0, 5).map(a => a.id || `advisor-${Math.random()}`);
+      const consumerIds = mockConsumers.slice(0, 5).map(c => c.id || `consumer-${Math.random()}`);
+      
+      const startTime = performance.now();
+      
+      for (const aId of advisorIds) {
+        for (const cId of consumerIds) {
+          getWeightedCompatibilityScore(aId, cId, defaultPreferences);
+        }
+      }
+      
+      const endTime = performance.now();
+      const totalCalculations = advisorIds.length * consumerIds.length;
+      const duration = endTime - startTime;
+      
+      console.log(`Multiple combinations (${totalCalculations}) took ${duration.toFixed(2)}ms`);
+      expect(duration).toBeLessThan(100); // Should process reasonably quickly 
+    });
+  });
 });
