@@ -7,7 +7,7 @@ import { UserProvider } from './context/UserContext';
 import { AuthProvider } from './components/auth/AuthContext';
 import { FeedbackProvider } from './context/FeedbackContext';
 import { initAnalytics } from './services/analytics/analyticsService';
-import { initPerformanceMonitoring } from './services/performance/performanceService';
+import { initPerformanceMonitoring } from './utils/performance';
 import { setupErrorHandling } from './utils/errorHandling';
 import { initMatchingWorker } from './services/matching/workerService';
 import { Toaster } from './components/ui/sonner';

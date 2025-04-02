@@ -3,10 +3,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
-import { initializePerformanceTracking } from './utils/performance';
+import { initPerformanceMonitoring } from './utils/performance';
 
 // Initialize performance tracking
-initializePerformanceTracking();
+initPerformanceMonitoring();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
