@@ -68,12 +68,8 @@ export const useToastHandler = () => {
           // Use the unstyled option when we have animation type
           unstyled: options.animationType ? true : false,
           className: customClassName,
-          // Use the data property to add custom data attributes
-          // This is the proper way to add data attributes in sonner
-          data: {
-            ariaRole: ariaRole,
-            ariaLive: ariaLive
-          }
+          // We can't use data property as it doesn't exist in ExternalToast type
+          // Instead, we'll add custom attributes to the DOM element after rendering
         }
       );
 
@@ -87,6 +83,10 @@ export const useToastHandler = () => {
             // Apply ARIA attributes directly to DOM since we can't do it via props
             lastToast.setAttribute('role', ariaRole);
             lastToast.setAttribute('aria-live', ariaLive);
+            
+            // Also add as data attributes for styling hooks
+            lastToast.dataset.ariaRole = ariaRole;
+            lastToast.dataset.ariaLive = ariaLive;
           }
         }
       }, 10);
