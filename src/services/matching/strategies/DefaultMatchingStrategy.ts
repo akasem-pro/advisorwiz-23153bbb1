@@ -3,7 +3,7 @@ import { MatchPreferences } from '../../../context/UserContextDefinition';
 import { CallMetrics } from '../../../types/callTypes';
 import { MatchingStrategy } from './MatchingStrategy';
 import { MATCHING_WEIGHTS } from '../config/matchingConfig';
-import { handleError, ErrorCategory, ErrorSeverity } from '../../../utils/errorHandling';
+import { handleError, createError, ErrorCategory, ErrorSeverity } from '../../../utils/errorHandling';
 
 // Algorithm components
 import { calculateLanguageMatchScore } from '../algorithms/languageMatching';
@@ -194,14 +194,17 @@ export class DefaultMatchingStrategy implements MatchingStrategy {
       
       return { score: finalScore, matchExplanation };
     } catch (error) {
-      // Log error and return fallback result
-      handleError({
-        message: `Error in Default Matching Strategy: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        category: ErrorCategory.UNKNOWN,
-        severity: ErrorSeverity.MEDIUM,
-        originalError: error,
-        context: { advisorId, consumerId }
-      });
+      // Use createError to properly create an AppError object
+      const appError = createError(
+        `Error in Default Matching Strategy: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        ErrorCategory.UNKNOWN,
+        ErrorSeverity.MEDIUM,
+        error,
+        { advisorId, consumerId }
+      );
+      
+      // Pass the properly constructed error object to handleError
+      handleError(appError);
       
       return { 
         score: 0, 

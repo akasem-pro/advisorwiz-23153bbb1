@@ -2,7 +2,7 @@
 import { MatchPreferences } from '../../../context/UserContextDefinition';
 import { CallMetrics } from '../../../types/callTypes';
 import { MatchingStrategy } from './MatchingStrategy';
-import { handleError, ErrorCategory, ErrorSeverity } from '../../../utils/errorHandling';
+import { handleError, createError, ErrorCategory, ErrorSeverity } from '../../../utils/errorHandling';
 
 /**
  * Risk-Focused Matching Strategy
@@ -58,14 +58,17 @@ export class RiskFocusedMatchingStrategy implements MatchingStrategy {
         matchExplanation: explanations
       };
     } catch (error) {
-      // Log error and return fallback result
-      handleError({
-        message: `Error in Risk-Focused Matching Strategy: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        category: ErrorCategory.UNKNOWN,
-        severity: ErrorSeverity.MEDIUM,
-        originalError: error,
-        context: { advisorId, consumerId }
-      });
+      // Create a proper AppError object using createError
+      const appError = createError(
+        `Error in Risk-Focused Matching Strategy: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        ErrorCategory.UNKNOWN,
+        ErrorSeverity.MEDIUM,
+        error,
+        { advisorId, consumerId }
+      );
+      
+      // Pass the properly constructed error object to handleError
+      handleError(appError);
       
       return { 
         score: 0, 
