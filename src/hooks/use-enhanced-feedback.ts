@@ -1,11 +1,10 @@
-
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useToast } from './use-toast';
-import type { ToastActionElement } from '@radix-ui/react-toast'; // Import the type directly from Radix UI
+import { toast as sonnerToast } from 'sonner';
 import { useFeedback } from '../context/FeedbackContext';
 import { ErrorSeverity, ErrorCategory } from '../utils/errorHandling/errorHandler';
 import { flushErrorLogs } from '../utils/errorHandling';
-import { toast as sonnerToast } from 'sonner';
+import { type ToastActionElement } from '../components/ui/toast';
 
 type FeedbackVariant = 'success' | 'error' | 'warning' | 'info' | 'loading';
 
