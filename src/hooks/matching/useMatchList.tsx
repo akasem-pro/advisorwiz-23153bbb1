@@ -1,4 +1,3 @@
-
 /**
  * Match List Hook
  * 
@@ -69,6 +68,7 @@ interface BasicProfileData {
   riskTolerance?: 'low' | 'medium' | 'high';
   preferredCommunication?: string[];
   preferredLanguage?: string[];
+  startTimeline?: 'immediately' | 'next_3_months' | 'next_6_months' | 'not_sure';
 }
 
 /**
@@ -162,7 +162,8 @@ export const useMatchList = (options: UseMatchListOptions) => {
               investableAssets: 50000,
               riskTolerance: 'medium',
               preferredCommunication: [],
-              preferredLanguage: []
+              preferredLanguage: [],
+              startTimeline: 'not_sure'
             } : {
               // Advisor-specific fields when viewing as consumer
               organization: 'Organization',
@@ -181,9 +182,10 @@ export const useMatchList = (options: UseMatchListOptions) => {
             })
           };
           
+          // Use type assertion after ensuring all required properties are present
           return userType === 'advisor' 
-            ? profile as ConsumerProfile 
-            : profile as AdvisorProfile;
+            ? profile as unknown as ConsumerProfile  
+            : profile as unknown as AdvisorProfile;
         });
         
         setProfiles(matchedProfiles);
