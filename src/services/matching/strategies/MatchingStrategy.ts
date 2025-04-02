@@ -11,6 +11,11 @@ import { CallMetrics } from '../../../types/callTypes';
  * 
  * The interface enables a flexible strategy pattern where different
  * matching algorithms can be used interchangeably based on context.
+ * 
+ * Examples of concrete implementations include:
+ * - DefaultMatchingStrategy: Balanced approach for general users
+ * - PremiumMatchingStrategy: Enhanced algorithm with more factors for premium users
+ * - RiskFocusedStrategy: Specialized algorithm emphasizing risk tolerance alignment
  */
 export interface MatchingStrategy {
   /**
@@ -31,4 +36,14 @@ export interface MatchingStrategy {
     preferences: MatchPreferences,
     callMetrics?: CallMetrics[]
   ): { score: number; matchExplanation: string[] };
+  
+  /**
+   * Get the name of the strategy for logging and analytics
+   */
+  getName(): string;
+  
+  /**
+   * Get the description of how this strategy works
+   */
+  getDescription(): string;
 }

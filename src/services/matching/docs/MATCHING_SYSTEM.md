@@ -57,6 +57,36 @@ Each matching strategy calculates scores based on multiple factors:
 6. Explanations are generated for UI presentation
 7. Results may be cached and/or persisted to database
 
+## Caching System
+
+The matching system employs a multi-level caching strategy:
+
+1. **In-Memory Cache**: Primary cache for frequent calculations
+   - Time-based expiration
+   - LRU eviction policy
+   - Size-based maintenance
+
+2. **Persistence Layer**: Secondary cache for longer-term storage
+   - Database-backed persistence
+   - Background synchronization
+   - Offline support
+
+3. **Cache Invalidation Triggers**:
+   - Profile updates
+   - Preference changes
+   - Time expiration
+   - Manual invalidation
+
+## Performance Optimizations
+
+The system includes several performance optimizations:
+
+1. **Batch Processing**: Multiple matches calculated together
+2. **Web Workers**: Offloads calculations to background threads
+3. **Progressive Loading**: Calculates matches in priority order
+4. **Memoization**: Avoids redundant calculations
+5. **Pre-filtering**: Eliminates obvious non-matches early
+
 ## Configuration
 
 Matching weights and thresholds are defined in `matchingConfig.ts` and can be adjusted without modifying algorithm code.
@@ -69,3 +99,11 @@ To add a new matching strategy:
 3. Register the new strategy in MatchingStrategyFactory
 4. Update documentation with strategy's purpose and characteristics
 
+## Monitoring
+
+The matching system includes tools for monitoring performance:
+
+1. **Cache Statistics**: Hit rates, size, eviction counts
+2. **Execution Time Tracking**: Performance monitoring
+3. **Match Quality Metrics**: User feedback integration
+4. **Error Logging**: Failure detection and diagnosis
