@@ -6,10 +6,10 @@
  * and integrates with analytics systems including A/B testing
  */
 
-import { ReportHandler } from 'web-vitals';
 import { trackConversion } from '../abTesting';
 import { sendGA4Event } from '../analytics/ga4Integration';
 import { storeAnalyticsMetric } from './core';
+import type { Metric } from 'web-vitals';
 
 // Metric names from Core Web Vitals
 type WebVitalName = 'CLS' | 'FID' | 'FCP' | 'LCP' | 'TTFB' | 'INP';
@@ -35,52 +35,48 @@ const getRating = (name: WebVitalName, value: number): 'good' | 'needs-improveme
 };
 
 /**
- * Report web vitals to analytics
+ * Track web vitals and report them to analytics
  */
-export const reportWebVitals = (onPerfEntry?: ReportHandler): void => {
-  if (typeof onPerfEntry !== 'function') {
-    return;
-  }
-
+export const trackWebVitals = (): void => {
   // Only load web-vitals when in the browser
   if (typeof window !== 'undefined') {
-    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB, getINP }) => {
+    import('web-vitals').then(({ onCLS, onFID, onFCP, onLCP, onTTFB, onINP }) => {
       // Core metrics
-      getCLS(metric => {
+      onCLS(metric => {
         const rating = getRating('CLS', metric.value);
         storeAnalyticsMetric('vitals_cls', metric.value);
-        processMetric(metric, rating, onPerfEntry);
+        processMetric(metric, rating);
       });
       
-      getFID(metric => {
+      onFID(metric => {
         const rating = getRating('FID', metric.value);
         storeAnalyticsMetric('vitals_fid', metric.value);
-        processMetric(metric, rating, onPerfEntry);
+        processMetric(metric, rating);
       });
       
-      getFCP(metric => {
+      onFCP(metric => {
         const rating = getRating('FCP', metric.value);
         storeAnalyticsMetric('vitals_fcp', metric.value);
-        processMetric(metric, rating, onPerfEntry);
+        processMetric(metric, rating);
       });
       
-      getLCP(metric => {
+      onLCP(metric => {
         const rating = getRating('LCP', metric.value);
         storeAnalyticsMetric('vitals_lcp', metric.value);
-        processMetric(metric, rating, onPerfEntry);
+        processMetric(metric, rating);
       });
       
-      getTTFB(metric => {
+      onTTFB(metric => {
         const rating = getRating('TTFB', metric.value);
         storeAnalyticsMetric('vitals_ttfb', metric.value);
-        processMetric(metric, rating, onPerfEntry);
+        processMetric(metric, rating);
       });
       
       // Experimental metric - measure responsiveness
-      getINP(metric => {
+      onINP(metric => {
         const rating = getRating('INP', metric.value);
         storeAnalyticsMetric('vitals_inp', metric.value);
-        processMetric(metric, rating, onPerfEntry);
+        processMetric(metric, rating);
       });
     });
   }
@@ -90,13 +86,9 @@ export const reportWebVitals = (onPerfEntry?: ReportHandler): void => {
  * Process and report a web vital metric
  */
 const processMetric = (
-  metric: { name: string; value: number; id: string },
-  rating: string,
-  reportHandler: ReportHandler
+  metric: Metric,
+  rating: string
 ): void => {
-  // Call the provided handler
-  reportHandler(metric);
-  
   // Report to GA4
   sendGA4Event(`web_vital_${metric.name.toLowerCase()}`, {
     value: Math.round(metric.value * 100) / 100,
@@ -136,6 +128,7 @@ const checkABTestingIntegration = (metricName: WebVitalName, value: number): voi
             variantId, 
             `web_vital_${metricName.toLowerCase()}`,
             userId,
+            // Pass additional data as an object, not a number
             { 
               metricName, 
               value, 

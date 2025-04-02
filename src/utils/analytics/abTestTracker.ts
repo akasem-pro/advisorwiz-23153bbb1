@@ -1,126 +1,54 @@
 
-import { supabase } from '../../integrations/supabase/client';
-import { trackEvent } from '../tagManager';
-import { handleError, ErrorCategory } from '../errorHandling/errorHandler';
+/**
+ * A/B Testing tracker implementations
+ */
 
-interface ABTestResult {
-  testId: string;
-  variantId: string;
-  userId?: string;
-  converted: boolean;
-  exposureTimestamp: string;
-  conversionTimestamp?: string;
-}
-
-interface ABTestDefinition {
-  id: string;
-  name: string;
-  description: string;
-  variants: { id: string; name: string }[];
-  startDate: string;
-  endDate: string;
-  status: 'active' | 'paused' | 'completed';
-}
+export type VariantId = string;
+export type ExperimentId = string;
 
 /**
- * Record when a user is exposed to an A/B test variant
+ * Track when a variant is shown to a user
+ * 
+ * @param experimentId The experiment identifier
+ * @param variantId The specific variant shown
+ * @param userId Optional user ID for tracking
  */
-export const trackABTestExposure = async (
-  testId: string,
-  variantId: string,
+export function trackVariantImpression(
+  experimentId: ExperimentId,
+  variantId: VariantId,
   userId?: string
-): Promise<void> => {
+): void {
+  // In a real implementation, this would send data to an analytics system
+  console.log(`[ABTest] Impression: ${experimentId} / ${variantId} / User: ${userId || 'anonymous'}`);
+  
+  // Store the current test in the user's session for later correlation with metrics
   try {
-    // Record in analytics system
-    trackEvent('ab_test_exposure', {
-      test_id: testId,
-      variant_id: variantId,
-      user_id: userId
-    });
-    
-    // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.info(`A/B Test Exposure: ${testId} / ${variantId}`);
-    }
-  } catch (error) {
-    console.error('Failed to track A/B test exposure:', error);
+    sessionStorage.setItem('current_ab_test', JSON.stringify({ experimentId, variantId }));
+  } catch (e) {
+    // Handle possible storage errors
+    console.error('Error storing AB test data:', e);
   }
-};
+}
 
 /**
- * Record when a user converts on an A/B test variant
+ * Track a conversion event for a variant
+ * 
+ * @param experimentId The experiment identifier
+ * @param variantId The specific variant that was shown
+ * @param conversionType The type of conversion (click, signup, etc.)
+ * @param userId Optional user ID for tracking
+ * @param additionalData Optional additional data about the conversion
  */
-export const trackABTestConversion = async (
-  testId: string,
-  variantId: string,
-  userId?: string,
-  additionalData?: Record<string, any>
-): Promise<void> => {
-  try {
-    // Record in analytics system
-    trackEvent('ab_test_conversion', {
-      test_id: testId,
-      variant_id: variantId,
-      user_id: userId,
-      ...additionalData
-    });
-    
-    // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.info(`A/B Test Conversion: ${testId} / ${variantId}`);
-    }
-  } catch (error) {
-    console.error('Failed to track A/B test conversion:', error);
-  }
-};
-
-/**
- * Track variant impression for an A/B test
- * Re-exported for the abTesting.ts utility
- */
-export const trackVariantImpression = trackABTestExposure;
-
-/**
- * Track variant conversion for an A/B test
- * Re-exported for the abTesting.ts utility
- */
-export const trackVariantConversion = async (
-  testId: string,
-  variantId: string,
+export function trackVariantConversion(
+  experimentId: ExperimentId,
+  variantId: VariantId,
   conversionType: string,
   userId?: string,
   additionalData?: Record<string, any>
-): Promise<void> => {
-  try {
-    await trackABTestConversion(testId, variantId, userId, {
-      conversion_type: conversionType,
-      ...additionalData
-    });
-  } catch (error) {
-    console.error('Failed to track variant conversion:', error);
-  }
-};
-
-/**
- * Get the user's assigned variant for an A/B test
- * Temporarily mocking this functionality until the database schema is updated
- */
-export const getABTestVariant = async (
-  testId: string,
-  userId?: string
-): Promise<string | null> => {
-  try {
-    // In a real implementation, this would check a user's persistent assignment
-    // For simplicity in this example, we'll use a random assignment
-    
-    // Mock obtaining variants for a test
-    const variants = ['control', 'variant_a', 'variant_b'];
-    
-    // Get a random variant
-    const randomIndex = Math.floor(Math.random() * variants.length);
-    return variants[randomIndex];
-  } catch (error) {
-    console.error('Failed to get A/B test variant:', error);
-    return null;
-  }
-};
+): void {
+  // In a real implementation, this would send data to an analytics system
+  console.log(
+    `[ABTest] Conversion: ${experimentId} / ${variantId} / ${conversionType} / User: ${userId || 'anonymous'}`,
+    additionalData || {}
+  );
+}

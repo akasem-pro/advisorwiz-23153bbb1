@@ -32,10 +32,14 @@ interface UseMatchListOptions {
  * Interface for basic profile data when fetching persisted matches
  */
 interface BasicProfileData {
+  // Basic shared fields
   id: string;
   name: string;
   score: number;
-  // Add minimum required fields for both profile types
+  matches: string[];
+  chatEnabled: boolean;
+  
+  // AdvisorProfile required fields
   organization?: string;
   isAccredited?: boolean;
   website?: string;
@@ -43,8 +47,28 @@ interface BasicProfileData {
   languages?: string[];
   expertise?: any[];
   specializations?: string[];
-  chatEnabled?: boolean;
-  matches?: string[];
+  pricing?: { hourlyRate?: number; portfolioFee?: number; };
+  assetsUnderManagement?: number;
+  yearsOfExperience?: number;
+  
+  // Required for both profile types
+  chats: string[];
+  onlineStatus: 'online' | 'offline' | 'away';
+  lastOnline: string;
+  showOnlineStatus: boolean;
+  
+  // AdvisorProfile specific
+  appointmentCategories?: any[];
+  appointments?: string[];
+  availability?: any[];
+  
+  // ConsumerProfile specific
+  age?: number;
+  status?: string;
+  investableAssets?: number;
+  riskTolerance?: 'low' | 'medium' | 'high';
+  preferredCommunication?: string[];
+  preferredLanguage?: string[];
 }
 
 /**
@@ -85,17 +109,22 @@ export const useMatchList = (options: UseMatchListOptions) => {
   const { getTopMatches: fetchPersistedMatches } = useMatchPersistence();
   
   // Use pagination
-  const {
-    currentPage,
-    totalPages,
-    items: paginatedItems,
-    goToPage,
-    nextPage,
-    prevPage
-  } = usePagination<AdvisorProfile | ConsumerProfile>({
+  const pagination = usePagination<AdvisorProfile | ConsumerProfile>({
     items: filteredAndSortedProfiles,
     itemsPerPage: pageSize
   });
+  
+  // Extract pagination values for readability
+  const {
+    items: paginatedItems,
+    currentPage,
+    totalPages,
+    goToPage,
+    nextPage,
+    prevPage,
+    isFirstPage,
+    isLastPage
+  } = pagination;
   
   /**
    * Load matches from persistence
@@ -116,19 +145,45 @@ export const useMatchList = (options: UseMatchListOptions) => {
             id: match.id,
             name: `Profile ${match.id}`,
             score: match.score,
-            // Add minimum required fields for both profile types
-            organization: userType === 'consumer' ? undefined : 'Organization',
-            isAccredited: userType === 'consumer' ? undefined : false,
-            website: userType === 'consumer' ? undefined : '',
-            testimonials: userType === 'consumer' ? undefined : [],
-            languages: [],
-            expertise: [],
-            specializations: userType === 'consumer' ? undefined : [],
+            
+            // Required shared fields
+            matches: [],
             chatEnabled: false,
-            matches: []
+            chats: [],
+            onlineStatus: 'offline',
+            lastOnline: new Date().toISOString(),
+            showOnlineStatus: false,
+            
+            // Add type-specific fields based on userType
+            ...(userType === 'advisor' ? {
+              // Consumer-specific fields when viewing as advisor
+              age: 30,
+              status: 'Active',
+              investableAssets: 50000,
+              riskTolerance: 'medium',
+              preferredCommunication: [],
+              preferredLanguage: []
+            } : {
+              // Advisor-specific fields when viewing as consumer
+              organization: 'Organization',
+              isAccredited: false,
+              website: '',
+              testimonials: [],
+              languages: [],
+              expertise: [],
+              specializations: [],
+              pricing: { hourlyRate: 100, portfolioFee: 1 },
+              assetsUnderManagement: 1000000,
+              yearsOfExperience: 5,
+              appointments: [],
+              appointmentCategories: [],
+              availability: []
+            })
           };
           
-          return profile as (AdvisorProfile | ConsumerProfile);
+          return userType === 'advisor' 
+            ? profile as ConsumerProfile 
+            : profile as AdvisorProfile;
         });
         
         setProfiles(matchedProfiles);
@@ -196,6 +251,8 @@ export const useMatchList = (options: UseMatchListOptions) => {
     goToPage,
     nextPage,
     prevPage,
+    isFirstPage,
+    isLastPage,
     
     // Actions
     updateProfiles,
