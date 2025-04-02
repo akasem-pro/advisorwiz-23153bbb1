@@ -77,3 +77,57 @@
     transform: translateX(100%);
   }
 }
+
+/* Visual feedback states for interactive elements */
+.element-hover {
+  @apply transition-colors duration-200;
+}
+
+.element-active {
+  @apply transition-transform duration-100 active:scale-98;
+}
+
+/* Consistent entrance animations */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Card entrance animation */
+.card-entrance {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: cardEntrance 0.4s ease-out forwards;
+}
+
+@keyframes cardEntrance {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered list item animations */
+.list-item-entrance {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.list-item-entrance:nth-child(1) { animation: listItemEntrance 0.3s ease-out 0.1s forwards; }
+.list-item-entrance:nth-child(2) { animation: listItemEntrance 0.3s ease-out 0.2s forwards; }
+.list-item-entrance:nth-child(3) { animation: listItemEntrance 0.3s ease-out 0.3s forwards; }
+.list-item-entrance:nth-child(4) { animation: listItemEntrance 0.3s ease-out 0.4s forwards; }
+.list-item-entrance:nth-child(5) { animation: listItemEntrance 0.3s ease-out 0.5s forwards; }
+
+@keyframes listItemEntrance {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

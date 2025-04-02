@@ -1,6 +1,5 @@
 
 import { createRoutes } from './routeHelpers';
-import AppLayout from '../components/layout/AppLayout';
 import Home from '../pages/Home';
 import AboutUs from '../pages/AboutUs';
 import ForAdvisors from '../pages/ForAdvisors';
