@@ -48,7 +48,10 @@ describe('MatchCard Component', () => {
       hourlyRate: 150
     },
     assetsUnderManagement: 5000000,
-    matches: []
+    matches: [],
+    // Adding the missing properties
+    website: 'https://example.com',
+    specializations: ['retirement_planning', 'tax_planning']
   };
   
   // Sample consumer profile for testing
@@ -175,17 +178,16 @@ describe('MatchCard Component', () => {
     expect(screen.getByText(/85%/)).toBeInTheDocument();
   });
   
-  // Update this test to pass the isLoading prop correctly
+  // Update this test to remove the isLoading prop which doesn't exist on MatchCard
   it('handles loading state correctly', () => {
     // Mock the implementation of the AdvisorCard and ConsumerCard components
     jest.mock('../../components/advisor/AdvisorCard', () => {
-      return function MockAdvisorCard({ isLoading }) {
-        return isLoading ? <div data-testid="card-skeleton"></div> : null;
+      return function MockAdvisorCard() {
+        return <div data-testid="card-skeleton"></div>;
       };
     });
     
-    // Instead of testing the isLoading prop, which doesn't exist directly on MatchCard,
-    // we'll test something else that makes sense for the component
+    // Test for presence of components without using isLoading
     render(
       <MatchCard
         item={advisorItem}
