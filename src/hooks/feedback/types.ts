@@ -1,5 +1,6 @@
 
 import { type ToastActionElement } from '@/components/ui/toast';
+import { ErrorSeverity, ErrorCategory } from '../../utils/errorHandling/errorHandler';
 
 export type FeedbackVariant = 'success' | 'error' | 'warning' | 'info' | 'loading';
 
@@ -35,5 +36,5 @@ export interface EnhancedFeedbackOptions {
   position?: 'top' | 'bottom' | 'inline';
 }
 
-// Re-export error types that are used
-export { ErrorSeverity, ErrorCategory } from '../../utils/errorHandling/errorHandler';
+// Re-export error types for convenience
+export { ErrorSeverity, ErrorCategory };
