@@ -24,26 +24,34 @@ Object.defineProperty(window, 'matchMedia', {
 window.scrollTo = jest.fn();
 
 // Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  constructor(callback) {
-    this.callback = callback;
-  }
-  
+class MockIntersectionObserver {
   observe = jest.fn();
   unobserve = jest.fn();
   disconnect = jest.fn();
-};
+  root = null;
+  rootMargin = '';
+  thresholds = [];
+  takeRecords = jest.fn();
+
+  constructor() {
+    // Empty constructor
+  }
+}
+
+global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
 // Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
-  constructor(callback) {
-    this.callback = callback;
-  }
-  
+class MockResizeObserver {
   observe = jest.fn();
   unobserve = jest.fn();
   disconnect = jest.fn();
-};
+
+  constructor() {
+    // Empty constructor
+  }
+}
+
+global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 
 // Set up localStorage mock
 const localStorageMock = (() => {
@@ -92,8 +100,18 @@ global.fetch = jest.fn(() =>
     text: () => Promise.resolve(''),
     ok: true,
     status: 200,
+    statusText: '',
     headers: new Headers(),
-  })
+    redirected: false,
+    type: 'basic',
+    url: '',
+    clone: () => ({}),
+    body: null,
+    bodyUsed: false,
+    arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
+    blob: () => Promise.resolve(new Blob()),
+    formData: () => Promise.resolve(new FormData()),
+  } as Response)
 );
 
 // Reset all mocks after each test

@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
-import { AdvisorProfile, ConsumerProfile, useUser } from '../../context/UserContext';
+import { AdvisorProfile, ConsumerProfile } from '../../context/UserContext';
 import AdvisorCard from '../advisor/AdvisorCard';
 import ConsumerCard from '../consumer/ConsumerCard';
 import AvailabilityViewer from '../advisor/AvailabilityViewer';
 import { Calendar, CheckCircle } from 'lucide-react';
 
-interface MatchCardProps {
+export interface MatchCardProps {
   item: AdvisorProfile | ConsumerProfile;
   userType: 'consumer' | 'advisor' | null;
   onSwipeRight: (item: AdvisorProfile | ConsumerProfile) => void;
@@ -99,5 +99,8 @@ const MatchCard: React.FC<MatchCardProps> = ({
     </div>
   );
 };
+
+// Adding the missing useUser hook import
+import { useUser } from '../../context/UserContext';
 
 export default MatchCard;
