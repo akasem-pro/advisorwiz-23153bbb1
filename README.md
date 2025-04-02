@@ -70,6 +70,7 @@ For detailed development guidelines, please refer to the documentation in the `d
 - [Architecture Documentation](./docs/ARCHITECTURE.md) - System design and architectural decisions
 - [Code Standards](./docs/CODE_STANDARDS.md) - Coding conventions and standards
 - [Contributing Guide](./docs/CONTRIBUTING.md) - How to contribute to the project
+- [Performance Monitoring](./docs/PERFORMANCE_MONITORING.md) - Performance tracking and optimization guide
 
 ## Project Structure
 
@@ -108,6 +109,18 @@ This project implements several performance optimizations:
 - **Resource Hints**: Uses preconnect and preload for critical resources
 - **Enhanced Performance Tracking**: Metrics batching and persistence across page loads
 
+### Performance Monitoring System
+
+AdvisorWiz includes a comprehensive performance monitoring system that:
+
+- **Tracks Core Web Vitals**: Monitors LCP, FID, CLS, and INP metrics
+- **Measures Component Performance**: Tracks render times and interaction latency
+- **Records User Journey Metrics**: Captures key user flows and experiences
+- **Integrates with Analytics**: Correlates performance with business metrics
+- **Supports A/B Testing**: Measures performance impact of different implementations
+
+For details, see the [Performance Monitoring Documentation](./docs/PERFORMANCE_MONITORING.md).
+
 ## A/B Testing Integration
 
 The platform includes integrated A/B testing capabilities:
@@ -135,4 +148,3 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for detailed information on contri
 ## License
 
 This project is proprietary and confidential. All rights reserved.
-

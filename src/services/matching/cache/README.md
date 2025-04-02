@@ -57,16 +57,24 @@ The cache system integrates with the application's performance monitoring infras
 Example integration with performance monitoring:
 
 ```typescript
-import { recordPerformanceMark } from '../../../utils/performance';
+import { recordPerformanceMark, trackEnhancedPerformance } from '../../../utils/performance';
 
-// When retrieving from cache
+// Basic performance tracking
 recordPerformanceMark('cache-lookup-start');
 const result = cacheStore.get(key);
 recordPerformanceMark('cache-lookup-end', 'cache-lookup-duration', 'cache-lookup-start');
 
-// Track cache hit/miss
-storeAnalyticsMetric(`cache_${result ? 'hit' : 'miss'}`, 1);
+// Enhanced performance tracking
+trackEnhancedPerformance(`cache_${result ? 'hit' : 'miss'}`, lookupTimeMs, {
+  tags: {
+    cacheType: 'compatibility',
+    keyPattern: keyPattern,
+    cacheSize: cacheStore.size
+  }
+});
 ```
+
+For a comprehensive overview of performance monitoring, see [PERFORMANCE_MONITORING.md](/docs/PERFORMANCE_MONITORING.md).
 
 ## Cache Invalidation Strategies
 
@@ -131,4 +139,3 @@ On mobile devices, the cache system automatically:
 - Reduces the maximum cache size
 - Increases garbage collection frequency
 - Prioritizes memory efficiency over lookup speed
-

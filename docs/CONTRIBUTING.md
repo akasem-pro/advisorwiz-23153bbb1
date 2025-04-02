@@ -125,10 +125,10 @@ When working with the performance monitoring system:
 - Test changes against Core Web Vitals metrics
 - Make sure A/B test integrations properly track performance impacts
 
-### Performance Monitoring Guidelines
+### Performance Monitoring Usage Examples
 
 ```typescript
-// Example of recording performance marks
+// Example of recording simple performance marks
 import { recordPerformanceMark } from '../utils/performance';
 
 // Record when a component loads
@@ -140,7 +140,34 @@ useEffect(() => {
 recordPerformanceMark('operation-start');
 const result = expensiveOperation();
 recordPerformanceMark('operation-end', 'operation-duration', 'operation-start');
+
+// Example of enhanced performance tracking for complex metrics
+import { trackEnhancedPerformance } from '../utils/performance';
+
+// Track a complex operation with tags and metadata
+trackEnhancedPerformance('matching-calculation', durationMs, {
+  tags: {
+    userType: 'advisor',
+    featureArea: 'matching',
+    matchType: 'expertise'
+  },
+  persist: true,
+  sendImmediately: false
+});
 ```
+
+### Web Vitals Integration
+
+The performance monitoring system automatically tracks Core Web Vitals:
+
+- LCP (Largest Contentful Paint)
+- FID (First Input Delay)
+- CLS (Cumulative Layout Shift)
+- INP (Interaction to Next Paint)
+
+These metrics are correlated with user interactions and reported to analytics for monitoring.
+
+For more details, refer to [PERFORMANCE_MONITORING.md](./PERFORMANCE_MONITORING.md).
 
 ## Reporting Bugs
 
@@ -170,4 +197,3 @@ If you have questions or need support, please:
 1. Check the documentation
 2. Look for existing issues
 3. Create a new issue with the label "question"
-

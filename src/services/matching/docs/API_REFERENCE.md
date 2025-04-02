@@ -152,6 +152,37 @@ trackEnhancedPerformance('match-calculation-time', 250, {
 });
 ```
 
+### `measureComponentRender`
+
+Track rendering performance of a React component.
+
+```typescript
+function measureComponentRender(
+  componentName: string, 
+  phase: 'mount' | 'update' | 'unmount'
+): void
+```
+
+**Parameters:**
+- `componentName`: Name of the component being measured
+- `phase`: Which lifecycle phase is being measured
+
+**Example:**
+```typescript
+// In a React component
+useEffect(() => {
+  measureComponentRender('MatchingInterface', 'mount');
+  return () => {
+    measureComponentRender('MatchingInterface', 'unmount');
+  };
+}, []);
+
+// For updates
+useEffect(() => {
+  measureComponentRender('MatchingInterface', 'update');
+}, [dependencies]);
+```
+
 ## Cache Management APIs
 
 ### `clearCompatibilityCache`
@@ -278,6 +309,67 @@ function calculateExpertiseMatchScore(
 ): { score: number; explanation: string | null }
 ```
 
+## Performance Monitoring Integration
+
+### `withPerformanceTracking`
+
+Higher-order function for tracking execution time.
+
+```typescript
+function withPerformanceTracking<T extends (...args: any[]) => any>(
+  fn: T,
+  operationName: string,
+  options?: {
+    reportToAnalytics?: boolean;
+    threshold?: number; // Only report if execution time exceeds threshold (ms)
+  }
+): (...args: Parameters<T>) => ReturnType<T>
+```
+
+**Example:**
+```typescript
+// Wrap a function with performance tracking
+const optimizedCalculation = withPerformanceTracking(
+  expensiveCalculation,
+  'advisor-matching-calculation',
+  { 
+    reportToAnalytics: true,
+    threshold: 50 // Only report if it takes > 50ms
+  }
+);
+
+// Use the wrapped function
+const result = optimizedCalculation(data);
+```
+
+### `usePerformanceTracking`
+
+React hook for tracking component rendering performance.
+
+```typescript
+function usePerformanceTracking(
+  componentName: string,
+  options?: {
+    trackMount?: boolean;
+    trackUpdate?: boolean;
+    trackUnmount?: boolean;
+    reportToAnalytics?: boolean;
+  }
+): void
+```
+
+**Example:**
+```typescript
+function ExpensiveComponent() {
+  usePerformanceTracking('ExpensiveComponent', {
+    trackMount: true,
+    trackUpdate: true
+  });
+  
+  // Component implementation
+}
+```
+
 ## Analytics Integration
 
 ### `trackVariantImpression`
@@ -326,3 +418,4 @@ These metrics are collected and correlated with matching operations to optimize 
 }
 ```
 
+For more details on performance monitoring, see [PERFORMANCE_MONITORING.md](/docs/PERFORMANCE_MONITORING.md).

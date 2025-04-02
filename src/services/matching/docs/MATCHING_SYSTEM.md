@@ -77,6 +77,8 @@ The matching system employs a multi-level caching strategy:
    - Time expiration
    - Manual invalidation
 
+For more details on the caching system, see the [Cache System README](../cache/README.md).
+
 ## Performance Monitoring
 
 The matching system integrates with the application's performance monitoring system to track:
@@ -101,11 +103,30 @@ recordPerformanceMark('matching-calculation-end',
                      'matching-calculation-start');
 ```
 
+For enhanced performance tracking with metadata:
+
+```typescript
+import { trackEnhancedPerformance } from '../../../utils/performance';
+
+// Track match calculation with metadata
+trackEnhancedPerformance('match-calculation', calculationTimeMs, {
+  tags: {
+    strategy: currentStrategy,
+    advisorCount: advisors.length,
+    consumerCount: consumers.length,
+    cacheHit: wasCacheHit
+  },
+  persist: true
+});
+```
+
 The system also tracks how matching impacts user experience by correlating matching scores with:
 - User engagement metrics
 - Session duration
 - Conversion rates
 - Web Vitals measurements
+
+For a comprehensive guide to performance monitoring, see [PERFORMANCE_MONITORING.md](/docs/PERFORMANCE_MONITORING.md).
 
 ## Performance Optimizations
 
@@ -140,4 +161,3 @@ The matching system includes tools for monitoring performance:
 3. **Match Quality Metrics**: User feedback integration
 4. **Error Logging**: Failure detection and diagnosis
 5. **A/B Test Correlation**: Tracking which matching algorithms perform best
-
