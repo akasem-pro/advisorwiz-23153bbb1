@@ -6,7 +6,7 @@
  * and integrates with analytics systems including A/B testing
  */
 
-import { trackConversion } from '../abTesting';
+import { trackVariantConversion } from '../analytics/abTestTracker';
 import { sendGA4Event } from '../analytics/ga4Integration';
 import { storeAnalyticsMetric } from './core';
 import type { Metric } from 'web-vitals';
@@ -123,12 +123,12 @@ const checkABTestingIntegration = (metricName: WebVitalName, value: number): voi
         
         if (userId) {
           // Send the web vital as conversion data for this experiment
-          trackConversion(
+          trackVariantConversion(
             experimentId, 
             variantId, 
             `web_vital_${metricName.toLowerCase()}`,
             userId,
-            // Pass additional data as an object, not a number
+            // Pass additional data as an object
             { 
               metricName, 
               value, 
