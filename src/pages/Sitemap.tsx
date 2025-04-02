@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
+import AppLayout from '../components/layout/AppLayout';
 import PageSEO from '../components/seo/PageSEO';
 import { Button } from '../components/ui/button';
 import { generateBreadcrumbSchema } from '../utils/schemas';
@@ -79,7 +79,7 @@ const Sitemap: React.FC = () => {
   ];
 
   return (
-    <>
+    <AppLayout>
       <PageSEO
         title="Complete Website Sitemap | AdvisorWiz"
         description="Navigate the AdvisorWiz financial advisor matching platform with our comprehensive sitemap. Find all sections and pages of our website organized for easy access."
@@ -133,7 +133,7 @@ const Sitemap: React.FC = () => {
           </Button>
         </div>
       </div>
-    </>
+    </AppLayout>
   );
 };
 

@@ -67,7 +67,21 @@ const routeConfigs = [
   },
 ];
 
-// Simply use createRoutes without wrapping in additional AppLayout
-const MainRoutes = createRoutes(routeConfigs);
+// Apply consistent AppLayout to non-index routes
+const MainRoutes = routeConfigs.map(config => {
+  if (config.index) {
+    // Use createRoutes for single route as well
+    return createRoutes([config])[0];
+  }
+  
+  return createRoutes([{
+    ...config,
+    element: (
+      <AppLayout hideFooter={true}>
+        {config.element}
+      </AppLayout>
+    )
+  }])[0];
+});
 
 export default MainRoutes;
