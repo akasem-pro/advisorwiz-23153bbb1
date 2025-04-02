@@ -8,13 +8,20 @@ import {
   getTopMatches as fetchTopMatches 
 } from '../services/matching/supabaseIntegration';
 import { toast } from 'sonner';
-
-// Cache configuration
-const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
-const MAX_CACHE_ITEMS = 100;
+import { CACHE_CONFIG } from '../services/matching/config/matchingConfig';
 
 /**
  * Hook for persisting match data to the database
+ * 
+ * This hook provides functionality to store and retrieve compatibility scores
+ * between advisors and consumers, with local caching for performance optimization.
+ * 
+ * Features:
+ * - Local in-memory caching with TTL
+ * - Database persistence
+ * - Automatic cache maintenance
+ * - Offline support
+ * - Error handling
  */
 export const useMatchPersistence = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -36,20 +43,20 @@ export const useMatchPersistence = () => {
       
       // Time-based eviction
       scoreCache.current.forEach((entry, key) => {
-        if (now - entry.timestamp > CACHE_TTL) {
+        if (now - entry.timestamp > CACHE_CONFIG.EXPIRATION_MS) {
           scoreCache.current.delete(key);
           evictedCount++;
         }
       });
       
       // Size-based eviction if too many items
-      if (scoreCache.current.size > MAX_CACHE_ITEMS) {
+      if (scoreCache.current.size > CACHE_CONFIG.MAX_ITEMS) {
         // Convert to array to sort by timestamp
         const entries = Array.from(scoreCache.current.entries())
           .sort((a, b) => a[1].timestamp - b[1].timestamp);
         
         // Remove oldest entries to bring size down to 75% of max
-        const itemsToRemove = scoreCache.current.size - Math.floor(MAX_CACHE_ITEMS * 0.75);
+        const itemsToRemove = scoreCache.current.size - Math.floor(CACHE_CONFIG.MAX_ITEMS * 0.75);
         entries.slice(0, itemsToRemove).forEach(([key]) => {
           scoreCache.current.delete(key);
           evictedCount++;
@@ -59,7 +66,7 @@ export const useMatchPersistence = () => {
       if (evictedCount > 0) {
         console.log(`Cache maintenance: evicted ${evictedCount} stale or excess entries`);
       }
-    }, 5 * 60 * 1000); // Run every 5 minutes
+    }, CACHE_CONFIG.CLEANUP_INTERVAL_MS); // Run every 10 minutes
     
     return () => clearInterval(cleanupInterval);
   }, []);
@@ -114,7 +121,7 @@ export const useMatchPersistence = () => {
     
     // Check local cache first
     const cachedEntry = scoreCache.current.get(cacheKey);
-    if (cachedEntry && (Date.now() - cachedEntry.timestamp < CACHE_TTL)) {
+    if (cachedEntry && (Date.now() - cachedEntry.timestamp < CACHE_CONFIG.EXPIRATION_MS)) {
       console.log('Cache hit: Returning cached compatibility score');
       return cachedEntry.data;
     }

@@ -2,6 +2,7 @@
 import { MatchPreferences } from '../../../context/UserContextDefinition';
 import { CallMetrics } from '../../../types/callTypes';
 import { MatchingStrategy } from './MatchingStrategy';
+import { MATCHING_WEIGHTS } from '../config/matchingConfig';
 
 // Algorithm components
 import { calculateLanguageMatchScore } from '../algorithms/languageMatching';
@@ -18,14 +19,37 @@ import { mockAdvisors, mockConsumers } from '../../../data/mockUsers';
 
 /**
  * Default implementation of the matching strategy
+ * 
+ * This strategy implements a balanced approach to compatibility scoring,
+ * giving appropriate weight to each matching factor based on standard weights.
+ * It serves as the base implementation and fallback strategy.
+ * 
+ * Algorithm characteristics:
+ * - Balances all matching factors using standard weights
+ * - Includes risk tolerance alignment with moderate weighting
+ * - Considers call interaction data if available
+ * - Applies exclusion penalties for explicitly excluded categories
+ * - Enforces minimum score thresholds from user preferences
  */
 export class DefaultMatchingStrategy implements MatchingStrategy {
+  /**
+   * Calculate compatibility score using the default balanced algorithm
+   * 
+   * @param advisorId - ID of the advisor to evaluate
+   * @param consumerId - ID of the consumer to match against
+   * @param preferences - User-defined matching preferences
+   * @param callMetrics - Optional call interaction metrics
+   * 
+   * @returns Compatibility score (0-100) and explanations
+   */
   calculateScore(
     advisorId: string,
     consumerId: string,
     preferences: MatchPreferences,
     callMetrics?: CallMetrics[]
   ): { score: number; matchExplanation: string[] } {
+    // Fetch profiles from data source
+    // In production, this would be replaced with database queries or API calls
     const advisor = mockAdvisors.find(a => a.id === advisorId);
     const consumer = mockConsumers.find(c => c.id === consumerId);
     
@@ -65,7 +89,7 @@ export class DefaultMatchingStrategy implements MatchingStrategy {
     // 4. Location preference weighting
     if (preferences.prioritizeLocation) {
       // Simplified location logic for now
-      weightedScore += 5;
+      weightedScore += MATCHING_WEIGHTS.LOCATION;
     }
     
     // 5. Call interaction data weighting

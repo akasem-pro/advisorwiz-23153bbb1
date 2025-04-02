@@ -2,6 +2,16 @@
 /**
  * Weighted compatibility scoring system
  * Central coordinator for the matching algorithm
+ * 
+ * This module provides the main entry point for compatibility calculations,
+ * utilizing the strategy pattern to apply different scoring algorithms
+ * based on context and requirements.
+ * 
+ * Key features:
+ * - Strategy-based scoring with interchangeable algorithms
+ * - Performance optimization through caching
+ * - Integration with analytics for match tracking
+ * - Support for custom preference weightings
  */
 import { MatchPreferences } from '../../context/UserContextDefinition';
 import { withPerformanceTracking } from '../../utils/performance/functionTracking';
@@ -21,7 +31,10 @@ import {
   checkCacheMaintenance
 } from './cache/compatibilityCache';
 
-// Create the strategy context with default strategy
+/**
+ * The current active strategy context used for calculations
+ * @private
+ */
 const strategyContext = new MatchingStrategyContext(
   MatchingStrategyFactory.createStrategy('default')
 );
@@ -30,14 +43,26 @@ const strategyContext = new MatchingStrategyContext(
  * Set the active matching strategy
  * 
  * @param strategyType - The type of matching strategy to use
+ * 
+ * Usage example:
+ * ```typescript
+ * // For a premium user
+ * setMatchingStrategy('premium');
+ * // For risk-focused matching
+ * setMatchingStrategy('risk-focused');
+ * ```
  */
 export const setMatchingStrategy = (strategyType: MatchingStrategyType): void => {
   const strategy = MatchingStrategyFactory.createStrategy(strategyType);
   strategyContext.setStrategy(strategy);
+  console.log(`Matching strategy set to: ${strategyType}`);
 };
 
 /**
  * Performance-optimized weighted compatibility score calculation
+ * 
+ * This function handles caching, analytics tracking, and delegates the actual
+ * calculation to the current active strategy.
  * 
  * @param advisorId - The ID of the advisor to score
  * @param consumerId - The ID of the consumer to score against
@@ -110,13 +135,18 @@ const calculateWeightedCompatibilityScore = (
   return result;
 };
 
-// Export the function with performance tracking wrapper
+/**
+ * Public API: Calculate compatibility score with performance tracking
+ * 
+ * This exported function wraps the internal calculation function with
+ * performance tracking to monitor execution time and success rates.
+ */
 export const getWeightedCompatibilityScore = withPerformanceTracking(
   calculateWeightedCompatibilityScore,
   'getWeightedCompatibilityScore'
 );
 
-// Re-export cache utilities
+// Re-export cache utilities for external use
 export {
   clearCompatibilityCache,
   getCompatibilityCacheStats
