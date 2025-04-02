@@ -1,5 +1,7 @@
+
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useToast, type ToastActionElement } from './use-toast';
+import { useToast } from './use-toast';
+import type { ToastActionElement } from '@radix-ui/react-toast'; // Import the type directly from Radix UI
 import { useFeedback } from '../context/FeedbackContext';
 import { ErrorSeverity, ErrorCategory } from '../utils/errorHandling/errorHandler';
 import { flushErrorLogs } from '../utils/errorHandling';
