@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { AdvisorProfile, ConsumerProfile } from '../context/UserContext';
 import { MatchPreferences } from '../context/UserContextDefinition';
 import { memoize, createStableKey, MemoizedFunction } from '../utils/optimization/memoize';
@@ -59,23 +59,19 @@ export const useOptimizedMatching = (
   }, []);
   
   // Create a memoized version of the compatibility calculation function
-  const calculateCompatibilityMemoized = useRef<MemoizedFunction<
-    (advisorId: string, consumerId: string, prefs: MatchPreferences) => { score: number; matchExplanation: string[] }
-  >>(
-    memoize(
-      (advisorId: string, consumerId: string, prefs: MatchPreferences) => {
-        return getWeightedCompatibilityScore(advisorId, consumerId, prefs);
-      },
-      {
-        maxSize: 500,
-        ttl: 5 * 60 * 1000, // 5 minutes
-        cacheKeyFn: (...args) => {
-          const [advisorId, consumerId, prefs] = args;
-          return `${advisorId}:${consumerId}:${createStableKey(prefs)}`;
-        }
+  const calculateCompatibilityMemoized = useMemo(() => memoize(
+    (advisorId: string, consumerId: string, prefs: MatchPreferences) => {
+      return getWeightedCompatibilityScore(advisorId, consumerId, prefs);
+    },
+    {
+      maxSize: 500,
+      ttl: 5 * 60 * 1000, // 5 minutes
+      cacheKeyFn: (...args) => {
+        const [advisorId, consumerId, prefs] = args;
+        return `${advisorId}:${consumerId}:${createStableKey(prefs)}`;
       }
-    )
-  ).current;
+    }
+  ), []);
   
   /**
    * Process batch queue of compatibility calculations
@@ -162,30 +158,10 @@ export const useOptimizedMatching = (
         }
         
         // If not in database, try memoized cache
-        const cachedResult = calculateCompatibilityMemoized(
-          advisorId, 
-          consumerId, 
-          matchPreferences
-        );
-        
-        // Store the result in the database for future use
-        persistCompatibilityScore(
-          advisorId, 
-          consumerId, 
-          cachedResult.score, 
-          cachedResult.matchExplanation
-        ).catch(err => {
-          console.error('Failed to persist compatibility score:', err);
-        });
-        
-        return cachedResult.score;
-      } catch (error) {
-        // If memoization fails or cache miss, use async calculation
-        if (workerAvailable) {
-          // Use web worker if available
-          const result = await calculateCompatibilityAsync(
-            advisorId,
-            consumerId,
+        try {
+          const cachedResult = calculateCompatibilityMemoized(
+            advisorId, 
+            consumerId, 
             matchPreferences
           );
           
@@ -193,17 +169,42 @@ export const useOptimizedMatching = (
           persistCompatibilityScore(
             advisorId, 
             consumerId, 
-            result.score, 
-            result.matchExplanation
+            cachedResult.score, 
+            cachedResult.matchExplanation
           ).catch(err => {
             console.error('Failed to persist compatibility score:', err);
           });
           
-          return result.score;
-        } else {
-          // Queue for batch processing as fallback
-          return queueCompatibilityCalculation(advisorId, consumerId);
+          return cachedResult.score;
+        } catch (error) {
+          // If memoization fails or cache miss, use async calculation
+          if (workerAvailable) {
+            // Use web worker if available
+            const result = await calculateCompatibilityAsync(
+              advisorId,
+              consumerId,
+              matchPreferences
+            );
+            
+            // Store the result in the database for future use
+            persistCompatibilityScore(
+              advisorId, 
+              consumerId, 
+              result.score, 
+              result.matchExplanation
+            ).catch(err => {
+              console.error('Failed to persist compatibility score:', err);
+            });
+            
+            return result.score;
+          } else {
+            // Queue for batch processing as fallback
+            return queueCompatibilityCalculation(advisorId, consumerId);
+          }
         }
+      } catch (error) {
+        console.error('Error calculating compatibility score:', error);
+        return 0; // Fallback score
       }
     },
     [
@@ -220,20 +221,25 @@ export const useOptimizedMatching = (
    * Get compatibility explanations
    */
   const getCompatibilityExplanations = useCallback(
-    (advisorId: string, consumerId: string): Promise<string[]> => {
-      // Always get the full explanation
-      if (workerAvailable) {
-        return calculateCompatibilityAsync(advisorId, consumerId, matchPreferences)
-          .then(result => result.matchExplanation);
+    async (advisorId: string, consumerId: string): Promise<string[]> => {
+      try {
+        // Always get the full explanation
+        if (workerAvailable) {
+          return calculateCompatibilityAsync(advisorId, consumerId, matchPreferences)
+            .then(result => result.matchExplanation);
+        }
+        
+        // Fallback to synchronous calculation
+        const result = calculateCompatibilityMemoized(
+          advisorId,
+          consumerId,
+          matchPreferences
+        );
+        return Promise.resolve(result.matchExplanation);
+      } catch (error) {
+        console.error('Error getting compatibility explanations:', error);
+        return Promise.resolve(['Unable to generate explanation']);
       }
-      
-      // Fallback to synchronous calculation
-      const result = calculateCompatibilityMemoized(
-        advisorId,
-        consumerId,
-        matchPreferences
-      );
-      return Promise.resolve(result.matchExplanation);
     },
     [matchPreferences, workerAvailable, calculateCompatibilityMemoized]
   );
@@ -270,26 +276,30 @@ export const useOptimizedMatching = (
       }
       
       // Fall back to local calculation if database retrieval fails
-      const calculationPromises = profiles.map(async (profile) => {
-        const targetId = profile.id;
-        const advisorId = userType === 'consumer' ? targetId : selfId;
-        const consumerId = userType === 'consumer' ? selfId : targetId;
+      try {
+        const results = await Promise.all(
+          profiles.map(async profile => {
+            const targetId = profile.id;
+            const advisorId = userType === 'consumer' ? targetId : selfId;
+            const consumerId = userType === 'consumer' ? selfId : targetId;
+            
+            const score = await calculateCompatibilityScore(advisorId, consumerId);
+            
+            return {
+              profile,
+              score
+            };
+          })
+        );
         
-        const score = await calculateCompatibilityScore(advisorId, consumerId);
-        
-        return {
-          profile,
-          score
-        };
-      });
-      
-      // Wait for all calculations to complete
-      const results = await Promise.all(calculationPromises);
-      
-      // Sort by score (descending) and take only the limit
-      return results
-        .sort((a, b) => b.score - a.score)
-        .slice(0, limit);
+        // Sort by score (descending) and take only the limit
+        return results
+          .sort((a, b) => b.score - a.score)
+          .slice(0, limit);
+      } catch (error) {
+        console.error('Error calculating top matches:', error);
+        return [];
+      }
     },
     [calculateCompatibilityScore, fetchPersistentMatches]
   );
@@ -298,14 +308,17 @@ export const useOptimizedMatching = (
    * Clear the compatibility calculation cache
    */
   const clearCache = useCallback(() => {
-    calculateCompatibilityMemoized.clearCache();
+    // This is now safe because calculateCompatibilityMemoized is memoized
+    if (calculateCompatibilityMemoized.clearCache) {
+      calculateCompatibilityMemoized.clearCache();
+    }
   }, [calculateCompatibilityMemoized]);
   
   /**
    * Get cache statistics
    */
   const getCacheStats = useCallback(() => {
-    return calculateCompatibilityMemoized.getStats();
+    return calculateCompatibilityMemoized.getStats?.() || { size: 0, keys: [] };
   }, [calculateCompatibilityMemoized]);
   
   return {

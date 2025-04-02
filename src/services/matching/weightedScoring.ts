@@ -6,12 +6,6 @@
  * This module provides the main entry point for compatibility calculations,
  * utilizing the strategy pattern to apply different scoring algorithms
  * based on context and requirements.
- * 
- * Key features:
- * - Strategy-based scoring with interchangeable algorithms
- * - Performance optimization through caching
- * - Integration with analytics for match tracking
- * - Support for custom preference weightings
  */
 import { MatchPreferences } from '../../context/UserContextDefinition';
 import { withPerformanceTracking } from '../../utils/performance/functionTracking';
@@ -22,7 +16,7 @@ import { trackMatchingInteraction } from '../../utils/analytics/matchTracker';
 import { MatchingStrategyContext } from './strategies/MatchingStrategyContext';
 import { MatchingStrategyFactory, MatchingStrategyType } from './strategies/MatchingStrategyFactory';
 
-// Cache management - updated imports
+// Cache management with improved implementation
 import { 
   getCachedResult, 
   cacheResult, 
@@ -43,14 +37,6 @@ const strategyContext = new MatchingStrategyContext(
  * Set the active matching strategy
  * 
  * @param strategyType - The type of matching strategy to use
- * 
- * Usage example:
- * ```typescript
- * // For a premium user
- * setMatchingStrategy('premium');
- * // For risk-focused matching
- * setMatchingStrategy('risk-focused');
- * ```
  */
 export const setMatchingStrategy = (strategyType: MatchingStrategyType): void => {
   const strategy = MatchingStrategyFactory.createStrategy(strategyType);
@@ -59,17 +45,28 @@ export const setMatchingStrategy = (strategyType: MatchingStrategyType): void =>
 };
 
 /**
+ * Create a stable cache key for compatibility calculation inputs
+ * @private
+ */
+const createCompatibilityCacheKey = (
+  advisorId: string,
+  consumerId: string,
+  preferences: MatchPreferences
+): string => {
+  // Sort preference keys to ensure consistent ordering
+  const prefsString = JSON.stringify(
+    preferences, 
+    Object.keys(preferences).sort()
+  );
+  
+  return `${advisorId}-${consumerId}-${prefsString}`;
+};
+
+/**
  * Performance-optimized weighted compatibility score calculation
  * 
- * This function handles caching, analytics tracking, and delegates the actual
+ * This pure function handles caching and delegates the actual
  * calculation to the current active strategy.
- * 
- * @param advisorId - The ID of the advisor to score
- * @param consumerId - The ID of the consumer to score against
- * @param preferences - The matching preferences to apply
- * @param callMetrics - Optional call metrics for interaction-based scoring
- * @param trackAnalytics - Whether to track this calculation in analytics
- * @returns Object containing both the score and explanation for the match
  */
 const calculateWeightedCompatibilityScore = (
   advisorId: string,
@@ -78,8 +75,15 @@ const calculateWeightedCompatibilityScore = (
   callMetrics?: CallMetrics[],
   trackAnalytics: boolean = false
 ): { score: number; matchExplanation: string[] } => {
-  // Create a comprehensive cache key that includes preferences
-  const cacheKey = `${advisorId}-${consumerId}-${JSON.stringify(preferences)}`;
+  if (!advisorId || !consumerId) {
+    return { 
+      score: 0, 
+      matchExplanation: ["Invalid input: Missing advisor or consumer ID"] 
+    };
+  }
+
+  // Create a comprehensive cache key
+  const cacheKey = createCompatibilityCacheKey(advisorId, consumerId, preferences);
   
   // Check if we have this calculation cached and it's not expired
   const cachedResult = getCachedResult(cacheKey);
@@ -105,7 +109,7 @@ const calculateWeightedCompatibilityScore = (
   // Check if cache maintenance is needed
   checkCacheMaintenance();
   
-  // Get score from the strategy context
+  // Get score from the strategy context using a pure function call
   const result = strategyContext.calculateCompatibilityScore(
     advisorId, 
     consumerId, 
