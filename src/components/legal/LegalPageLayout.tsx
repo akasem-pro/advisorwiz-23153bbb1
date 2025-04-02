@@ -2,7 +2,6 @@
 import React from 'react';
 import BreadcrumbNav from '../navigation/BreadcrumbNav';
 import PageSEO from '../seo/PageSEO';
-import AppLayout from '../layout/AppLayout';
 
 interface LegalPageLayoutProps {
   title: string;
@@ -34,7 +33,7 @@ const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
   };
 
   return (
-    <AppLayout hideFooter={false}>
+    <>
       <PageSEO
         title={title}
         description={description}
@@ -58,7 +57,7 @@ const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
           </div>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 };
 
