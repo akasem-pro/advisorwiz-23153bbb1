@@ -2,6 +2,7 @@
 import { MatchPreferences } from '../../../context/UserContextDefinition';
 import { CallMetrics } from '../../../types/callTypes';
 import { MatchingStrategy } from './MatchingStrategy';
+import { handleError, ErrorCategory, ErrorSeverity } from '../../../utils/errorHandling';
 
 /**
  * Premium Matching Strategy
@@ -27,42 +28,72 @@ export class PremiumMatchingStrategy implements MatchingStrategy {
     preferences: MatchPreferences,
     callMetrics?: CallMetrics[]
   ): { score: number; matchExplanation: string[] } {
-    // Base score for premium users
-    const baseScore = 80;
-    const explanations = [
-      "Premium matching algorithm applied",
-      "Dynamic user preference weights utilized"
-    ];
-    
-    // Apply weight factors if they exist
-    if (preferences.weightFactors) {
-      explanations.push("Personalized weight factors applied to match criteria");
+    try {
+      // Input validation
+      if (!advisorId || !consumerId) {
+        return { 
+          score: 0, 
+          matchExplanation: ["Invalid input: Missing advisor or consumer ID"] 
+        };
+      }
+
+      // Normalize preferences to prevent unexpected nulls
+      const safePreferences: MatchPreferences = {
+        ...preferences,
+        weightFactors: preferences?.weightFactors || {}
+      };
       
-      // We would apply the specific weights here in a real implementation
-      // For example, if language is weighted higher, we'd score that more heavily
-      if (preferences.weightFactors.language && preferences.weightFactors.language > 50) {
-        explanations.push(`Language compatibility weighted at ${preferences.weightFactors.language}%`);
+      // Base score for premium users
+      const baseScore = 80;
+      const explanations = [
+        "Premium matching algorithm applied",
+        "Dynamic user preference weights utilized"
+      ];
+      
+      // Apply weight factors if they exist
+      if (safePreferences.weightFactors) {
+        explanations.push("Personalized weight factors applied to match criteria");
+        
+        // We would apply the specific weights here in a real implementation
+        // For example, if language is weighted higher, we'd score that more heavily
+        if (safePreferences.weightFactors.language && safePreferences.weightFactors.language > 50) {
+          explanations.push(`Language compatibility weighted at ${safePreferences.weightFactors.language}%`);
+        }
+        
+        if (safePreferences.weightFactors.expertise && safePreferences.weightFactors.expertise > 50) {
+          explanations.push(`Expertise match weighted at ${safePreferences.weightFactors.expertise}%`);
+        }
+        
+        if (safePreferences.weightFactors.interaction && safePreferences.weightFactors.interaction > 40) {
+          explanations.push("Past interactions heavily factored into match score");
+        }
       }
       
-      if (preferences.weightFactors.expertise && preferences.weightFactors.expertise > 50) {
-        explanations.push(`Expertise match weighted at ${preferences.weightFactors.expertise}%`);
+      // Consider additional premium factors
+      if (safePreferences.considerInteractionData && callMetrics && callMetrics.length > 0) {
+        explanations.push("Call history and interaction quality analyzed");
       }
       
-      if (preferences.weightFactors.interaction && preferences.weightFactors.interaction > 40) {
-        explanations.push("Past interactions heavily factored into match score");
-      }
+      // In practice, we'd calculate this based on actual profile data and preferences
+      return {
+        score: baseScore,
+        matchExplanation: explanations
+      };
+    } catch (error) {
+      // Log error and return fallback result
+      handleError({
+        message: `Error in Premium Matching Strategy: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        category: ErrorCategory.UNKNOWN,
+        severity: ErrorSeverity.MEDIUM,
+        originalError: error,
+        context: { advisorId, consumerId }
+      });
+      
+      return { 
+        score: 0, 
+        matchExplanation: ["An error occurred while calculating premium compatibility"] 
+      };
     }
-    
-    // Consider additional premium factors
-    if (preferences.considerInteractionData && callMetrics && callMetrics.length > 0) {
-      explanations.push("Call history and interaction quality analyzed");
-    }
-    
-    // In practice, we'd calculate this based on actual profile data and preferences
-    return {
-      score: baseScore,
-      matchExplanation: explanations
-    };
   }
 
   /**

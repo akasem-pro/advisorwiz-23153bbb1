@@ -2,6 +2,7 @@
 import { MatchPreferences } from '../../../context/UserContextDefinition';
 import { CallMetrics } from '../../../types/callTypes';
 import { MatchingStrategy } from './MatchingStrategy';
+import { handleError, ErrorCategory, ErrorSeverity } from '../../../utils/errorHandling';
 
 /**
  * Risk-Focused Matching Strategy
@@ -12,6 +13,13 @@ import { MatchingStrategy } from './MatchingStrategy';
 export class RiskFocusedMatchingStrategy implements MatchingStrategy {
   /**
    * Calculate compatibility score with emphasis on risk alignment
+   * 
+   * @param advisorId - ID of the advisor to evaluate
+   * @param consumerId - ID of the consumer to match against
+   * @param preferences - User-defined matching preferences
+   * @param callMetrics - Optional call interaction metrics
+   * 
+   * @returns Compatibility score (0-100) and explanations
    */
   calculateScore(
     advisorId: string,
@@ -19,27 +27,51 @@ export class RiskFocusedMatchingStrategy implements MatchingStrategy {
     preferences: MatchPreferences,
     callMetrics?: CallMetrics[]
   ): { score: number; matchExplanation: string[] } {
-    // In a real implementation, this would:
-    // 1. Query advisor and consumer profiles
-    // 2. Put heavy weight on risk tolerance alignment
-    // 3. Consider risk management expertise of the advisor
-    // 4. Analyze portfolio diversification needs
+    try {
+      // Input validation
+      if (!advisorId || !consumerId) {
+        return { 
+          score: 0, 
+          matchExplanation: ["Invalid input: Missing advisor or consumer ID"] 
+        };
+      }
 
-    // For this example, we'll return a mock implementation
-    // that would be replaced with actual risk-focused algorithm
-    
-    const baseScore = 75; // Reasonable starting score
-    const explanations = [
-      "Risk-focused matching algorithm applied",
-      "Advisor's risk management expertise considered",
-      "Consumer's risk tolerance preferences prioritized"
-    ];
-    
-    // In practice, we'd calculate this based on actual profile data
-    return {
-      score: baseScore,
-      matchExplanation: explanations
-    };
+      // In a real implementation, this would:
+      // 1. Query advisor and consumer profiles
+      // 2. Put heavy weight on risk tolerance alignment
+      // 3. Consider risk management expertise of the advisor
+      // 4. Analyze portfolio diversification needs
+      
+      // For this example, we'll return a mock implementation
+      // that would be replaced with actual risk-focused algorithm
+      
+      const baseScore = 75; // Reasonable starting score
+      const explanations = [
+        "Risk-focused matching algorithm applied",
+        "Advisor's risk management expertise considered",
+        "Consumer's risk tolerance preferences prioritized"
+      ];
+      
+      // In practice, we'd calculate this based on actual profile data
+      return {
+        score: baseScore,
+        matchExplanation: explanations
+      };
+    } catch (error) {
+      // Log error and return fallback result
+      handleError({
+        message: `Error in Risk-Focused Matching Strategy: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        category: ErrorCategory.UNKNOWN,
+        severity: ErrorSeverity.MEDIUM,
+        originalError: error,
+        context: { advisorId, consumerId }
+      });
+      
+      return { 
+        score: 0, 
+        matchExplanation: ["An error occurred while calculating risk-focused compatibility"] 
+      };
+    }
   }
   
   /**

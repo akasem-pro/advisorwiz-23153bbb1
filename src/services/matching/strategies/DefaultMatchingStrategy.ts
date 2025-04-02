@@ -3,6 +3,7 @@ import { MatchPreferences } from '../../../context/UserContextDefinition';
 import { CallMetrics } from '../../../types/callTypes';
 import { MatchingStrategy } from './MatchingStrategy';
 import { MATCHING_WEIGHTS } from '../config/matchingConfig';
+import { handleError, ErrorCategory, ErrorSeverity } from '../../../utils/errorHandling';
 
 // Algorithm components
 import { calculateLanguageMatchScore } from '../algorithms/languageMatching';
@@ -48,94 +49,165 @@ export class DefaultMatchingStrategy implements MatchingStrategy {
     preferences: MatchPreferences,
     callMetrics?: CallMetrics[]
   ): { score: number; matchExplanation: string[] } {
-    // Fetch profiles from data source
-    // In production, this would be replaced with database queries or API calls
-    const advisor = mockAdvisors.find(a => a.id === advisorId);
-    const consumer = mockConsumers.find(c => c.id === consumerId);
-    
-    if (!advisor || !consumer) return { score: 0, matchExplanation: ["No match data available"] };
-    
-    // Get base compatibility score
-    let weightedScore = 0;
-    let matchExplanation: string[] = [];
-    
-    // 1. Language match calculation
-    if (preferences.prioritizeLanguage) {
-      const languageResult = calculateLanguageMatchScore(advisor, consumer);
-      weightedScore += languageResult.score;
-      if (languageResult.explanation) {
-        matchExplanation.push(languageResult.explanation);
+    try {
+      // Input validation
+      if (!advisorId || !consumerId) {
+        return { 
+          score: 0, 
+          matchExplanation: ["Invalid input: Missing advisor or consumer ID"] 
+        };
       }
-    }
-    
-    // 2. Expertise match calculation
-    if (preferences.prioritizeExpertise) {
-      const expertiseResult = calculateExpertiseMatchScore(advisor, consumer);
-      weightedScore += expertiseResult.score;
-      if (expertiseResult.explanation) {
-        matchExplanation.push(expertiseResult.explanation);
+      
+      // Normalize preferences to prevent unexpected nulls
+      const safePreferences: MatchPreferences = {
+        prioritizeLanguage: preferences?.prioritizeLanguage ?? true,
+        prioritizeExpertise: preferences?.prioritizeExpertise ?? true,
+        prioritizeAvailability: preferences?.prioritizeAvailability ?? true,
+        prioritizeLocation: preferences?.prioritizeLocation ?? false,
+        minimumMatchScore: preferences?.minimumMatchScore ?? 0,
+        considerInteractionData: preferences?.considerInteractionData ?? true,
+        excludedCategories: preferences?.excludedCategories ?? [],
+        weightFactors: preferences?.weightFactors ?? {}
+      };
+
+      // Fetch profiles from data source
+      // In production, this would be replaced with database queries or API calls
+      const advisor = mockAdvisors.find(a => a.id === advisorId);
+      const consumer = mockConsumers.find(c => c.id === consumerId);
+      
+      if (!advisor || !consumer) {
+        return { 
+          score: 0, 
+          matchExplanation: ["No match data available: Profile not found"] 
+        };
       }
-    }
-    
-    // 3. Availability preference weighting
-    if (preferences.prioritizeAvailability) {
-      const availabilityResult = calculateAvailabilityScore(advisor);
-      weightedScore += availabilityResult.score;
-      if (availabilityResult.explanation) {
-        matchExplanation.push(availabilityResult.explanation);
+      
+      // Get base compatibility score
+      let weightedScore = 0;
+      let matchExplanation: string[] = [];
+      
+      // 1. Language match calculation
+      if (safePreferences.prioritizeLanguage) {
+        try {
+          const languageResult = calculateLanguageMatchScore(advisor, consumer);
+          weightedScore += languageResult.score;
+          if (languageResult.explanation) {
+            matchExplanation.push(languageResult.explanation);
+          }
+        } catch (error) {
+          console.warn("Error in language matching calculation:", error);
+          // Continue with other calculations despite this error
+        }
       }
-    }
-    
-    // 4. Location preference weighting
-    if (preferences.prioritizeLocation) {
-      // Simplified location logic for now
-      weightedScore += MATCHING_WEIGHTS.LOCATION;
-    }
-    
-    // 5. Call interaction data weighting
-    if (preferences.considerInteractionData) {
-      const interactionResult = calculateCallInteractionScore(advisorId, consumerId, callMetrics);
-      weightedScore += interactionResult.score;
-      if (interactionResult.explanation) {
-        matchExplanation.push(interactionResult.explanation);
+      
+      // 2. Expertise match calculation
+      if (safePreferences.prioritizeExpertise) {
+        try {
+          const expertiseResult = calculateExpertiseMatchScore(advisor, consumer);
+          weightedScore += expertiseResult.score;
+          if (expertiseResult.explanation) {
+            matchExplanation.push(expertiseResult.explanation);
+          }
+        } catch (error) {
+          console.warn("Error in expertise matching calculation:", error);
+          // Continue with other calculations despite this error
+        }
       }
-    }
-    
-    // 6. Risk tolerance alignment
-    const riskResult = calculateRiskAlignmentScore(advisor, consumer);
-    weightedScore += riskResult.score;
-    if (riskResult.explanation) {
-      matchExplanation.push(riskResult.explanation);
-    }
-    
-    // 7. Filter out excluded categories
-    if (preferences.excludedCategories?.length) {
-      const exclusionResult = checkExcludedCategories(advisor, preferences.excludedCategories);
-      weightedScore -= exclusionResult.penalty;
-      if (exclusionResult.explanation) {
-        matchExplanation.push(exclusionResult.explanation);
+      
+      // 3. Availability preference weighting
+      if (safePreferences.prioritizeAvailability) {
+        try {
+          const availabilityResult = calculateAvailabilityScore(advisor);
+          weightedScore += availabilityResult.score;
+          if (availabilityResult.explanation) {
+            matchExplanation.push(availabilityResult.explanation);
+          }
+        } catch (error) {
+          console.warn("Error in availability calculation:", error);
+          // Continue with other calculations despite this error
+        }
       }
+      
+      // 4. Location preference weighting
+      if (safePreferences.prioritizeLocation) {
+        // Simplified location logic for now
+        weightedScore += MATCHING_WEIGHTS.LOCATION;
+      }
+      
+      // 5. Call interaction data weighting
+      if (safePreferences.considerInteractionData) {
+        try {
+          const interactionResult = calculateCallInteractionScore(advisorId, consumerId, callMetrics);
+          weightedScore += interactionResult.score;
+          if (interactionResult.explanation) {
+            matchExplanation.push(interactionResult.explanation);
+          }
+        } catch (error) {
+          console.warn("Error in call interaction scoring:", error);
+          // Continue with other calculations despite this error
+        }
+      }
+      
+      // 6. Risk tolerance alignment
+      try {
+        const riskResult = calculateRiskAlignmentScore(advisor, consumer);
+        weightedScore += riskResult.score;
+        if (riskResult.explanation) {
+          matchExplanation.push(riskResult.explanation);
+        }
+      } catch (error) {
+        console.warn("Error in risk alignment calculation:", error);
+        // Continue with other calculations despite this error
+      }
+      
+      // 7. Filter out excluded categories
+      if (safePreferences.excludedCategories?.length) {
+        try {
+          const exclusionResult = checkExcludedCategories(advisor, safePreferences.excludedCategories);
+          weightedScore -= exclusionResult.penalty;
+          if (exclusionResult.explanation) {
+            matchExplanation.push(exclusionResult.explanation);
+          }
+        } catch (error) {
+          console.warn("Error in excluded categories check:", error);
+          // Continue with other calculations despite this error
+        }
+      }
+      
+      // Apply minimum score threshold with early exit
+      if (safePreferences.minimumMatchScore && weightedScore < safePreferences.minimumMatchScore) {
+        return { score: 0, matchExplanation: ["Below your minimum match threshold"] };
+      }
+      
+      // Cap at 100
+      const finalScore = Math.min(Math.max(weightedScore, 0), 100);
+      
+      // For low scores with explanations, add a general explanation
+      if (finalScore < 40 && matchExplanation.length === 0) {
+        matchExplanation.push("Low overall compatibility with your profile");
+      }
+      
+      // Add base compatibility explanation if no specific matches found
+      if (matchExplanation.length === 0) {
+        matchExplanation.push("Basic compatibility with your financial needs");
+      }
+      
+      return { score: finalScore, matchExplanation };
+    } catch (error) {
+      // Log error and return fallback result
+      handleError({
+        message: `Error in Default Matching Strategy: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        category: ErrorCategory.UNKNOWN,
+        severity: ErrorSeverity.MEDIUM,
+        originalError: error,
+        context: { advisorId, consumerId }
+      });
+      
+      return { 
+        score: 0, 
+        matchExplanation: ["An error occurred while calculating compatibility"] 
+      };
     }
-    
-    // Apply minimum score threshold with early exit
-    if (preferences.minimumMatchScore && weightedScore < preferences.minimumMatchScore) {
-      return { score: 0, matchExplanation: ["Below your minimum match threshold"] };
-    }
-    
-    // Cap at 100
-    const finalScore = Math.min(Math.max(weightedScore, 0), 100);
-    
-    // For low scores with explanations, add a general explanation
-    if (finalScore < 40 && matchExplanation.length === 0) {
-      matchExplanation.push("Low overall compatibility with your profile");
-    }
-    
-    // Add base compatibility explanation if no specific matches found
-    if (matchExplanation.length === 0) {
-      matchExplanation.push("Basic compatibility with your financial needs");
-    }
-    
-    return { score: finalScore, matchExplanation };
   }
 
   /**
