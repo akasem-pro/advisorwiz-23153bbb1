@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import AppLayout from '../components/layout/AppLayout';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 
 const Blog: React.FC = () => {
@@ -19,7 +18,7 @@ const Blog: React.FC = () => {
       ];
 
   return (
-    <AppLayout>
+    <>
       <BreadcrumbNav items={breadcrumbs} />
       
       <div className="container mx-auto px-4 py-12">
@@ -41,7 +40,7 @@ const Blog: React.FC = () => {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 };
 

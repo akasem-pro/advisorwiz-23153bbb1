@@ -1,7 +1,5 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import AppLayout from '../components/layout/AppLayout';
 import PageSEO from '../components/seo/PageSEO';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -9,7 +7,7 @@ import { Book, TrendingUp, Calculator, Shield, FileText } from 'lucide-react';
 
 const Resources: React.FC = () => {
   return (
-    <AppLayout>
+    <>
       <PageSEO
         title="Financial Resources & Tools"
         description="Access a wealth of financial education, investment insights, calculators, and regulatory information to help you make informed financial decisions."
@@ -243,7 +241,7 @@ const Resources: React.FC = () => {
           </Button>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 };
 
