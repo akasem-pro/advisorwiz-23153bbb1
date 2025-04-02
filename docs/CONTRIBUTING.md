@@ -90,10 +90,28 @@ Please follow the code standards outlined in [CODE_STANDARDS.md](./CODE_STANDARD
 
 ## Testing Guidelines
 
-- Write unit tests for utility functions and hooks
-- Write component tests for UI components
-- Aim for a good balance of unit, integration, and e2e tests
-- Test edge cases and error scenarios
+### Testing Strategy
+
+We aim for at least 80% test coverage on all core modules, with particular emphasis on:
+- Matching algorithms
+- User authentication flows
+- Data persistence layers
+- Critical user journeys
+
+### Types of Tests
+
+- **Unit tests**: Test individual components and functions in isolation
+- **Integration tests**: Test interactions between components and services
+- **E2E tests**: Test complete user flows from start to finish
+- **Performance tests**: Test system performance under various conditions
+
+### Writing Effective Tests
+
+- Focus on testing behavior, not implementation details
+- Use descriptive test names that explain what is being tested
+- Follow the AAA pattern (Arrange, Act, Assert)
+- Mock external dependencies when necessary
+- Consider edge cases and error scenarios
 
 ### Running Tests
 
@@ -106,7 +124,26 @@ npm test -- --watch
 
 # Run tests with coverage
 npm test -- --coverage
+
+# Run specific test file
+npm test -- src/tests/matching/matchCaching.test.ts
+
+# Run tests matching a specific pattern
+npm test -- -t "should process batch calculations efficiently"
 ```
+
+### Continuous Integration
+
+All tests are run automatically on:
+- Every pull request to the main branch
+- Every commit to the main branch
+
+The CI pipeline includes:
+- Linting
+- Type checking
+- Unit and integration tests
+- Performance benchmarks for critical paths
+- Accessibility audits
 
 ## Documentation
 
@@ -168,6 +205,42 @@ The performance monitoring system automatically tracks Core Web Vitals:
 These metrics are correlated with user interactions and reported to analytics for monitoring.
 
 For more details, refer to [PERFORMANCE_MONITORING.md](./PERFORMANCE_MONITORING.md).
+
+## Quality Assurance
+
+### Manual Testing
+
+Before submitting a PR, manually test your changes:
+- Test on multiple browsers (Chrome, Firefox, Safari)
+- Test on different screen sizes (desktop, tablet, mobile)
+- Test with keyboard navigation
+- Test with a screen reader if modifying UI elements
+
+### Accessibility Testing
+
+- Run the built-in accessibility audit tool: `npm run a11y-audit`
+- Ensure all interactive elements are keyboard accessible
+- Maintain proper heading hierarchy
+- Use appropriate ARIA attributes
+- Ensure sufficient color contrast (minimum 4.5:1 for normal text)
+
+### Security Best Practices
+
+- Validate all user inputs
+- Use parameterized queries for database operations
+- Follow the principle of least privilege
+- Keep dependencies updated
+- Do not commit secrets or credentials
+- Use content security policies
+
+### Performance Optimization
+
+- Minimize bundle size
+- Optimize images
+- Use code splitting and lazy loading
+- Implement caching strategies
+- Avoid unnecessary re-renders
+- Profile and optimize expensive operations
 
 ## Reporting Bugs
 

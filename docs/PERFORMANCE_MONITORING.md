@@ -1,256 +1,389 @@
 # Performance Monitoring System
 
+This document explains the performance monitoring system implemented in AdvisorWiz, including its architecture, usage guidelines, and best practices.
+
 ## Overview
 
-AdvisorWiz implements a comprehensive performance monitoring system that tracks application performance metrics, Core Web Vitals, and user experience. This document describes the architecture, integration points, and usage guidelines.
+AdvisorWiz includes a comprehensive performance monitoring system that tracks:
+
+1. **Core Web Vitals**: LCP, FID, CLS, INP
+2. **Custom Metrics**: Component render times, algorithm execution times
+3. **User Experience Metrics**: Interaction delays, response times
+4. **Business Metrics**: Match quality correlation, conversion impacts
+
+The system is designed to:
+- Identify performance bottlenecks
+- Track performance trends over time
+- Correlate performance with business outcomes
+- Support A/B testing experiments
+- Alert on performance regressions
 
 ## Architecture
 
-The performance monitoring system is organized into several specialized modules:
+The performance monitoring system consists of several interconnected components:
 
 ```
-┌─────────────────────┐     ┌────────────────────────┐
-│                     │     │                        │
-│  Core               │◄────│  Web Vitals            │
-│  (Basic Metrics)    │     │  (Core Web Vitals)     │
-└─────────┬───────────┘     └────────────────────────┘
-          │                             ▲
-          │                             │
-          ▼                             │
-┌─────────────────────┐     ┌────────────────────────┐
-│                     │     │                        │
-│  Enhanced Tracking  │     │  Function Tracking     │
-│  (Batching/Storage) │     │  (Component/Function)  │
-└─────────────────────┘     └────────────────���───────┘
-          ▲                             ▲
-          │                             │
-          └─────────────────────────────┘
-                  Integration
-                       │
-                       ▼
-┌─────────────────────────────────────────┐
-│                                         │
-│  Analytics Integration                  │
-│  (GA4, A/B Testing, User Behavior)      │
-└─────────────────────────────────────────┘
+┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
+│                     │     │                     │     │                     │
+│  Core Monitoring    │────▶│  Enhanced Tracking  │────▶│  Analytics          │
+│  (Web Vitals)       │     │  (Custom Metrics)   │     │  Integration        │
+│                     │     │                     │     │                     │
+└─────────────────────┘     └─────────────────────┘     └─────────────────────┘
+          │                           │                           │
+          │                           │                           │
+          ▼                           ▼                           ▼
+┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
+│                     │     │                     │     │                     │
+│  Performance        │     │  Metric             │     │  Reporting &        │
+│  Optimization       │◀────│  Processing         │◀────│  Visualization      │
+│                     │     │                     │     │                     │
+└─────────────────────┘     └─────────────────────┘     └─────────────────────┘
 ```
 
-## Key Components
+## Core Components
 
-### 1. Core Module (`/utils/performance/core.ts`)
+### 1. Web Vitals Tracking
 
-Provides fundamental performance tracking capabilities:
-
-- **Performance Marking**: Create timestamps for key events
-- **Performance Measuring**: Calculate durations between marks
-- **Entry Management**: Create, retrieve, and clear performance entries
-- **Initialization**: Set up the performance monitoring system
+The system captures all Core Web Vitals using the `web-vitals` library:
 
 ```typescript
-// Core functionality
-recordPerformanceMark('feature-started');
-recordPerformanceMark('feature-completed', 'feature-duration', 'feature-started');
+// From src/utils/performance/webVitals.ts
+export const trackWebVitals = (): void => {
+  if (typeof window !== 'undefined') {
+    import('web-vitals').then(({ onCLS, onFID, onFCP, onLCP, onTTFB, onINP }) => {
+      onCLS(metric => {
+        const rating = getRating('CLS', metric.value);
+        storeAnalyticsMetric('vitals_cls', metric.value);
+        processMetric(metric, rating);
+      });
+      
+      // ... other metrics similarly tracked
+    });
+  }
+};
 ```
 
-### 2. Web Vitals Module (`/utils/performance/webVitals.ts`)
+### 2. Enhanced Performance Tracking
 
-Monitors the essential metrics defined by Google's Core Web Vitals initiative:
-
-- **LCP (Largest Contentful Paint)**: Measures loading performance
-- **FID (First Input Delay)**: Measures interactivity
-- **CLS (Cumulative Layout Shift)**: Measures visual stability
-- **INP (Interaction to Next Paint)**: Measures responsiveness
-- **TTFB (Time to First Byte)**: Measures server response time
-- **FCP (First Contentful Paint)**: Measures initial render time
-
-These metrics are automatically tracked and reported to analytics systems.
-
-### 3. Enhanced Performance Tracking (`/utils/performance/enhancedPerformanceTracking.ts`)
-
-Provides advanced capabilities:
-
-- **Metrics Batching**: Groups metrics for efficient reporting
-- **Persistence**: Stores metrics across page reloads
-- **Deduplicated Events**: Prevents redundant metric tracking
-- **Priority-based Tracking**: Focuses on critical user paths
-- **Tagging System**: Adds metadata to metrics for better analysis
+For custom metrics, we use an enhanced tracking system that supports:
+- Batching of metrics
+- Persistence across page loads
+- Tagging with metadata
+- Priority-based processing
 
 ```typescript
-trackEnhancedPerformance('critical-operation', durationMs, {
-  tags: { feature: 'matching', userId: '123' },
-  persist: true,
-  sendImmediately: true
+// From src/utils/performance/enhancedPerformanceTracking.ts
+export const trackEnhancedPerformance = (
+  metricName: string,
+  metricValue: number,
+  options?: {
+    tags?: Record<string, string>;
+    persist?: boolean;
+    sendImmediately?: boolean;
+  }
+) => {
+  // Metric tracking with batching and persistence logic
+  // ...
+};
+```
+
+### 3. Performance Marks and Measures
+
+For timing specific operations, we use the browser's Performance API:
+
+```typescript
+// From src/utils/performance/webVitals.ts
+export const recordPerformanceMark = (
+  markName: string,
+  measureName?: string,
+  startMark?: string
+): void => {
+  if (typeof window === 'undefined' || !window.performance) return;
+  
+  try {
+    // Record the mark
+    performance.mark(markName);
+    
+    // Create a measure if requested
+    if (measureName && startMark) {
+      performance.measure(measureName, startMark, markName);
+      
+      // Get the measure and report it
+      const measures = performance.getEntriesByName(measureName, 'measure');
+      if (measures.length > 0) {
+        const duration = measures[0].duration;
+        storeAnalyticsMetric(measureName, duration);
+      }
+    }
+  } catch (error) {
+    console.error('Error recording performance mark:', error);
+  }
+};
+```
+
+### 4. Analytics Integration
+
+Performance metrics are integrated with the analytics system for correlation with business metrics:
+
+```typescript
+// Integration with Google Analytics 4
+sendGA4Event(`web_vital_${metric.name.toLowerCase()}`, {
+  value: Math.round(metric.value * 100) / 100,
+  rating,
+  metric_id: metric.id,
+  page_path: window.location.pathname
 });
 ```
 
-### 4. Function Tracking Module (`/utils/performance/functionTracking.ts`)
+### 5. A/B Test Correlation
 
-Enables granular performance measurements:
-
-- **HOC Wrapper**: `withPerformanceTracking` for function-level tracking
-- **Hooks**: Custom hooks for component-level measurement
+Performance metrics are automatically correlated with active A/B tests:
 
 ```typescript
-const optimizedFunction = withPerformanceTracking(
-  expensiveFunction, 
-  'expensive-function'
-);
-```
-
-### 5. Analytics Integration
-
-Connects performance data with business metrics:
-
-- **GA4 Reporting**: Sends metrics to Google Analytics
-- **A/B Test Correlation**: Ties performance to specific test variants
-- **User Behavior Correlation**: Links performance to user actions
-
-## Initialization
-
-The performance monitoring system is initialized in two places:
-
-1. **Early Initialization**: In `main.tsx` to capture early metrics like TTFB
-2. **Full Initialization**: In `App.tsx` to set up all monitoring components
-
-```typescript
-// In main.tsx
-import { initPerformanceMonitoring } from './utils/performance';
-initPerformanceMonitoring();
-
-// In App.tsx
-useEffect(() => {
-  initPerformanceMonitoring();
-  // Other initializations...
-}, []);
+const checkABTestingIntegration = (metricName: WebVitalName, value: number): void => {
+  try {
+    // Check if we have stored experiment data
+    const experimentData = sessionStorage.getItem('current_ab_test');
+    if (experimentData) {
+      const { experimentId, variantId } = JSON.parse(experimentData);
+      
+      // Track this metric as part of the A/B test
+      if (experimentId && variantId) {
+        // Get user ID if available
+        const userId = localStorage.getItem('userId');
+        
+        if (userId) {
+          // Send the web vital as conversion data for this experiment
+          trackVariantConversion(
+            experimentId, 
+            variantId, 
+            `web_vital_${metricName.toLowerCase()}`,
+            userId,
+            { 
+              metricName, 
+              value, 
+              page: window.location.pathname 
+            }
+          );
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error integrating web vitals with A/B testing:', error);
+  }
+};
 ```
 
 ## Usage Guidelines
 
-### Basic Performance Marking
+### Basic Performance Monitoring
+
+To track when a component loads:
 
 ```typescript
-import { recordPerformanceMark } from './utils/performance';
+import { recordPerformanceMark } from '../utils/performance';
 
-// Record a simple timestamp
-recordPerformanceMark('feature-loaded');
-
-// Create a duration measurement
-recordPerformanceMark('operation-start');
-// ...expensive operation...
-recordPerformanceMark('operation-end', 'operation-duration', 'operation-start');
-```
-
-### Enhanced Tracking
-
-```typescript
-import { trackEnhancedPerformance } from './utils/performance';
-
-// Track with tags and persistence
-trackEnhancedPerformance('critical-operation', durationMs, {
-  tags: { feature: 'matching', userId: '123' },
-  persist: true, // Survive page reloads
-  sendImmediately: true // Don't batch
-});
-```
-
-### Component Tracking
-
-```typescript
-import { withPerformanceTracking } from './utils/performance';
-
-// Track function execution time
-const optimizedFunction = withPerformanceTracking(
-  expensiveFunction, 
-  'expensive-function'
-);
-
-// Use it in a component
-function MyComponent() {
+const MyComponent = () => {
   useEffect(() => {
-    recordPerformanceMark('component-mounted');
-    return () => recordPerformanceMark('component-unmounted');
+    recordPerformanceMark('mycomponent-loaded');
+    
+    return () => {
+      recordPerformanceMark('mycomponent-unloaded');
+    };
   }, []);
   
-  // ...
-}
+  // Component code...
+};
 ```
 
-### A/B Testing Integration
+### Measuring Operation Duration
 
-The performance monitoring system automatically correlates metrics with active A/B tests when using the provided tracking utilities:
+To measure how long an operation takes:
 
 ```typescript
-// In A/B test variant
-import { trackVariantImpression, trackVariantConversion } from '../utils/abTesting';
+import { recordPerformanceMark } from '../utils/performance';
 
-// Track impression
-trackVariantImpression('pricing-test', 'variant-a');
-
-// Track conversion
-trackVariantConversion('pricing-test', 'variant-a', 'signup');
+const handleExpensiveOperation = () => {
+  recordPerformanceMark('operation-start');
+  
+  // Expensive operation
+  const result = performExpensiveCalculation();
+  
+  recordPerformanceMark('operation-end', 'operation-duration', 'operation-start');
+  
+  return result;
+};
 ```
 
-## Performance Impact Analysis
+### Enhanced Metric Tracking
 
-The system provides tools to analyze how code changes impact performance:
-
-1. **Before/After Comparison**: Track metrics before and after changes
-2. **A/B Test Integration**: Compare metrics between variants
-3. **User Segment Analysis**: Break down metrics by user type, device, etc.
-4. **Real User Monitoring**: Track metrics from actual users
-
-Example of impact analysis workflow:
+For more detailed metric tracking with metadata:
 
 ```typescript
-// Before change
-trackEnhancedPerformance('feature-old', oldDurationMs);
+import { trackEnhancedPerformance } from '../utils/performance';
 
-// After change
-trackEnhancedPerformance('feature-new', newDurationMs);
-
-// Later, analyze the difference through the analytics dashboard
+const calculateMatches = (advisorId, consumerId, preferences) => {
+  const startTime = performance.now();
+  
+  // Matching calculation
+  const results = performMatching(advisorId, consumerId, preferences);
+  
+  const endTime = performance.now();
+  const duration = endTime - startTime;
+  
+  // Track with metadata
+  trackEnhancedPerformance('matching-calculation', duration, {
+    tags: {
+      advisorId,
+      consumerId,
+      preferenceCount: Object.keys(preferences).length,
+      resultCount: results.length
+    },
+    persist: true // Persist across page loads for reporting
+  });
+  
+  return results;
+};
 ```
+
+### Component Performance Wrapper
+
+For tracking component render performance:
+
+```typescript
+import { withPerformanceTracking } from '../utils/performance/functionTracking';
+
+// Original component
+const ExpensiveComponent = ({ data }) => {
+  // Component logic...
+  return <div>{/* Render content */}</div>;
+};
+
+// Wrapped with performance tracking
+export default withPerformanceTracking(ExpensiveComponent, 'ExpensiveComponent');
+```
+
+## Performance Budgets
+
+We maintain the following performance budgets:
+
+| Metric | Budget | Critical Threshold |
+|--------|--------|-------------------|
+| First Contentful Paint | 1.8s | 3.0s |
+| Largest Contentful Paint | 2.5s | 4.0s |
+| Time to Interactive | 3.5s | 7.5s |
+| Total Bundle Size | 250KB | 400KB |
+| Total Image Size | 500KB | 1MB |
+| API Response Time | 300ms | 1s |
+| Matching Algorithm | 50ms | 200ms |
+
+## Optimization Techniques
+
+The system implements several optimization techniques:
+
+### Resource Hints
+
+```typescript
+// From utils/performance/resourceHints.ts
+export const implementResourceHints = () => {
+  // Preconnect to important domains
+  createLink('preconnect', 'https://api.advisorwiz.com');
+  createLink('preconnect', 'https://cdn.advisorwiz.com');
+  
+  // Preload critical resources
+  createLink('preload', '/fonts/main-font.woff2', 'font');
+  createLink('preload', '/images/hero-bg.jpg', 'image');
+};
+```
+
+### Image Optimization
+
+```typescript
+// From utils/performance/imageOptimization.ts
+export const optimizeImagesForCWV = () => {
+  const images = document.querySelectorAll('img');
+  
+  images.forEach(img => {
+    // Add loading="lazy" to images below the fold
+    if (!isInViewport(img)) {
+      img.setAttribute('loading', 'lazy');
+    }
+    
+    // Add explicit width/height to prevent layout shifts
+    if (!img.getAttribute('width') && !img.getAttribute('height')) {
+      img.style.aspectRatio = '16/9';
+    }
+  });
+};
+```
+
+### Code Splitting
+
+```typescript
+// Example from routes/AppRoutes.tsx
+const LazyContactUs = lazy(() => import('../pages/ContactUs'));
+const LazyTeam = lazy(() => import('../pages/Team'));
+```
+
+## Monitoring and Alerting
+
+The system provides real-time monitoring and alerting:
+
+- **Dashboard**: Performance metrics are visualized in the admin dashboard
+- **Alerts**: Configurable alerts for performance regressions
+- **Reports**: Automated weekly and monthly performance reports
+- **CI/CD Integration**: Performance tests run in the CI pipeline
+
+## A/B Testing Integration
+
+Performance metrics are automatically tracked for A/B test variants:
+
+1. When a user enters an A/B test, the test ID and variant ID are stored
+2. Performance metrics collected during the session are tagged with the test information
+3. Reports show performance differences between variants
+4. Statistical significance is calculated for performance metrics
 
 ## Best Practices
 
-1. **Measure Meaningful Events**: Focus on metrics that impact user experience
-2. **Avoid Overdoing It**: Too many marks can impact performance
-3. **Track Long Operations**: Any operation taking >100ms should be measured
-4. **Label Clearly**: Use consistent, descriptive names
-5. **Monitor Trends**: Look for patterns and regressions over time
-6. **Correlate With Business Metrics**: Connect performance to user outcomes
-7. **Test Across Devices**: Monitor both high and low-end devices
+When working with the performance monitoring system:
 
-## Debugging
+1. **Be Specific**: Use descriptive names for performance marks
+2. **Be Consistent**: Use consistent naming conventions
+3. **Minimize Overhead**: The monitoring itself should have minimal impact
+4. **Focus on Critical Paths**: Monitor the most important user journeys
+5. **Correlate with Business Metrics**: Connect performance to business outcomes
+6. **Test on Real Devices**: Performance varies across devices and networks
 
-To view collected metrics during development:
+## Troubleshooting
 
-1. Open browser DevTools
-2. Navigate to the Performance or Network tab
-3. Check for console logs tagged with `[Performance]`
-4. Use the Performance API: `performance.getEntriesByType('measure')`
+Common issues and solutions:
 
-## Common Issues and Solutions
+### High Memory Usage
 
-| Issue | Possible Solution |
-|-------|------------------|
-| Missing metrics | Check initialization in main.tsx and App.tsx |
-| Duplicate metrics | Ensure metrics aren't recorded in loops or frequently re-rendering components |
-| High memory usage | Reduce metric persistence or implementation batching |
-| Performance impact | Ensure tracking code itself isn't causing performance issues |
+If the monitoring system is using excessive memory:
+- Reduce the number of metrics being tracked
+- Increase the batch size for sending metrics
+- Disable persistence for non-critical metrics
 
-## Extending The System
+### Metrics Not Appearing
 
-To add new metric types:
+If metrics aren't showing up in reports:
+- Check that the metric name is correctly formatted
+- Verify that the analytics integration is working
+- Check for errors in the console
+- Ensure the metrics are being sent with proper batching
 
-1. Define the metric in the appropriate module
-2. Create collection and reporting functions
-3. Update analytics integrations if needed
-4. Document the new metric
+### Performance Degradation from Monitoring
 
-## Related Resources
+If the monitoring itself is causing performance issues:
+- Reduce the frequency of metric collection
+- Use sampling for high-volume metrics
+- Optimize the batch processing logic
+- Disable monitoring in performance-critical paths
+
+## Further Resources
 
 - [Web Vitals Documentation](https://web.dev/vitals/)
-- [User-centric Performance Metrics](https://web.dev/user-centric-performance-metrics/)
-- [GA4 Metrics Collection](https://developers.google.com/analytics/devguides/collection/ga4/set-up-performance)
-- [Performance API Documentation](https://developer.mozilla.org/en-US/docs/Web/API/Performance_API)
+- [Performance API](https://developer.mozilla.org/en-US/docs/Web/API/Performance)
+- [Measuring Performance](https://web.dev/metrics/)
+- [Chrome DevTools Performance Tab](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance)
