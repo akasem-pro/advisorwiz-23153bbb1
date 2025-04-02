@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Send, Loader2, Mail } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
+import { useFeedbackSystem } from "@/hooks/use-feedback-system";
 
 interface ContactFormData {
   name: string;
@@ -17,6 +18,7 @@ interface ContactFormData {
 }
 
 const ContactForm: React.FC = () => {
+  const { showInlineFeedback } = useFeedbackSystem();
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
@@ -55,6 +57,15 @@ const ContactForm: React.FC = () => {
       // Show success message
       toast.success("Message sent successfully", {
         description: "We'll get back to you as soon as possible."
+      });
+
+      // Use our feedback system to show inline feedback
+      showInlineFeedback({
+        variant: 'success',
+        title: 'Message Sent',
+        description: 'Thank you for contacting us. We will get back to you shortly.',
+        autoDisappear: true,
+        duration: 5000
       });
       
       // Reset form

@@ -6,6 +6,7 @@ import ContactForm from "../components/contact/ContactForm";
 import EnhancedBreadcrumbNav from "../components/navigation/EnhancedBreadcrumbNav";
 import PageSEO from "../components/seo/PageSEO";
 import { useFeedbackSystem } from "../hooks/use-feedback-system";
+import { InlineFeedback } from "../components/ui/InlineFeedback";
 
 const ContactUs: React.FC = () => {
   const { inlineFeedback, showInlineFeedback, clearInlineFeedback } = useFeedbackSystem();
@@ -33,7 +34,7 @@ const ContactUs: React.FC = () => {
           {inlineFeedback && (
             <div className="mb-6">
               <InlineFeedback
-                variant={inlineFeedback.variant as any}
+                variant={inlineFeedback.variant}
                 message={inlineFeedback.description}
                 title={inlineFeedback.title}
                 onDismiss={clearInlineFeedback}
@@ -42,17 +43,7 @@ const ContactUs: React.FC = () => {
           )}
           
           <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-100">
-            <ContactForm 
-              onSubmit={() => {
-                showInlineFeedback({
-                  variant: 'success',
-                  title: 'Message Sent',
-                  description: 'Thank you for contacting us. We will get back to you shortly.',
-                  autoDisappear: true,
-                  duration: 5000
-                });
-              }} 
-            />
+            <ContactForm />
           </div>
         </div>
       </div>

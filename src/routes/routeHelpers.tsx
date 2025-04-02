@@ -1,3 +1,4 @@
+
 import React, { ReactNode } from 'react';
 import { Route, RouteProps } from 'react-router-dom';
 
@@ -6,7 +7,7 @@ import { Route, RouteProps } from 'react-router-dom';
  */
 export interface RouteConfig {
   path: string;
-  element: React.ReactNode;
+  element: ReactNode;
   key: string;
   requiresAuth?: boolean;
   allowedRoles?: string[];

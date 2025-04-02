@@ -1,7 +1,7 @@
 
 import React from 'react';
 import AppLayout from '../components/layout/AppLayout';
-import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
+import EnhancedBreadcrumbNav from '../components/navigation/EnhancedBreadcrumbNav';
 import BenefitsSection from '../components/advisors/BenefitsSection';
 import PageHero from '../components/shared/PageHero';
 import PageHowItWorks from '../components/shared/PageHowItWorks';
@@ -66,7 +66,7 @@ const ForAdvisors: React.FC = () => {
 
   return (
     <AppLayout>
-      <BreadcrumbNav items={breadcrumbs} />
+      <EnhancedBreadcrumbNav items={breadcrumbs} />
       
       <PageHero 
         title="Grow Your Advisory Practice with Qualified Leads"

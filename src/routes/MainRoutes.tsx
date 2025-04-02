@@ -14,10 +14,11 @@ import ContactUs from '../pages/ContactUs';
 import Blog from '../pages/Blog';
 import Resources from '../pages/Resources';
 import EnhancedOnboardingTour from '../components/onboarding/EnhancedOnboardingTour';
-import React from 'react';
+import React, { ReactNode } from 'react';
+import { RouteConfig } from './routeHelpers';
 
 // Wrap pages with the enhanced onboarding tour where appropriate
-const withOnboarding = (Component: React.ComponentType, userType?: string) => {
+const withOnboarding = (Component: React.ComponentType, userType?: string): ReactNode => {
   return (props: any) => (
     <>
       <EnhancedOnboardingTour 
@@ -32,7 +33,7 @@ const withOnboarding = (Component: React.ComponentType, userType?: string) => {
 };
 
 // Create route configs with consistent layout pattern
-const routeConfigs = [
+const routeConfigs: RouteConfig[] = [
   { 
     path: '/', 
     element: withOnboarding(Home), 
