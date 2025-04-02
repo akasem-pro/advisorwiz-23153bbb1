@@ -55,6 +55,9 @@ export const useToastHandler = () => {
     if (useEnhancedToast) {
       const toastMethod = getSonnerToastMethod(variant);
       
+      // Create a custom className that includes ARIA attributes and animation type
+      const customClassName = `${options.animationType ? `animate-${options.animationType}` : ''} toast-${variant}`;
+      
       sonnerToast[toastMethod](
         options.title || '',
         {
@@ -62,15 +65,31 @@ export const useToastHandler = () => {
           duration: options.duration || 5000,
           action: options.action,
           onDismiss,
-          // Add ARIA attributes
-          role: ariaRole,
-          'aria-live': ariaLive,
-          // Add custom animations via data attribute
-          // Sonner will pick this up for custom animations
+          // Since we can't directly add role/aria-live attributes to sonner toast config,
+          // we'll add them via data attributes that can be styled/selected later
           unstyled: options.animationType ? true : false,
-          className: options.animationType ? `animate-${options.animationType}` : undefined
+          className: customClassName,
+          // Use data attributes for ARIA information
+          // These can be targeted via CSS or JS later
+          // We'll use the data-* attributes to apply the correct ARIA attributes in CSS
+          "data-aria-role": ariaRole,
+          "data-aria-live": ariaLive
         }
       );
+
+      // After rendering, find the toast and apply ARIA attributes
+      setTimeout(() => {
+        const toastElements = document.querySelectorAll('[data-sonner-toast]');
+        if (toastElements.length > 0) {
+          const lastToast = toastElements[toastElements.length - 1] as HTMLElement;
+          
+          if (lastToast) {
+            // Apply ARIA attributes directly to DOM since we can't do it via props
+            lastToast.setAttribute('role', ariaRole);
+            lastToast.setAttribute('aria-live', ariaLive);
+          }
+        }
+      }, 10);
     } else {
       toast({
         title: options.title,
