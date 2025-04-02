@@ -5,14 +5,23 @@ import PageSEO from '../components/seo/PageSEO';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Book, TrendingUp, Calculator, Shield, FileText } from 'lucide-react';
+import EnhancedBreadcrumbNav from '../components/navigation/EnhancedBreadcrumbNav';
 
 const Resources: React.FC = () => {
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: 'Resources', url: '/resources' }
+  ];
+
   return (
     <>
       <PageSEO
         title="Financial Resources & Tools"
         description="Access a wealth of financial education, investment insights, calculators, and regulatory information to help you make informed financial decisions."
+        breadcrumbs={breadcrumbs}
       />
+      
+      <EnhancedBreadcrumbNav items={breadcrumbs} />
       
       <div className="container mx-auto px-4 py-12 space-y-16">
         <div className="text-center mb-8">
@@ -247,3 +256,4 @@ const Resources: React.FC = () => {
 };
 
 export default Resources;
+
