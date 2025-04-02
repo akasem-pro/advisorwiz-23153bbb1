@@ -1,3 +1,4 @@
+
 /**
  * Mobile DOM optimization utilities
  * Enhances performance on mobile devices by optimizing DOM interaction
@@ -31,9 +32,11 @@ const optimizeOffScreenContent = () => {
     const nonCriticalSections = document.querySelectorAll('.mobile-section:not(.critical)');
     
     nonCriticalSections.forEach(section => {
-      // @ts-ignore - TypeScript doesn't know about contentVisibility yet
-      section.style.contentVisibility = 'auto';
-      section.style.contain = 'content';
+      // Type check and cast to HTMLElement before accessing style
+      if (section instanceof HTMLElement) {
+        section.style.contentVisibility = 'auto';
+        section.style.contain = 'content';
+      }
     });
   }
 };
