@@ -137,4 +137,21 @@ export class DefaultMatchingStrategy implements MatchingStrategy {
     
     return { score: finalScore, matchExplanation };
   }
+
+  /**
+   * Get the name of the strategy for logging and analytics
+   * @returns Name of the strategy
+   */
+  getName(): string {
+    return 'Default Balanced Strategy';
+  }
+  
+  /**
+   * Get the description of how this strategy works
+   * @returns Description of the strategy
+   */
+  getDescription(): string {
+    return 'Balanced approach that weighs all matching factors using standard weights, ' +
+           'including language, expertise, availability, location, and risk tolerance alignment.';
+  }
 }

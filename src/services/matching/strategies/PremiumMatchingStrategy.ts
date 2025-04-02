@@ -64,4 +64,21 @@ export class PremiumMatchingStrategy implements MatchingStrategy {
       matchExplanation: explanations
     };
   }
+
+  /**
+   * Get the name of the strategy for logging and analytics
+   * @returns Name of the strategy
+   */
+  getName(): string {
+    return 'Premium Enhanced Strategy';
+  }
+  
+  /**
+   * Get the description of how this strategy works
+   * @returns Description of the strategy
+   */
+  getDescription(): string {
+    return 'Enhanced algorithm for premium users that applies custom weighting factors ' +
+           'and analyzes historical interaction data to provide highly personalized matching.';
+  }
 }

@@ -41,4 +41,21 @@ export class RiskFocusedMatchingStrategy implements MatchingStrategy {
       matchExplanation: explanations
     };
   }
+  
+  /**
+   * Get the name of the strategy for logging and analytics
+   * @returns Name of the strategy
+   */
+  getName(): string {
+    return 'Risk-Focused Strategy';
+  }
+  
+  /**
+   * Get the description of how this strategy works
+   * @returns Description of the strategy
+   */
+  getDescription(): string {
+    return 'Specialized algorithm that prioritizes risk tolerance alignment between ' +
+           'advisors and consumers, with emphasis on risk management expertise.';
+  }
 }
