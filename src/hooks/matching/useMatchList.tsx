@@ -1,3 +1,4 @@
+
 /**
  * Match List Hook
  * 
@@ -25,6 +26,25 @@ interface UseMatchListOptions {
   loadPersistedMatches?: boolean;
   /** Whether to sort results by match score */
   sortByMatchScore?: boolean;
+}
+
+/**
+ * Interface for basic profile data when fetching persisted matches
+ */
+interface BasicProfileData {
+  id: string;
+  name: string;
+  score: number;
+  // Add minimum required fields for both profile types
+  organization?: string;
+  isAccredited?: boolean;
+  website?: string;
+  testimonials?: { client: string; text: string }[];
+  languages?: string[];
+  expertise?: any[];
+  specializations?: string[];
+  chatEnabled?: boolean;
+  matches?: string[];
 }
 
 /**
@@ -68,11 +88,14 @@ export const useMatchList = (options: UseMatchListOptions) => {
   const {
     currentPage,
     totalPages,
-    paginatedItems,
+    items: paginatedItems,
     goToPage,
     nextPage,
     prevPage
-  } = usePagination(filteredAndSortedProfiles, pageSize);
+  } = usePagination<AdvisorProfile | ConsumerProfile>({
+    items: filteredAndSortedProfiles,
+    itemsPerPage: pageSize
+  });
   
   /**
    * Load matches from persistence
@@ -88,12 +111,25 @@ export const useMatchList = (options: UseMatchListOptions) => {
       if (persistedMatches.length > 0) {
         // Transform persisted matches to profile format
         // In a real implementation, you would fetch the full profiles
-        const matchedProfiles = persistedMatches.map(match => ({
-          id: match.id,
-          name: `Profile ${match.id}`,
-          score: match.score
-          // Other profile fields would be populated here
-        })) as (AdvisorProfile | ConsumerProfile)[];
+        const matchedProfiles = persistedMatches.map(match => {
+          const profile: BasicProfileData = {
+            id: match.id,
+            name: `Profile ${match.id}`,
+            score: match.score,
+            // Add minimum required fields for both profile types
+            organization: userType === 'consumer' ? undefined : 'Organization',
+            isAccredited: userType === 'consumer' ? undefined : false,
+            website: userType === 'consumer' ? undefined : '',
+            testimonials: userType === 'consumer' ? undefined : [],
+            languages: [],
+            expertise: [],
+            specializations: userType === 'consumer' ? undefined : [],
+            chatEnabled: false,
+            matches: []
+          };
+          
+          return profile as (AdvisorProfile | ConsumerProfile);
+        });
         
         setProfiles(matchedProfiles);
       }
@@ -102,7 +138,7 @@ export const useMatchList = (options: UseMatchListOptions) => {
     } finally {
       setIsLoading(false);
     }
-  }, [fetchPersistedMatches, loadPersistedMatches, pageSize]);
+  }, [fetchPersistedMatches, loadPersistedMatches, pageSize, userType]);
   
   // Load matches on mount if needed
   useMemo(() => {

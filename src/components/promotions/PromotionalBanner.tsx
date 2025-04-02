@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -14,6 +15,8 @@ interface PromotionalBannerProps {
   persistent?: boolean;
   userId?: string;
   onCtaClick?: () => void;
+  onDismiss?: () => void;
+  title?: string;
 }
 
 const PromotionalBanner: React.FC<PromotionalBannerProps> = ({
@@ -25,7 +28,9 @@ const PromotionalBanner: React.FC<PromotionalBannerProps> = ({
   durationInSeconds,
   persistent = false,
   userId,
-  onCtaClick
+  onCtaClick,
+  onDismiss,
+  title
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   
@@ -83,6 +88,11 @@ const PromotionalBanner: React.FC<PromotionalBannerProps> = ({
     }
     
     trackBannerEvent('dismiss');
+    
+    // Call the custom dismiss handler if provided
+    if (onDismiss) {
+      onDismiss();
+    }
   };
   
   const handleCtaClick = () => {

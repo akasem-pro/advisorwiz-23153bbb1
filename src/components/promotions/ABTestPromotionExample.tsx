@@ -93,19 +93,17 @@ const ABTestPromotionExample: React.FC<ABTestPromotionExampleProps> = ({
   useEffect(() => {
     if (userId) {
       // Record that this variant was seen
-      trackConversion(experimentId, selectedVariant.id, 'impression', userId, {
-        ...selectedVariant.value.analyticsData,
-        page: window.location.pathname
-      });
+      trackConversion(experimentId, selectedVariant.id, 'impression', userId, 
+        selectedVariant.value.analyticsData
+      );
     }
   }, [experimentId, selectedVariant.id, userId, selectedVariant.value.analyticsData]);
   
   // Function to handle CTA click - track as conversion
   const handleCtaClick = () => {
-    trackConversion(experimentId, selectedVariant.id, 'click', userId, {
-      ...selectedVariant.value.analyticsData,
-      element: 'cta_button'
-    });
+    trackConversion(experimentId, selectedVariant.id, 'click', userId,
+      selectedVariant.value.analyticsData
+    );
   };
   
   // Function to handle banner dismissal

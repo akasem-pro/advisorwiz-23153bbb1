@@ -1,206 +1,181 @@
 
 /**
- * Web Vitals Monitoring System
+ * Web Vitals Performance Monitoring
  * 
- * Collects, analyzes, and reports Core Web Vitals metrics to various analytics endpoints.
- * Integrates with A/B testing to compare performance between variants.
- * 
- * @module webVitals
+ * Tracks and reports Core Web Vitals metrics for real-user monitoring
+ * and integrates with analytics systems including A/B testing
  */
-import * as webVitals from 'web-vitals';
-import { storeAnalyticsMetric } from './core';
-import { sendGA4Event } from '../analytics/ga4Integration';
-import { getVariant } from '../abTesting';
 
-/**
- * Thresholds for good performance metrics
- * Based on Google's Core Web Vitals recommendations
- * @see https://web.dev/vitals/
- */
-const PERFORMANCE_THRESHOLDS = {
-  CLS: 0.1,  // Cumulative Layout Shift (unitless)
-  FID: 100,  // First Input Delay (ms)
-  LCP: 2500, // Largest Contentful Paint (ms)
-  FCP: 1800, // First Contentful Paint (ms)
-  TTFB: 800, // Time to First Byte (ms)
-  INP: 200   // Interaction to Next Paint (ms)
+import { ReportHandler } from 'web-vitals';
+import { trackConversion } from '../abTesting';
+import { sendGA4Event } from '../analytics/ga4Integration';
+import { storeAnalyticsMetric } from './core';
+
+// Metric names from Core Web Vitals
+type WebVitalName = 'CLS' | 'FID' | 'FCP' | 'LCP' | 'TTFB' | 'INP';
+
+// Thresholds based on Google's Core Web Vitals guidelines
+const vitalThresholds = {
+  CLS: { good: 0.1, needsImprovement: 0.25 }, // Cumulative Layout Shift
+  FID: { good: 100, needsImprovement: 300 }, // First Input Delay (ms)
+  FCP: { good: 1800, needsImprovement: 3000 }, // First Contentful Paint (ms)
+  LCP: { good: 2500, needsImprovement: 4000 }, // Largest Contentful Paint (ms)
+  TTFB: { good: 800, needsImprovement: 1800 }, // Time to First Byte (ms)
+  INP: { good: 200, needsImprovement: 500 }, // Interaction to Next Paint (ms)
 };
 
 /**
- * Rating tiers for performance metrics
+ * Get performance rating based on thresholds
  */
-export type MetricRating = 'good' | 'needs-improvement' | 'poor';
+const getRating = (name: WebVitalName, value: number): 'good' | 'needs-improvement' | 'poor' => {
+  const threshold = vitalThresholds[name];
+  if (value <= threshold.good) return 'good';
+  if (value <= threshold.needsImprovement) return 'needs-improvement';
+  return 'poor';
+};
 
 /**
- * Initialize and track all web vitals
- * @param {string} [experimentId] - Optional A/B test experiment ID for performance comparison
+ * Report web vitals to analytics
  */
-export const trackWebVitals = (experimentId?: string): void => {
+export const reportWebVitals = (onPerfEntry?: ReportHandler): void => {
+  if (typeof onPerfEntry !== 'function') {
+    return;
+  }
+
+  // Only load web-vitals when in the browser
   if (typeof window !== 'undefined') {
-    try {
-      webVitals.onCLS(metric => sendToAnalytics(metric, experimentId));
-      webVitals.onFID(metric => sendToAnalytics(metric, experimentId));
-      webVitals.onLCP(metric => sendToAnalytics(metric, experimentId));
-      webVitals.onFCP(metric => sendToAnalytics(metric, experimentId));
-      webVitals.onTTFB(metric => sendToAnalytics(metric, experimentId));
-      webVitals.onINP(metric => sendToAnalytics(metric, experimentId));
+    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB, getINP }) => {
+      // Core metrics
+      getCLS(metric => {
+        const rating = getRating('CLS', metric.value);
+        storeAnalyticsMetric('vitals_cls', metric.value);
+        processMetric(metric, rating, onPerfEntry);
+      });
       
-      console.log('Web Vitals tracking initialized');
-    } catch (error) {
-      console.error('Failed to load web-vitals:', error);
-    }
+      getFID(metric => {
+        const rating = getRating('FID', metric.value);
+        storeAnalyticsMetric('vitals_fid', metric.value);
+        processMetric(metric, rating, onPerfEntry);
+      });
+      
+      getFCP(metric => {
+        const rating = getRating('FCP', metric.value);
+        storeAnalyticsMetric('vitals_fcp', metric.value);
+        processMetric(metric, rating, onPerfEntry);
+      });
+      
+      getLCP(metric => {
+        const rating = getRating('LCP', metric.value);
+        storeAnalyticsMetric('vitals_lcp', metric.value);
+        processMetric(metric, rating, onPerfEntry);
+      });
+      
+      getTTFB(metric => {
+        const rating = getRating('TTFB', metric.value);
+        storeAnalyticsMetric('vitals_ttfb', metric.value);
+        processMetric(metric, rating, onPerfEntry);
+      });
+      
+      // Experimental metric - measure responsiveness
+      getINP(metric => {
+        const rating = getRating('INP', metric.value);
+        storeAnalyticsMetric('vitals_inp', metric.value);
+        processMetric(metric, rating, onPerfEntry);
+      });
+    });
   }
 };
 
 /**
- * Enhanced function to send metrics to analytics with threshold checking and A/B test integration
- * 
- * @param {webVitals.Metric} metric - The web vital metric to report
- * @param {string} [experimentId] - Optional A/B test experiment ID
+ * Process and report a web vital metric
  */
-const sendToAnalytics = (metric: webVitals.Metric, experimentId?: string): void => {
+const processMetric = (
+  metric: { name: string; value: number; id: string },
+  rating: string,
+  reportHandler: ReportHandler
+): void => {
+  // Call the provided handler
+  reportHandler(metric);
+  
+  // Report to GA4
+  sendGA4Event(`web_vital_${metric.name.toLowerCase()}`, {
+    value: Math.round(metric.value * 100) / 100,
+    rating,
+    metric_id: metric.id,
+    page_path: window.location.pathname
+  });
+  
+  // Check if this is part of an A/B test
+  checkABTestingIntegration(metric.name as WebVitalName, metric.value);
+  
+  // Alert if poor performance
+  if (rating === 'poor') {
+    console.warn(`Poor web vital detected: ${metric.name} = ${metric.value}`);
+  }
+};
+
+/**
+ * Check if current page is part of an A/B test and report metrics
+ */
+const checkABTestingIntegration = (metricName: WebVitalName, value: number): void => {
   try {
-    // Get current A/B test variant if experiment ID is provided
-    let variantId: string | undefined;
-    if (experimentId) {
-      const userId = getUserIdFromStorage();
-      if (userId) {
-        // This is just getting the current variant, not assigning a new one
-        variantId = getCurrentVariant(experimentId, userId);
+    // Check if we have stored experiment data
+    const experimentData = sessionStorage.getItem('current_ab_test');
+    if (experimentData) {
+      const { experimentId, variantId } = JSON.parse(experimentData);
+      
+      // Track this metric as part of the A/B test
+      if (experimentId && variantId) {
+        // Get user ID if available
+        const userId = localStorage.getItem('userId');
+        
+        if (userId) {
+          // Send the web vital as conversion data for this experiment
+          trackConversion(
+            experimentId, 
+            variantId, 
+            `web_vital_${metricName.toLowerCase()}`,
+            userId,
+            { 
+              metricName, 
+              value, 
+              page: window.location.pathname 
+            }
+          );
+        }
       }
     }
+  } catch (error) {
+    console.error('Error integrating web vitals with A/B testing:', error);
+  }
+};
+
+/**
+ * Record a performance mark and measure
+ */
+export const recordPerformanceMark = (
+  markName: string,
+  measureName?: string,
+  startMark?: string
+): void => {
+  if (typeof window === 'undefined' || !window.performance) return;
+  
+  try {
+    // Record the mark
+    performance.mark(markName);
     
-    // Check if gtag is available
-    if (typeof window !== 'undefined' && 'gtag' in window) {
-      // @ts-ignore
-      window.gtag('event', 'web_vitals', {
-        event_category: 'Web Vitals',
-        event_label: metric.name,
-        value: Math.round(metric.value),
-        non_interaction: true,
-        metric_id: metric.id,
-        metric_rating: metric.navigationType || 'unknown',
-        variant_id: variantId // Include variant ID if available
-      });
-    }
-    
-    // Use GA4 integration with A/B test data
-    sendGA4Event('web_vital_measured', {
-      metric_name: metric.name,
-      metric_value: Math.round(metric.value),
-      metric_id: metric.id,
-      metric_rating: getMetricRating(metric),
-      experiment_id: experimentId,
-      variant_id: variantId
-    });
-    
-    // Store in analytics system for dashboards
-    storeAnalyticsMetric('web_vitals', Math.round(metric.value), {
-      metricName: metric.name,
-      experimentId,
-      variantId
-    });
-    
-    // Check against thresholds and log issues
-    checkMetricAgainstThreshold(metric, experimentId, variantId);
-    
-    // Log to console during development
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[Web Vitals] ${metric.name}: ${Math.round(metric.value)}${variantId ? ` (variant: ${variantId})` : ''}`);
+    // Create a measure if requested
+    if (measureName && startMark) {
+      performance.measure(measureName, startMark, markName);
+      
+      // Get the measure and report it
+      const measures = performance.getEntriesByName(measureName, 'measure');
+      if (measures.length > 0) {
+        const duration = measures[0].duration;
+        storeAnalyticsMetric(measureName, duration);
+      }
     }
   } catch (error) {
-    console.error('Error sending web vitals to analytics:', error);
+    console.error('Error recording performance mark:', error);
   }
-};
-
-/**
- * Get the current user ID from storage for A/B test tracking
- */
-const getUserIdFromStorage = (): string | undefined => {
-  try {
-    return localStorage.getItem('userId') || undefined;
-  } catch {
-    return undefined;
-  }
-};
-
-/**
- * Get the current variant for an experiment
- */
-const getCurrentVariant = (experimentId: string, userId: string): string | undefined => {
-  try {
-    // Simple implementation - in a real app, this would check what variant
-    // the user is already assigned to rather than creating a new assignment
-    const storedVariant = localStorage.getItem(`exp_${experimentId}`);
-    if (storedVariant) {
-      return storedVariant;
-    }
-    return undefined;
-  } catch {
-    return undefined;
-  }
-};
-
-/**
- * Function to determine if a metric exceeds recommended thresholds
- * 
- * @param {webVitals.Metric} metric - The metric to check
- * @param {string} [experimentId] - Optional A/B test experiment ID
- * @param {string} [variantId] - Optional A/B test variant ID
- */
-const checkMetricAgainstThreshold = (
-  metric: webVitals.Metric, 
-  experimentId?: string,
-  variantId?: string
-): void => {
-  const { name, value } = metric;
-  
-  // @ts-ignore - TypeScript doesn't know our threshold keys match metric names
-  const threshold = PERFORMANCE_THRESHOLDS[name];
-  if (!threshold) return;
-  
-  // Check if metric exceeds threshold
-  const exceeds = name === 'CLS' ? value > threshold : value >= threshold;
-  
-  if (exceeds) {
-    // Send alert to analytics with A/B test info if available
-    sendGA4Event('web_vital_threshold_exceeded', {
-      metric_name: name,
-      metric_value: Math.round(value),
-      threshold: threshold,
-      experiment_id: experimentId,
-      variant_id: variantId
-    });
-    
-    // Log warning for developers
-    console.warn(
-      `[Performance Alert] ${name} value (${Math.round(value)}) exceeds recommended threshold (${threshold})${
-        experimentId ? ` for experiment ${experimentId}${variantId ? `, variant ${variantId}` : ''}` : ''
-      }`
-    );
-  }
-};
-
-/**
- * Get performance rating based on metric value
- * @param {webVitals.Metric} metric - The web vital metric
- * @returns {MetricRating} Performance rating category
- */
-const getMetricRating = (metric: webVitals.Metric): MetricRating => {
-  const { name, value } = metric;
-  
-  // @ts-ignore - TypeScript doesn't know our threshold keys match metric names
-  const threshold = PERFORMANCE_THRESHOLDS[name];
-  if (!threshold) return 'good';
-  
-  if (name === 'CLS') {
-    if (value <= 0.1) return 'good';
-    if (value <= 0.25) return 'needs-improvement';
-    return 'poor';
-  }
-  
-  // For timing metrics (lower is better)
-  if (value <= threshold * 0.75) return 'good';
-  if (value <= threshold * 1.5) return 'needs-improvement';
-  return 'poor';
 };

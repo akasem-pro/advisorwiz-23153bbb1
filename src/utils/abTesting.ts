@@ -70,16 +70,14 @@ export function getVariant<T>(
  * @param variantId Variant identifier that was shown to the user
  * @param conversionType Type of conversion (e.g., 'click', 'signup', 'purchase')
  * @param userId Optional user ID
- * @param value Optional conversion value (e.g., purchase amount)
+ * @param additionalData Optional additional data for the event
  */
 export function trackConversion(
   experimentId: ExperimentId,
   variantId: VariantId,
   conversionType: string,
   userId?: string,
-  value?: number
+  additionalData?: Record<string, any>
 ): void {
-  // Create additional data object if value is provided
-  const additionalData = value !== undefined ? { value } : undefined;
   trackVariantConversion(experimentId, variantId, conversionType, userId, additionalData);
 }
