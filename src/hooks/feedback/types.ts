@@ -16,6 +16,9 @@ export interface FeedbackItem {
   source?: string;
   errorDetails?: any;
   icon?: React.ReactNode;
+  ariaLive?: 'assertive' | 'polite' | 'off'; // Adding ARIA support
+  ariaRole?: 'alert' | 'status' | 'log'; // Adding ARIA support
+  animationType?: 'fade' | 'slide' | 'scale'; // Linking to animation system
 }
 
 export interface EnhancedFeedbackOptions {
@@ -34,6 +37,9 @@ export interface EnhancedFeedbackOptions {
   groupSimilar?: boolean;
   action?: ToastActionElement;
   position?: 'top' | 'bottom' | 'inline';
+  ariaLive?: 'assertive' | 'polite' | 'off'; // Adding ARIA support
+  ariaRole?: 'alert' | 'status' | 'log'; // Adding ARIA support
+  animationType?: 'fade' | 'slide' | 'scale'; // Linking to animation system
 }
 
 // Re-export error types for convenience

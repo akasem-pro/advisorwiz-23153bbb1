@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { CheckCircle2, AlertTriangle, AlertCircle, XCircle, X } from 'lucide-react';
+import { prefersReducedMotion } from '../../utils/animations/optimizedAnimations';
+import { FeedbackVariant } from '@/hooks/feedback/types';
 
 const feedbackVariants = cva(
   "flex items-center p-4 rounded-md shadow-sm border transition-all duration-300",
@@ -38,6 +40,7 @@ export interface FeedbackMessageProps
   autoClose?: boolean;
   duration?: number;
   onClose?: () => void;
+  animationType?: 'fade' | 'slide' | 'scale';
 }
 
 const FeedbackMessage = React.forwardRef<HTMLDivElement, FeedbackMessageProps>(
@@ -50,12 +53,14 @@ const FeedbackMessage = React.forwardRef<HTMLDivElement, FeedbackMessageProps>(
     autoClose = false,
     duration = 5000,
     onClose,
+    animationType = 'fade',
     ...props 
   }, ref) => {
     const [visible, setVisible] = useState(true);
+    const reducedMotion = prefersReducedMotion();
     
     useEffect(() => {
-      if (autoClose) {
+      if (autoClose && duration > 0) {
         const timer = setTimeout(() => {
           setVisible(false);
           if (onClose) onClose();
@@ -86,14 +91,42 @@ const FeedbackMessage = React.forwardRef<HTMLDivElement, FeedbackMessageProps>(
       }
     };
     
+    // Get animation class based on type and reduced motion preference
+    const getAnimationClass = () => {
+      if (reducedMotion) return '';
+      
+      switch (animationType) {
+        case 'fade':
+          return 'animate-fade-in';
+        case 'slide':
+          return 'animate-slide-in-right';
+        case 'scale':
+          return 'animate-scale-in';
+        default:
+          return 'animate-fade-in';
+      }
+    };
+    
+    // Determine ARIA properties based on variant
+    const getAriaRole = (): 'alert' | 'status' => {
+      return (variant === "error" || variant === "warning") ? "alert" : "status";
+    };
+    
+    const getAriaLive = (): 'assertive' | 'polite' => {
+      return (variant === "error" || variant === "warning") ? "assertive" : "polite";
+    };
+    
     if (!visible) return null;
     
     return (
       <div
-        className={cn(feedbackVariants({ variant, size, className }), "animate-fade-in")}
+        className={cn(
+          feedbackVariants({ variant, size, className }),
+          getAnimationClass()
+        )}
         ref={ref}
-        role={variant === "error" ? "alert" : "status"}
-        aria-live={variant === "error" ? "assertive" : "polite"}
+        role={getAriaRole()}
+        aria-live={getAriaLive()}
         {...props}
       >
         {getIcon()}

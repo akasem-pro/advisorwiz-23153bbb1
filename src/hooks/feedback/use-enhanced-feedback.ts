@@ -5,11 +5,12 @@ import { toast as sonnerToast } from 'sonner';
 import { useToastHandler } from './use-toast-handler';
 import { useFeedbackCore } from './use-feedback-core';
 import { useErrorHandler } from './use-error-handler';
-import { generateFeedbackId, isSimilarMessageActive } from './feedback-utils';
+import { generateFeedbackId, isSimilarMessageActive, getSeverityDuration } from './feedback-utils';
 import { EnhancedFeedbackOptions, FeedbackItem, FeedbackVariant } from './types';
 
 /**
  * Enhanced feedback system with error grouping, history, and persistence
+ * Includes accessibility features and optimized animations
  */
 export const useEnhancedFeedback = () => {
   const { isFeedbackEnabled } = useFeedback();
@@ -31,7 +32,7 @@ export const useEnhancedFeedback = () => {
     checkSevereFeedback(feedbackHistory);
   }, [feedbackHistory, checkSevereFeedback]);
   
-  // Show enhanced toast notification
+  // Show enhanced toast notification with proper ARIA attributes and animations
   const showEnhancedToast = useCallback((options: EnhancedFeedbackOptions) => {
     if (!isFeedbackEnabled) return { id: '', dismiss: () => {} };
     
@@ -51,10 +52,15 @@ export const useEnhancedFeedback = () => {
       timestamp: Date.now(),
       dismissable: options.dismissable !== false,
       autoExpire: options.autoExpire !== false,
-      expiryMs: options.duration,
+      expiryMs: options.duration || getSeverityDuration(options.errorSeverity || 'MEDIUM'),
       source: options.source || 'user',
       errorDetails: options.errorDetails,
-      icon: options.icon
+      icon: options.icon,
+      // Add ARIA attributes
+      ariaRole: options.ariaRole,
+      ariaLive: options.ariaLive,
+      // Add animation type
+      animationType: options.animationType || 'fade'
     };
     
     addToHistory(feedbackItem);
@@ -91,51 +97,63 @@ export const useEnhancedFeedback = () => {
     dismissFeedback
   ]);
   
-  // Show a success toast
+  // Show a success toast with accessibility features
   const showSuccess = useCallback((description: string, title?: string, options?: Partial<EnhancedFeedbackOptions>) => {
     return showEnhancedToast({
       title: title || 'Success',
       description,
       variant: 'success',
       duration: 5000,
+      ariaRole: 'status',
+      ariaLive: 'polite',
+      animationType: options?.animationType || 'fade',
       ...(options || {})
     });
   }, [showEnhancedToast]);
   
-  // Show an error toast
+  // Show an error toast with accessibility features
   const showError = useCallback((description: string, title?: string, options?: Partial<EnhancedFeedbackOptions>) => {
     return showEnhancedToast({
       title: title || 'Error',
       description,
       variant: 'error',
       duration: 7000,
+      ariaRole: 'alert',
+      ariaLive: 'assertive',
+      animationType: options?.animationType || 'fade',
       ...(options || {})
     });
   }, [showEnhancedToast]);
   
-  // Show a warning toast
+  // Show a warning toast with accessibility features
   const showWarning = useCallback((description: string, title?: string, options?: Partial<EnhancedFeedbackOptions>) => {
     return showEnhancedToast({
       title: title || 'Warning',
       description,
       variant: 'warning',
       duration: 6000,
+      ariaRole: 'alert',
+      ariaLive: 'assertive',
+      animationType: options?.animationType || 'slide',
       ...(options || {})
     });
   }, [showEnhancedToast]);
   
-  // Show an info toast
+  // Show an info toast with accessibility features
   const showInfo = useCallback((description: string, title?: string, options?: Partial<EnhancedFeedbackOptions>) => {
     return showEnhancedToast({
       title: title || 'Information',
       description,
       variant: 'info',
       duration: 5000,
+      ariaRole: 'status',
+      ariaLive: 'polite',
+      animationType: options?.animationType || 'fade',
       ...(options || {})
     });
   }, [showEnhancedToast]);
   
-  // Show a loading toast
+  // Show a loading toast with accessibility features
   const showLoading = useCallback((description: string, title?: string, options?: Partial<EnhancedFeedbackOptions>) => {
     return showEnhancedToast({
       title: title || 'Loading',
@@ -143,11 +161,14 @@ export const useEnhancedFeedback = () => {
       variant: 'loading',
       duration: 30000,
       autoExpire: false,
+      ariaRole: 'status',
+      ariaLive: 'polite',
+      animationType: options?.animationType || 'scale',
       ...(options || {})
     });
   }, [showEnhancedToast]);
   
-  // Show inline feedback
+  // Show inline feedback with accessibility features
   const showInlineFeedback = useCallback((options: EnhancedFeedbackOptions) => {
     return showEnhancedToast({
       ...options,

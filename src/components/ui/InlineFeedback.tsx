@@ -3,17 +3,20 @@ import React, { useEffect, useState } from 'react';
 import { AlertCircle, CheckCircle2, XCircle, AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './button';
+import { FeedbackVariant } from '@/hooks/feedback/types';
+import { prefersReducedMotion } from '@/utils/animations/optimizedAnimations';
 
 interface InlineFeedbackProps {
   title?: string;
   message: string;
-  variant?: 'success' | 'error' | 'warning' | 'info';
+  variant?: FeedbackVariant;
   dismissable?: boolean;
   icon?: React.ReactNode;
   className?: string;
   onDismiss?: () => void;
   autoDisappear?: boolean;
   duration?: number;
+  animationType?: 'fade' | 'slide' | 'scale';
 }
 
 const InlineFeedback: React.FC<InlineFeedbackProps> = ({
@@ -25,9 +28,11 @@ const InlineFeedback: React.FC<InlineFeedbackProps> = ({
   className,
   onDismiss,
   autoDisappear = false,
-  duration = 5000
+  duration = 5000,
+  animationType = 'fade'
 }) => {
   const [isVisible, setIsVisible] = useState(true);
+  const reducedMotion = prefersReducedMotion();
   
   useEffect(() => {
     if (autoDisappear) {
@@ -46,7 +51,8 @@ const InlineFeedback: React.FC<InlineFeedbackProps> = ({
     success: "bg-green-50 border-green-200 text-green-800 dark:bg-green-900/30 dark:border-green-800/50 dark:text-green-200",
     error: "bg-red-50 border-red-200 text-red-800 dark:bg-red-900/30 dark:border-red-800/50 dark:text-red-200",
     warning: "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-900/30 dark:border-amber-800/50 dark:text-amber-200",
-    info: "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/30 dark:border-blue-800/50 dark:text-blue-200"
+    info: "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/30 dark:border-blue-800/50 dark:text-blue-200",
+    loading: "bg-purple-50 border-purple-200 text-purple-800 dark:bg-purple-900/30 dark:border-purple-800/50 dark:text-purple-200"
   };
   
   const getIcon = () => {
@@ -65,15 +71,34 @@ const InlineFeedback: React.FC<InlineFeedbackProps> = ({
     }
   };
   
+  const getAnimationClass = () => {
+    if (reducedMotion) return '';
+    
+    switch (animationType) {
+      case 'fade':
+        return 'animate-fade-in';
+      case 'slide':
+        return 'animate-slide-in-right';
+      case 'scale':
+        return 'animate-scale-in';
+      default:
+        return 'animate-fade-in';
+    }
+  };
+  
+  const ariaRole = variant === 'error' || variant === 'warning' ? 'alert' : 'status';
+  const ariaLive = variant === 'error' || variant === 'warning' ? 'assertive' : 'polite';
+  
   return (
     <div 
       className={cn(
-        "border rounded-md p-4 animate-fade-in flex items-start",
+        "border rounded-md p-4 flex items-start",
         variantStyles[variant],
+        getAnimationClass(),
         className
       )}
-      role={variant === 'error' ? 'alert' : 'status'}
-      aria-live={variant === 'error' ? 'assertive' : 'polite'}
+      role={ariaRole}
+      aria-live={ariaLive}
     >
       <div className="flex-shrink-0 mr-3">
         {getIcon()}
@@ -93,6 +118,7 @@ const InlineFeedback: React.FC<InlineFeedbackProps> = ({
             setIsVisible(false);
             if (onDismiss) onDismiss();
           }}
+          aria-label="Dismiss message"
         >
           <X className="h-4 w-4" />
           <span className="sr-only">Dismiss</span>
