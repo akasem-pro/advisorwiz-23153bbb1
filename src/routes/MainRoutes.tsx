@@ -18,7 +18,7 @@ import React, { ReactNode } from 'react';
 import { RouteConfig } from './routeHelpers';
 
 // Wrap pages with the enhanced onboarding tour where appropriate
-const withOnboarding = (Component: React.ComponentType, userType?: string): ReactNode => {
+const withOnboarding = (Component: React.ComponentType, userType?: string) => {
   return (props: any) => (
     <>
       <EnhancedOnboardingTour 
@@ -36,7 +36,7 @@ const withOnboarding = (Component: React.ComponentType, userType?: string): Reac
 const routeConfigs: RouteConfig[] = [
   { 
     path: '/', 
-    element: withOnboarding(Home), 
+    element: React.createElement(withOnboarding(Home)), 
     key: 'home',
     index: true
   },
@@ -47,17 +47,17 @@ const routeConfigs: RouteConfig[] = [
   },
   { 
     path: 'for-advisors', 
-    element: withOnboarding(ForAdvisors, 'advisor'), 
+    element: React.createElement(withOnboarding(ForAdvisors, 'advisor')), 
     key: 'for-advisors'
   },
   { 
     path: 'for-consumers', 
-    element: withOnboarding(ForConsumers, 'consumer'), 
+    element: React.createElement(withOnboarding(ForConsumers, 'consumer')), 
     key: 'for-consumers'
   },
   { 
     path: 'for-firms', 
-    element: withOnboarding(ForFirms, 'firm_admin'), 
+    element: React.createElement(withOnboarding(ForFirms, 'firm_admin')), 
     key: 'for-firms'
   },
   { 
