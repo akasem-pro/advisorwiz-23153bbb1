@@ -1,6 +1,5 @@
 
 import React from 'react';
-import AppLayout from '../components/layout/AppLayout';
 import PageSEO from '../components/seo/PageSEO';
 import { Button } from '../components/ui/button';
 import { generateBreadcrumbSchema } from '../utils/schemas';
@@ -18,7 +17,7 @@ const Careers: React.FC = () => {
   ];
 
   return (
-    <AppLayout>
+    <>
       <PageSEO
         title="Careers at AdvisorWiz | Join Our Financial Technology Team"
         description="Join our team at AdvisorWiz and help revolutionize how people connect with financial advisors. Explore our open positions and career opportunities."
@@ -135,7 +134,7 @@ const Careers: React.FC = () => {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 };
 

@@ -108,20 +108,19 @@ const AppRoutes = () => {
           />
         ))}
         
-        <Route path="/" element={<Outlet />}>
+        <Route path="/" element={<AppLayout><Outlet /></AppLayout>}>
           {contentPageRoutes.map((routeProps, index) => (
             <Route 
               key={`content-${index}`} 
               path={routeProps.path} 
-              element={
-                <AppLayout hideFooter={false}>
-                  {routeProps.element}
-                </AppLayout>
-              } 
+              element={routeProps.element}
             />
           ))}
           
           {MainRoutes}
+        </Route>
+        
+        <Route path="/dashboard" element={<Outlet />}>
           {DashboardRoutes}
         </Route>
         
