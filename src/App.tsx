@@ -5,6 +5,7 @@ import AppRoutes from './routes/AppRoutes';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider } from './context/UserContext';
 import { AuthProvider } from './components/auth/AuthContext';
+import { FeedbackProvider } from './context/FeedbackContext';
 import { initAnalytics } from './services/analytics/analyticsService';
 import { initPerformanceMonitoring } from './services/performance/performanceService';
 import { setupErrorHandling } from './utils/errorHandling';
@@ -30,8 +31,10 @@ const App: React.FC = () => {
       <ThemeProvider>
         <AuthProvider>
           <UserProvider>
-            <AppRoutes />
-            <Toaster position="top-right" richColors />
+            <FeedbackProvider>
+              <AppRoutes />
+              <Toaster position="top-right" richColors />
+            </FeedbackProvider>
           </UserProvider>
         </AuthProvider>
       </ThemeProvider>
