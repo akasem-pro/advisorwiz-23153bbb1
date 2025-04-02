@@ -1,12 +1,21 @@
 
+/**
+ * @jest-environment jsdom
+ * 
+ * Test suite for the weighted compatibility scoring algorithm
+ * This file tests the accuracy, performance, and consistency of the matching algorithm
+ */
 import { getWeightedCompatibilityScore, setMatchingStrategy } from '../../services/matching/weightedScoring';
 import { mockAdvisors, mockConsumers } from '../../data/mockUsers';
+import { MatchPreferences } from '../../context/UserContextDefinition';
 
 describe('Weighted Scoring Algorithm', () => {
   // Sample test data
   const advisorId = mockAdvisors[0]?.id || 'advisor-1';
   const consumerId = mockConsumers[0]?.id || 'consumer-1';
-  const defaultPreferences = {
+  
+  // Define the default preferences with proper typing
+  const defaultPreferences: MatchPreferences = {
     prioritizeLanguage: true,
     prioritizeExpertise: true,
     prioritizeAvailability: true,
@@ -18,6 +27,9 @@ describe('Weighted Scoring Algorithm', () => {
     setMatchingStrategy('default');
   });
 
+  /**
+   * Core functionality tests
+   */
   test('should return valid score structure', () => {
     const result = getWeightedCompatibilityScore(advisorId, consumerId, defaultPreferences);
     
@@ -34,6 +46,9 @@ describe('Weighted Scoring Algorithm', () => {
     expect(result.score).toBeLessThanOrEqual(100);
   });
 
+  /**
+   * Tests for preference handling
+   */
   test('disabling all preferences should lower score', () => {
     const withPreferences = getWeightedCompatibilityScore(
       advisorId, 
@@ -76,6 +91,9 @@ describe('Weighted Scoring Algorithm', () => {
     expect(withExclusions.score).toBeLessThanOrEqual(withoutExclusions.score);
   });
 
+  /**
+   * Tests for strategy management
+   */
   test('changing matching strategy should be possible', () => {
     // First use default strategy
     const defaultResult = getWeightedCompatibilityScore(advisorId, consumerId, defaultPreferences);
@@ -95,6 +113,9 @@ describe('Weighted Scoring Algorithm', () => {
     expect(riskResult.score).not.toEqual(defaultResult.score);
   });
 
+  /**
+   * Tests for weight factors
+   */
   test('weight factors should influence score', () => {
     const withoutWeights = getWeightedCompatibilityScore(
       advisorId, 
@@ -121,7 +142,10 @@ describe('Weighted Scoring Algorithm', () => {
     expect(withWeights.score).not.toEqual(withoutWeights.score);
   });
   
-  // Performance benchmarks
+  /**
+   * Performance benchmark tests
+   * These tests help detect performance regressions
+   */
   describe('Performance', () => {
     test('should process single match score calculation in under 5ms', () => {
       const startTime = performance.now();
