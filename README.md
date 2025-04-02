@@ -19,6 +19,7 @@ AdvisorWiz is a comprehensive platform designed to connect consumers with financ
 - **Secure Messaging**: In-app communication
 - **Dashboard Analytics**: Performance tracking and insights
 - **Accessibility**: WCAG compliant design
+- **Performance Monitoring**: Real-time tracking of web vitals metrics and user experience
 
 ## Technology Stack
 
@@ -28,6 +29,7 @@ AdvisorWiz is a comprehensive platform designed to connect consumers with financ
 - **Testing**: Jest, React Testing Library
 - **Accessibility**: Custom audit tools, WCAG compliance
 - **Performance Optimization**: Code splitting, lazy loading, Web Vitals monitoring
+- **Analytics Integration**: GA4 integration with A/B testing capability
 
 ## Getting Started
 
@@ -86,7 +88,7 @@ advisorwiz/
 │   ├── styles/          # CSS and styling
 │   ├── tests/           # Test files
 │   ├── types/           # TypeScript definitions
-│   └── utils/           # Utility functions
+│   └── utils/           # Utility functions and performance monitoring
 ├── .gitignore           # Git ignore file
 ├── package.json         # NPM package configuration
 ├── README.md            # Project documentation
@@ -100,9 +102,19 @@ This project implements several performance optimizations:
 
 - **Code Splitting**: React.lazy and Suspense for component-level code splitting
 - **Lazy Loading**: Components are loaded only when needed
-- **Web Vitals Monitoring**: Real-time performance metrics tracking
+- **Web Vitals Monitoring**: Real-time performance metrics tracking with Google Core Web Vitals integration
 - **Image Optimization**: Responsive images and lazy loading
 - **Bundle Size Management**: Careful dependency management
+- **Resource Hints**: Uses preconnect and preload for critical resources
+- **Enhanced Performance Tracking**: Metrics batching and persistence across page loads
+
+## A/B Testing Integration
+
+The platform includes integrated A/B testing capabilities:
+
+- **Performance Impact Tracking**: Web vitals metrics are correlated with A/B test variants
+- **Variant Tracking**: Impression and conversion tracking for variants
+- **Analytics Integration**: Test results feed directly into analytics systems
 
 ## Deployment
 
@@ -123,3 +135,4 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for detailed information on contri
 ## License
 
 This project is proprietary and confidential. All rights reserved.
+

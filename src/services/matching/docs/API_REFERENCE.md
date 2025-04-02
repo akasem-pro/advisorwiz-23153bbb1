@@ -84,6 +84,74 @@ function calculateCompatibilityBetweenProfiles(
 **Returns:**
 Object containing the score and explanations.
 
+## Performance Monitoring APIs
+
+### `recordPerformanceMark`
+
+Record a performance mark and optionally create a measure.
+
+```typescript
+function recordPerformanceMark(
+  markName: string,
+  measureName?: string,
+  startMark?: string
+): void
+```
+
+**Parameters:**
+- `markName`: Name of the mark to record
+- `measureName` (optional): Name of the measure to create
+- `startMark` (optional): Name of the starting mark for the measure
+
+**Example:**
+```typescript
+// Record start of matching calculation
+recordPerformanceMark('matching-calculation-start');
+
+// Perform calculation
+const result = calculateMatch();
+
+// Record end and create a duration measure
+recordPerformanceMark(
+  'matching-calculation-end', 
+  'matching-calculation-duration', 
+  'matching-calculation-start'
+);
+```
+
+### `trackEnhancedPerformance`
+
+Track a performance metric with advanced options.
+
+```typescript
+function trackEnhancedPerformance(
+  metricName: string,
+  metricValue: number,
+  options?: {
+    tags?: Record<string, string>;
+    persist?: boolean;
+    sendImmediately?: boolean;
+  }
+): void
+```
+
+**Parameters:**
+- `metricName`: Name of the metric to track
+- `metricValue`: Numeric value for the metric
+- `options` (optional): Configuration options for tracking
+
+**Example:**
+```typescript
+// Track match calculation time with tags
+trackEnhancedPerformance('match-calculation-time', 250, {
+  tags: {
+    strategy: 'premium',
+    userType: 'advisor'
+  },
+  persist: true
+});
+```
+
 ## Cache Management APIs
 
 ### `clearCompatibilityCache`
@@ -209,3 +277,52 @@ function calculateExpertiseMatchScore(
   consumer: ConsumerProfile
 ): { score: number; explanation: string | null }
 ```
+
+## Analytics Integration
+
+### `trackVariantImpression`
+
+Track when a matching variant is shown to a user.
+
+```typescript
+function trackVariantImpression(
+  experimentId: ExperimentId,
+  variantId: VariantId,
+  userId?: string
+): void
+```
+
+### `trackVariantConversion`
+
+Track a conversion event for a matching variant.
+
+```typescript
+function trackVariantConversion(
+  experimentId: ExperimentId,
+  variantId: VariantId,
+  conversionType: string,
+  userId?: string,
+  additionalData?: Record<string, any>
+): void
+```
+
+## Web Vitals Integration
+
+The matching system automatically integrates with Core Web Vitals measurements, tracking how matching operations affect:
+
+- Loading performance (LCP)
+- Interactivity (FID, INP)
+- Visual stability (CLS)
+
+These metrics are collected and correlated with matching operations to optimize the user experience.
+
+```typescript
+// Example of auto-tracked data for a matching operation
+{
+  operation: "match_calculation",
+  duration_ms: 245,
+  affected_vitals: ["INP", "FID"],
+  impact_score: 0.12  // Estimated impact on vitals
+}
+```
+

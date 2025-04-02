@@ -77,6 +77,36 @@ The matching system employs a multi-level caching strategy:
    - Time expiration
    - Manual invalidation
 
+## Performance Monitoring
+
+The matching system integrates with the application's performance monitoring system to track:
+
+1. **Calculation Speed**: Time taken to compute matches
+2. **Cache Efficiency**: Hit rates and miss counts
+3. **Matching Quality**: User satisfaction and feedback metrics
+4. **Web Vitals Impact**: How matching operations affect Core Web Vitals
+
+This integration uses the utilities in `utils/performance/` to report metrics:
+
+```typescript
+// Record the start of a matching calculation
+recordPerformanceMark('matching-calculation-start');
+
+// Perform the calculation
+const result = calculateMatches();
+
+// Record the end and create a measure
+recordPerformanceMark('matching-calculation-end', 
+                     'matching-calculation-duration', 
+                     'matching-calculation-start');
+```
+
+The system also tracks how matching impacts user experience by correlating matching scores with:
+- User engagement metrics
+- Session duration
+- Conversion rates
+- Web Vitals measurements
+
 ## Performance Optimizations
 
 The system includes several performance optimizations:
@@ -86,6 +116,8 @@ The system includes several performance optimizations:
 3. **Progressive Loading**: Calculates matches in priority order
 4. **Memoization**: Avoids redundant calculations
 5. **Pre-filtering**: Eliminates obvious non-matches early
+6. **Performance Tracking**: Monitors and reports calculation speeds
+7. **A/B Testing Integration**: Correlates performance with user experience
 
 ## Configuration
 
@@ -104,6 +136,8 @@ To add a new matching strategy:
 The matching system includes tools for monitoring performance:
 
 1. **Cache Statistics**: Hit rates, size, eviction counts
-2. **Execution Time Tracking**: Performance monitoring
+2. **Execution Time Tracking**: Performance monitoring with Web Vitals integration
 3. **Match Quality Metrics**: User feedback integration
 4. **Error Logging**: Failure detection and diagnosis
+5. **A/B Test Correlation**: Tracking which matching algorithms perform best
+

@@ -114,6 +114,34 @@ npm test -- --coverage
 - Document complex algorithms and business logic
 - Use JSDoc for documenting functions and components
 
+## Performance Monitoring
+
+When working with the performance monitoring system:
+
+- Use the provided utilities in `utils/performance/` directory
+- Record meaningful performance marks with `recordPerformanceMark`
+- Leverage the enhanced performance tracking system for complex metrics
+- Respect the Web Vitals guidelines when adding new UI elements
+- Test changes against Core Web Vitals metrics
+- Make sure A/B test integrations properly track performance impacts
+
+### Performance Monitoring Guidelines
+
+```typescript
+// Example of recording performance marks
+import { recordPerformanceMark } from '../utils/performance';
+
+// Record when a component loads
+useEffect(() => {
+  recordPerformanceMark('component-loaded');
+}, []);
+
+// Record before and after expensive operations
+recordPerformanceMark('operation-start');
+const result = expensiveOperation();
+recordPerformanceMark('operation-end', 'operation-duration', 'operation-start');
+```
+
 ## Reporting Bugs
 
 When reporting bugs, please include:
@@ -122,6 +150,7 @@ When reporting bugs, please include:
 - Actual behavior
 - Screenshots if applicable
 - Environment information (browser, OS, etc.)
+- Performance metrics if relevant
 
 ## Feature Requests
 
@@ -129,6 +158,7 @@ Feature requests are welcome! Please provide:
 - A clear description of the feature
 - The problem it solves
 - Potential implementation ideas (optional)
+- Performance impact considerations
 
 ## Code of Conduct
 
@@ -140,3 +170,4 @@ If you have questions or need support, please:
 1. Check the documentation
 2. Look for existing issues
 3. Create a new issue with the label "question"
+

@@ -35,6 +35,39 @@ reducing redundant calculations and database queries.
 3. **cacheMaintenance.ts** - Cleanup and optimization routines
 4. **compatibilityCache.ts** - Public API facade with high-level functions
 
+## Performance Monitoring
+
+The cache system integrates with the application's performance monitoring infrastructure to:
+
+1. **Track Cache Performance**:
+   - Hit/miss rates
+   - Retrieval times
+   - Cache size metrics
+   
+2. **Optimize Cache Operations**:
+   - Auto-tuning cache size based on memory pressure
+   - Prioritizing frequently accessed entries
+   - Background maintenance during idle periods
+
+3. **Report Key Metrics**:
+   - Cache efficiency statistics
+   - Memory usage patterns
+   - Access pattern insights
+
+Example integration with performance monitoring:
+
+```typescript
+import { recordPerformanceMark } from '../../../utils/performance';
+
+// When retrieving from cache
+recordPerformanceMark('cache-lookup-start');
+const result = cacheStore.get(key);
+recordPerformanceMark('cache-lookup-end', 'cache-lookup-duration', 'cache-lookup-start');
+
+// Track cache hit/miss
+storeAnalyticsMetric(`cache_${result ? 'hit' : 'miss'}`, 1);
+```
+
 ## Cache Invalidation Strategies
 
 The system employs multiple cache invalidation strategies:
@@ -50,6 +83,16 @@ The system employs multiple cache invalidation strategies:
 * **Size Monitoring**: Automatic cleanup when size exceeds thresholds
 * **Background Maintenance**: Stale entry cleanup runs asynchronously
 * **Progressive Caching**: Prioritizes frequently accessed matches
+* **Performance Metrics**: Integrated with Web Vitals monitoring
+
+## A/B Testing Integration
+
+The cache system can be used in A/B testing scenarios:
+
+1. **Cache Strategies**: Test different caching algorithms
+2. **TTL Settings**: Experiment with various expiration times
+3. **Preloading**: Test impact of preloading common matches
+4. **Performance Impact**: Measure effects on Core Web Vitals
 
 ## Usage Example
 
@@ -69,3 +112,23 @@ clearCompatibilityCache();
 // Run maintenance (normally auto-triggered)
 cleanupStaleEntries();
 ```
+
+## Advanced Uses
+
+### Debugging Cache Performance
+
+```typescript
+// Get detailed cache statistics
+const stats = getCompatibilityCacheStats();
+console.log(`Cache hit rate: ${stats.hitRate}%`);
+console.log(`Cache size: ${stats.size} entries`);
+console.log(`Last cleanup: ${stats.lastCleanup}`);
+```
+
+### Optimizing for Mobile Devices
+
+On mobile devices, the cache system automatically:
+- Reduces the maximum cache size
+- Increases garbage collection frequency
+- Prioritizes memory efficiency over lookup speed
+
