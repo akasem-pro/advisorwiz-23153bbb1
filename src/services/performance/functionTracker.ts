@@ -2,67 +2,61 @@
 import { trackPerformanceMetric } from './trackingUtils';
 
 /**
- * Performance monitoring for functions
+ * Wraps a function with performance tracking
+ * 
+ * @param fn The function to track
+ * @param name The name of the function for tracking
+ * @returns The wrapped function with performance tracking
  */
 export function withPerformanceTracking<T extends (...args: any[]) => any>(
   fn: T,
-  fnName: string
-): (...args: Parameters<T>) => ReturnType<T> {
-  return (...args: Parameters<T>): ReturnType<T> => {
-    const startTime = performance.now();
-    
-    // Use performance mark for more detailed profiling in DevTools
-    performance.mark(`${fnName}-start`);
-    
+  name: string
+): T {
+  return ((...args: Parameters<T>): ReturnType<T> => {
+    const start = performance.now();
     try {
       const result = fn(...args);
-      
-      // Handle promises specially
+
+      // Handle promises
       if (result instanceof Promise) {
         return result.finally(() => {
-          const endTime = performance.now();
-          const duration = endTime - startTime;
-          
-          performance.mark(`${fnName}-end`);
-          performance.measure(fnName, `${fnName}-start`, `${fnName}-end`);
-          
-          trackPerformanceMetric(`function_${fnName}`, duration, {
-            tags: {
-              async: 'true',
-              argCount: args.length.toString()
-            }
+          const duration = performance.now() - start;
+          trackPerformanceMetric(`fn_${name}`, duration, {
+            tags: { function_name: name, async: 'true' }
           });
         }) as ReturnType<T>;
       }
-      
-      // For synchronous functions
-      const endTime = performance.now();
-      const duration = endTime - startTime;
-      
-      performance.mark(`${fnName}-end`);
-      performance.measure(fnName, `${fnName}-start`, `${fnName}-end`);
-      
-      trackPerformanceMetric(`function_${fnName}`, duration, {
-        tags: {
-          async: 'false',
-          argCount: args.length.toString()
-        }
+
+      // Handle synchronous functions
+      const duration = performance.now() - start;
+      trackPerformanceMetric(`fn_${name}`, duration, {
+        tags: { function_name: name, async: 'false' }
       });
       
       return result;
     } catch (error) {
-      // Still track performance even if there's an error
-      const endTime = performance.now();
-      const duration = endTime - startTime;
-      
-      trackPerformanceMetric(`function_${fnName}_error`, duration, {
-        tags: {
-          error: 'true',
-          errorType: error instanceof Error ? error.name : 'unknown'
-        }
+      const duration = performance.now() - start;
+      trackPerformanceMetric(`fn_${name}_error`, duration, {
+        tags: { function_name: name, error: 'true' }
       });
-      
       throw error;
     }
-  };
+  }) as T;
+}
+
+/**
+ * Track the performance of a function invocation
+ * 
+ * @param functionName The name of the function
+ * @param duration The duration of the function execution in ms
+ * @param metadata Additional metadata about the function execution
+ */
+export function trackFunctionPerformance(
+  functionName: string,
+  duration: number,
+  metadata?: Record<string, any>
+): void {
+  trackPerformanceMetric(`fn_${functionName}`, duration, {
+    tags: { ...metadata, function_name: functionName }
+  });
 }

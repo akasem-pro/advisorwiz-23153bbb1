@@ -1,32 +1,17 @@
 
-// Performance service entry point
-import { trackPerformanceMetric, recordPerformanceMark } from './trackingUtils';
-import { withPerformanceTracking } from './functionTracker';
-import { flushMetrics, initMetricsEventListeners } from './metricsService';
-import { getPersistedMetrics, clearPersistedMetrics } from './storage';
-import { getCurrentMetrics, clearMetricsBuffer } from './metricsBuffer';
+// Performance service exports
 
-/**
- * Initialize performance monitoring
- */
-export const initPerformanceMonitoring = (): void => {
-  // Only run in browser environment
-  if (typeof window === 'undefined') return;
-  
-  // Initialize metrics event listeners
-  initMetricsEventListeners();
-  
-  // Log initialization
-  console.log('[Performance] Performance monitoring initialized');
-};
+// Export types
+export * from './types';
 
-export {
-  trackPerformanceMetric,
-  recordPerformanceMark,
-  withPerformanceTracking,
-  flushMetrics,
-  getPersistedMetrics,
-  clearPersistedMetrics,
-  getCurrentMetrics,
-  clearMetricsBuffer,
-};
+// Export core utilities
+export { trackPerformanceMetric, recordPerformanceMark } from './trackingUtils';
+
+// Export function tracking utilities
+export { withPerformanceTracking, trackFunctionPerformance } from './functionTracker';
+
+// Export storage utilities
+export { persistMetric, getPersistedMetrics, clearPersistedMetrics } from './storage';
+
+// Export buffer utilities
+export { addToBuffer, flushBuffer, getBufferContents } from './metricsBuffer';

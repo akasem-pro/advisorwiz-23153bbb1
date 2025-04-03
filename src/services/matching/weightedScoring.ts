@@ -1,157 +1,130 @@
 
-/**
- * Weighted compatibility scoring system
- * Central coordinator for the matching algorithm
- * 
- * This module provides the main entry point for compatibility calculations,
- * utilizing the strategy pattern to apply different scoring algorithms
- * based on context and requirements.
- */
+import { createHash } from 'crypto';
 import { MatchPreferences } from '../../context/UserContextDefinition';
-import { withPerformanceTracking } from '../../utils/performance/functionTracking';
-import { CallMetrics } from '../../types/callTypes';
-import { trackMatchingInteraction } from '../../utils/analytics/matchTracker';
+import { MatchingStrategy } from './strategies/MatchingStrategy';
+import { DefaultMatchingStrategy } from './strategies/DefaultMatchingStrategy';
+import { PremiumMatchingStrategy } from './strategies/PremiumMatchingStrategy';
+import { RiskFocusedStrategy } from './strategies/RiskFocusedStrategy';
+import { getCachedCompatibility, cacheCompatibility } from './cache/compatibilityCache';
+import { trackMatchingOperation } from './performance/matchingPerformanceTracker';
+import { trackUserBehavior, UserBehaviorEvent } from '../../utils/analytics/eventTracker';
 
-// Strategy Pattern components
-import { MatchingStrategyContext } from './strategies/MatchingStrategyContext';
-import { MatchingStrategyFactory, MatchingStrategyType } from './strategies/MatchingStrategyFactory';
+// Available matching strategies
+const strategies: Record<string, MatchingStrategy> = {
+  default: new DefaultMatchingStrategy(),
+  premium: new PremiumMatchingStrategy(),
+  'risk-focused': new RiskFocusedStrategy()
+};
 
-// Cache management with improved implementation
-import { 
-  getCachedResult, 
-  cacheResult, 
-  clearCompatibilityCache, 
-  getCompatibilityCacheStats,
-  checkCacheMaintenance
-} from './cache/compatibilityCache';
-
-/**
- * The current active strategy context used for calculations
- * @private
- */
-const strategyContext = new MatchingStrategyContext(
-  MatchingStrategyFactory.createStrategy('default')
-);
+// Current strategy
+let currentStrategy: MatchingStrategy = strategies.default;
 
 /**
  * Set the active matching strategy
- * 
- * @param strategyType - The type of matching strategy to use
+ * @param strategyName The strategy name to use
  */
-export const setMatchingStrategy = (strategyType: MatchingStrategyType): void => {
-  const strategy = MatchingStrategyFactory.createStrategy(strategyType);
-  strategyContext.setStrategy(strategy);
-  console.log(`Matching strategy set to: ${strategyType}`);
+export const setMatchingStrategy = (strategyName: string): void => {
+  if (!strategies[strategyName]) {
+    console.error(`Strategy "${strategyName}" not found, using default`);
+    currentStrategy = strategies.default;
+  } else {
+    currentStrategy = strategies[strategyName];
+  }
 };
 
 /**
- * Create a stable cache key for compatibility calculation inputs
- * @private
+ * Generate a stable hash for preferences object
+ * @param preferences Match preferences
+ * @returns Hash string
  */
-const createCompatibilityCacheKey = (
-  advisorId: string,
-  consumerId: string,
-  preferences: MatchPreferences
-): string => {
-  // Sort preference keys to ensure consistent ordering
-  const prefsString = JSON.stringify(
-    preferences, 
-    Object.keys(preferences).sort()
-  );
-  
-  return `${advisorId}-${consumerId}-${prefsString}`;
+const generatePreferencesHash = (preferences: MatchPreferences): string => {
+  const json = JSON.stringify(preferences);
+  return createHash('md5').update(json).digest('hex').substring(0, 8);
 };
 
 /**
- * Performance-optimized weighted compatibility score calculation
- * 
- * This pure function handles caching and delegates the actual
- * calculation to the current active strategy.
+ * Calculate weighted compatibility score
  */
-const calculateWeightedCompatibilityScore = (
+export const getWeightedCompatibilityScore = (
   advisorId: string,
   consumerId: string,
   preferences: MatchPreferences,
-  callMetrics?: CallMetrics[],
-  trackAnalytics: boolean = false
+  callMetrics: any[] = [],
+  trackViewEvent: boolean = false
 ): { score: number; matchExplanation: string[] } => {
-  if (!advisorId || !consumerId) {
-    return { 
-      score: 0, 
-      matchExplanation: ["Invalid input: Missing advisor or consumer ID"] 
+  const startTime = performance.now();
+  
+  // Generate cache key using both IDs and preferences hash
+  const preferencesHash = generatePreferencesHash(preferences);
+  const cacheKey = `${advisorId}-${consumerId}-${preferencesHash}`;
+  
+  // Check cache first
+  const cachedResult = getCachedCompatibility(cacheKey);
+  if (cachedResult) {
+    // Track cache hit
+    const duration = performance.now() - startTime;
+    trackMatchingOperation('getWeightedCompatibilityScore', duration, {
+      advisorId,
+      consumerId,
+      strategyName: currentStrategy.getName()
+    }, true);
+    
+    // Generate a view ID for tracking events
+    if (trackViewEvent) {
+      const viewId = `match-${advisorId}-${consumerId}-${Math.random().toString(36).substring(2, 10)}`;
+      
+      // Track view event
+      trackUserBehavior(UserBehaviorEvent.MATCH_VIEW, {
+        advisor_id: advisorId,
+        consumer_id: consumerId,
+        score: cachedResult.score,
+        explanations: cachedResult.matchExplanation,
+        match_id: viewId,
+        view_type: 'cache_hit'
+      });
+    }
+    
+    return {
+      score: cachedResult.score,
+      matchExplanation: cachedResult.matchExplanation
     };
   }
-
-  // Create a comprehensive cache key
-  const cacheKey = createCompatibilityCacheKey(advisorId, consumerId, preferences);
   
-  // Check if we have this calculation cached and it's not expired
-  const cachedResult = getCachedResult(cacheKey);
-  if (cachedResult) {
-    // Track analytics even for cached results if requested
-    if (trackAnalytics) {
-      // Generate a unique ID for this match calculation
-      const matchId = `${advisorId}_${consumerId}_${Date.now()}`;
-      
-      // Track the match view event asynchronously
-      trackMatchingInteraction(
-        'view',
-        advisorId,
-        consumerId,
-        cachedResult.score,
-        matchId,
-        { explanations: cachedResult.matchExplanation }
-      );
-    }
-    return cachedResult;
-  }
-  
-  // Check if cache maintenance is needed
-  checkCacheMaintenance();
-  
-  // Get score from the strategy context using a pure function call
-  const result = strategyContext.calculateCompatibilityScore(
-    advisorId, 
-    consumerId, 
-    preferences, 
+  // Use current strategy to calculate score
+  const result = currentStrategy.calculateScore(
+    advisorId,
+    consumerId,
+    preferences,
     callMetrics
   );
   
-  // Cache the result with a timestamp
-  cacheResult(cacheKey, result);
+  // Cache the result
+  cacheCompatibility(cacheKey, result.score, result.matchExplanation);
   
-  // Track analytics for newly calculated match if requested
-  if (trackAnalytics) {
-    // Generate a unique ID for this match calculation
-    const matchId = `${advisorId}_${consumerId}_${Date.now()}`;
+  // Track performance
+  const duration = performance.now() - startTime;
+  trackMatchingOperation('getWeightedCompatibilityScore', duration, {
+    advisorId,
+    consumerId,
+    strategyName: currentStrategy.getName()
+  }, false);
+  
+  // Track view event
+  if (trackViewEvent) {
+    const viewId = `match-${advisorId}-${consumerId}-${Math.random().toString(36).substring(2, 10)}`;
     
-    // Track the match view event asynchronously
-    trackMatchingInteraction(
-      'view',
-      advisorId,
-      consumerId,
-      result.score,
-      matchId,
-      { explanations: result.matchExplanation }
-    );
+    trackUserBehavior(UserBehaviorEvent.MATCH_VIEW, {
+      advisor_id: advisorId,
+      consumer_id: consumerId,
+      score: result.score,
+      explanations: result.matchExplanation,
+      match_id: viewId,
+      view_type: 'calculation'
+    });
   }
   
   return result;
 };
 
-/**
- * Public API: Calculate compatibility score with performance tracking
- * 
- * This exported function wraps the internal calculation function with
- * performance tracking to monitor execution time and success rates.
- */
-export const getWeightedCompatibilityScore = withPerformanceTracking(
-  calculateWeightedCompatibilityScore,
-  'getWeightedCompatibilityScore'
-);
-
-// Re-export cache utilities for external use
-export {
-  clearCompatibilityCache,
-  getCompatibilityCacheStats
-};
+// Export for tests and direct usage if needed
+export { clearCompatibilityCache } from './cache/compatibilityCache';

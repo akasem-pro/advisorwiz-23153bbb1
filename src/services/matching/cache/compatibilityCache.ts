@@ -1,86 +1,107 @@
 
 /**
- * Enhanced compatibility score caching system with memory optimizations
- * 
- * This module serves as a facade for the underlying cache implementation,
- * providing a simplified public API for other modules to use.
+ * Cache management for compatibility scores
+ * This file provides utilities for caching and retrieving compatibility scores
+ * to improve performance of matching operations.
  */
 
-// Re-export key functionality from internal modules
-export { getCachedResult, cacheResult, createCacheKey } from './operations/cacheOperations';
-export { 
-  cleanupStaleEntries, 
-  retainTopHitEntries, 
-  pruneCache,
-  cleanupCacheAsync,
-  optimizeCache,
-  CACHE_CLEANUP_INTERVAL,
-  CACHE_AUTO_CLEANUP_SIZE,
-  MAX_CACHE_SIZE
-} from './maintenance/cacheMaintenance';
+// Cache structure: advisorId-consumerId-preferencesHash -> {score, explanations, timestamp}
+const compatibilityCache = new Map<string, {
+  score: number;
+  matchExplanation: string[];
+  timestamp: number;
+}>();
 
-// Export statistics functionality
-import { getCacheMetrics } from './core/cacheStore';
-export const getCompatibilityCacheStats = getCacheMetrics;
-
-// Re-export cache clearing functionality
-import { clearCache } from './core/cacheStore';
-export const clearCompatibilityCache = clearCache;
-
-// Main function to check cache maintenance if needed
-import { getCacheSize, getLastCleanupTime } from './core/cacheStore';
-import { 
-  CACHE_AUTO_CLEANUP_SIZE, 
-  CACHE_CLEANUP_INTERVAL, 
-  cleanupCacheAsync, 
-  MAX_CACHE_SIZE,
-  pruneCache
-} from './maintenance/cacheMaintenance';
+// Cache configuration
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+const MAX_CACHE_SIZE = 1000; // Maximum number of entries to prevent memory issues
 
 /**
- * Check if cache maintenance is needed and perform it if required
+ * Get a cached compatibility result
  * 
- * This function implements an adaptive cache maintenance strategy:
- * - Performs cleanup on size threshold or time interval
- * - Emergency pruning when cache size approaches capacity
- * - All maintenance operations run asynchronously to avoid blocking
- * 
- * Should be called by client code before cache operations
- * in high-traffic scenarios.
+ * @param cacheKey The cache key (advisorId-consumerId-preferencesHash)
+ * @returns The cached result or undefined if not found or expired
  */
-export const checkCacheMaintenance = (): void => {
-  const currentSize = getCacheSize();
-  const now = Date.now();
-  const lastCleanup = getLastCleanupTime();
-
-  // Consider automatic cleanup in these cases:
-  // 1. Cache is getting too large
-  // 2. It's been a while since the last cleanup
-  if (currentSize > CACHE_AUTO_CLEANUP_SIZE || 
-      (now - lastCleanup > CACHE_CLEANUP_INTERVAL)) {
-    cleanupCacheAsync();
+export const getCachedCompatibility = (cacheKey: string) => {
+  const cachedResult = compatibilityCache.get(cacheKey);
+  
+  if (!cachedResult) return undefined;
+  
+  // Check if cache entry has expired
+  if (Date.now() - cachedResult.timestamp > CACHE_TTL) {
+    // Cache expired, remove it
+    compatibilityCache.delete(cacheKey);
+    return undefined;
   }
   
-  // If we're at capacity, remove least recently used entries
-  if (currentSize >= MAX_CACHE_SIZE) {
-    pruneCache(MAX_CACHE_SIZE / 5); // Remove 20% of entries
+  return cachedResult;
+};
+
+/**
+ * Store a compatibility result in the cache
+ * 
+ * @param cacheKey The cache key (advisorId-consumerId-preferencesHash)
+ * @param score The compatibility score
+ * @param matchExplanation The match explanations
+ */
+export const cacheCompatibility = (
+  cacheKey: string,
+  score: number,
+  matchExplanation: string[]
+) => {
+  // Enforce cache size limit with LRU behavior (remove oldest entries)
+  if (compatibilityCache.size >= MAX_CACHE_SIZE) {
+    const oldestKey = compatibilityCache.keys().next().value;
+    compatibilityCache.delete(oldestKey);
+  }
+  
+  compatibilityCache.set(cacheKey, {
+    score,
+    matchExplanation,
+    timestamp: Date.now()
+  });
+};
+
+/**
+ * Clear the compatibility cache
+ */
+export const clearCompatibilityCache = () => {
+  compatibilityCache.clear();
+};
+
+/**
+ * Invalidate cache entries for a specific advisor or consumer
+ * 
+ * @param id The advisor or consumer ID
+ */
+export const invalidateCompatibilityCache = (id: string) => {
+  // Delete any cache entries that contain this ID
+  for (const key of compatibilityCache.keys()) {
+    if (key.includes(id)) {
+      compatibilityCache.delete(key);
+    }
   }
 };
 
 /**
- * Get cache health indicators as percentages
+ * Get cache statistics
  * 
- * @returns Object with cache health metrics
+ * @returns Cache statistics object
  */
-export const getCacheHealth = () => {
-  const metrics = getCacheMetrics();
+export const getCacheStats = () => {
+  let expiredCount = 0;
+  const now = Date.now();
+  
+  // Count expired entries
+  for (const entry of compatibilityCache.values()) {
+    if (now - entry.timestamp > CACHE_TTL) {
+      expiredCount++;
+    }
+  }
   
   return {
-    utilizationPercent: (metrics.size / MAX_CACHE_SIZE) * 100,
-    hitRatePercent: metrics.hitRate,
-    timeElapsedPercent: Math.min(
-      ((Date.now() - getLastCleanupTime()) / CACHE_CLEANUP_INTERVAL) * 100,
-      100
-    )
+    totalEntries: compatibilityCache.size,
+    expiredEntries: expiredCount,
+    activeEntries: compatibilityCache.size - expiredCount
   };
 };
