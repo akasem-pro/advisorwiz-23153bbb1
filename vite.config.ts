@@ -7,7 +7,7 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "localhost", // Restrict to localhost only
+    host: "localhost", // Change from "::" to "localhost" to restrict access
     port: 8080,
     // Add security settings to prevent external access
     hmr: {
@@ -16,28 +16,18 @@ export default defineConfig(({ mode }) => ({
     },
     // Restrict access to local connections only
     cors: false,
-    // Add additional security headers
-    headers: {
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
-    },
-    // Disable server.fs.deny bypass
-    fs: {
-      strict: true,
-      allow: ['.']
-    }
   },
   plugins: [
     react(),
-    mode === 'development' && componentTagger(),
+    mode === 'development' &&
+    componentTagger(), // Removed the configuration object that was causing the type error
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // Add build optimization settings
+  // Add build optimization setting
   build: {
     // Minify options
     minify: "terser",
@@ -48,18 +38,5 @@ export default defineConfig(({ mode }) => ({
         drop_debugger: true,
       }
     },
-    // Add additional security measures for output
-    rollupOptions: {
-      output: {
-        // Ensure proper content types
-        entryFileNames: 'assets/[name].[hash].js',
-        chunkFileNames: 'assets/[name].[hash].js',
-        assetFileNames: 'assets/[name].[hash].[ext]'
-      }
-    }
   },
-  // Fix for server.fs.deny bypass
-  optimizeDeps: {
-    exclude: ['fsevents']
-  }
 }));

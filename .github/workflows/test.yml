@@ -46,7 +46,7 @@ jobs:
         run: npm run build
       
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v4  # Upgraded to v4 from v3
+        uses: actions/upload-artifact@v3
         with:
           name: dist
           path: |
@@ -54,8 +54,7 @@ jobs:
             !dist/**/*.map
       
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v4  # Upgraded to v4 from v3
+        uses: actions/upload-artifact@v3
         with:
           name: code-coverage-report
           path: coverage
-
