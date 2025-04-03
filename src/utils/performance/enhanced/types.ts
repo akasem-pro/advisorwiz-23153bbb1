@@ -1,9 +1,6 @@
 
-/**
- * Types for enhanced performance tracking system
- */
+// Types for performance metrics
 
-// Interface for metric data
 export interface MetricData {
   name: string;
   value: number;
@@ -12,7 +9,6 @@ export interface MetricData {
   persistOnPageLoad?: boolean;
 }
 
-// Constants
-export const PERSISTED_METRICS_KEY = 'lovable_persisted_metrics';
-export const FLUSH_INTERVAL = 2000; // 2 seconds
-export const MAX_BUFFER_SIZE = 20;
+// Configuration
+export const MAX_BUFFER_SIZE = 50;
+export const FLUSH_INTERVAL = 10000; // 10 seconds

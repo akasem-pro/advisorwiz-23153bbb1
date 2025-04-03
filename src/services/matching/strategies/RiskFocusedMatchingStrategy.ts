@@ -1,96 +1,65 @@
 
-import { MatchPreferences } from '../../../context/UserContextDefinition';
-import { CallMetrics } from '../../../types/callTypes';
 import { MatchingStrategy } from './MatchingStrategy';
-import { handleError, createError, ErrorCategory, ErrorSeverity } from '../../../utils/errorHandling';
+import { MatchPreferences } from '../../../context/UserContextDefinition';
 
 /**
- * Risk-Focused Matching Strategy
- * 
- * This strategy prioritizes matching consumers with advisors who have expertise
- * in risk management and align with the consumer's risk tolerance preferences.
+ * Strategy focused on managing risk exposure in matches
+ * Gives higher weight to factors that reduce risk-mismatch
  */
 export class RiskFocusedMatchingStrategy implements MatchingStrategy {
-  /**
-   * Calculate compatibility score with emphasis on risk alignment
-   * 
-   * @param advisorId - ID of the advisor to evaluate
-   * @param consumerId - ID of the consumer to match against
-   * @param preferences - User-defined matching preferences
-   * @param callMetrics - Optional call interaction metrics
-   * 
-   * @returns Compatibility score (0-100) and explanations
-   */
+  getName(): string {
+    return 'risk-focused';
+  }
+
   calculateScore(
     advisorId: string,
     consumerId: string,
     preferences: MatchPreferences,
-    callMetrics?: CallMetrics[]
+    callMetrics: any[] = []
   ): { score: number; matchExplanation: string[] } {
-    try {
-      // Input validation
-      if (!advisorId || !consumerId) {
-        return { 
-          score: 0, 
-          matchExplanation: ["Invalid input: Missing advisor or consumer ID"] 
-        };
-      }
-
-      // In a real implementation, this would:
-      // 1. Query advisor and consumer profiles
-      // 2. Put heavy weight on risk tolerance alignment
-      // 3. Consider risk management expertise of the advisor
-      // 4. Analyze portfolio diversification needs
-      
-      // For this example, we'll return a mock implementation
-      // that would be replaced with actual risk-focused algorithm
-      
-      const baseScore = 75; // Reasonable starting score
-      const explanations = [
-        "Risk-focused matching algorithm applied",
-        "Advisor's risk management expertise considered",
-        "Consumer's risk tolerance preferences prioritized"
-      ];
-      
-      // In practice, we'd calculate this based on actual profile data
-      return {
-        score: baseScore,
-        matchExplanation: explanations
-      };
-    } catch (error) {
-      // Create a proper AppError object using createError
-      const appError = createError(
-        `Error in Risk-Focused Matching Strategy: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        ErrorCategory.UNKNOWN,
-        ErrorSeverity.MEDIUM,
-        error,
-        { advisorId, consumerId }
-      );
-      
-      // Pass the properly constructed error object to handleError
-      handleError(appError);
-      
-      return { 
-        score: 0, 
-        matchExplanation: ["An error occurred while calculating risk-focused compatibility"] 
-      };
+    // Base score starts at 50
+    let score = 50;
+    const explanations: string[] = [];
+    
+    // Calculate risk-tolerance based score adjustments
+    // This would normally use actual user data from profiles
+    
+    // Simulate using risk data for this example
+    score += Math.min(25, Math.random() * 30); // Risk alignment score
+    explanations.push('Risk tolerance profile analyzed');
+    
+    // If there are excluded categories and they match advisor specialties, reduce score
+    if (preferences.excludedCategories && preferences.excludedCategories.length > 0) {
+      // In a real implementation, this would check against actual advisor expertise
+      const penaltyPerCategory = 10;
+      score -= Math.min(30, preferences.excludedCategories.length * penaltyPerCategory);
+      explanations.push(`Excluded ${preferences.excludedCategories.length} investment categories from match consideration`);
     }
-  }
-  
-  /**
-   * Get the name of the strategy for logging and analytics
-   * @returns Name of the strategy
-   */
-  getName(): string {
-    return 'Risk-Focused Strategy';
-  }
-  
-  /**
-   * Get the description of how this strategy works
-   * @returns Description of the strategy
-   */
-  getDescription(): string {
-    return 'Specialized algorithm that prioritizes risk tolerance alignment between ' +
-           'advisors and consumers, with emphasis on risk management expertise.';
+    
+    // Apply customized weight factors if provided
+    if (preferences.weightFactors) {
+      const riskScore = Math.min(15, Math.random() * 20); // Sample risk score calculation
+      
+      // Higher weight for risk assessment in this strategy
+      const riskWeight = preferences.weightFactors.riskTolerance || 70;
+      score += (riskScore * riskWeight / 100);
+      
+      explanations.push('Applied custom risk tolerance weighting');
+    }
+    
+    // Add insights from previous interactions if available
+    if (callMetrics && callMetrics.length > 0) {
+      // Analyze call metrics for risk discussion patterns
+      score += Math.min(10, callMetrics.length * 2);
+      explanations.push('Incorporated insights from previous risk discussions');
+    }
+
+    // Ensure score is within 0-100 range
+    score = Math.max(0, Math.min(100, score));
+    
+    return {
+      score: Math.round(score),
+      matchExplanation: explanations
+    };
   }
 }

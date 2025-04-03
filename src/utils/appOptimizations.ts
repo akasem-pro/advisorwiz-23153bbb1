@@ -1,3 +1,4 @@
+
 /**
  * App Optimizations
  * Centralized initialization of all performance optimizations
@@ -8,6 +9,7 @@ import { initAnimationMetrics } from './performance/animationMetrics';
 import { initPerformanceOptimizations } from './performanceTracking';
 import { initMobileOptimizations } from './mobileDOMOptimization';
 import { setupErrorHandling } from './errorHandling';
+import { initIntegratedPerformanceMonitor } from './performance/integrated/performanceMonitor';
 
 /**
  * Initialize all app optimizations
@@ -30,6 +32,9 @@ export const initAppOptimizations = (): void => {
   
   // Initialize mobile optimizations
   initMobileOptimizations();
+  
+  // Initialize the integrated performance monitor
+  initIntegratedPerformanceMonitor();
   
   console.log('[App] Performance optimizations initialized');
 };

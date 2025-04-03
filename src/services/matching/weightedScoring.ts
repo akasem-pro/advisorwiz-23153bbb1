@@ -1,4 +1,3 @@
-
 import { createHash } from 'crypto';
 import { MatchPreferences } from '../../context/UserContextDefinition';
 import { MatchingStrategy } from './strategies/MatchingStrategy';

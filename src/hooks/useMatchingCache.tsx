@@ -1,26 +1,15 @@
-
 import { useCallback, useMemo, useEffect, useState } from 'react';
 import { 
-  clearCompatibilityCache, 
-  getCacheStats,
-  getCompatibilityCacheStats 
+  clearCompatibilityCache,
+  getCompatibilityCacheStats
+} from '../services/matching';
+import { 
+  cleanupStaleEntries, 
+  retainTopHitEntries 
 } from '../services/matching/cache/compatibilityCache';
 import { clearMatchCache, invalidateMatchCache } from '../utils/matchingAlgorithm';
 import { toast } from 'sonner';
 import { supabase } from '../integrations/supabase/client';
-
-// Helper functions to match the expected API
-const cleanupStaleEntries = (): number => {
-  // This is a simplified implementation
-  console.log('Cleaning up stale cache entries');
-  return 0;
-};
-
-const retainTopHitEntries = (limit: number): number => {
-  // This is a simplified implementation
-  console.log(`Retaining top ${limit} cache entries`);
-  return 0;
-};
 
 /**
  * Hook for monitoring and managing the matching algorithm cache

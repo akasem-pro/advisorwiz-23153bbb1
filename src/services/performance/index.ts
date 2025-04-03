@@ -16,6 +16,7 @@ export { persistMetric, getPersistedMetrics, clearPersistedMetrics } from './sto
 // Export buffer utilities
 export { 
   addToBuffer, 
-  clearMetricsBuffer as flushBuffer, 
-  getCurrentMetrics as getBufferContents 
+  flushBuffer,
+  getBufferContents,
+  clearMetricsBuffer
 } from './metricsBuffer';

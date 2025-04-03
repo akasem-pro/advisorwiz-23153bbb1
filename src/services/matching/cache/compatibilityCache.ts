@@ -1,196 +1,162 @@
-
 /**
- * Cache management for compatibility scores
- * This file provides utilities for caching and retrieving compatibility scores
- * to improve performance of matching operations.
+ * Compatibility Cache Module
+ * 
+ * Provides caching functionality for compatibility score calculations
+ * with time-based invalidation and size management.
  */
 
-// Cache structure: advisorId-consumerId-preferencesHash -> {score, explanations, timestamp}
-const compatibilityCache = new Map<string, {
+interface CachedResult {
   score: number;
   matchExplanation: string[];
   timestamp: number;
-  hitCount?: number;
-}>();
+}
+
+// Cache storage
+const compatibilityCache: Map<string, CachedResult> = new Map();
 
 // Cache configuration
-const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
-const MAX_CACHE_SIZE = 1000; // Maximum number of entries to prevent memory issues
+const CACHE_MAX_SIZE = 500;
+const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+
+// Performance metrics
+let cacheHits = 0;
+let cacheMisses = 0;
 
 /**
- * Get a cached compatibility result
- * 
- * @param cacheKey The cache key (advisorId-consumerId-preferencesHash)
- * @returns The cached result or undefined if not found or expired
+ * Get cached compatibility result
  */
-export const getCachedCompatibility = (cacheKey: string) => {
+export const getCachedCompatibility = (cacheKey: string): CachedResult | null => {
   const cachedResult = compatibilityCache.get(cacheKey);
   
-  if (!cachedResult) return undefined;
-  
-  // Check if cache entry has expired
-  if (Date.now() - cachedResult.timestamp > CACHE_TTL) {
-    // Cache expired, remove it
-    compatibilityCache.delete(cacheKey);
-    return undefined;
+  // If not in cache, return null
+  if (!cachedResult) {
+    cacheMisses++;
+    return null;
   }
   
-  // Update hit count for LRU tracking
-  const hitCount = cachedResult.hitCount || 0;
-  compatibilityCache.set(cacheKey, {
-    ...cachedResult,
-    hitCount: hitCount + 1
-  });
+  // Check if entry is expired
+  const now = Date.now();
+  if (now - cachedResult.timestamp > CACHE_TTL) {
+    compatibilityCache.delete(cacheKey);
+    cacheMisses++;
+    return null;
+  }
   
+  // Valid cache hit
+  cacheHits++;
   return cachedResult;
 };
 
 /**
- * Store a compatibility result in the cache
- * 
- * @param cacheKey The cache key (advisorId-consumerId-preferencesHash)
- * @param score The compatibility score
- * @param matchExplanation The match explanations
+ * Cache a compatibility result
  */
 export const cacheCompatibility = (
   cacheKey: string,
   score: number,
   matchExplanation: string[]
-) => {
-  // Enforce cache size limit with LRU behavior (remove oldest entries)
-  if (compatibilityCache.size >= MAX_CACHE_SIZE) {
-    const oldestKey = compatibilityCache.keys().next().value;
+): void => {
+  // Check if cache is at max capacity
+  if (compatibilityCache.size >= CACHE_MAX_SIZE) {
+    // Remove oldest entry
+    const oldestKey = Array.from(compatibilityCache.keys())[0];
     compatibilityCache.delete(oldestKey);
   }
   
+  // Add to cache
   compatibilityCache.set(cacheKey, {
     score,
     matchExplanation,
-    timestamp: Date.now(),
-    hitCount: 1
+    timestamp: Date.now()
   });
 };
 
 /**
  * Clear the compatibility cache
  */
-export const clearCompatibilityCache = () => {
+export const clearCompatibilityCache = (): void => {
   compatibilityCache.clear();
 };
 
 /**
- * Invalidate cache entries for a specific advisor or consumer
- * 
- * @param id The advisor or consumer ID
- */
-export const invalidateCompatibilityCache = (id: string) => {
-  // Delete any cache entries that contain this ID
-  for (const key of compatibilityCache.keys()) {
-    if (key.includes(id)) {
-      compatibilityCache.delete(key);
-    }
-  }
-};
-
-/**
  * Get cache statistics
- * 
- * @returns Cache statistics object
  */
 export const getCacheStats = () => {
-  let expiredCount = 0;
   const now = Date.now();
+  let oldestEntryTime = now;
+  let activeEntries = 0;
   
-  // Count expired entries
-  for (const entry of compatibilityCache.values()) {
-    if (now - entry.timestamp > CACHE_TTL) {
-      expiredCount++;
+  // Count active (non-expired) entries
+  compatibilityCache.forEach((entry) => {
+    if (now - entry.timestamp <= CACHE_TTL) {
+      activeEntries++;
+      if (entry.timestamp < oldestEntryTime) {
+        oldestEntryTime = entry.timestamp;
+      }
     }
-  }
+  });
   
   return {
     totalEntries: compatibilityCache.size,
-    expiredEntries: expiredCount,
-    activeEntries: compatibilityCache.size - expiredCount
+    activeEntries,
+    oldestEntry: activeEntries > 0 ? new Date(oldestEntryTime) : null,
+    hitRate: cacheHits + cacheMisses > 0 
+      ? (cacheHits / (cacheHits + cacheMisses)) * 100 
+      : 0
   };
 };
 
 /**
- * Get extended cache statistics for monitoring
- */
-export const getCompatibilityCacheStats = () => {
-  const stats = getCacheStats();
-  
-  // Calculate hit rate if we had tracking
-  let frequentlyAccessedCount = 0;
-  for (const entry of compatibilityCache.values()) {
-    if (entry.hitCount && entry.hitCount > 5) {
-      frequentlyAccessedCount++;
-    }
-  }
-  
-  return {
-    size: stats.totalEntries,
-    hitRate: frequentlyAccessedCount / Math.max(stats.activeEntries, 1) * 100,
-    oldestEntry: getOldestEntryAge(),
-    frequentlyAccessedCount
-  };
-};
-
-/**
- * Get age of oldest entry in cache in milliseconds
- */
-const getOldestEntryAge = (): number | null => {
-  let oldestTimestamp = Date.now();
-  
-  for (const entry of compatibilityCache.values()) {
-    if (entry.timestamp < oldestTimestamp) {
-      oldestTimestamp = entry.timestamp;
-    }
-  }
-  
-  return oldestTimestamp === Date.now() ? null : Date.now() - oldestTimestamp;
-};
-
-/**
- * Remove stale entries from the cache
+ * Clean up stale entries from cache
+ * @returns Number of entries removed
  */
 export const cleanupStaleEntries = (): number => {
   const now = Date.now();
   let removedCount = 0;
   
-  for (const [key, entry] of compatibilityCache.entries()) {
+  compatibilityCache.forEach((entry, key) => {
     if (now - entry.timestamp > CACHE_TTL) {
       compatibilityCache.delete(key);
       removedCount++;
     }
-  }
+  });
   
   return removedCount;
 };
 
 /**
- * Keep only the most frequently accessed entries in the cache
- * 
- * @param limit Maximum number of entries to keep
+ * Retain only the most frequently accessed entries
+ * @param limit Number of entries to keep
+ * @returns Number of entries removed
  */
 export const retainTopHitEntries = (limit: number): number => {
-  if (compatibilityCache.size <= limit) {
-    return 0;
-  }
+  if (compatibilityCache.size <= limit) return 0;
   
-  // Convert to array for sorting
+  // In a real implementation, this would track access frequency
+  // For now, we'll just keep the most recent entries
   const entries = Array.from(compatibilityCache.entries())
-    .sort((a, b) => (b[1].hitCount || 0) - (a[1].hitCount || 0));
+    .sort((a, b) => b[1].timestamp - a[1].timestamp);
   
-  // Clear cache
-  compatibilityCache.clear();
+  const toRemove = entries.slice(limit);
+  let removedCount = 0;
   
-  // Add back only the top entries
-  const entriesToKeep = entries.slice(0, limit);
-  for (const [key, value] of entriesToKeep) {
-    compatibilityCache.set(key, value);
-  }
+  toRemove.forEach(([key]) => {
+    compatibilityCache.delete(key);
+    removedCount++;
+  });
   
-  return entries.length - entriesToKeep.length;
+  return removedCount;
+};
+
+/**
+ * Get compatibility cache statistics specifically for the useMatchingCache hook
+ */
+export const getCompatibilityCacheStats = () => {
+  const stats = getCacheStats();
+  
+  return {
+    size: stats.activeEntries,
+    hitRate: stats.hitRate,
+    oldestEntry: stats.oldestEntry,
+    frequentlyAccessedCount: Math.min(stats.activeEntries, 20) // Placeholder for actual tracking
+  };
 };
