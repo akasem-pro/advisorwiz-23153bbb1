@@ -1,3 +1,4 @@
+
 import { Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useEffect, lazy, Suspense, ReactNode } from 'react';
 import AppLayout from '../components/layout/AppLayout';
@@ -10,6 +11,7 @@ import AuthRoutes from './AuthRoutes';
 import UtilityRoutes from './UtilityRoutes';
 import OnboardingTour from '../components/onboarding/OnboardingTour';
 import { Skeleton } from '../components/ui/skeleton';
+import Home from '../pages/Home';
 
 // Lazy load content pages to improve initial load time
 const LazyContactUs = lazy(() => import('../pages/ContactUs'));
@@ -101,6 +103,9 @@ const AppRoutes = () => {
       </div>
       
       <Routes>
+        {/* Handle root route explicitly */}
+        <Route path="/" element={<AppLayout><Home /></AppLayout>} />
+        
         <Route path="/m" element={<MobileLayout><Outlet /></MobileLayout>}>
           {MobileRoutes}
         </Route>
@@ -123,8 +128,6 @@ const AppRoutes = () => {
               element={routeProps.element}
             />
           ))}
-          
-          <Route path="/*" element={<MainRoutes />} />
         </Route>
         
         <Route path="/dashboard" element={<Outlet />}>
