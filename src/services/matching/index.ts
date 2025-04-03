@@ -4,11 +4,13 @@ export { calculateBaseCompatibility } from './compatibility';
 export { 
   getWeightedCompatibilityScore,
   clearCompatibilityCache,
-  getCompatibilityCacheStats,
   setMatchingStrategy
 } from './weightedScoring';
 export { calculateCompatibilityBetweenProfiles } from './profileMatching';
 export { getRecommendedProfilesBasedOnActivity } from './activityRecommendations';
+
+// Export cache statistics from the cache module directly
+export { getCompatibilityCacheStats } from './cache/compatibilityCache';
 
 // Export algorithm components for detailed access
 export * from './algorithms/languageMatching';

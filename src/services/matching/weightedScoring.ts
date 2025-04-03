@@ -4,8 +4,8 @@ import { MatchPreferences } from '../../context/UserContextDefinition';
 import { MatchingStrategy } from './strategies/MatchingStrategy';
 import { DefaultMatchingStrategy } from './strategies/DefaultMatchingStrategy';
 import { PremiumMatchingStrategy } from './strategies/PremiumMatchingStrategy';
-import { RiskFocusedStrategy } from './strategies/RiskFocusedStrategy';
-import { getCachedCompatibility, cacheCompatibility } from './cache/compatibilityCache';
+import { RiskFocusedMatchingStrategy } from './strategies/RiskFocusedMatchingStrategy';
+import { getCachedCompatibility, cacheCompatibility, getCacheStats } from './cache/compatibilityCache';
 import { trackMatchingOperation } from './performance/matchingPerformanceTracker';
 import { trackUserBehavior, UserBehaviorEvent } from '../../utils/analytics/eventTracker';
 
@@ -13,7 +13,7 @@ import { trackUserBehavior, UserBehaviorEvent } from '../../utils/analytics/even
 const strategies: Record<string, MatchingStrategy> = {
   default: new DefaultMatchingStrategy(),
   premium: new PremiumMatchingStrategy(),
-  'risk-focused': new RiskFocusedStrategy()
+  'risk-focused': new RiskFocusedMatchingStrategy()
 };
 
 // Current strategy
@@ -124,6 +124,13 @@ export const getWeightedCompatibilityScore = (
   }
   
   return result;
+};
+
+/**
+ * Get cache statistics for monitoring
+ */
+export const getCompatibilityCacheStats = () => {
+  return getCacheStats();
 };
 
 // Export for tests and direct usage if needed

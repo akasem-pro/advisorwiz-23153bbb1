@@ -31,3 +31,20 @@ export const clearMetricsBuffer = (): void => {
 export const shouldFlushBuffer = (): boolean => {
   return metricsBuffer.length >= 20;
 };
+
+/**
+ * Flush the metrics buffer
+ * Returns the metrics that were in the buffer and clears it
+ */
+export const flushBuffer = (): PerformanceMetric[] => {
+  const metrics = getCurrentMetrics();
+  clearMetricsBuffer();
+  return metrics;
+};
+
+/**
+ * Get the current contents of the buffer without clearing it
+ */
+export const getBufferContents = (): PerformanceMetric[] => {
+  return getCurrentMetrics();
+};
