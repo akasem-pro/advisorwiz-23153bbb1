@@ -1,4 +1,3 @@
-
 import { Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useEffect, lazy, Suspense, ReactNode } from 'react';
 import AppLayout from '../components/layout/AppLayout';
@@ -128,6 +127,8 @@ const AppRoutes = () => {
               element={routeProps.element}
             />
           ))}
+          
+          <Route path="*" element={<MainRoutes />} />
         </Route>
         
         <Route path="/dashboard" element={<Outlet />}>
