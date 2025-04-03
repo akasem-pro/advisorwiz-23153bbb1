@@ -6,6 +6,7 @@ import NotFound from '../pages/NotFound';
 import AccessibilityTestPage from '../pages/AccessibilityTestPage';
 import { lazy, Suspense } from 'react';
 import { ComponentLoadingFallback } from '../components/LazyComponents';
+import AboutUs from '../pages/AboutUs';
 
 // Lazily load the security and accessibility page
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -22,6 +23,7 @@ const MainRoutes = () => {
       <Route path="/settings" element={<div>Settings Page</div>} />
       <Route path="/onboarding" element={<div>Onboarding Page</div>} />
       <Route path="/accessibility-test" element={<AccessibilityTestPage />} />
+      <Route path="/about" element={<AboutUs />} />
       {isAdmin && <Route path="/admin" element={<div>Admin Page</div>} />}
       <Route 
         path="/security-accessibility" 

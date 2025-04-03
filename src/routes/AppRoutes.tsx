@@ -1,4 +1,3 @@
-
 import { Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useEffect, lazy, Suspense, ReactNode } from 'react';
 import AppLayout from '../components/layout/AppLayout';
@@ -25,6 +24,11 @@ const LazySitemap = lazy(() => import('../pages/Sitemap'));
 const LazySchedule = lazy(() => import('../pages/Schedule'));
 const LazyChat = lazy(() => import('../pages/Chat'));
 const LazyConsumerProfile = lazy(() => import('../pages/ConsumerProfile'));
+const LazyAboutUs = lazy(() => import('../pages/AboutUs'));
+const LazyForFirms = lazy(() => import('../pages/ForFirms'));
+const LazyForAdvisors = lazy(() => import('../pages/ForAdvisors'));
+const LazyForConsumers = lazy(() => import('../pages/ForConsumers'));
+const LazyPricing = lazy(() => import('../pages/Pricing'));
 
 // Loading fallback component
 const PageLoadingFallback = (): JSX.Element => (
@@ -51,7 +55,12 @@ const contentPageRoutes = [
   { path: 'chat/:chatId', element: <Suspense fallback={<PageLoadingFallback />}><LazyChat /></Suspense> },
   { path: 'consumer-profile', element: <Suspense fallback={<PageLoadingFallback />}><LazyConsumerProfile /></Suspense> },
   { path: 'messages', element: <Suspense fallback={<PageLoadingFallback />}><LazyChat /></Suspense> },
-  { path: 'messages/:chatId', element: <Suspense fallback={<PageLoadingFallback />}><LazyChat /></Suspense> }
+  { path: 'messages/:chatId', element: <Suspense fallback={<PageLoadingFallback />}><LazyChat /></Suspense> },
+  { path: 'about', element: <Suspense fallback={<PageLoadingFallback />}><LazyAboutUs /></Suspense> },
+  { path: 'for-firms', element: <Suspense fallback={<PageLoadingFallback />}><LazyForFirms /></Suspense> },
+  { path: 'for-advisors', element: <Suspense fallback={<PageLoadingFallback />}><LazyForAdvisors /></Suspense> },
+  { path: 'for-consumers', element: <Suspense fallback={<PageLoadingFallback />}><LazyForConsumers /></Suspense> },
+  { path: 'pricing', element: <Suspense fallback={<PageLoadingFallback />}><LazyPricing /></Suspense> }
 ];
 
 const redirectRoutes = [
@@ -66,14 +75,12 @@ const AppRoutes = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Use requestAnimationFrame to ensure scrolling happens after render
     const frameId = requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: 'auto' });
     });
     
     console.log('Route changed:', location.pathname);
     
-    // Update body classes efficiently
     document.body.className = document.body.className
       .split(' ')
       .filter(cls => !cls.startsWith('page-'))
