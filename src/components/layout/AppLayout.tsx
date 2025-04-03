@@ -34,7 +34,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   return (
     <BaseLayout
       header={<Header />}
-      footer={hideFooter ? null : undefined} // Pass null to completely hide footer, undefined to use default
+      footer={hideFooter ? null : undefined} // Pass null to hide footer completely
       showSocialProof={!hideSocialProof}
       showTrustBadges={showTrustBadges}
       fullWidth={fullWidth}

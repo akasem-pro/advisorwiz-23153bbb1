@@ -31,7 +31,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
   return (
     <BaseLayout
       header={<Header />}
-      footer={hideFooter ? null : undefined} // Pass null to completely hide footer, undefined to use default
+      footer={hideFooter ? null : undefined} // Pass null to completely hide footer
       mobileNavbar={<MobileNavbar />}
       contentClassName={cn("pt-56 pb-24", contentClassName)} // Increased bottom padding for footer visibility with navbar
       showSocialProof={showSocialProof}

@@ -1,62 +1,57 @@
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import EnhancedBreadcrumbNav from '../components/navigation/EnhancedBreadcrumbNav';
-import { InlineFeedback } from '../components/ui/InlineFeedback';
+import AppLayout from '../components/layout/AppLayout';
 import PageSEO from '../components/seo/PageSEO';
+import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 
 const Blog: React.FC = () => {
-  const { slug } = useParams<{ slug?: string }>();
-  
-  const breadcrumbs = slug 
-    ? [
-        { name: 'Home', url: '/' },
-        { name: 'Blog', url: '/blog' },
-        { name: slug, url: `/blog/${slug}` }
-      ]
-    : [
-        { name: 'Home', url: '/' },
-        { name: 'Blog', url: '/blog' }
-      ];
+  const breadcrumbs = [
+    { name: "Home", url: "/" },
+    { name: "Blog", url: "/blog" }
+  ];
 
   return (
-    <>
-      <PageSEO
-        title={slug ? `${slug} - Financial Insights Blog` : "Financial Insights Blog"}
-        description={slug 
-          ? `Detailed information about ${slug} and related financial topics.` 
-          : 'Stay informed with our latest articles and insights on personal finance and investing.'}
-        breadcrumbs={breadcrumbs}
+    <AppLayout>
+      <PageSEO 
+        title="Financial Advice Blog | AdvisorWiz"
+        description="Explore our collection of articles on personal finance, investment strategies, retirement planning, and more."
+        keywords="financial blog, investment advice, retirement planning, financial tips"
+        canonicalUrl="https://advisorwiz.com/blog"
       />
       
-      <EnhancedBreadcrumbNav 
-        items={breadcrumbs}
-        includeHomeIcon={true}
-      />
+      <BreadcrumbNav items={breadcrumbs} />
       
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="section-title">
-            {slug ? `Blog Post: ${slug}` : 'Financial Insights Blog'}
-          </h1>
-          <p className="section-description">
-            {slug 
-              ? 'Detailed information about this specific financial topic.' 
-              : 'Stay informed with our latest articles and insights on personal finance and investing.'}
-          </p>
-          
-          {/* Content will be added in future updates */}
-          <div className="mt-8">
-            <InlineFeedback 
-              variant="info" 
-              title="Coming Soon"
-              message="This page is under construction. Check back soon for more blog content."
-              dismissable={true}
-            />
-          </div>
+        <h1 className="text-4xl font-bold mb-8 text-navy-900 dark:text-white">Financial Wisdom Blog</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* This would normally be populated from a CMS or backend */}
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="bg-white dark:bg-navy-800 rounded-lg overflow-hidden shadow-md">
+              <div className="h-48 bg-slate-200 dark:bg-navy-700"></div>
+              <div className="p-6">
+                <p className="text-sm text-teal-600 dark:text-teal-400 font-medium">
+                  {['Investing', 'Retirement', 'Tax Planning', 'Estate Planning', 'Insurance', 'Budgeting'][i % 6]}
+                </p>
+                <h2 className="text-xl font-bold mt-2 mb-4 text-navy-900 dark:text-white">
+                  Sample Blog Post Title {i}
+                </h2>
+                <p className="text-slate-600 dark:text-slate-300 mb-4">
+                  This is a short preview of the blog post content. Click to read the full article and learn more about this topic.
+                </p>
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-slate-300 dark:bg-navy-600"></div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-navy-900 dark:text-white">Author Name</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">April 3, 2025 · 5 min read</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    </>
+    </AppLayout>
   );
 };
 
