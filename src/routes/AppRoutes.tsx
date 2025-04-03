@@ -1,6 +1,6 @@
 
 import { Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
-import { useEffect, lazy, Suspense } from 'react';
+import { useEffect, lazy, Suspense, ReactNode } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import MobileLayout from '../components/layout/MobileLayout';
 import NotFound from '../pages/NotFound';
@@ -27,7 +27,7 @@ const LazyChat = lazy(() => import('../pages/Chat'));
 const LazyConsumerProfile = lazy(() => import('../pages/ConsumerProfile'));
 
 // Loading fallback component
-const PageLoadingFallback = () => (
+const PageLoadingFallback = (): ReactNode => (
   <div className="container mx-auto px-4 py-8">
     <Skeleton className="h-12 w-3/4 mb-6" />
     <Skeleton className="h-64 w-full mb-4" />

@@ -1,15 +1,18 @@
+
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import HomePage from '../pages/HomePage';
-import DashboardPage from '../pages/DashboardPage';
-import UserProfilePage from '../pages/UserProfilePage';
-import SettingsPage from '../pages/SettingsPage';
-import AdminPage from '../pages/AdminPage';
-import NotFoundPage from '../pages/NotFoundPage';
-import OnboardingPage from '../pages/OnboardingPage';
-import AdvisorProfilePage from '../pages/AdvisorProfilePage';
-import AccessibilityTestPage from '../pages/AccessibilityTestPage';
-import SecurityAndAccessibilityPage from '../pages/SecurityAndAccessibilityPage';
+
+// Since these pages don't exist yet, we'll create simple placeholder components
+const HomePage = () => <div>Home Page</div>;
+const DashboardPage = () => <div>Dashboard Page</div>;
+const UserProfilePage = () => <div>User Profile Page</div>;
+const SettingsPage = () => <div>Settings Page</div>;
+const AdminPage = () => <div>Admin Page</div>;
+const NotFoundPage = () => <div>Not Found Page</div>;
+const OnboardingPage = () => <div>Onboarding Page</div>;
+const AdvisorProfilePage = () => <div>Advisor Profile Page</div>;
+const AccessibilityTestPage = () => <div>Accessibility Test Page</div>;
+const SecurityAndAccessibilityPage = () => <div>Security And Accessibility Page</div>;
 
 const MainRoutes = () => {
   const isAdmin = true; // Replace with actual admin check

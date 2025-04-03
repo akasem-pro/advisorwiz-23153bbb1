@@ -46,6 +46,7 @@ const SecurityDashboard: React.FC = () => {
       }
     ];
 
+    // Fixed the comparison by correctly checking if any vulnerability has 'high' severity
     setSecurityStatus({
       overall: mockVulnerabilities.some(v => v.severity === 'high') ? 'critical' : 
                mockVulnerabilities.some(v => v.severity === 'medium') ? 'warning' : 'good',

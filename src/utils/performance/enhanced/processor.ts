@@ -1,33 +1,32 @@
 
-import { trackPerformance } from '../core';
 import { getPersistedMetrics, clearPersistedMetrics } from './storage';
+import { trackEnhancedPerformance } from './tracker';
 
 /**
- * Process persisted metrics from previous sessions
+ * Process metrics that were persisted from previous sessions
  */
 export const processPersistedMetrics = (): void => {
   try {
+    // Get persisted metrics
     const persistedMetrics = getPersistedMetrics();
     
+    // Process each metric
     if (persistedMetrics.length > 0) {
       console.log(`Processing ${persistedMetrics.length} persisted metrics`);
       
-      // Process only unique metrics to avoid duplication
-      const uniqueMetrics = new Map();
-      
-      persistedMetrics.forEach((metric) => {
-        uniqueMetrics.set(metric.name, metric);
+      // Re-track each persisted metric
+      persistedMetrics.forEach(metric => {
+        trackEnhancedPerformance(
+          `persisted_${metric.name}`,
+          metric.value,
+          {
+            tags: { ...metric.tags, persisted: 'true' },
+            persist: false // Don't persist these again
+          }
+        );
       });
       
-      // Track the persisted metrics
-      uniqueMetrics.forEach((metric) => {
-        trackPerformance(metric.name, metric.value, {
-          ...(metric.tags || {}),
-          persisted: 'true'
-        });
-      });
-      
-      // Clear persisted metrics
+      // Clear persisted metrics after processing
       clearPersistedMetrics();
     }
   } catch (error) {

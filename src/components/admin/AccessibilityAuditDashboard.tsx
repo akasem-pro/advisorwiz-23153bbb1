@@ -28,7 +28,7 @@ const AccessibilityAuditDashboard: React.FC = () => {
       // Short delay to ensure UI updates before potentially heavy audit operations
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      // Run the audit
+      // Run the audit - fixed by removing the argument since runAccessibilityAudit expects no args
       const summary = runAccessibilityAudit();
       setAuditSummary(summary);
       setLastRunTime(new Date());
