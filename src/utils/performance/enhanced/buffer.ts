@@ -88,7 +88,8 @@ export const flushBuffer = async (): Promise<void> => {
     });
   } catch (error) {
     console.error('Error flushing metrics buffer:', error);
-    // Add back to buffer if sending fails
-    metricsToSend.forEach(metric => addToBuffer(metric));
+    // Add back to buffer if sending fails - need to create a new metricsToSend variable here
+    const failedMetrics = getBufferContents();
+    failedMetrics.forEach(metric => addToBuffer(metric));
   }
 };
