@@ -14,9 +14,10 @@ export { withPerformanceTracking, trackFunctionPerformance } from './functionTra
 export { persistMetric, getPersistedMetrics, clearPersistedMetrics } from './storage';
 
 // Export buffer utilities
-export { 
-  addToBuffer, 
+export {
+  addToBuffer,
   flushBuffer,
   getBufferContents,
   clearMetricsBuffer
-} from './metricsBuffer';
+} from '../utils/performanceBuffer';
+

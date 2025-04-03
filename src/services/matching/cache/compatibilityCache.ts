@@ -1,3 +1,4 @@
+
 /**
  * Compatibility Cache Module
  * 
@@ -101,7 +102,9 @@ export const getCacheStats = () => {
     oldestEntry: activeEntries > 0 ? new Date(oldestEntryTime) : null,
     hitRate: cacheHits + cacheMisses > 0 
       ? (cacheHits / (cacheHits + cacheMisses)) * 100 
-      : 0
+      : 0,
+    size: compatibilityCache.size, // Add size for consistency with other interfaces
+    expiredEntries: compatibilityCache.size - activeEntries // Add expiredEntries for operations/cacheOperations.ts
   };
 };
 
@@ -154,9 +157,9 @@ export const getCompatibilityCacheStats = () => {
   const stats = getCacheStats();
   
   return {
-    size: stats.activeEntries,
+    size: stats.size,
     hitRate: stats.hitRate,
     oldestEntry: stats.oldestEntry,
-    frequentlyAccessedCount: Math.min(stats.activeEntries, 20) // Placeholder for actual tracking
+    frequentlyAccessedCount: Math.min(stats.size, 20) // Placeholder for actual tracking
   };
 };

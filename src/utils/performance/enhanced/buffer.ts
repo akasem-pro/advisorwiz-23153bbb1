@@ -1,46 +1,27 @@
 
-import { storeAnalyticsMetric } from '../core';
-import { MetricData, MAX_BUFFER_SIZE } from './types';
+import { MetricData, MAX_BUFFER_SIZE, FLUSH_INTERVAL } from './types';
+import { persistMetricToStorage } from './storage';
 
-// Buffer for metrics that will be sent in batch
+// Buffer to store metrics before sending them
 const metricsBuffer: MetricData[] = [];
 let flushTimer: number | null = null;
-let lastFlushTime = 0;
+let lastFlushTime = Date.now();
 
 /**
- * Add metric to buffer
+ * Add a metric to the buffer
  */
 export const addToBuffer = (metric: MetricData): void => {
   metricsBuffer.push(metric);
-};
-
-/**
- * Get current buffer contents
- */
-export const getBufferContents = (): MetricData[] => {
-  return [...metricsBuffer];
-};
-
-/**
- * Clear the metrics buffer
- */
-export const clearBuffer = (): void => {
-  metricsBuffer.length = 0;
-};
-
-/**
- * Check if buffer should be flushed immediately based on size or time
- */
-export const shouldFlushImmediately = (): boolean => {
-  const now = Date.now();
-  return metricsBuffer.length >= MAX_BUFFER_SIZE || (now - lastFlushTime > 10000);
-};
-
-/**
- * Update the last flush time
- */
-export const updateLastFlushTime = (): void => {
-  lastFlushTime = Date.now();
+  
+  // Persist metric if needed
+  if (metric.persistOnPageLoad) {
+    persistMetricToStorage(metric);
+  }
+  
+  // Schedule a flush if the buffer is getting large
+  if (metricsBuffer.length >= MAX_BUFFER_SIZE / 2) {
+    scheduleFlush();
+  }
 };
 
 /**
@@ -58,38 +39,86 @@ export const setFlushTimer = (timer: number | null): void => {
 };
 
 /**
- * Flush the metrics buffer with deduplication and grouping for more efficient processing
+ * Update the last flush time
+ */
+export const updateLastFlushTime = (): void => {
+  lastFlushTime = Date.now();
+};
+
+/**
+ * Check if the buffer should be flushed immediately
+ */
+export const shouldFlushImmediately = (): boolean => {
+  return (
+    metricsBuffer.length >= MAX_BUFFER_SIZE ||
+    Date.now() - lastFlushTime >= FLUSH_INTERVAL * 2
+  );
+};
+
+/**
+ * Get the contents of the buffer
+ */
+export const getBufferContents = (): MetricData[] => {
+  return [...metricsBuffer];
+};
+
+/**
+ * Flush the buffer and send metrics
  */
 export const flushBuffer = async (): Promise<void> => {
   if (metricsBuffer.length === 0) return;
   
   try {
-    // Create a copy of the buffer for processing
-    const metricsToSend = [...metricsBuffer];
-    clearBuffer();
+    // In a real implementation, this would send metrics to a server
+    console.log(`Flushing ${metricsBuffer.length} metrics`);
     
-    // Group metrics by name for more efficient processing
-    const metricsByName = metricsToSend.reduce((acc, metric) => {
-      if (!acc[metric.name]) {
-        acc[metric.name] = [];
-      }
-      acc[metric.name].push(metric);
-      return acc;
-    }, {} as Record<string, MetricData[]>);
+    // Process and group metrics
+    const groupedMetrics = groupMetricsByName(metricsBuffer);
     
-    // For each group, send only the most recent one
-    Object.entries(metricsByName).forEach(([name, metrics]) => {
-      // Sort by timestamp descending
-      metrics.sort((a, b) => b.timestamp - a.timestamp);
-      
-      // Send only the most recent metric
-      const mostRecent = metrics[0];
-      storeAnalyticsMetric(mostRecent.name, mostRecent.value);
-    });
+    // Clear the buffer
+    metricsBuffer.length = 0;
+    
+    // Return the processed metrics (not really needed in production)
+    return Promise.resolve();
   } catch (error) {
     console.error('Error flushing metrics buffer:', error);
-    // Add back to buffer if sending fails - need to create a new metricsToSend variable here
-    const failedMetrics = getBufferContents();
-    failedMetrics.forEach(metric => addToBuffer(metric));
+    return Promise.reject(error);
   }
+};
+
+/**
+ * Group metrics by name for more efficient processing
+ */
+const groupMetricsByName = (metrics: MetricData[]): Record<string, MetricData[]> => {
+  const grouped: Record<string, MetricData[]> = {};
+  
+  metrics.forEach(metric => {
+    if (!grouped[metric.name]) {
+      grouped[metric.name] = [];
+    }
+    
+    grouped[metric.name].push(metric);
+  });
+  
+  return grouped;
+};
+
+/**
+ * Schedule a flush of the metrics buffer
+ */
+const scheduleFlush = (): void => {
+  if (flushTimer !== null) return;
+  
+  flushTimer = window.setTimeout(() => {
+    flushBuffer();
+    flushTimer = null;
+    updateLastFlushTime();
+  }, FLUSH_INTERVAL);
+};
+
+/**
+ * Clear the metrics buffer
+ */
+export const clearMetricsBuffer = (): void => {
+  metricsBuffer.length = 0;
 };

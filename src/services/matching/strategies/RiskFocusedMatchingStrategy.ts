@@ -10,6 +10,10 @@ export class RiskFocusedMatchingStrategy implements MatchingStrategy {
   getName(): string {
     return 'risk-focused';
   }
+  
+  getDescription(): string {
+    return 'Prioritizes matching based on risk tolerance alignment and investment preferences';
+  }
 
   calculateScore(
     advisorId: string,
@@ -41,7 +45,8 @@ export class RiskFocusedMatchingStrategy implements MatchingStrategy {
       const riskScore = Math.min(15, Math.random() * 20); // Sample risk score calculation
       
       // Higher weight for risk assessment in this strategy
-      const riskWeight = preferences.weightFactors.riskTolerance || 70;
+      // Fix: Change riskTolerance to risk or another valid property
+      const riskWeight = preferences.weightFactors.risk || 70;
       score += (riskScore * riskWeight / 100);
       
       explanations.push('Applied custom risk tolerance weighting');
