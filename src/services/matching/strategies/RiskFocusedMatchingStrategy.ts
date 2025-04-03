@@ -45,8 +45,8 @@ export class RiskFocusedMatchingStrategy implements MatchingStrategy {
       const riskScore = Math.min(15, Math.random() * 20); // Sample risk score calculation
       
       // Higher weight for risk assessment in this strategy
-      // Fix: Change riskTolerance to risk or another valid property
-      const riskWeight = preferences.weightFactors.risk || 70;
+      // Fix: Use 'expertise' instead of 'risk' as it's more related to risk assessment
+      const riskWeight = preferences.weightFactors.expertise || 70;
       score += (riskScore * riskWeight / 100);
       
       explanations.push('Applied custom risk tolerance weighting');
