@@ -62,11 +62,6 @@ const redirectRoutes = [
   { path: '/menu', to: '/sitemap' }
 ];
 
-// Create SecurityAndAccessibilityPage component if needed
-const SecurityAndAccessibilityPage: React.FC = () => (
-  <div>Security And Accessibility Page</div>
-);
-
 const AppRoutes = () => {
   const location = useLocation();
 
