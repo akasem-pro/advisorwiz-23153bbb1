@@ -1,62 +1,68 @@
 
-/**
- * Cache statistics module
- * Provides analytics and monitoring for cache performance
- */
-import { 
-  getAllEntries, 
-  getCacheSize, 
-  getCacheHits, 
-  getCacheMisses, 
-} from '../core/cacheStore';
+import { CacheStatistics } from '../../../../utils/accessibility/types';
 
 /**
- * Get statistics about the cache for debugging and monitoring
+ * Generates statistics about the current state of the compatibility cache
+ * 
+ * @param cache The compatibility cache to analyze
+ * @returns Statistics about the cache
  */
-export const getCompatibilityCacheStats = (): { 
-  size: number, 
-  hitRate: number, 
-  oldestEntry: number | null,
-  frequentlyAccessedCount: number,
-  memoryUsageEstimate: string,
-  efficiency: number
-} => {
-  let oldestTimestamp: number | null = null;
-  let frequentlyAccessedCount = 0;
-  let totalHitCount = 0;
+export function generateCacheStatistics(cache: Map<string, any>): CacheStatistics {
+  const now = new Date();
+  let hitCount = 0;
+  let missCount = 0;
+  let oldestDate: Date = now;
+  let expiredCount = 0;
+  let totalSize = 0;
   
-  for (const [_, entry] of getAllEntries()) {
-    if (oldestTimestamp === null || entry.timestamp < oldestTimestamp) {
-      oldestTimestamp = entry.timestamp;
+  // Process cache entries to calculate statistics
+  Array.from(cache.entries()).forEach(([_, entry]) => {
+    // Track hit/miss ratio
+    hitCount += entry.hits || 0;
+    missCount += entry.misses || 0;
+    
+    // Calculate size (approximate)
+    const entrySize = JSON.stringify(entry).length;
+    totalSize += entrySize;
+    
+    // Track expired entries
+    if (entry.expires && entry.expires < now) {
+      expiredCount++;
     }
-    if (entry.hitCount > 10) {
-      frequentlyAccessedCount++;
+    
+    // Track oldest entry
+    if (entry.timestamp && entry.timestamp < oldestDate) {
+      oldestDate = entry.timestamp;
     }
-    totalHitCount += entry.hitCount;
-  }
+  });
   
-  const cacheHits = getCacheHits();
-  const cacheMisses = getCacheMisses();
-  const totalRequests = cacheHits + cacheMisses;
-  const hitRate = totalRequests > 0 ? (cacheHits / totalRequests) * 100 : 0;
-  
-  // Calculate efficiency (hits per cache entry) - higher is better
-  const currentSize = getCacheSize();
-  const efficiency = currentSize > 0 ? totalHitCount / currentSize : 0;
-  
-  // Estimate memory usage (rough calculation)
-  // Assuming each entry takes about 200 bytes on average
-  const memoryUsageBytes = currentSize * 200;
-  const memoryUsageEstimate = memoryUsageBytes < 1024 * 1024
-    ? `${(memoryUsageBytes / 1024).toFixed(2)} KB`
-    : `${(memoryUsageBytes / (1024 * 1024)).toFixed(2)} MB`;
+  // Calculate hit rate
+  const hitRate = hitCount + missCount > 0 
+    ? (hitCount / (hitCount + missCount)) 
+    : 0;
   
   return {
-    size: currentSize,
-    hitRate,
-    oldestEntry: oldestTimestamp ? Date.now() - oldestTimestamp : null,
-    frequentlyAccessedCount,
-    memoryUsageEstimate,
-    efficiency
+    totalEntries: cache.size,
+    activeEntries: cache.size - expiredCount,
+    size: totalSize,
+    expiredEntries: expiredCount,
+    oldestEntry: oldestDate,
+    hitRate: hitRate
   };
-};
+}
+
+/**
+ * Prints cache statistics to console
+ * 
+ * @param statistics The cache statistics to print
+ */
+export function printCacheStatistics(statistics: CacheStatistics): void {
+  console.group('Compatibility Cache Statistics');
+  console.log(`Total entries: ${statistics.totalEntries}`);
+  console.log(`Active entries: ${statistics.activeEntries}`);
+  console.log(`Expired entries: ${statistics.expiredEntries}`);
+  console.log(`Cache size (bytes): ${statistics.size}`);
+  console.log(`Hit rate: ${(statistics.hitRate * 100).toFixed(2)}%`);
+  console.log(`Oldest entry: ${statistics.oldestEntry.toISOString()}`);
+  console.groupEnd();
+}

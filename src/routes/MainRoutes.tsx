@@ -1,108 +1,33 @@
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import HomePage from '../pages/HomePage';
+import DashboardPage from '../pages/DashboardPage';
+import UserProfilePage from '../pages/UserProfilePage';
+import SettingsPage from '../pages/SettingsPage';
+import AdminPage from '../pages/AdminPage';
+import NotFoundPage from '../pages/NotFoundPage';
+import OnboardingPage from '../pages/OnboardingPage';
+import AdvisorProfilePage from '../pages/AdvisorProfilePage';
+import AccessibilityTestPage from '../pages/AccessibilityTestPage';
+import SecurityAndAccessibilityPage from '../pages/SecurityAndAccessibilityPage';
 
-import { createRoutes } from './routeHelpers';
-import Home from '../pages/Home';
-import AboutUs from '../pages/AboutUs';
-import ForAdvisors from '../pages/ForAdvisors';
-import ForConsumers from '../pages/ForConsumers';
-import ForFirms from '../pages/ForFirms';
-import Pricing from '../pages/Pricing';
-import Privacy from '../pages/Privacy';
-import Terms from '../pages/Terms';
-import Disclaimer from '../pages/Disclaimer';
-import Cookies from '../pages/Cookies';
-import ContactUs from '../pages/ContactUs';
-import Blog from '../pages/Blog';
-import Resources from '../pages/Resources';
-import EnhancedOnboardingTour from '../components/onboarding/EnhancedOnboardingTour';
-import React, { ReactNode } from 'react';
-import { RouteConfig } from './routeHelpers';
+const MainRoutes = () => {
+  const isAdmin = true; // Replace with actual admin check
 
-// Wrap pages with the enhanced onboarding tour where appropriate
-const withOnboarding = (Component: React.ComponentType, userType?: string) => {
-  return (props: any) => (
-    <>
-      <EnhancedOnboardingTour 
-        userType={userType as any} 
-        tourName={Component.displayName || Component.name}
-        autoStart={false} 
-        buttonPosition="bottom-right"
-      />
-      <Component {...props} />
-    </>
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/profile" element={<UserProfilePage />} />
+      <Route path="/advisor-profile/:advisorId" element={<AdvisorProfilePage />} />
+      <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/onboarding" element={<OnboardingPage />} />
+      <Route path="/accessibility-test" element={<AccessibilityTestPage />} />
+      {isAdmin && <Route path="/admin" element={<AdminPage />} />}
+      <Route path="/security-accessibility" element={<SecurityAndAccessibilityPage />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 };
-
-// Create route configs with consistent layout pattern
-const routeConfigs: RouteConfig[] = [
-  { 
-    path: '/', 
-    element: React.createElement(withOnboarding(Home)), 
-    key: 'home',
-    index: true
-  },
-  { 
-    path: 'about', 
-    element: <AboutUs />, 
-    key: 'about'
-  },
-  { 
-    path: 'for-advisors', 
-    element: React.createElement(withOnboarding(ForAdvisors, 'advisor')), 
-    key: 'for-advisors'
-  },
-  { 
-    path: 'for-consumers', 
-    element: React.createElement(withOnboarding(ForConsumers, 'consumer')), 
-    key: 'for-consumers'
-  },
-  { 
-    path: 'for-firms', 
-    element: React.createElement(withOnboarding(ForFirms, 'firm_admin')), 
-    key: 'for-firms'
-  },
-  { 
-    path: 'pricing', 
-    element: <Pricing />, 
-    key: 'pricing'
-  },
-  { 
-    path: 'privacy', 
-    element: <Privacy />, 
-    key: 'privacy' 
-  },
-  { 
-    path: 'terms', 
-    element: <Terms />, 
-    key: 'terms'
-  },
-  { 
-    path: 'disclaimer', 
-    element: <Disclaimer />, 
-    key: 'disclaimer'
-  },
-  { 
-    path: 'cookies', 
-    element: <Cookies />, 
-    key: 'cookies'
-  },
-  {
-    path: 'contact',
-    element: <ContactUs />,
-    key: 'contact'
-  },
-  {
-    path: 'blog/*',
-    element: <Blog />,
-    key: 'blog'
-  },
-  {
-    path: 'resources',
-    element: <Resources />,
-    key: 'resources'
-  }
-];
-
-// Simply use createRoutes without wrapping in additional AppLayout
-const MainRoutes = createRoutes(routeConfigs);
 
 export default MainRoutes;

@@ -1,124 +1,69 @@
 
-import { MetricData, MAX_BUFFER_SIZE, FLUSH_INTERVAL } from './types';
-import { persistMetricToStorage } from './storage';
+import { MetricData, MAX_BUFFER_SIZE, PERSISTED_METRICS_KEY } from './types';
+import { saveMetricsToStorage } from './storage';
 
-// Buffer to store metrics before sending them
-const metricsBuffer: MetricData[] = [];
-let flushTimer: number | null = null;
-let lastFlushTime = Date.now();
+// In-memory buffer for performance metrics
+let metricsBuffer: MetricData[] = [];
+let flushInProgress = false;
 
 /**
- * Add a metric to the buffer
+ * Add a metric to the in-memory buffer
+ * @param metric The performance metric to add
  */
 export const addToBuffer = (metric: MetricData): void => {
+  // Add to buffer
   metricsBuffer.push(metric);
   
-  // Persist metric if needed
-  if (metric.persistOnPageLoad) {
-    persistMetricToStorage(metric);
+  // If buffer exceeds max size, remove oldest metrics
+  while (metricsBuffer.length > MAX_BUFFER_SIZE) {
+    metricsBuffer.shift();
+  }
+};
+
+/**
+ * Flush the metrics buffer to storage
+ * @returns True if the buffer was flushed successfully
+ */
+export const flushBuffer = async (): Promise<boolean> => {
+  // Prevent multiple flush operations from running simultaneously
+  if (flushInProgress || metricsBuffer.length === 0) {
+    return false;
   }
   
-  // Schedule a flush if the buffer is getting large
-  if (metricsBuffer.length >= MAX_BUFFER_SIZE / 2) {
-    scheduleFlush();
+  try {
+    flushInProgress = true;
+    
+    // Get metrics to persist
+    const persistedMetrics = metricsBuffer.filter(m => m.persistOnPageLoad);
+    
+    // Save persistent metrics to storage
+    if (persistedMetrics.length > 0) {
+      await saveMetricsToStorage(PERSISTED_METRICS_KEY, persistedMetrics);
+    }
+    
+    // Clear the buffer after successful processing
+    metricsBuffer = [];
+    
+    return true;
+  } catch (error) {
+    console.error('Error flushing performance metrics buffer:', error);
+    return false;
+  } finally {
+    flushInProgress = false;
   }
 };
 
 /**
- * Get the current flush timer
- */
-export const getFlushTimer = (): number | null => {
-  return flushTimer;
-};
-
-/**
- * Set the flush timer
- */
-export const setFlushTimer = (timer: number | null): void => {
-  flushTimer = timer;
-};
-
-/**
- * Update the last flush time
- */
-export const updateLastFlushTime = (): void => {
-  lastFlushTime = Date.now();
-};
-
-/**
- * Check if the buffer should be flushed immediately
- */
-export const shouldFlushImmediately = (): boolean => {
-  return (
-    metricsBuffer.length >= MAX_BUFFER_SIZE ||
-    Date.now() - lastFlushTime >= FLUSH_INTERVAL * 2
-  );
-};
-
-/**
- * Get the contents of the buffer
+ * Get the current contents of the metrics buffer
+ * @returns Array of metrics currently in the buffer
  */
 export const getBufferContents = (): MetricData[] => {
   return [...metricsBuffer];
 };
 
 /**
- * Flush the buffer and send metrics
- */
-export const flushBuffer = async (): Promise<void> => {
-  if (metricsBuffer.length === 0) return;
-  
-  try {
-    // In a real implementation, this would send metrics to a server
-    console.log(`Flushing ${metricsBuffer.length} metrics`);
-    
-    // Process and group metrics
-    const groupedMetrics = groupMetricsByName(metricsBuffer);
-    
-    // Clear the buffer
-    metricsBuffer.length = 0;
-    
-    // Return the processed metrics (not really needed in production)
-    return Promise.resolve();
-  } catch (error) {
-    console.error('Error flushing metrics buffer:', error);
-    return Promise.reject(error);
-  }
-};
-
-/**
- * Group metrics by name for more efficient processing
- */
-const groupMetricsByName = (metrics: MetricData[]): Record<string, MetricData[]> => {
-  const grouped: Record<string, MetricData[]> = {};
-  
-  metrics.forEach(metric => {
-    if (!grouped[metric.name]) {
-      grouped[metric.name] = [];
-    }
-    
-    grouped[metric.name].push(metric);
-  });
-  
-  return grouped;
-};
-
-/**
- * Schedule a flush of the metrics buffer
- */
-const scheduleFlush = (): void => {
-  if (flushTimer !== null) return;
-  
-  flushTimer = window.setTimeout(() => {
-    flushBuffer();
-    flushTimer = null;
-    updateLastFlushTime();
-  }, FLUSH_INTERVAL);
-};
-
-/**
- * Clear the metrics buffer
+ * Clear the metrics buffer without persisting
  */
 export const clearMetricsBuffer = (): void => {
-  metricsBuffer.length = 0;
+  metricsBuffer = [];
 };
