@@ -1,5 +1,4 @@
 
-import { performance } from 'window';
 import { PerformanceMetric } from './types';
 import { addToBuffer } from './metricsBuffer';
 import { persistMetric } from './storage';

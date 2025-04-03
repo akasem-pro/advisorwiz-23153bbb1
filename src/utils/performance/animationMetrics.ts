@@ -4,7 +4,7 @@
  * Track and analyze animation performance metrics
  */
 
-import { trackPerformanceMetric } from '../../services/performance/performanceService';
+import { trackPerformanceMetric } from '../../services/performance';
 
 // Store metrics about active animations
 const activeAnimations: Record<string, {

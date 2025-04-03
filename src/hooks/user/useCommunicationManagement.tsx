@@ -5,7 +5,7 @@ import { Appointment, AppointmentStatus } from '../../types/timeTypes';
 import { addMessageToChat, markChatMessagesAsRead } from '../../services/chatService';
 import { v4 as uuidv4 } from 'uuid';
 import { trackEvent } from '../../services/analytics/analyticsService';
-import { withPerformanceTracking } from '../../services/performance/performanceService';
+import { withPerformanceTracking } from '../../services/performance';
 
 /**
  * Enhanced hook to manage chats and appointments with performance tracking and analytics
