@@ -1,4 +1,4 @@
-import { flushMetricsBuffer } from '../../utils/performance/enhancedPerformanceTracking';
+import { flushMetricsBuffer } from '../../utils/performance/enhanced';
 
 // Define core types
 interface PerformanceMetric {

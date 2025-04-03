@@ -2,7 +2,7 @@
 import { trackWebVitals } from './performance/webVitals';
 import { implementResourceHints } from './performance/resourceHints';
 import { setupLazyLoading, optimizeImagesForCWV } from './performance/imageOptimization';
-import { initEnhancedPerformanceTracking } from './performance/enhancedPerformanceTracking';
+import { initEnhancedPerformanceTracking } from './performance/enhanced';
 import { withPerformanceTracking } from './performance/functionTracking';
 
 /**
