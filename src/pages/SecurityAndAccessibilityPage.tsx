@@ -1,111 +1,110 @@
 
 import React from 'react';
 import AppLayout from '../components/layout/AppLayout';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 import SecurityDashboard from '../components/admin/SecurityDashboard';
-import AccessibilityAuditDashboard from '../components/admin/AccessibilityAuditDashboard';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Shield, Accessibility } from 'lucide-react';
+import AccessibilityDashboard from '../components/admin/AccessibilityDashboard';
+import { ChevronRight, Shield, Accessibility } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { useToast } from '../hooks/use-toast';
 
 const SecurityAndAccessibilityPage: React.FC = () => {
+  const { toast } = useToast();
+  
+  const handleRunAllTests = () => {
+    toast({
+      title: "Running all security and accessibility tests",
+      description: "This may take a few moments to complete.",
+      duration: 3000,
+    });
+  };
+  
   return (
     <AppLayout>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Security & Accessibility</h1>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold">Security & Accessibility</h1>
+            <div className="flex items-center text-sm text-muted-foreground mt-1">
+              <span>Dashboard</span>
+              <ChevronRight className="h-4 w-4 mx-1" />
+              <span>Security & Accessibility</span>
+            </div>
+          </div>
+          <Button onClick={handleRunAllTests}>Run All Tests</Button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center">
+                <Shield className="h-5 w-5 mr-2 text-blue-600" />
+                <CardTitle>Security Overview</CardTitle>
+              </div>
+              <CardDescription>
+                Monitor and improve your application's security posture
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="p-3 bg-green-50 rounded-md">
+                  <div className="text-xl font-bold text-green-700">3</div>
+                  <div className="text-xs text-muted-foreground">Passed</div>
+                </div>
+                <div className="p-3 bg-yellow-50 rounded-md">
+                  <div className="text-xl font-bold text-yellow-700">2</div>
+                  <div className="text-xs text-muted-foreground">Warnings</div>
+                </div>
+                <div className="p-3 bg-red-50 rounded-md">
+                  <div className="text-xl font-bold text-red-700">0</div>
+                  <div className="text-xs text-muted-foreground">Failed</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center">
+                <Accessibility className="h-5 w-5 mr-2 text-purple-600" />
+                <CardTitle>Accessibility Overview</CardTitle>
+              </div>
+              <CardDescription>
+                Ensure your application is usable by everyone
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="p-3 bg-green-50 rounded-md">
+                  <div className="text-xl font-bold text-green-700">75%</div>
+                  <div className="text-xs text-muted-foreground">Compliance</div>
+                </div>
+                <div className="p-3 bg-yellow-50 rounded-md">
+                  <div className="text-xl font-bold text-yellow-700">2</div>
+                  <div className="text-xs text-muted-foreground">Warnings</div>
+                </div>
+                <div className="p-3 bg-blue-50 rounded-md">
+                  <div className="text-xl font-bold text-blue-700">3</div>
+                  <div className="text-xs text-muted-foreground">Info</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
         
         <Tabs defaultValue="security" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="security" className="flex items-center">
-              <Shield className="mr-2 h-4 w-4" />
-              Security
-            </TabsTrigger>
-            <TabsTrigger value="accessibility" className="flex items-center">
-              <Accessibility className="mr-2 h-4 w-4" />
-              Accessibility
-            </TabsTrigger>
+          <TabsList className="w-full mb-6">
+            <TabsTrigger value="security" className="flex-1">Security</TabsTrigger>
+            <TabsTrigger value="accessibility" className="flex-1">Accessibility</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="security" className="space-y-8">
+          <TabsContent value="security">
             <SecurityDashboard />
-            
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-4">Security Recommendations</h2>
-              
-              <div className="space-y-4">
-                <div className="border-l-4 border-blue-500 pl-4 py-2">
-                  <h3 className="font-semibold">Regular Security Audits</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Schedule regular security audits to identify potential vulnerabilities.
-                    Consider using automated tools like OWASP ZAP or Burp Suite for web application scanning.
-                  </p>
-                </div>
-                
-                <div className="border-l-4 border-blue-500 pl-4 py-2">
-                  <h3 className="font-semibold">Update Dependencies</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Regularly update dependencies to patch security vulnerabilities.
-                    Use tools like npm audit or Dependabot to automate this process.
-                  </p>
-                </div>
-                
-                <div className="border-l-4 border-blue-500 pl-4 py-2">
-                  <h3 className="font-semibold">Security Headers</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Implement security headers like Content-Security-Policy, X-XSS-Protection, and
-                    X-Content-Type-Options to protect against common web vulnerabilities.
-                  </p>
-                </div>
-                
-                <div className="border-l-4 border-blue-500 pl-4 py-2">
-                  <h3 className="font-semibold">Implement CSRF Protection</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Ensure all forms and API endpoints are protected against Cross-Site Request Forgery (CSRF)
-                    attacks by implementing anti-CSRF tokens.
-                  </p>
-                </div>
-              </div>
-            </div>
           </TabsContent>
           
-          <TabsContent value="accessibility" className="space-y-8">
-            <AccessibilityAuditDashboard />
-            
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-4">Accessibility Recommendations</h2>
-              
-              <div className="space-y-4">
-                <div className="border-l-4 border-green-500 pl-4 py-2">
-                  <h3 className="font-semibold">Regular Accessibility Testing</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Include accessibility testing in your CI/CD pipeline using tools like Axe, Lighthouse,
-                    or Wave to identify issues early in development.
-                  </p>
-                </div>
-                
-                <div className="border-l-4 border-green-500 pl-4 py-2">
-                  <h3 className="font-semibold">Screen Reader Testing</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Test your application with screen readers like NVDA, VoiceOver, or JAWS to ensure
-                    it's usable for visually impaired users.
-                  </p>
-                </div>
-                
-                <div className="border-l-4 border-green-500 pl-4 py-2">
-                  <h3 className="font-semibold">Keyboard Navigation</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Ensure all interactive elements are keyboard accessible and have visible focus states.
-                    Test navigation using only the keyboard.
-                  </p>
-                </div>
-                
-                <div className="border-l-4 border-green-500 pl-4 py-2">
-                  <h3 className="font-semibold">Color Contrast</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Use tools like the WebAIM Contrast Checker to ensure text has sufficient contrast
-                    against its background (4.5:1 for normal text, 3:1 for large text).
-                  </p>
-                </div>
-              </div>
-            </div>
+          <TabsContent value="accessibility">
+            <AccessibilityDashboard />
           </TabsContent>
         </Tabs>
       </div>

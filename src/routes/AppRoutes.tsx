@@ -27,7 +27,7 @@ const LazyChat = lazy(() => import('../pages/Chat'));
 const LazyConsumerProfile = lazy(() => import('../pages/ConsumerProfile'));
 
 // Loading fallback component
-const PageLoadingFallback = (): ReactNode => (
+const PageLoadingFallback = (): JSX.Element => (
   <div className="container mx-auto px-4 py-8">
     <Skeleton className="h-12 w-3/4 mb-6" />
     <Skeleton className="h-64 w-full mb-4" />
@@ -61,6 +61,11 @@ const redirectRoutes = [
   { path: '/onboarding', to: '/signup' },
   { path: '/menu', to: '/sitemap' }
 ];
+
+// Create SecurityAndAccessibilityPage component if needed
+const SecurityAndAccessibilityPage: React.FC = () => (
+  <div>Security And Accessibility Page</div>
+);
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -117,7 +122,7 @@ const AppRoutes = () => {
             />
           ))}
           
-          {MainRoutes}
+          <Route path="/*" element={<MainRoutes />} />
         </Route>
         
         <Route path="/dashboard" element={<Outlet />}>
