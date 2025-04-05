@@ -7,6 +7,14 @@ import AuthRoutes from './AuthRoutes';
 import DashboardRoutes from './DashboardRoutes';
 import MobileRoutes from './MobileRoutes';
 import UtilityRoutes from './UtilityRoutes';
+import { ReactNode } from 'react';
+
+// Define a common interface for route objects
+interface RouteConfig {
+  path: string;
+  element: ReactNode;
+  props?: Record<string, any>;
+}
 
 const AppRoutes: React.FC = () => {
   console.log("AppRoutes component rendering");
@@ -41,42 +49,93 @@ const AppRoutes: React.FC = () => {
       
       {/* Include routes from DashboardRoutes for compatibility */}
       {Array.isArray(DashboardRoutes) && DashboardRoutes.map((route, index) => {
-        if (route && typeof route === 'object' && 'path' in route && 'element' in route) {
-          return (
-            <Route 
-              key={`dashboard-route-${index}`} 
-              path={route.path} 
-              element={route.element} 
-            />
-          );
+        if (route && typeof route === 'object') {
+          // Handle routes with path and element properties
+          if ('path' in route && 'element' in route) {
+            const typedRoute = route as RouteConfig;
+            return (
+              <Route 
+                key={`dashboard-route-${index}`} 
+                path={typedRoute.path} 
+                element={typedRoute.element} 
+              />
+            );
+          }
+          // Handle routes with props object containing path and element
+          if ('props' in route && route.props && 
+              typeof route.props === 'object' && 
+              'path' in route.props && 
+              'element' in route.props) {
+            return (
+              <Route 
+                key={`dashboard-route-${index}`} 
+                path={route.props.path as string} 
+                element={route.props.element as ReactNode} 
+              />
+            );
+          }
         }
         return null;
       })}
 
       {/* Include routes from MobileRoutes */}
       {Array.isArray(MobileRoutes) && MobileRoutes.map((route, index) => {
-        if (route && typeof route === 'object' && 'path' in route && 'element' in route) {
-          return (
-            <Route 
-              key={`mobile-route-${index}`} 
-              path={route.path} 
-              element={route.element} 
-            />
-          );
+        if (route && typeof route === 'object') {
+          // Handle routes with path and element properties
+          if ('path' in route && 'element' in route) {
+            const typedRoute = route as RouteConfig;
+            return (
+              <Route 
+                key={`mobile-route-${index}`} 
+                path={typedRoute.path} 
+                element={typedRoute.element} 
+              />
+            );
+          }
+          // Handle routes with props object containing path and element
+          if ('props' in route && route.props && 
+              typeof route.props === 'object' && 
+              'path' in route.props && 
+              'element' in route.props) {
+            return (
+              <Route 
+                key={`mobile-route-${index}`} 
+                path={route.props.path as string} 
+                element={route.props.element as ReactNode} 
+              />
+            );
+          }
         }
         return null;
       })}
 
       {/* Include routes from UtilityRoutes */}
       {Array.isArray(UtilityRoutes) && UtilityRoutes.map((route, index) => {
-        if (route && typeof route === 'object' && 'path' in route && 'element' in route) {
-          return (
-            <Route 
-              key={`utility-route-${index}`} 
-              path={route.path} 
-              element={route.element} 
-            />
-          );
+        if (route && typeof route === 'object') {
+          // Handle routes with path and element properties
+          if ('path' in route && 'element' in route) {
+            const typedRoute = route as RouteConfig;
+            return (
+              <Route 
+                key={`utility-route-${index}`} 
+                path={typedRoute.path} 
+                element={typedRoute.element} 
+              />
+            );
+          }
+          // Handle routes with props object containing path and element
+          if ('props' in route && route.props && 
+              typeof route.props === 'object' && 
+              'path' in route.props && 
+              'element' in route.props) {
+            return (
+              <Route 
+                key={`utility-route-${index}`} 
+                path={route.props.path as string} 
+                element={route.props.element as ReactNode} 
+              />
+            );
+          }
         }
         return null;
       })}
