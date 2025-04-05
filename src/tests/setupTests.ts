@@ -121,17 +121,9 @@ afterEach(() => {
   sessionStorage.clear();
 });
 
-// Console error and warning suppression during tests
-// Uncomment these if test output is too noisy
+// Setup to suppress specific console messages during tests
 // const originalConsoleError = console.error;
-// const originalConsoleWarn = console.warn;
-// 
 // console.error = (...args) => {
-//   if (args[0]?.includes('Some expected error')) return;
+//   if (args[0]?.includes('Warning:')) return;
 //   originalConsoleError(...args);
-// };
-// 
-// console.warn = (...args) => {
-//   if (args[0]?.includes('Some expected warning')) return;
-//   originalConsoleWarn(...args);
 // };
