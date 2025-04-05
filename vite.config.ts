@@ -19,8 +19,13 @@ export default defineConfig(({ mode }) => ({
     // Prevent directory traversal
     fs: {
       strict: true,
-      allow: ['.']
+      allow: ['.'],
+      deny: ['node_modules/.vite', '.git', '.github'],
     },
+    // Force HTTPS for local development to prevent Host header attacks
+    https: mode === 'development' ? true : undefined,
+    // Explicitly set allowed hosts
+    origin: 'http://localhost:8080',
   },
   plugins: [
     react(),
@@ -51,5 +56,17 @@ export default defineConfig(({ mode }) => ({
         }
       }
     },
+  },
+  // Improve Content Security Policy headers
+  csp: {
+    enable: true,
+    policy: {
+      'default-src': ["'self'"],
+      'script-src': ["'self'", "'unsafe-inline'", "https://cdn.gpteng.co"],
+      'style-src': ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      'img-src': ["'self'", "data:", "https:"],
+      'font-src': ["'self'", "https://fonts.gstatic.com"],
+      'connect-src': ["'self'"]
+    }
   },
 }));
