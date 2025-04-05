@@ -1,3 +1,4 @@
+
 import React from 'react';
 import VerifyIntegrationsPage from '../pages/VerifyIntegrations';
 import AccessibilityTestPage from '../pages/AccessibilityTestPage';
@@ -6,7 +7,7 @@ import AppLayout from '../components/layout/AppLayout';
 const UtilityRoutes = [
   {
     props: {
-      path: "verify-integrations",
+      path: "/verify-integrations",
       element: (
         <AppLayout>
           <VerifyIntegrationsPage />
@@ -16,7 +17,7 @@ const UtilityRoutes = [
   },
   {
     props: {
-      path: "accessibility-test",
+      path: "/accessibility-test",
       element: (
         <AppLayout>
           <AccessibilityTestPage />

@@ -6,11 +6,11 @@ import Onboarding from '../pages/Onboarding';
 // Export auth routes matching the structure expected in AppRoutes
 const AuthRoutes = [
   {
-    path: "signin",
+    path: "/signin",
     element: <SignIn />
   },
   {
-    path: "signup",
+    path: "/signup",
     element: <Onboarding />
   }
 ];

@@ -9,7 +9,7 @@ const LandingPage = lazy(() => import('../pages/LandingPage'));
 const MobileRoutes = [
   {
     props: {
-      path: "mobile-landing",
+      path: "/mobile-landing",
       element: (
         <Suspense fallback={<PageLoadingFallback />}>
           <LandingPage />
