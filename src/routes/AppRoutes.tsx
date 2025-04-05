@@ -1,3 +1,4 @@
+
 import { Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home';
 import AppLayout from '../components/layout/AppLayout';
@@ -16,6 +17,8 @@ import Pricing from '../pages/Pricing';
 import Sitemap from '../pages/Sitemap';
 import ContactUs from '../pages/ContactUs';
 import Blog from '../pages/Blog';
+import AdvisorProfile from '../pages/AdvisorProfile';
+import ConsumerProfile from '../pages/ConsumerProfile';
 
 // Lazily load the security and accessibility page
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -25,6 +28,11 @@ const AppRoutes = () => {
     <Routes>
       {/* Home route */}
       <Route path="/" element={<AppLayout><Home /></AppLayout>} />
+      
+      {/* Profile routes */}
+      <Route path="/profile" element={<AppLayout><AdvisorProfile /></AppLayout>} />
+      <Route path="/advisor-profile" element={<AppLayout><AdvisorProfile /></AppLayout>} />
+      <Route path="/consumer-profile" element={<AppLayout><ConsumerProfile /></AppLayout>} />
       
       {/* Main marketing pages */}
       <Route path="/about" element={<AppLayout><AboutUs /></AppLayout>} />
