@@ -1,9 +1,11 @@
+
 import React from 'react';
+import { RouteItem } from './routeConfig';
 import VerifyIntegrationsPage from '../pages/VerifyIntegrations';
 import AccessibilityTestPage from '../pages/AccessibilityTestPage';
 import AppLayout from '../components/layout/AppLayout';
 
-const UtilityRoutes = [
+const UtilityRoutes: RouteItem[] = [
   {
     path: "/verify-integrations",
     element: (
