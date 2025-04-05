@@ -8,6 +8,7 @@ import DashboardRoutes from './DashboardRoutes';
 import MobileRoutes from './MobileRoutes';
 import UtilityRoutes from './UtilityRoutes';
 import { ReactNode } from 'react';
+import { DashboardRouteType, hasDirect, hasProps } from './dashboard/types';
 
 // Define common interfaces for route objects
 interface RouteConfig {
@@ -70,8 +71,8 @@ const AppRoutes: React.FC = () => {
       ))}
       
       {/* Include routes from DashboardRoutes for compatibility */}
-      {Array.isArray(DashboardRoutes) && DashboardRoutes.map((route, index) => {
-        if (isDirectRoute(route)) {
+      {Array.isArray(DashboardRoutes) && DashboardRoutes.map((route: DashboardRouteType, index) => {
+        if (hasDirect(route)) {
           return (
             <Route 
               key={`dashboard-route-${index}`} 
@@ -81,7 +82,7 @@ const AppRoutes: React.FC = () => {
           );
         }
         
-        if (isPropsRoute(route)) {
+        if (hasProps(route)) {
           return (
             <Route 
               key={`dashboard-route-${index}`} 
