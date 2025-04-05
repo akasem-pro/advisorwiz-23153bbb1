@@ -23,7 +23,7 @@ export function Toaster() {
                 <ToastDescription>{description}</ToastDescription>
               )}
             </div>
-            {action && typeof action === 'function' ? action({}) : action}
+            {action && typeof action === 'function' ? action() : action}
             <ToastClose />
           </Toast>
         )
