@@ -1,8 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
-import AppFooter from '../components/layout/AppFooter';
 import { useUser, ConsumerProfile as ConsumerProfileType } from '../context/UserContext';
 import { 
   ArrowRight, 
@@ -1202,7 +1202,7 @@ const ConsumerProfile: React.FC = () => {
           </div>
         </main>
       </div>
-      <AppFooter />
+      {/* Removed the AppFooter component */}
     </AnimatedRoute>
   );
 };

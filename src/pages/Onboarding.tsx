@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -282,7 +283,7 @@ const Onboarding: React.FC = () => {
           </div>
         </main>
 
-        <AppFooter />
+        {/* Removed the AppFooter component */}
       </div>
     </AnimatedRoute>
   );
