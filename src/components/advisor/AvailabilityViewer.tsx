@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight, MessageCircle } from 'lucide-react';
@@ -108,9 +109,8 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
     
     addAppointment(newAppointment);
     
-    toast({
-      title: "Booking Request Sent",
-      description: `Your booking request with ${advisorName} has been sent for ${format(selectedDate, 'EEEE, MMMM d')} at ${selectedSlot}.`,
+    toast("Booking Request Sent", {
+      description: `Your booking request with ${advisorName} has been sent for ${format(selectedDate, 'EEEE, MMMM d')} at ${selectedSlot}.`
     });
 
     navigate('/schedule');

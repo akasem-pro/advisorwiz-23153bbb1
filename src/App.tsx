@@ -1,5 +1,5 @@
 
-import React, { Suspense } from 'react';
+import React, { Suspense, Component, ErrorInfo, ReactNode } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppRoutes from './routes/AppRoutes';
 import { ThemeProvider } from './context/ThemeContext';
@@ -10,15 +10,15 @@ import { Toaster } from './components/ui/sonner';
 import { initAppOptimizations } from './utils/appOptimizations';
 import './App.css';
 
-// Simple error boundary component
-class ErrorBoundaryComponent extends React.Component<{children: React.ReactNode}> {
+// Proper ErrorBoundary component
+class ErrorBoundaryComponent extends Component<{children: ReactNode}, {hasError: boolean, error: Error | null}> {
   state = { hasError: false, error: null };
   
-  static getDerivedStateFromError(error: any) {
+  static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
   }
   
-  componentDidCatch(error: any, info: any) {
+  componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("App error boundary caught error:", error, info);
   }
   

@@ -1,5 +1,5 @@
 
-import { toast as sonnerToast, ToastT, useToaster } from "sonner";
+import { toast as sonnerToast, type ToastT } from "sonner";
 
 export type ToastProps = Omit<Parameters<typeof sonnerToast>[1], "close" | "position" | "cancel" | "promise"> & {
   title?: React.ReactNode;
@@ -8,17 +8,22 @@ export type ToastProps = Omit<Parameters<typeof sonnerToast>[1], "close" | "posi
 };
 
 const useToast = () => {
-  const { toasts, dismiss } = useToaster();
   return {
-    toast: (props: ToastProps) => {
-      const { title, description, variant, ...options } = props;
+    toast: ({ title, description, variant, ...props }: ToastProps) => {
       return sonnerToast(title as string, {
-        ...options,
+        ...props,
         description
       });
     },
-    toasts,
-    dismiss
+    // Since useToaster isn't available, we'll handle toasts and dismiss differently
+    toasts: [] as ToastT[],
+    dismiss: (toastId?: string) => {
+      if (toastId) {
+        sonnerToast.dismiss(toastId);
+      } else {
+        sonnerToast.dismiss();
+      }
+    }
   };
 };
 
