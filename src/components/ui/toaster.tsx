@@ -1,26 +1,58 @@
-import { useToast } from "@/hooks/use-toast"
-import {
-  Toast,
-  ToastClose,
-  ToastDescription,
-  ToastProvider,
-  ToastTitle,
-  ToastViewport,
-} from "@/components/ui/toast"
-import { ReactNode } from "react"
+
+import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "@/components/ui/toast";
+import { useEffect, useState } from "react";
+import { toast as sonnerToast } from "sonner";
+
+// Define a toast item type
+type ToastItem = {
+  id: string;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  action?: React.ReactNode;
+  variant?: "default" | "destructive";
+  [key: string]: any;
+};
 
 export function Toaster() {
-  const { toasts } = useToast()
+  // Using local state to track toasts
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+
+  // Listen to sonner toast events
+  useEffect(() => {
+    const handleToastAdd = (toast: any) => {
+      const newToast: ToastItem = {
+        id: toast.id,
+        title: toast.title,
+        description: toast.description,
+        action: toast.action,
+        variant: toast.type === "error" ? "destructive" : "default",
+      };
+      setToasts(prev => [...prev, newToast]);
+    };
+
+    const handleToastDismiss = (id: string) => {
+      setToasts(prev => prev.filter(toast => toast.id !== id));
+    };
+
+    // Add event listeners
+    if (typeof window !== 'undefined') {
+      window.addEventListener('sonner-toast-add', (e: any) => handleToastAdd(e.detail));
+      window.addEventListener('sonner-toast-dismiss', (e: any) => handleToastDismiss(e.detail));
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('sonner-toast-add', (e: any) => handleToastAdd(e.detail));
+        window.removeEventListener('sonner-toast-dismiss', (e: any) => handleToastDismiss(e.detail));
+      }
+    };
+  }, []);
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, ...props }) {
-        // Remove incompatible props from Sonner toast
+      {toasts.map(function ({ id, title, description, action, variant, ...props }) {
+        // Remove incompatible props
         const { type, icon, jsx, richColors, invert, ...compatibleProps } = props;
-        
-        // Map to shadcn/ui toast variant (default or destructive)
-        // Use type to determine if it's destructive
-        const variant = type === "error" ? "destructive" : "default";
         
         return (
           <Toast key={id} {...compatibleProps} variant={variant}>
@@ -32,14 +64,14 @@ export function Toaster() {
             </div>
             {action && (
               typeof action === 'object' && action !== null
-                ? <div>{action as ReactNode}</div>
+                ? <div>{action as React.ReactNode}</div>
                 : null
             )}
             <ToastClose />
           </Toast>
-        )
+        );
       })}
       <ToastViewport />
     </ToastProvider>
-  )
+  );
 }
