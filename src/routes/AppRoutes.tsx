@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { getAllRoutes } from './routeConfig';
+import { getAllRoutes } from './config';
 import MainRoutes from './MainRoutes';
 import AuthRoutes from './AuthRoutes';
 import DashboardRoutes from './DashboardRoutes';
@@ -41,15 +41,13 @@ export function isPropsRoute(route: RouteItem): route is RouteConfigWithProps {
 }
 
 const AppRoutes: React.FC = () => {
-  console.log("AppRoutes component rendering");
-  
   // Get all routes from the centralized configuration
   const allRoutes = getAllRoutes();
   
   return (
     <Routes>
-      {/* Routes from centralized configuration */}
-      {allRoutes.map((route, index) => (
+      {/* Render centralized route configuration */}
+      {allRoutes && allRoutes.map((route, index) => (
         <Route 
           key={`route-config-${index}`} 
           path={route.path} 
@@ -57,11 +55,11 @@ const AppRoutes: React.FC = () => {
         />
       ))}
       
-      {/* Use conditional rendering to avoid problems with MainRoutes */}
-      {typeof MainRoutes === 'function' && <MainRoutes />}
+      {/* Use MainRoutes component - using type check to prevent runtime errors */}
+      {MainRoutes && typeof MainRoutes === 'function' && <MainRoutes />}
       
-      {/* Include routes from AuthRoutes for compatibility */}
-      {Array.isArray(AuthRoutes) && AuthRoutes.map((route, index) => (
+      {/* Process AuthRoutes array if it exists */}
+      {AuthRoutes && Array.isArray(AuthRoutes) && AuthRoutes.map((route, index) => (
         <Route 
           key={`auth-route-${index}`} 
           path={route.path} 
@@ -69,8 +67,8 @@ const AppRoutes: React.FC = () => {
         />
       ))}
       
-      {/* Include routes from DashboardRoutes for compatibility */}
-      {Array.isArray(DashboardRoutes) && DashboardRoutes.map((route: DashboardRouteType, index) => {
+      {/* Process DashboardRoutes array if it exists */}
+      {DashboardRoutes && Array.isArray(DashboardRoutes) && DashboardRoutes.map((route: DashboardRouteType, index) => {
         if (hasDirect(route)) {
           return (
             <Route 
@@ -94,8 +92,8 @@ const AppRoutes: React.FC = () => {
         return null;
       })}
 
-      {/* Include routes from MobileRoutes */}
-      {Array.isArray(MobileRoutes) && MobileRoutes.map((route, index) => {
+      {/* Process MobileRoutes array with proper type checking */}
+      {MobileRoutes && Array.isArray(MobileRoutes) && MobileRoutes.map((route, index) => {
         if (isDirectRoute(route)) {
           return (
             <Route 
@@ -119,8 +117,8 @@ const AppRoutes: React.FC = () => {
         return null;
       })}
 
-      {/* Include routes from UtilityRoutes */}
-      {Array.isArray(UtilityRoutes) && UtilityRoutes.map((route, index) => {
+      {/* Process UtilityRoutes array with proper type checking */}
+      {UtilityRoutes && Array.isArray(UtilityRoutes) && UtilityRoutes.map((route, index) => {
         if (isDirectRoute(route)) {
           return (
             <Route 
