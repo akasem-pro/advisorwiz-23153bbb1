@@ -11,27 +11,28 @@ import { ReactNode } from 'react';
 import { DashboardRouteType, hasDirect, hasProps } from './dashboard/types';
 
 // Define common interfaces for route objects
-interface RouteConfig {
+export interface RouteConfig {
   path: string;
   element: ReactNode;
+  key?: string;
 }
 
-interface RouteConfigWithProps {
+export interface RouteConfigWithProps {
   props: {
     path: string;
     element: ReactNode;
   };
 }
 
-type RouteItem = RouteConfig | RouteConfigWithProps;
+export type RouteItem = RouteConfig | RouteConfigWithProps;
 
 // Type guard to check if a route has direct path and element
-function isDirectRoute(route: RouteItem): route is RouteConfig {
+export function isDirectRoute(route: RouteItem): route is RouteConfig {
   return 'path' in route && 'element' in route;
 }
 
 // Type guard to check if a route has props containing path and element
-function isPropsRoute(route: RouteItem): route is RouteConfigWithProps {
+export function isPropsRoute(route: RouteItem): route is RouteConfigWithProps {
   return 'props' in route && 
          route.props !== undefined && 
          typeof route.props === 'object' && 
