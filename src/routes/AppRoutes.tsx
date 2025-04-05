@@ -5,17 +5,14 @@ import { getAllRoutes } from './routeConfig';
 import MainRoutes from './MainRoutes';
 import AuthRoutes from './AuthRoutes';
 import DashboardRoutes from './DashboardRoutes';
+import MobileRoutes from './MobileRoutes';
+import UtilityRoutes from './UtilityRoutes';
 
 const AppRoutes = () => {
   console.log("AppRoutes component rendering");
   
   // Get all routes from the centralized configuration
   const allRoutes = getAllRoutes();
-  
-  // Also include routes from MainRoutes, AuthRoutes, and DashboardRoutes for compatibility
-  const mainRouteElements = MainRoutes || [];
-  const authRouteElements = AuthRoutes || [];
-  const dashboardRouteElements = DashboardRoutes || [];
   
   return (
     <Routes>
@@ -34,7 +31,7 @@ const AppRoutes = () => {
       )}
       
       {/* Include routes from AuthRoutes for compatibility */}
-      {Array.isArray(authRouteElements) && authRouteElements.map((route, index) => (
+      {Array.isArray(AuthRoutes) && AuthRoutes.map((route, index) => (
         <Route 
           key={`auth-route-${index}`} 
           path={route.path} 
@@ -43,9 +40,25 @@ const AppRoutes = () => {
       ))}
       
       {/* Include routes from DashboardRoutes for compatibility */}
-      {Array.isArray(dashboardRouteElements) && dashboardRouteElements.map((route, index) => (
+      {Array.isArray(DashboardRoutes) && DashboardRoutes.map((route, index) => (
         <Route 
           key={`dashboard-route-${index}`} 
+          {...route.props} 
+        />
+      ))}
+
+      {/* Include routes from MobileRoutes */}
+      {Array.isArray(MobileRoutes) && MobileRoutes.map((route, index) => (
+        <Route 
+          key={`mobile-route-${index}`} 
+          {...route.props} 
+        />
+      ))}
+
+      {/* Include routes from UtilityRoutes */}
+      {Array.isArray(UtilityRoutes) && UtilityRoutes.map((route, index) => (
+        <Route 
+          key={`utility-route-${index}`} 
           {...route.props} 
         />
       ))}
