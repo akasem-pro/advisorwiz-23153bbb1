@@ -1,30 +1,28 @@
 
-import { toast as sonnerToast, type ToastT } from "sonner";
+import { toast as sonnerToast, type Toast } from "sonner";
 import { ReactNode } from "react";
 
-export type ToastProps = Omit<Parameters<typeof sonnerToast>[1], "close" | "position" | "cancel" | "promise"> & {
+export type ToastProps = {
   title?: React.ReactNode;
   description?: React.ReactNode;
   variant?: "default" | "destructive";
   action?: ReactNode;
+  duration?: number;
 };
 
 const useToast = () => {
   return {
-    toast: ({ title, description, variant, action, ...props }: ToastProps) => {
-      // Map our variant to sonner's type if needed
+    toast: ({ title, description, variant, action, duration, ...props }: ToastProps) => {
+      // Map our variant to sonner's type
       const toastType = variant === "destructive" ? "error" : "default";
       
       return sonnerToast[toastType](title as string, {
-        ...props,
         description,
-        // We're not setting variant anymore since it doesn't exist in ExternalToast
-        // Instead we're using the appropriate toast method (error or default)
-        action: action && typeof action === 'object' ? action : undefined
+        duration,
+        action: action && typeof action === 'object' ? action : undefined,
+        ...props
       });
     },
-    // Since useToaster isn't available, we'll handle toasts and dismiss differently
-    toasts: [] as ToastT[],
     dismiss: (toastId?: string) => {
       if (toastId) {
         sonnerToast.dismiss(toastId);

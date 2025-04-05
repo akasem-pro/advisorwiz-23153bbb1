@@ -1,3 +1,4 @@
+
 import React, { Suspense, Component, ErrorInfo, ReactNode } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppRoutes from './routes/AppRoutes';
@@ -5,7 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider } from './context/UserContext';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import { FeedbackProvider } from './context/FeedbackContext';
-import { Toaster } from './components/ui/toaster';
+import { Toaster } from 'sonner';
 import { initAppOptimizations } from './utils/appOptimizations';
 import './App.css';
 
@@ -64,7 +65,7 @@ const App: React.FC = () => {
               <FeedbackProvider>
                 <Suspense fallback={<div>Loading...</div>}>
                   <AppRoutes />
-                  <Toaster />
+                  <Toaster position="bottom-right" />
                 </Suspense>
               </FeedbackProvider>
             </UserProvider>

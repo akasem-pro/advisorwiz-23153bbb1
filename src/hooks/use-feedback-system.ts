@@ -2,7 +2,6 @@
 import { useState, useCallback } from 'react';
 import { useToast } from './use-toast';
 import { useFeedback } from '../context/FeedbackContext';
-import { ToastActionElement } from "@/components/ui/toast";
 
 type FeedbackType = 'success' | 'error' | 'warning' | 'info';
 
@@ -10,7 +9,7 @@ interface FeedbackOptions {
   title?: string;
   description: string;
   duration?: number;
-  action?: ToastActionElement;
+  action?: React.ReactNode;
   variant?: FeedbackType;
   // For in-page feedback
   dismissable?: boolean;
