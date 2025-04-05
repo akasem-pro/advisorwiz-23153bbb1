@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { MessageCircle, Phone, Mail, HelpCircle, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 
 interface SupportPanelProps {
   isOpen: boolean;
@@ -13,11 +13,14 @@ interface SupportPanelProps {
 export const SupportPanel: React.FC<SupportPanelProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success('Support request sent', {
-      description: 'Our team will get back to you shortly'
+    toast({
+      title: 'Support request sent',
+      description: 'Our team will get back to you shortly',
+      variant: 'default'
     });
     setEmail('');
     setMessage('');

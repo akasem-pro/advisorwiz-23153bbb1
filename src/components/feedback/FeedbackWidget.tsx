@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { X, MessageSquare, ThumbsUp, ThumbsDown, Bug } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Label } from '../ui/label';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 import { trackUserBehavior } from '../../utils/analytics/eventTracker';
 import { UserBehaviorEvent } from '../../utils/analytics/types';
 
@@ -21,6 +22,7 @@ const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({
   currentPageUrl = typeof window !== 'undefined' ? window.location.href : '',
   userId
 }) => {
+  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [feedbackType, setFeedbackType] = useState<FeedbackType>('suggestion');
   const [comment, setComment] = useState('');
@@ -62,8 +64,10 @@ const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({
       });
 
       // Show success message
-      toast.success('Thank you for your feedback!', {
-        description: 'Your input helps us improve AdvisorWiz.'
+      toast({
+        title: 'Thank you for your feedback!',
+        description: 'Your input helps us improve AdvisorWiz.',
+        variant: 'default'
       });
 
       // Reset form and close
@@ -71,8 +75,10 @@ const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({
       setFeedbackType('suggestion');
       setIsOpen(false);
     } catch (error) {
-      toast.error('Unable to submit feedback', {
-        description: 'Please try again later.'
+      toast({
+        title: 'Unable to submit feedback',
+        description: 'Please try again later.',
+        variant: 'destructive'
       });
       console.error('Error submitting feedback:', error);
     } finally {

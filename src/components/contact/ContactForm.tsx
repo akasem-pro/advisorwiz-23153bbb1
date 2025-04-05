@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +18,7 @@ interface ContactFormData {
 }
 
 const ContactForm: React.FC = () => {
+  const { toast } = useToast();
   const { showInlineFeedback } = useFeedbackSystem();
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
@@ -55,8 +56,10 @@ const ContactForm: React.FC = () => {
       }
 
       // Show success message
-      toast.success("Message sent successfully", {
-        description: "We'll get back to you as soon as possible."
+      toast({
+        title: "Message sent successfully",
+        description: "We'll get back to you as soon as possible.",
+        variant: "default"
       });
 
       // Use our feedback system to show inline feedback
@@ -86,8 +89,10 @@ const ContactForm: React.FC = () => {
       
     } catch (error) {
       console.error('Error submitting contact form:', error);
-      toast.error("Failed to send message", {
-        description: "Please try again or contact us directly via email."
+      toast({
+        title: "Failed to send message",
+        description: "Please try again or contact us directly via email.",
+        variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);
