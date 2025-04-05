@@ -94,26 +94,6 @@ const AppointmentCategoryManager: React.FC<AppointmentCategoryManagerProps> = ({
     );
   };
 
-  const handleSaveCategories = () => {
-    if (advisorProfile) {
-      setAdvisorProfile({
-        ...advisorProfile,
-        appointmentCategories: categories
-      });
-      
-      setSaved(true);
-      toast({
-        title: 'Categories saved',
-        description: 'Your appointment categories have been updated.',
-      });
-      
-      setTimeout(() => {
-        setSaved(false);
-        onClose();
-      }, 1500);
-    }
-  };
-
   const resetToDefaults = () => {
     const defaultCats = DEFAULT_CATEGORIES.map(cat => ({
       ...cat,
@@ -122,10 +102,28 @@ const AppointmentCategoryManager: React.FC<AppointmentCategoryManagerProps> = ({
     
     setCategories(defaultCats);
     
-    toast({
-      title: 'Reset to defaults',
-      description: 'Appointment categories have been reset to default values.',
+    toast("Reset to defaults", {
+      description: 'Appointment categories have been reset to default values.'
     });
+  };
+
+  const handleSaveCategories = () => {
+    if (advisorProfile) {
+      setAdvisorProfile({
+        ...advisorProfile,
+        appointmentCategories: categories
+      });
+      
+      setSaved(true);
+      toast("Categories saved", {
+        description: 'Your appointment categories have been updated.'
+      });
+      
+      setTimeout(() => {
+        setSaved(false);
+        onClose();
+      }, 1500);
+    }
   };
 
   return (

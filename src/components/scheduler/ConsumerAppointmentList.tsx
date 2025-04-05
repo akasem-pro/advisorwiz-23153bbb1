@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   CalendarCheck, 
@@ -64,9 +65,8 @@ const ConsumerAppointmentList: React.FC<ConsumerAppointmentListProps> = ({ appoi
 
   const handleCancelAppointment = (appointmentId: string) => {
     updateAppointmentStatus(appointmentId, 'canceled');
-    toast({
-      title: 'Appointment cancelled',
-      description: 'Your appointment has been cancelled.',
+    toast("Appointment cancelled", {
+      description: 'Your appointment has been cancelled.'
     });
     setShowDetails(false);
   };

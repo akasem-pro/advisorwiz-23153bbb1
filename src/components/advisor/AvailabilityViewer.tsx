@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight, MessageCircle } from 'lucide-react';
@@ -60,10 +59,8 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
 
   const handleBooking = () => {
     if (!selectedSlot || !consumerProfile) {
-      toast({
-        title: "Please select a time slot",
-        description: "You need to select a time slot and be logged in to book a meeting",
-        variant: "destructive"
+      toast("Please select a time slot", {
+        description: "You need to select a time slot and be logged in to book a meeting"
       });
       return;
     }
@@ -86,7 +83,6 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
     const startTime = convertTo24Hour(startTimeStr);
     const endTime = convertTo24Hour(endTimeStr);
 
-    // Convert date to ISO string for the selected date
     const scheduledStart = new Date(selectedDate);
     const [startHours, startMinutes] = startTime.split(':').map(Number);
     scheduledStart.setHours(startHours, startMinutes, 0);
@@ -105,7 +101,6 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
       status: 'pending',
       notes: '',
       location: 'video',
-      // Add backward compatibility properties
       date: selectedDate.toISOString(),
       startTime,
       endTime
@@ -123,10 +118,8 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
 
   const handleStartChat = () => {
     if (!consumerProfile) {
-      toast({
-        title: "Please complete your profile",
-        description: "You need to complete your profile to chat with advisors",
-        variant: "destructive"
+      toast("Please complete your profile", {
+        description: "You need to complete your profile to chat with advisors"
       });
       return;
     }

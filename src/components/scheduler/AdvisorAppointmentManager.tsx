@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Appointment, AppointmentStatus, useUser } from '../../context/UserContext';
 import { toast } from '@/hooks/use-toast';
@@ -29,9 +28,8 @@ const AdvisorAppointmentManager: React.FC<AdvisorAppointmentManagerProps> = ({ a
 
   const handleUpdateStatus = (appointmentId: string, status: AppointmentStatus) => {
     updateAppointmentStatus(appointmentId, status);
-    toast({
-      title: 'Status updated',
-      description: `Appointment status changed to ${status}`,
+    toast("Status updated", {
+      description: `Appointment status changed to ${status}`
     });
     setShowDetails(false);
   };

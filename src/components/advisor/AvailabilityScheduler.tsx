@@ -51,20 +51,16 @@ const AvailabilityScheduler: React.FC<AvailabilitySchedulerProps> = ({
   const addTimeSlot = () => {
     // Validate the time slot
     if (!newSlot.day || !newSlot.startTime || !newSlot.endTime) {
-      toast({
-        title: "Missing information",
-        description: "Please select day, start time and end time",
-        variant: "destructive"
+      toast("Missing information", {
+        description: "Please select day, start time and end time"
       });
       return;
     }
 
     // Check if end time is after start time
     if (newSlot.startTime >= newSlot.endTime) {
-      toast({
-        title: "Invalid time range",
-        description: "End time must be after start time",
-        variant: "destructive"
+      toast("Invalid time range", {
+        description: "End time must be after start time"
       });
       return;
     }
@@ -76,10 +72,8 @@ const AvailabilityScheduler: React.FC<AvailabilitySchedulerProps> = ({
     );
 
     if (hasOverlap) {
-      toast({
-        title: "Time slot overlap",
-        description: "This time slot overlaps with an existing one",
-        variant: "destructive"
+      toast("Time slot overlap", {
+        description: "This time slot overlaps with an existing one"
       });
       return;
     }
