@@ -9,11 +9,33 @@ import MobileRoutes from './MobileRoutes';
 import UtilityRoutes from './UtilityRoutes';
 import { ReactNode } from 'react';
 
-// Define a common interface for route objects
+// Define common interfaces for route objects
 interface RouteConfig {
   path: string;
   element: ReactNode;
-  props?: Record<string, any>;
+}
+
+interface RouteConfigWithProps {
+  props: {
+    path: string;
+    element: ReactNode;
+  };
+}
+
+type RouteItem = RouteConfig | RouteConfigWithProps;
+
+// Type guard to check if a route has direct path and element
+function isDirectRoute(route: RouteItem): route is RouteConfig {
+  return 'path' in route && 'element' in route;
+}
+
+// Type guard to check if a route has props containing path and element
+function isPropsRoute(route: RouteItem): route is RouteConfigWithProps {
+  return 'props' in route && 
+         route.props !== undefined && 
+         typeof route.props === 'object' && 
+         'path' in route.props && 
+         'element' in route.props;
 }
 
 const AppRoutes: React.FC = () => {
@@ -49,94 +71,76 @@ const AppRoutes: React.FC = () => {
       
       {/* Include routes from DashboardRoutes for compatibility */}
       {Array.isArray(DashboardRoutes) && DashboardRoutes.map((route, index) => {
-        if (route && typeof route === 'object') {
-          // Handle routes with path and element properties
-          if ('path' in route && 'element' in route) {
-            const typedRoute = route as RouteConfig;
-            return (
-              <Route 
-                key={`dashboard-route-${index}`} 
-                path={typedRoute.path} 
-                element={typedRoute.element} 
-              />
-            );
-          }
-          // Handle routes with props object containing path and element
-          if ('props' in route && route.props && 
-              typeof route.props === 'object' && 
-              'path' in route.props && 
-              'element' in route.props) {
-            return (
-              <Route 
-                key={`dashboard-route-${index}`} 
-                path={route.props.path as string} 
-                element={route.props.element as ReactNode} 
-              />
-            );
-          }
+        if (isDirectRoute(route)) {
+          return (
+            <Route 
+              key={`dashboard-route-${index}`} 
+              path={route.path} 
+              element={route.element} 
+            />
+          );
         }
+        
+        if (isPropsRoute(route)) {
+          return (
+            <Route 
+              key={`dashboard-route-${index}`} 
+              path={route.props.path} 
+              element={route.props.element} 
+            />
+          );
+        }
+        
         return null;
       })}
 
       {/* Include routes from MobileRoutes */}
       {Array.isArray(MobileRoutes) && MobileRoutes.map((route, index) => {
-        if (route && typeof route === 'object') {
-          // Handle routes with path and element properties
-          if ('path' in route && 'element' in route) {
-            const typedRoute = route as RouteConfig;
-            return (
-              <Route 
-                key={`mobile-route-${index}`} 
-                path={typedRoute.path} 
-                element={typedRoute.element} 
-              />
-            );
-          }
-          // Handle routes with props object containing path and element
-          if ('props' in route && route.props && 
-              typeof route.props === 'object' && 
-              'path' in route.props && 
-              'element' in route.props) {
-            return (
-              <Route 
-                key={`mobile-route-${index}`} 
-                path={route.props.path as string} 
-                element={route.props.element as ReactNode} 
-              />
-            );
-          }
+        if (isDirectRoute(route)) {
+          return (
+            <Route 
+              key={`mobile-route-${index}`} 
+              path={route.path} 
+              element={route.element} 
+            />
+          );
         }
+        
+        if (isPropsRoute(route)) {
+          return (
+            <Route 
+              key={`mobile-route-${index}`} 
+              path={route.props.path} 
+              element={route.props.element} 
+            />
+          );
+        }
+        
         return null;
       })}
 
       {/* Include routes from UtilityRoutes */}
       {Array.isArray(UtilityRoutes) && UtilityRoutes.map((route, index) => {
-        if (route && typeof route === 'object') {
-          // Handle routes with path and element properties
-          if ('path' in route && 'element' in route) {
-            const typedRoute = route as RouteConfig;
-            return (
-              <Route 
-                key={`utility-route-${index}`} 
-                path={typedRoute.path} 
-                element={typedRoute.element} 
-              />
-            );
-          }
-          // Handle routes with props object containing path and element
-          if ('props' in route && route.props && 
-              typeof route.props === 'object' && 
-              'path' in route.props && 
-              'element' in route.props) {
-            return (
-              <Route 
-                key={`utility-route-${index}`} 
-                path={route.props.path as string} 
-                element={route.props.element as ReactNode} 
-              />
-            );
-          }
+        if (isDirectRoute(route)) {
+          return (
+            <Route 
+              key={`utility-route-${index}`} 
+              path={route.path} 
+              element={route.element} 
+            />
+          );
         }
+        
+        if (isPropsRoute(route)) {
+          return (
+            <Route 
+              key={`utility-route-${index}`} 
+              path={route.props.path} 
+              element={route.props.element} 
+            />
+          );
+        }
+        
         return null;
       })}
     </Routes>

@@ -1,7 +1,11 @@
 
-import { RouteProps } from 'react-router-dom';
+import { ReactNode } from 'react';
 
-// Define the route object type
 export interface DashboardRouteType {
-  props: RouteProps;
+  path?: string;
+  element?: ReactNode;
+  props?: {
+    path: string;
+    element: ReactNode;
+  };
 }
