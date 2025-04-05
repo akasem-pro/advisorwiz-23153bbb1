@@ -21,21 +21,21 @@ const AppRoutes = () => {
       
       {/* Include Auth Routes */}
       {AuthRoutes.map((route, index) => (
-        <Route key={`auth-route-${index}`} {...route} />
+        <Route key={`auth-route-${index}`} element={route.element} path={route.path} />
       ))}
       
       {/* Include Utility Routes */}
       {UtilityRoutes.map((route, index) => (
-        <Route key={`utility-route-${index}`} {...route} />
+        <Route key={`utility-route-${index}`} path={route.props.path} element={route.props.element} />
       ))}
       
       {/* Include Mobile Routes when needed */}
       {MobileRoutes.map((route, index) => (
-        <Route key={`mobile-route-${index}`} {...route} />
+        <Route key={`mobile-route-${index}`} path={route.props?.path || ''} element={route.props?.element} />
       ))}
       
-      {/* Main Routes should be rendered within their own Routes component, not as a fallback */}
-      <Route path="*" element={<MainRoutes />} />
+      {/* Main Routes get their own path */}
+      <Route path="/*" element={<MainRoutes />} />
     </Routes>
   );
 };
