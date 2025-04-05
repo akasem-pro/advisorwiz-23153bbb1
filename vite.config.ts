@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => ({
       deny: ['node_modules/.vite', '.git', '.github'],
     },
     // Force HTTPS for local development to prevent Host header attacks
-    https: mode === 'development' ? true : undefined,
+    https: mode === 'development' ? {} : undefined,
     // Explicitly set allowed hosts
     origin: 'http://localhost:8080',
   },
