@@ -3,7 +3,6 @@ import Home from '../pages/Home';
 import AppLayout from '../components/layout/AppLayout';
 import DashboardRoutes from './DashboardRoutes';
 import AuthRoutes from './AuthRoutes';
-import MainRoutes from './MainRoutes';
 import UtilityRoutes from './UtilityRoutes';
 import MobileRoutes from './MobileRoutes';
 import { lazy, Suspense } from 'react';
