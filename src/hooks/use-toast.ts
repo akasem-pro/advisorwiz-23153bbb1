@@ -6,21 +6,21 @@ export type ToastProps = Omit<Parameters<typeof sonnerToast>[1], "close" | "posi
   title?: React.ReactNode;
   description?: React.ReactNode;
   variant?: "default" | "destructive";
-  action?: ReactNode | (() => ReactNode);
+  action?: ReactNode;
 };
 
 const useToast = () => {
   return {
     toast: ({ title, description, variant, action, ...props }: ToastProps) => {
-      return sonnerToast(title as string, {
+      // Map our variant to sonner's type if needed
+      const toastType = variant === "destructive" ? "error" : "default";
+      
+      return sonnerToast[toastType](title as string, {
         ...props,
         description,
-        // Map our variant to sonner's type if needed
-        variant: variant === "destructive" ? "error" : undefined,
-        // Handle action properly
-        action: action && typeof action === 'function' 
-          ? { label: 'Action', onClick: () => {} } 
-          : (typeof action === 'object' ? { label: 'Action', onClick: () => {} } : undefined)
+        // We're not setting variant anymore since it doesn't exist in ExternalToast
+        // Instead we're using the appropriate toast method (error or default)
+        action: action && typeof action === 'object' ? action : undefined
       });
     },
     // Since useToaster isn't available, we'll handle toasts and dismiss differently

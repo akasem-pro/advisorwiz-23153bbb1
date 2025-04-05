@@ -17,13 +17,11 @@ export function Toaster() {
     <ToastProvider>
       {toasts.map(function ({ id, title, description, action, ...props }) {
         // Remove incompatible props from Sonner toast
-        const { type, icon, jsx, richColors, invert, variant: sonnerVariant, ...compatibleProps } = props;
+        const { type, icon, jsx, richColors, invert, ...compatibleProps } = props;
         
         // Map to shadcn/ui toast variant (default or destructive)
-        // Use the variant from props if it exists, otherwise map from sonnerVariant
-        const variant = props.variant === "destructive" || sonnerVariant === "error" 
-          ? "destructive" 
-          : "default";
+        // Use type to determine if it's destructive
+        const variant = type === "error" ? "destructive" : "default";
         
         return (
           <Toast key={id} {...compatibleProps} variant={variant}>
@@ -34,9 +32,9 @@ export function Toaster() {
               )}
             </div>
             {action && (
-              typeof action === 'function' 
-                ? action() 
-                : action
+              typeof action === 'object' && action !== null
+                ? <div>{action as ReactNode}</div>
+                : null
             )}
             <ToastClose />
           </Toast>
