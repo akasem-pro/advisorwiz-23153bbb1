@@ -96,7 +96,7 @@ const AppRoutes: React.FC = () => {
       })}
 
       {/* Include routes from MobileRoutes */}
-      {Array.isArray(MobileRoutes) && MobileRoutes.map((route, index) => {
+      {Array.isArray(MobileRoutes) && MobileRoutes.map((route: RouteItem, index) => {
         if (isDirectRoute(route)) {
           return (
             <Route 
@@ -121,7 +121,7 @@ const AppRoutes: React.FC = () => {
       })}
 
       {/* Include routes from UtilityRoutes */}
-      {Array.isArray(UtilityRoutes) && UtilityRoutes.map((route, index) => {
+      {Array.isArray(UtilityRoutes) && UtilityRoutes.map((route: RouteItem, index) => {
         if (isDirectRoute(route)) {
           return (
             <Route 
