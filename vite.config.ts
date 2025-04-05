@@ -24,8 +24,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(), // Removed the configuration object that was causing the type error
+    mode === 'development' && componentTagger(), // Removed the configuration object that was causing the type error
   ].filter(Boolean),
   resolve: {
     alias: {
