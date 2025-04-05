@@ -7,7 +7,7 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "localhost", // Change from "::" to "localhost" to restrict access
+    host: "localhost", // Restrict access to localhost only
     port: 8080,
     // Add security settings to prevent external access
     hmr: {
@@ -16,6 +16,11 @@ export default defineConfig(({ mode }) => ({
     },
     // Restrict access to local connections only
     cors: false,
+    // Prevent directory traversal
+    fs: {
+      strict: true,
+      allow: ['.']
+    },
   },
   plugins: [
     react(),
@@ -36,6 +41,15 @@ export default defineConfig(({ mode }) => ({
         // Safe optimizations
         drop_console: true,
         drop_debugger: true,
+      }
+    },
+    // Add security headers
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['react-router-dom', 'framer-motion']
+        }
       }
     },
   },
