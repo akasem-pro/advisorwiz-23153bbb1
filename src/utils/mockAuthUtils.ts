@@ -1,90 +1,67 @@
-
-/**
- * Utility functions for handling mock authentication in development/preview environments
- */
-
-// Define production domains to distinguish from preview/development environments
+// List of production domains for deployment
 export const PRODUCTION_DOMAINS = [
   'advisorwiz.com',
-  'app.advisorwiz.com',
-  'api.advisorwiz.com',
   'www.advisorwiz.com',
-  'dashboard.advisorwiz.com'
+  'app.advisorwiz.com',
+  'staging.advisorwiz.com',
+  'dev.advisorwiz.com'
 ];
 
-/**
- * Check if the current environment is a preview/development environment
- */
+// Helper to determine if we're in a preview/development environment
 export const isPreviewEnvironment = (): boolean => {
-  const isDevelopment = process.env.NODE_ENV === 'development';
-  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  // Check if we're in a browser environment
+  if (typeof window === 'undefined') return false;
   
-  // If in development mode or running on localhost, consider it a preview environment
-  if (isDevelopment || hostname.includes('localhost')) {
-    return true;
-  }
+  // Check if we have a mocked user in localStorage (for development)
+  const hasMockUser = !!localStorage.getItem('mock_auth_user');
   
-  // Check if it's a preview deployment site
-  const isPreviewSite = hostname.includes('preview') || 
-                         hostname.includes('lovableproject');
+  // Check if the URL is a localhost or development URL
+  const hostname = window.location.hostname;
+  const isDevelopmentDomain = hostname === 'localhost' 
+    || hostname === '127.0.0.1'
+    || hostname.includes('.lovable.') 
+    || hostname.includes('.vercel.app');
   
-  // Check if it's a production domain
-  const isProductionDomain = PRODUCTION_DOMAINS.some(domain => 
-    hostname === domain || hostname.endsWith('.' + domain)
-  );
-  
-  // It's a preview environment if it's a preview site and not a production domain
-  return isPreviewSite && !isProductionDomain;
+  return isDevelopmentDomain || hasMockUser;
 };
 
-/**
- * Get the effective authentication status based on the current environment
- * In development or preview environments, we can override the auth status
- */
+// Get the effective auth status for preview environments
 export const getEffectiveAuthStatus = (isAuthenticated: boolean): boolean => {
-  // If it's a preview environment or development, consider the user authenticated
-  if (isPreviewEnvironment()) {
+  // In preview environments, we may want to bypass authentication
+  const isPreview = isPreviewEnvironment();
+  
+  // If we're in a preview environment and there's a mock user, consider as authenticated
+  if (isPreview && localStorage.getItem('mock_auth_user')) {
     return true;
   }
   
-  // Otherwise, use the actual auth status
+  // Otherwise, return the actual authentication status
   return isAuthenticated;
 };
 
-/**
- * Set a mock user in localStorage for development/preview environments
- */
-export const setMockUser = (userType: 'consumer' | 'advisor' | 'firm_admin' | 'admin') => {
-  localStorage.setItem('mock_auth_user', JSON.stringify({
-    type: userType,
-    email: `mock-${userType}@example.com`,
-    name: `Mock ${userType.charAt(0).toUpperCase() + userType.slice(1)}`,
-  }));
+// Set up mock authentication for development
+export const setupMockAuth = (userType = 'consumer', userId = '123') => {
+  const mockUser = {
+    id: userId,
+    email: 'test@example.com',
+    app_metadata: { userType },
+    user_metadata: { name: 'Test User', userType }
+  };
+  
+  localStorage.setItem('mock_auth_user', JSON.stringify(mockUser));
+  localStorage.setItem('mock_user_type', userType);
+  console.log('Mock auth setup complete:', { userType, userId });
+  
+  // Force reload to apply changes
+  window.location.reload();
 };
 
-/**
- * Clear the mock user from localStorage
- */
-export const clearMockUser = () => {
+// Clear mock authentication
+export const clearMockAuth = () => {
   localStorage.removeItem('mock_auth_user');
+  localStorage.removeItem('mock_user_type');
+  console.log('Mock auth cleared');
+  
+  // Force reload to apply changes
+  window.location.reload();
 };
-
-/**
- * Get the mock user from localStorage
- */
-export const getMockUser = () => {
-  const mockUserJson = localStorage.getItem('mock_auth_user');
-  return mockUserJson ? JSON.parse(mockUserJson) : null;
-};
-
-/**
- * Setup mock auth for testing in preview environments
- * Alias for setMockUser for backwards compatibility
- */
-export const setupMockAuth = setMockUser;
-
-/**
- * Clear mock auth for testing in preview environments
- * Alias for clearMockUser for backwards compatibility
- */
-export const clearMockAuth = clearMockUser;
