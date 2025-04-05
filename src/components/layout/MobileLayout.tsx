@@ -15,6 +15,7 @@ interface MobileLayoutProps {
   animationDuration?: 'fast' | 'normal' | 'slow';
   skipToContentId?: string;
   hideFooter?: boolean;
+  showFooter?: boolean;
 }
 
 const MobileLayout: React.FC<MobileLayoutProps> = ({ 
@@ -26,12 +27,16 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
   animation = 'fade',
   animationDuration = 'normal',
   skipToContentId = 'mobile-content',
-  hideFooter = false
+  hideFooter = true,
+  showFooter = false
 }) => {
+  // Override hideFooter if showFooter is explicitly true
+  const finalHideFooter = showFooter ? false : hideFooter;
+
   return (
     <BaseLayout
       header={<Header />}
-      footer={hideFooter ? null : undefined} // Pass null to completely hide footer, undefined to use default
+      footer={finalHideFooter ? null : undefined} // Pass null to completely hide footer, undefined to use default
       mobileNavbar={<MobileNavbar />}
       contentClassName={cn("pt-56 pb-24", contentClassName)} // Increased bottom padding for footer visibility with navbar
       showSocialProof={showSocialProof}
@@ -40,6 +45,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
       animation={animation}
       animationDuration={animationDuration}
       skipToContentId={skipToContentId}
+      hideFooter={finalHideFooter}
     >
       {children}
     </BaseLayout>

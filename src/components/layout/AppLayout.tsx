@@ -16,6 +16,7 @@ interface AppLayoutProps {
   animationDuration?: 'fast' | 'normal' | 'slow';
   skipToContentId?: string;
   hideFooter?: boolean;
+  showFooter?: boolean;
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ 
@@ -29,12 +30,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   animation = 'fade',
   animationDuration = 'normal',
   skipToContentId = 'main-content',
-  hideFooter = false
+  hideFooter = true,
+  showFooter = false
 }) => {
+  // Override hideFooter if showFooter is explicitly true
+  const finalHideFooter = showFooter ? false : hideFooter;
+
   return (
     <BaseLayout
       header={<Header />}
-      footer={hideFooter ? null : undefined} // Pass null to completely hide footer, undefined to use default
+      footer={finalHideFooter ? null : undefined} // Pass null to completely hide footer, undefined to use default
       showSocialProof={!hideSocialProof}
       showTrustBadges={showTrustBadges}
       fullWidth={fullWidth}
@@ -44,6 +49,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       animation={animation}
       animationDuration={animationDuration}
       skipToContentId={skipToContentId}
+      hideFooter={finalHideFooter}
     >
       {children}
     </BaseLayout>

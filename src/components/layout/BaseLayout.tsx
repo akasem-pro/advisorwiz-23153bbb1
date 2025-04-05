@@ -1,3 +1,4 @@
+
 import React, { ReactNode, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
@@ -24,6 +25,7 @@ export interface BaseLayoutProps {
   mainClassName?: string;
   withoutPadding?: boolean;
   skipToContentId?: string;
+  hideFooter?: boolean;
 }
 
 const BaseLayout: React.FC<BaseLayoutProps> = ({
@@ -41,7 +43,8 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   headerClassName = '',
   mainClassName = '',
   withoutPadding = true,
-  skipToContentId
+  skipToContentId,
+  hideFooter = false
 }) => {
   const location = useLocation();
   
@@ -68,7 +71,9 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   };
   
   // Determine what footer to render
-  const footerElement = footer === null ? null : (footer || <AppFooter />);
+  // If hideFooter is true or footer is explicitly set to null, don't render footer
+  const renderFooter = !hideFooter && footer !== null;
+  const footerElement = renderFooter ? (footer || <AppFooter />) : null;
 
   const renderContent = () => (
     <div className={cn(

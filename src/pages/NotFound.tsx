@@ -7,7 +7,7 @@ import PageSEO from '../components/seo/PageSEO';
 
 const NotFound: React.FC = () => {
   return (
-    <AppLayout hideFooter={true}>
+    <AppLayout>
       <PageSEO
         title="Page Not Found | AdvisorWiz"
         description="The page you're looking for doesn't exist or has been moved."
