@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -32,16 +33,36 @@ const ConsumerProfile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState('');
   const [formSuccess, setFormSuccess] = useState('');
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    income: '',
+    assets: '',
+    riskTolerance: 'moderate',
+    investmentGoals: ''
+  });
 
   useEffect(() => {
     if (!consumerProfile) {
       console.warn("Consumer profile is not initialized.");
+    } else {
+      // Initialize form data from profile
+      setFormData({
+        firstName: consumerProfile.name?.split(' ')[0] || '',
+        lastName: consumerProfile.name?.split(' ')[1] || '',
+        email: consumerProfile.email || '',
+        income: consumerProfile.investableAssets?.toString() || '',
+        assets: consumerProfile.investableAssets?.toString() || '',
+        riskTolerance: consumerProfile.riskTolerance || 'moderate',
+        investmentGoals: consumerProfile.financialGoals?.join(', ') || ''
+      });
     }
   }, [consumerProfile]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setConsumerProfile(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,7 +78,19 @@ const ConsumerProfile: React.FC = () => {
     }
 
     try {
-      const success = await saveProfileChanges(consumerProfile);
+      // Update the consumer profile with form data
+      const updatedProfile: ConsumerProfileType = {
+        ...consumerProfile,
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        investableAssets: parseFloat(formData.assets) || 0,
+        riskTolerance: formData.riskTolerance as 'low' | 'medium' | 'high',
+        financialGoals: formData.investmentGoals.split(',').map(goal => goal.trim())
+      };
+      
+      setConsumerProfile(updatedProfile);
+      const success = await saveProfileChanges();
+      
       if (success) {
         setFormSuccess('Profile updated successfully!');
         toast.success('Profile updated successfully!');
@@ -117,7 +150,7 @@ const ConsumerProfile: React.FC = () => {
                       id="firstName"
                       name="firstName"
                       className="input-field"
-                      value={consumerProfile?.firstName || ''}
+                      value={formData.firstName}
                       onChange={handleChange}
                       required
                     />
@@ -131,7 +164,7 @@ const ConsumerProfile: React.FC = () => {
                       id="lastName"
                       name="lastName"
                       className="input-field"
-                      value={consumerProfile?.lastName || ''}
+                      value={formData.lastName}
                       onChange={handleChange}
                       required
                     />
@@ -147,7 +180,7 @@ const ConsumerProfile: React.FC = () => {
                     id="email"
                     name="email"
                     className="input-field"
-                    value={consumerProfile?.email || ''}
+                    value={formData.email}
                     onChange={handleChange}
                     required
                   />
@@ -164,7 +197,7 @@ const ConsumerProfile: React.FC = () => {
                     id="income"
                     name="income"
                     className="input-field"
-                    value={consumerProfile?.income || ''}
+                    value={formData.income}
                     onChange={handleChange}
                   />
                 </div>
@@ -178,7 +211,7 @@ const ConsumerProfile: React.FC = () => {
                     id="assets"
                     name="assets"
                     className="input-field"
-                    value={consumerProfile?.assets || ''}
+                    value={formData.assets}
                     onChange={handleChange}
                   />
                 </div>
@@ -193,12 +226,12 @@ const ConsumerProfile: React.FC = () => {
                     id="riskTolerance"
                     name="riskTolerance"
                     className="select-field"
-                    value={consumerProfile?.riskTolerance || 'moderate'}
+                    value={formData.riskTolerance}
                     onChange={handleChange}
                   >
-                    <option value="conservative">Conservative</option>
-                    <option value="moderate">Moderate</option>
-                    <option value="aggressive">Aggressive</option>
+                    <option value="low">Conservative</option>
+                    <option value="medium">Moderate</option>
+                    <option value="high">Aggressive</option>
                   </select>
                 </div>
 
@@ -211,7 +244,7 @@ const ConsumerProfile: React.FC = () => {
                     name="investmentGoals"
                     rows={3}
                     className="textarea-field"
-                    value={consumerProfile?.investmentGoals || ''}
+                    value={formData.investmentGoals}
                     onChange={handleChange}
                   />
                 </div>
@@ -240,7 +273,6 @@ const ConsumerProfile: React.FC = () => {
           </div>
         </main>
       </div>
-      {/* Removed the AppFooter component */}
     </AnimatedRoute>
   );
 };
