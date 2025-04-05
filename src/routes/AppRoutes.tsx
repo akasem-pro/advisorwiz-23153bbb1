@@ -24,15 +24,18 @@ import ConsumerProfile from '../pages/ConsumerProfile';
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
 
 const AppRoutes = () => {
+  console.log("AppRoutes component rendering");
+  
   return (
     <Routes>
       {/* Home route */}
       <Route path="/" element={<AppLayout><Home /></AppLayout>} />
       
-      {/* Profile routes */}
+      {/* Profile routes - explicit paths */}
       <Route path="/profile" element={<AppLayout><AdvisorProfile /></AppLayout>} />
       <Route path="/advisor-profile" element={<AppLayout><AdvisorProfile /></AppLayout>} />
       <Route path="/consumer-profile" element={<AppLayout><ConsumerProfile /></AppLayout>} />
+      <Route path="/firm-profile" element={<AppLayout><AdvisorProfile /></AppLayout>} />
       
       {/* Main marketing pages */}
       <Route path="/about" element={<AppLayout><AboutUs /></AppLayout>} />
@@ -56,22 +59,22 @@ const AppRoutes = () => {
         } 
       />
       
-      {/* Include Dashboard Routes */}
+      {/* Include DashboardRoutes with profile routes that need authentication */}
       {DashboardRoutes.map((route, index) => (
         <Route key={`dashboard-route-${index}`} {...route.props} />
       ))}
       
-      {/* Include Auth Routes */}
+      {/* Include AuthRoutes */}
       {AuthRoutes.map((route, index) => (
         <Route key={`auth-route-${index}`} path={route.path} element={route.element} />
       ))}
       
-      {/* Include Utility Routes */}
+      {/* Include UtilityRoutes */}
       {UtilityRoutes.map((route, index) => (
         <Route key={`utility-route-${index}`} path={route.props.path} element={route.props.element} />
       ))}
       
-      {/* Include Mobile Routes when needed */}
+      {/* Include MobileRoutes when needed */}
       {MobileRoutes.map((route, index) => (
         <Route key={`mobile-route-${index}`} path={route.props?.path || ''} element={route.props?.element} />
       ))}

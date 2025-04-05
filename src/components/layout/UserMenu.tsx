@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../features/auth/context/AuthProvider';
 import { cn } from '@/lib/utils';
+import { useUser } from '../../context/UserContext';
 
 interface UserMenuProps {
   getUserName: () => string;
@@ -26,6 +27,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { signOut } = useAuth();
+  const { userType } = useUser();
   const menuRef = useRef<HTMLDivElement>(null);
   
   const toggleMenu = () => {
@@ -35,6 +37,14 @@ const UserMenu: React.FC<UserMenuProps> = ({
   const profileImage = getProfileImage();
   const userName = getUserName();
   const initials = getInitials();
+  
+  // Determine the correct profile route based on user type
+  const getProfileRoute = () => {
+    if (userType === 'consumer') return '/consumer-profile';
+    if (userType === 'advisor') return '/advisor-profile';
+    if (userType === 'firm_admin') return '/firm-profile';
+    return '/profile'; // Default fallback
+  };
   
   // Close menu when clicking outside
   useEffect(() => {
@@ -92,7 +102,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
           
           <div className="p-2">
             <Link 
-              to="/profile" 
+              to={getProfileRoute()}
               className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-100 dark:hover:bg-navy-700 text-slate-700 dark:text-slate-300"
               onClick={() => setIsOpen(false)}
             >

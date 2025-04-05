@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import AppRoutes from './routes/AppRoutes';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider } from './context/UserContext';
-import { AuthProvider } from './components/auth/AuthContext';
+import { AuthProvider } from './features/auth/context/AuthProvider';
 import { FeedbackProvider } from './context/FeedbackContext';
 import { Toaster } from './components/ui/sonner';
 import { initAppOptimizations } from './utils/appOptimizations';

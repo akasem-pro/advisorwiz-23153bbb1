@@ -1,8 +1,8 @@
-
 import { lazy, Suspense, ReactNode } from 'react';
 import { RouteProps } from 'react-router-dom';
 import { PageLoadingFallback } from '../components/LazyComponents';
 import AuthGuard from '../components/auth/AuthGuard';
+import AppLayout from '../components/layout/AppLayout';
 
 // Lazy loaded dashboard pages
 const AdvisorDashboard = lazy(() => import('../pages/AdvisorDashboard'));
@@ -28,18 +28,24 @@ interface DashboardRouteType {
 const DashboardRoutes: DashboardRouteType[] = [
   {
     props: {
-      path: "dashboard",
-      element: <div>Dashboard Home</div>
+      path: "/dashboard",
+      element: (
+        <AuthGuard>
+          <AppLayout>
+            <div>Dashboard Home</div>
+          </AppLayout>
+        </AuthGuard>
+      )
     }
   },
   
   {
     props: {
-      path: "advisor-dashboard",
+      path: "/advisor-dashboard",
       element: (
         <AuthGuard userTypes={['advisor', 'firm_admin']}>
           <Suspense fallback={<PageLoadingFallback />}>
-            <AdvisorDashboard />
+            <AppLayout><AdvisorDashboard /></AppLayout>
           </Suspense>
         </AuthGuard>
       )
@@ -48,11 +54,11 @@ const DashboardRoutes: DashboardRouteType[] = [
   
   {
     props: {
-      path: "consumer-dashboard",
+      path: "/consumer-dashboard",
       element: (
         <AuthGuard userTypes={['consumer']}>
           <Suspense fallback={<PageLoadingFallback />}>
-            <ConsumerDashboard />
+            <AppLayout><ConsumerDashboard /></AppLayout>
           </Suspense>
         </AuthGuard>
       )
@@ -61,11 +67,11 @@ const DashboardRoutes: DashboardRouteType[] = [
   
   {
     props: {
-      path: "firm-dashboard",
+      path: "/firm-dashboard",
       element: (
         <AuthGuard userTypes={['firm_admin']}>
           <Suspense fallback={<PageLoadingFallback />}>
-            <FirmDashboard />
+            <AppLayout><FirmDashboard /></AppLayout>
           </Suspense>
         </AuthGuard>
       )
@@ -74,11 +80,11 @@ const DashboardRoutes: DashboardRouteType[] = [
   
   {
     props: {
-      path: "admin/analytics",
+      path: "/admin/analytics",
       element: (
         <AuthGuard userTypes={['admin']}>
           <Suspense fallback={<PageLoadingFallback />}>
-            <AdminAnalytics />
+            <AppLayout><AdminAnalytics /></AppLayout>
           </Suspense>
         </AuthGuard>
       )
@@ -87,11 +93,11 @@ const DashboardRoutes: DashboardRouteType[] = [
   
   {
     props: {
-      path: "schedule",
+      path: "/schedule",
       element: (
         <AuthGuard>
           <Suspense fallback={<PageLoadingFallback />}>
-            <Schedule />
+            <AppLayout><Schedule /></AppLayout>
           </Suspense>
         </AuthGuard>
       )
@@ -100,50 +106,11 @@ const DashboardRoutes: DashboardRouteType[] = [
   
   {
     props: {
-      path: "chat",
+      path: "/chat",
       element: (
         <AuthGuard>
           <Suspense fallback={<PageLoadingFallback />}>
-            <Chat />
-          </Suspense>
-        </AuthGuard>
-      )
-    }
-  },
-  
-  {
-    props: {
-      path: "consumer-profile",
-      element: (
-        <AuthGuard>
-          <Suspense fallback={<PageLoadingFallback />}>
-            <ConsumerProfile />
-          </Suspense>
-        </AuthGuard>
-      )
-    }
-  },
-  
-  {
-    props: {
-      path: "advisor-profile",
-      element: (
-        <AuthGuard>
-          <Suspense fallback={<PageLoadingFallback />}>
-            <AdvisorProfile />
-          </Suspense>
-        </AuthGuard>
-      )
-    }
-  },
-  
-  {
-    props: {
-      path: "firm-profile",
-      element: (
-        <AuthGuard>
-          <Suspense fallback={<PageLoadingFallback />}>
-            <FirmProfile />
+            <AppLayout><Chat /></AppLayout>
           </Suspense>
         </AuthGuard>
       )
@@ -156,7 +123,7 @@ const DashboardRoutes: DashboardRouteType[] = [
       element: (
         <AuthGuard>
           <Suspense fallback={<PageLoadingFallback />}>
-            <Settings />
+            <AppLayout><Settings /></AppLayout>
           </Suspense>
         </AuthGuard>
       )
@@ -169,7 +136,7 @@ const DashboardRoutes: DashboardRouteType[] = [
       element: (
         <AuthGuard>
           <Suspense fallback={<PageLoadingFallback />}>
-            <LeadManagementPage />
+            <AppLayout><LeadManagementPage /></AppLayout>
           </Suspense>
         </AuthGuard>
       )
@@ -182,7 +149,7 @@ const DashboardRoutes: DashboardRouteType[] = [
       element: (
         <AuthGuard>
           <Suspense fallback={<PageLoadingFallback />}>
-            <Analytics />
+            <AppLayout><Analytics /></AppLayout>
           </Suspense>
         </AuthGuard>
       )
@@ -195,12 +162,55 @@ const DashboardRoutes: DashboardRouteType[] = [
       element: (
         <AuthGuard>
           <Suspense fallback={<PageLoadingFallback />}>
-            <Team />
+            <AppLayout><Team /></AppLayout>
           </Suspense>
         </AuthGuard>
       )
     }
   }
+  
+  // Removing these routes as they're now defined in AppRoutes.tsx as public routes
+  // We don't want duplicate routes that could cause conflicts
+  /*
+  {
+    props: {
+      path: "/consumer-profile",
+      element: (
+        <AuthGuard>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <ConsumerProfile />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
+  
+  {
+    props: {
+      path: "/advisor-profile",
+      element: (
+        <AuthGuard>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <AdvisorProfile />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
+  
+  {
+    props: {
+      path: "/firm-profile",
+      element: (
+        <AuthGuard>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <FirmProfile />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
+  */
 ];
 
 export default DashboardRoutes;
