@@ -16,7 +16,9 @@ const useToast = () => {
         ...props,
         description,
         // Convert action to format sonnerToast expects if needed
-        action: action && typeof action === 'function' ? { label: 'Action', onClick: () => {} } : undefined
+        action: action && typeof action === 'function' 
+          ? { label: 'Action', onClick: () => {} } 
+          : (typeof action === 'object' ? { label: 'Action', onClick: () => {} } : undefined)
       });
     },
     // Since useToaster isn't available, we'll handle toasts and dismiss differently
