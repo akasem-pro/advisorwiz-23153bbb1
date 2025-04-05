@@ -1,5 +1,5 @@
 
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import AppLayout from '../components/layout/AppLayout';
 import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
@@ -19,13 +19,12 @@ const AppRoutes = () => {
       ))}
       
       {/* Include Auth Routes */}
-      {AuthRoutes}
+      {AuthRoutes.map((route, index) => (
+        <Route key={`auth-route-${index}`} {...route} />
+      ))}
       
       {/* Include Main Routes */}
-      <Route path="/*" element={<MainRoutes />} />
-      
-      {/* Handle 404 for all unmatched routes */}
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<MainRoutes />} />
     </Routes>
   );
 };

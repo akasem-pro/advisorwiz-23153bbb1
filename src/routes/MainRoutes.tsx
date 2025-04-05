@@ -13,6 +13,8 @@ import ForFirms from '../pages/ForFirms';
 import ForConsumers from '../pages/ForConsumers';
 import Pricing from '../pages/Pricing';
 import Sitemap from '../pages/Sitemap';
+import ContactUs from '../pages/ContactUs';
+import Blog from '../pages/Blog';
 
 // Lazily load the security and accessibility page
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -21,15 +23,17 @@ const MainRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<AppLayout><Home /></AppLayout>} />
-      <Route path="/about" element={<AppLayout><AboutUs /></AppLayout>} />
-      <Route path="/for-advisors" element={<AppLayout><ForAdvisors /></AppLayout>} />
-      <Route path="/for-firms" element={<AppLayout><ForFirms /></AppLayout>} />
-      <Route path="/for-consumers" element={<AppLayout><ForConsumers /></AppLayout>} />
-      <Route path="/pricing" element={<AppLayout><Pricing /></AppLayout>} />
-      <Route path="/sitemap" element={<AppLayout><Sitemap /></AppLayout>} />
-      <Route path="/accessibility-test" element={<AppLayout><AccessibilityTestPage /></AppLayout>} />
+      <Route path="about" element={<AppLayout><AboutUs /></AppLayout>} />
+      <Route path="for-advisors" element={<AppLayout><ForAdvisors /></AppLayout>} />
+      <Route path="for-firms" element={<AppLayout><ForFirms /></AppLayout>} />
+      <Route path="for-consumers" element={<AppLayout><ForConsumers /></AppLayout>} />
+      <Route path="pricing" element={<AppLayout><Pricing /></AppLayout>} />
+      <Route path="sitemap" element={<AppLayout><Sitemap /></AppLayout>} />
+      <Route path="contact" element={<AppLayout><ContactUs /></AppLayout>} />
+      <Route path="blog/*" element={<AppLayout><Blog /></AppLayout>} />
+      <Route path="accessibility-test" element={<AppLayout><AccessibilityTestPage /></AppLayout>} />
       <Route 
-        path="/security-accessibility" 
+        path="security-accessibility" 
         element={
           <AppLayout>
             <Suspense fallback={<ComponentLoadingFallback />}>
