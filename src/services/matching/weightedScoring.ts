@@ -1,4 +1,5 @@
-import { createHash } from 'crypto';
+
+// import { createHash } from 'crypto'; // This causes build issues in browser environments
 import { MatchPreferences } from '../../context/UserContextDefinition';
 import { MatchingStrategy } from './strategies/MatchingStrategy';
 import { DefaultMatchingStrategy } from './strategies/DefaultMatchingStrategy';
@@ -32,13 +33,24 @@ export const setMatchingStrategy = (strategyName: string): void => {
 };
 
 /**
- * Generate a stable hash for preferences object
+ * Generate a stable hash for preferences object - browser compatible
  * @param preferences Match preferences
  * @returns Hash string
  */
 const generatePreferencesHash = (preferences: MatchPreferences): string => {
+  // Convert object to string
   const json = JSON.stringify(preferences);
-  return createHash('md5').update(json).digest('hex').substring(0, 8);
+  
+  // Simple browser-compatible hash function
+  let hash = 0;
+  for (let i = 0; i < json.length; i++) {
+    const char = json.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  
+  // Convert to a positive hex string and take first 8 chars
+  return Math.abs(hash).toString(16).substring(0, 8);
 };
 
 /**

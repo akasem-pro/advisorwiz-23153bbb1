@@ -40,28 +40,46 @@ const AppRoutes: React.FC = () => {
       ))}
       
       {/* Include routes from DashboardRoutes for compatibility */}
-      {Array.isArray(DashboardRoutes) && DashboardRoutes.map((route, index) => (
-        <Route 
-          key={`dashboard-route-${index}`} 
-          {...route.props} 
-        />
-      ))}
+      {Array.isArray(DashboardRoutes) && DashboardRoutes.map((route, index) => {
+        if (route && typeof route === 'object' && 'path' in route && 'element' in route) {
+          return (
+            <Route 
+              key={`dashboard-route-${index}`} 
+              path={route.path} 
+              element={route.element} 
+            />
+          );
+        }
+        return null;
+      })}
 
       {/* Include routes from MobileRoutes */}
-      {Array.isArray(MobileRoutes) && MobileRoutes.map((route, index) => (
-        <Route 
-          key={`mobile-route-${index}`} 
-          {...route.props} 
-        />
-      ))}
+      {Array.isArray(MobileRoutes) && MobileRoutes.map((route, index) => {
+        if (route && typeof route === 'object' && 'path' in route && 'element' in route) {
+          return (
+            <Route 
+              key={`mobile-route-${index}`} 
+              path={route.path} 
+              element={route.element} 
+            />
+          );
+        }
+        return null;
+      })}
 
       {/* Include routes from UtilityRoutes */}
-      {Array.isArray(UtilityRoutes) && UtilityRoutes.map((route, index) => (
-        <Route 
-          key={`utility-route-${index}`} 
-          {...route.props} 
-        />
-      ))}
+      {Array.isArray(UtilityRoutes) && UtilityRoutes.map((route, index) => {
+        if (route && typeof route === 'object' && 'path' in route && 'element' in route) {
+          return (
+            <Route 
+              key={`utility-route-${index}`} 
+              path={route.path} 
+              element={route.element} 
+            />
+          );
+        }
+        return null;
+      })}
     </Routes>
   );
 };
