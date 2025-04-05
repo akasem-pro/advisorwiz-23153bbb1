@@ -16,13 +16,19 @@ import './App.css';
 const App: React.FC = () => {
   useEffect(() => {
     // Initialize analytics, performance monitoring, and asynchronous error handling
-    initAnalytics();
-    initPerformanceMonitoring();
-    setupErrorHandling();
-    
-    // Initialize matching worker if supported
-    if (typeof Worker !== 'undefined') {
-      initMatchingWorker();
+    try {
+      console.log("Initializing app services...");
+      initAnalytics();
+      initPerformanceMonitoring();
+      setupErrorHandling();
+      
+      // Initialize matching worker if supported
+      if (typeof Worker !== 'undefined') {
+        initMatchingWorker();
+      }
+      console.log("App services initialized successfully");
+    } catch (error) {
+      console.error("Error initializing app services:", error);
     }
   }, []);
 
