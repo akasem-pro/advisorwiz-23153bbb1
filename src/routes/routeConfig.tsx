@@ -4,9 +4,10 @@ import { lazy } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import AuthGuard from '../components/auth/AuthGuard';
 import { PageLoadingFallback } from '../components/LazyComponents';
+import NotFound from '../pages/NotFound';
+import Home from '../pages/Home';
 
 // Main pages
-import Home from '../pages/Home';
 import AboutUs from '../pages/AboutUs';
 import ForAdvisors from '../pages/ForAdvisors';
 import ForFirms from '../pages/ForFirms';
@@ -15,7 +16,6 @@ import Pricing from '../pages/Pricing';
 import Sitemap from '../pages/Sitemap';
 import ContactUs from '../pages/ContactUs';
 import Blog from '../pages/Blog';
-import NotFound from '../pages/NotFound';
 import AdvisorProfile from '../pages/AdvisorProfile';
 import ConsumerProfile from '../pages/ConsumerProfile';
 import FirmProfile from '../pages/FirmProfile';

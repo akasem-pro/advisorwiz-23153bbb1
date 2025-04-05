@@ -8,7 +8,7 @@ import DashboardRoutes from './DashboardRoutes';
 import MobileRoutes from './MobileRoutes';
 import UtilityRoutes from './UtilityRoutes';
 
-const AppRoutes = () => {
+const AppRoutes: React.FC = () => {
   console.log("AppRoutes component rendering");
   
   // Get all routes from the centralized configuration
