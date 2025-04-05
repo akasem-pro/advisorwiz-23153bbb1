@@ -34,7 +34,7 @@ const AppRoutes = () => {
         <Route key={`mobile-route-${index}`} {...route} />
       ))}
       
-      {/* Include Main Routes for everything else */}
+      {/* Main Routes should be rendered within their own Routes component, not as a fallback */}
       <Route path="*" element={<MainRoutes />} />
     </Routes>
   );

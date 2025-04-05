@@ -4,12 +4,15 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 import { initPerformanceMonitoring } from './utils/performance';
+import { setupErrorHandling } from './utils/errorHandling';
 
-// Initialize performance monitoring
+// Initialize error handling and performance monitoring
 try {
+  setupErrorHandling();
   initPerformanceMonitoring();
+  console.log("Application services initialized");
 } catch (error) {
-  console.warn("Failed to initialize performance monitoring:", error);
+  console.warn("Failed to initialize application services:", error);
 }
 
 // Simple direct rendering with better error handling
