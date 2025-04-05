@@ -46,7 +46,7 @@ const Home = () => {
   };
 
   return (
-    <AppLayout fullWidth withoutPadding hideFooter={false}>
+    <AppLayout fullWidth withoutPadding hideFooter={true}>
       <PageSEO 
         title="AdvisorWiz - Connecting Financial Advisors with Clients"
         description="AdvisorWiz connects consumers with trusted financial advisors through an innovative matching platform."

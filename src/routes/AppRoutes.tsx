@@ -1,5 +1,6 @@
+
 import { Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
-import { useEffect, lazy, Suspense, ReactNode } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import MobileLayout from '../components/layout/MobileLayout';
 import NotFound from '../pages/NotFound';
@@ -103,7 +104,7 @@ const AppRoutes = () => {
       
       <Routes>
         {/* Handle root route explicitly */}
-        <Route path="/" element={<AppLayout><Home /></AppLayout>} />
+        <Route path="/" element={<AppLayout hideFooter={true}><Home /></AppLayout>} />
         
         <Route path="/m" element={<MobileLayout><Outlet /></MobileLayout>}>
           {MobileRoutes}
@@ -119,7 +120,7 @@ const AppRoutes = () => {
           />
         ))}
         
-        <Route path="/" element={<AppLayout><Outlet /></AppLayout>}>
+        <Route path="/" element={<AppLayout hideFooter={true}><Outlet /></AppLayout>}>
           {contentPageRoutes.map((routeProps, index) => (
             <Route 
               key={`content-${index}`} 

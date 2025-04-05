@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
-import { useUser, ConsumerProfile as ConsumerProfileType } from '../context/UserContext';
+import { useUser } from '../context/UserContext';
 import { 
   ArrowRight, 
   ArrowLeft,
@@ -48,9 +48,10 @@ const ConsumerProfile: React.FC = () => {
       console.warn("Consumer profile is not initialized.");
     } else {
       // Initialize form data from profile
+      const nameParts = consumerProfile.name?.split(' ') || ['', ''];
       setFormData({
-        firstName: consumerProfile.name?.split(' ')[0] || '',
-        lastName: consumerProfile.name?.split(' ')[1] || '',
+        firstName: nameParts[0] || '',
+        lastName: nameParts[1] || '',
         email: consumerProfile.email || '',
         income: consumerProfile.investableAssets?.toString() || '',
         assets: consumerProfile.investableAssets?.toString() || '',
@@ -79,7 +80,7 @@ const ConsumerProfile: React.FC = () => {
 
     try {
       // Update the consumer profile with form data
-      const updatedProfile: ConsumerProfileType = {
+      const updatedProfile = {
         ...consumerProfile,
         name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
