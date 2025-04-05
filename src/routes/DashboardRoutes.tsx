@@ -1,3 +1,4 @@
+
 import { lazy, Suspense } from 'react';
 import { Route } from 'react-router-dom';
 import { PageLoadingFallback } from '../components/LazyComponents';
@@ -20,49 +21,32 @@ const AdminAnalytics = lazy(() => import('../pages/AdminAnalytics'));
 
 // Export dashboard routes as an array of Route components
 const DashboardRoutes = [
-  // Support for both dashboard path patterns
-  <Route key="advisor-dashboard" path="dashboard/advisor" element={
+  <Route key="dashboard-root" path="dashboard" element={<div>Dashboard Home</div>} />,
+  
+  <Route key="advisor-dashboard" path="advisor-dashboard" element={
     <AuthGuard userTypes={['advisor', 'firm_admin']}>
       <Suspense fallback={<PageLoadingFallback />}>
         <AdvisorDashboard />
       </Suspense>
     </AuthGuard>
   } />,
-  <Route key="advisor-dashboard-alt" path="advisor-dashboard" element={
-    <AuthGuard userTypes={['advisor', 'firm_admin']}>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <AdvisorDashboard />
-      </Suspense>
-    </AuthGuard>
-  } />,
-  <Route key="consumer-dashboard" path="dashboard/consumer" element={
+  
+  <Route key="consumer-dashboard" path="consumer-dashboard" element={
     <AuthGuard userTypes={['consumer']}>
       <Suspense fallback={<PageLoadingFallback />}>
         <ConsumerDashboard />
       </Suspense>
     </AuthGuard>
   } />,
-  <Route key="consumer-dashboard-alt" path="consumer-dashboard" element={
-    <AuthGuard userTypes={['consumer']}>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <ConsumerDashboard />
-      </Suspense>
-    </AuthGuard>
-  } />,
-  <Route key="firm-dashboard" path="dashboard/firm" element={
+  
+  <Route key="firm-dashboard" path="firm-dashboard" element={
     <AuthGuard userTypes={['firm_admin']}>
       <Suspense fallback={<PageLoadingFallback />}>
         <FirmDashboard />
       </Suspense>
     </AuthGuard>
   } />,
-  <Route key="firm-dashboard-alt" path="firm-dashboard" element={
-    <AuthGuard userTypes={['firm_admin']}>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <FirmDashboard />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  
   <Route key="admin-analytics" path="admin/analytics" element={
     <AuthGuard userTypes={['admin']}>
       <Suspense fallback={<PageLoadingFallback />}>
@@ -70,6 +54,7 @@ const DashboardRoutes = [
       </Suspense>
     </AuthGuard>
   } />,
+  
   <Route key="schedule" path="schedule" element={
     <AuthGuard>
       <Suspense fallback={<PageLoadingFallback />}>
@@ -77,6 +62,7 @@ const DashboardRoutes = [
       </Suspense>
     </AuthGuard>
   } />,
+  
   <Route key="chat" path="chat" element={
     <AuthGuard>
       <Suspense fallback={<PageLoadingFallback />}>
@@ -84,6 +70,7 @@ const DashboardRoutes = [
       </Suspense>
     </AuthGuard>
   } />,
+  
   <Route key="consumer-profile" path="consumer-profile" element={
     <AuthGuard>
       <Suspense fallback={<PageLoadingFallback />}>
@@ -91,13 +78,15 @@ const DashboardRoutes = [
       </Suspense>
     </AuthGuard>
   } />,
-  <Route key="advisor-profile-dashboard" path="advisor-profile" element={
+  
+  <Route key="advisor-profile" path="advisor-profile" element={
     <AuthGuard>
       <Suspense fallback={<PageLoadingFallback />}>
         <AdvisorProfile />
       </Suspense>
     </AuthGuard>
   } />,
+  
   <Route key="firm-profile" path="firm-profile" element={
     <AuthGuard>
       <Suspense fallback={<PageLoadingFallback />}>
@@ -105,6 +94,7 @@ const DashboardRoutes = [
       </Suspense>
     </AuthGuard>
   } />,
+  
   <Route key="settings" path="settings" element={
     <AuthGuard>
       <Suspense fallback={<PageLoadingFallback />}>
@@ -112,6 +102,7 @@ const DashboardRoutes = [
       </Suspense>
     </AuthGuard>
   } />,
+  
   <Route key="leads" path="leads" element={
     <AuthGuard>
       <Suspense fallback={<PageLoadingFallback />}>
@@ -119,6 +110,7 @@ const DashboardRoutes = [
       </Suspense>
     </AuthGuard>
   } />,
+  
   <Route key="analytics" path="analytics" element={
     <AuthGuard>
       <Suspense fallback={<PageLoadingFallback />}>
@@ -126,6 +118,7 @@ const DashboardRoutes = [
       </Suspense>
     </AuthGuard>
   } />,
+  
   <Route key="team" path="team" element={
     <AuthGuard>
       <Suspense fallback={<PageLoadingFallback />}>

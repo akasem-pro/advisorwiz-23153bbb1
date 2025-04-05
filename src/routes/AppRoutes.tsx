@@ -120,6 +120,9 @@ const AppRoutes = () => {
           />
         ))}
         
+        {/* Dashboard Routes - Fixed to render properly */}
+        {DashboardRoutes}
+        
         <Route path="/" element={<AppLayout hideFooter={true}><Outlet /></AppLayout>}>
           {contentPageRoutes.map((routeProps, index) => (
             <Route 
@@ -132,12 +135,7 @@ const AppRoutes = () => {
           <Route path="*" element={<MainRoutes />} />
         </Route>
         
-        <Route path="/dashboard" element={<Outlet />}>
-          {DashboardRoutes}
-        </Route>
-        
-        {UtilityRoutes}
-        
+        {/* Handle 404 for all unmatched routes */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
