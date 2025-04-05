@@ -15,7 +15,7 @@ const Terms: React.FC = () => {
       description="Please read these terms carefully before using our platform."
       canonicalUrl="https://advisorwiz.com/terms"
       breadcrumbs={breadcrumbs}
-      lastUpdated="Feb 20th, 2025"
+      lastUpdated="April 5, 2025"
     >
       <TermsContent />
     </LegalPageLayout>
