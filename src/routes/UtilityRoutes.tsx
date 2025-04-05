@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { RouteItem } from './routeConfig';
+import { RouteItem } from './AppRoutes';
 import VerifyIntegrationsPage from '../pages/VerifyIntegrations';
 import AccessibilityTestPage from '../pages/AccessibilityTestPage';
 import AppLayout from '../components/layout/AppLayout';

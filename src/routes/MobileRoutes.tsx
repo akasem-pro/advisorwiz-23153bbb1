@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { RouteItem } from './routeConfig';
+import { RouteItem } from './AppRoutes';
 import AppLayout from '../components/layout/MobileLayout';
 
 // Define mobile-specific routes

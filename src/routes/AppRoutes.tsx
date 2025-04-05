@@ -57,10 +57,8 @@ const AppRoutes: React.FC = () => {
         />
       ))}
       
-      {/* Include routes from MainRoutes for compatibility */}
-      {typeof MainRoutes === 'function' && (
-        <MainRoutes />
-      )}
+      {/* Use conditional rendering to avoid problems with MainRoutes */}
+      {typeof MainRoutes === 'function' && <MainRoutes />}
       
       {/* Include routes from AuthRoutes for compatibility */}
       {Array.isArray(AuthRoutes) && AuthRoutes.map((route, index) => (
@@ -97,7 +95,7 @@ const AppRoutes: React.FC = () => {
       })}
 
       {/* Include routes from MobileRoutes */}
-      {Array.isArray(MobileRoutes) && MobileRoutes.map((route: RouteItem, index) => {
+      {Array.isArray(MobileRoutes) && MobileRoutes.map((route, index) => {
         if (isDirectRoute(route)) {
           return (
             <Route 
@@ -122,7 +120,7 @@ const AppRoutes: React.FC = () => {
       })}
 
       {/* Include routes from UtilityRoutes */}
-      {Array.isArray(UtilityRoutes) && UtilityRoutes.map((route: RouteItem, index) => {
+      {Array.isArray(UtilityRoutes) && UtilityRoutes.map((route, index) => {
         if (isDirectRoute(route)) {
           return (
             <Route 
