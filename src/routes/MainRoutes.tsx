@@ -3,6 +3,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
+import AppLayout from '../components/layout/AppLayout';
 import AccessibilityTestPage from '../pages/AccessibilityTestPage';
 import { lazy, Suspense } from 'react';
 import { ComponentLoadingFallback } from '../components/LazyComponents';
@@ -17,30 +18,24 @@ import Sitemap from '../pages/Sitemap';
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
 
 const MainRoutes = () => {
-  const isAdmin = true; // Replace with actual admin check
-
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="dashboard" element={<div>Dashboard Page</div>} />
-      <Route path="profile" element={<div>User Profile Page</div>} />
-      <Route path="advisor-profile/:advisorId" element={<div>Advisor Profile Page</div>} />
-      <Route path="settings" element={<div>Settings Page</div>} />
-      <Route path="onboarding" element={<div>Onboarding Page</div>} />
-      <Route path="accessibility-test" element={<AccessibilityTestPage />} />
-      <Route path="about" element={<AboutUs />} />
-      <Route path="for-advisors" element={<ForAdvisors />} />
-      <Route path="for-firms" element={<ForFirms />} />
-      <Route path="for-consumers" element={<ForConsumers />} />
-      <Route path="pricing" element={<Pricing />} />
-      <Route path="sitemap" element={<Sitemap />} />
-      {isAdmin && <Route path="admin" element={<div>Admin Page</div>} />}
+      <Route path="/" element={<AppLayout><Home /></AppLayout>} />
+      <Route path="/about" element={<AppLayout><AboutUs /></AppLayout>} />
+      <Route path="/for-advisors" element={<AppLayout><ForAdvisors /></AppLayout>} />
+      <Route path="/for-firms" element={<AppLayout><ForFirms /></AppLayout>} />
+      <Route path="/for-consumers" element={<AppLayout><ForConsumers /></AppLayout>} />
+      <Route path="/pricing" element={<AppLayout><Pricing /></AppLayout>} />
+      <Route path="/sitemap" element={<AppLayout><Sitemap /></AppLayout>} />
+      <Route path="/accessibility-test" element={<AppLayout><AccessibilityTestPage /></AppLayout>} />
       <Route 
-        path="security-accessibility" 
+        path="/security-accessibility" 
         element={
-          <Suspense fallback={<ComponentLoadingFallback />}>
-            <LazySecurityAndAccessibilityPage />
-          </Suspense>
+          <AppLayout>
+            <Suspense fallback={<ComponentLoadingFallback />}>
+              <LazySecurityAndAccessibilityPage />
+            </Suspense>
+          </AppLayout>
         } 
       />
       <Route path="*" element={<NotFound />} />
