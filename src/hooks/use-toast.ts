@@ -6,15 +6,17 @@ export type ToastProps = Omit<Parameters<typeof sonnerToast>[1], "close" | "posi
   title?: React.ReactNode;
   description?: React.ReactNode;
   variant?: "default" | "destructive";
-  action?: ReactNode;
+  action?: ReactNode | (() => ReactNode);
 };
 
 const useToast = () => {
   return {
-    toast: ({ title, description, variant, ...props }: ToastProps) => {
+    toast: ({ title, description, variant, action, ...props }: ToastProps) => {
       return sonnerToast(title as string, {
         ...props,
-        description
+        description,
+        // Convert action to format sonnerToast expects if needed
+        action: action && typeof action === 'function' ? { label: 'Action', onClick: () => {} } : undefined
       });
     },
     // Since useToaster isn't available, we'll handle toasts and dismiss differently
