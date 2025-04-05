@@ -20,6 +20,8 @@ if (typeof window !== 'undefined') {
 }
 
 const App: React.FC = () => {
+  console.log("App component rendering");
+  
   return (
     <Router>
       <ThemeProvider>

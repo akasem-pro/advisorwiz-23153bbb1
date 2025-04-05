@@ -54,6 +54,7 @@ const UserMenu: React.FC<UserMenuProps> = ({
       {isOpen && (
         <UserMenuContent 
           userName={userName}
+          userEmail={userName.includes('@') ? userName : undefined}
           onClose={() => setIsOpen(false)}
           onSignOut={signOut}
         />

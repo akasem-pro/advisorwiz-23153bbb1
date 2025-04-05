@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   User, 
   Settings, 
@@ -25,13 +25,22 @@ const UserMenuContent: React.FC<UserMenuContentProps> = ({
   onSignOut
 }) => {
   const { userType } = useUser();
+  const navigate = useNavigate();
   
   // Determine the correct profile route based on user type
   const getProfileRoute = () => {
+    console.log("UserMenuContent - userType:", userType);
     if (userType === 'consumer') return '/consumer-profile';
     if (userType === 'advisor') return '/advisor-profile';
     if (userType === 'firm_admin') return '/firm-profile';
     return '/profile'; // Default fallback
+  };
+  
+  const handleProfileClick = () => {
+    const route = getProfileRoute();
+    console.log("UserMenuContent - Navigating to:", route);
+    onClose();
+    navigate(route);
   };
   
   return (
@@ -42,14 +51,13 @@ const UserMenuContent: React.FC<UserMenuContentProps> = ({
       </div>
       
       <div className="p-2">
-        <Link 
-          to={getProfileRoute()} 
-          className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-100 dark:hover:bg-navy-700 text-slate-700 dark:text-slate-300"
-          onClick={onClose}
+        <button 
+          onClick={handleProfileClick}
+          className="flex w-full items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-100 dark:hover:bg-navy-700 text-slate-700 dark:text-slate-300 text-left"
         >
           <User className="h-4 w-4 text-slate-500 dark:text-slate-400" />
           <span>Your Profile</span>
-        </Link>
+        </button>
         
         <Link 
           to="/messages" 

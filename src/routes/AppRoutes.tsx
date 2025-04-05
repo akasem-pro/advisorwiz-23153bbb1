@@ -19,6 +19,7 @@ import ContactUs from '../pages/ContactUs';
 import Blog from '../pages/Blog';
 import AdvisorProfile from '../pages/AdvisorProfile';
 import ConsumerProfile from '../pages/ConsumerProfile';
+import FirmProfile from '../pages/FirmProfile';
 
 // Lazily load the security and accessibility page
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -31,11 +32,11 @@ const AppRoutes = () => {
       {/* Home route */}
       <Route path="/" element={<AppLayout><Home /></AppLayout>} />
       
-      {/* Profile routes - explicit paths */}
+      {/* Profile routes with explicit paths */}
       <Route path="/profile" element={<AppLayout><AdvisorProfile /></AppLayout>} />
       <Route path="/advisor-profile" element={<AppLayout><AdvisorProfile /></AppLayout>} />
       <Route path="/consumer-profile" element={<AppLayout><ConsumerProfile /></AppLayout>} />
-      <Route path="/firm-profile" element={<AppLayout><AdvisorProfile /></AppLayout>} />
+      <Route path="/firm-profile" element={<AppLayout><FirmProfile /></AppLayout>} />
       
       {/* Main marketing pages */}
       <Route path="/about" element={<AppLayout><AboutUs /></AppLayout>} />
