@@ -15,7 +15,9 @@ const useToast = () => {
       return sonnerToast(title as string, {
         ...props,
         description,
-        // Convert action to format sonnerToast expects if needed
+        // Map our variant to sonner's type if needed
+        variant: variant === "destructive" ? "error" : undefined,
+        // Handle action properly
         action: action && typeof action === 'function' 
           ? { label: 'Action', onClick: () => {} } 
           : (typeof action === 'object' ? { label: 'Action', onClick: () => {} } : undefined)
