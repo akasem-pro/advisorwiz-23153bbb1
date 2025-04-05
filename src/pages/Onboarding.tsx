@@ -1,9 +1,7 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
 import Header from '../components/layout/Header';
-import AppFooter from '../components/layout/AppFooter';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import PageSEO from '../components/seo/PageSEO';
