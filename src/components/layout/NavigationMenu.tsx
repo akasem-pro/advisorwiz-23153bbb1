@@ -1,46 +1,38 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
-interface NavigationLink {
+interface Link {
   name: string;
   path: string;
 }
 
 interface NavigationMenuProps {
-  links: NavigationLink[];
+  links: Link[];
+  className?: string;
 }
 
-const NavigationMenu: React.FC<NavigationMenuProps> = ({ links }) => {
-  const location = useLocation();
-  
+const NavigationMenu: React.FC<NavigationMenuProps> = ({ links, className }) => {
   return (
-    <nav>
-      <ul className="flex space-x-2">
-        {links.map((link) => {
-          const isActive = location.pathname === link.path || 
-                          (link.path !== '/' && location.pathname.startsWith(link.path));
-          
-          return (
-            <li key={link.name}>
-              <Link
-                to={link.path}
-                className={cn(
-                  "inline-flex px-3 py-2 text-sm transition-colors rounded-md",
-                  "hover:bg-slate-100 dark:hover:bg-navy-800/80",
-                  "focus:outline-none focus:ring-2 focus:ring-teal-500/40",
-                  isActive 
-                    ? "text-teal-600 dark:text-teal-400 font-medium" 
-                    : "text-slate-700 dark:text-slate-300"
-                )}
-              >
-                {link.name}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+    <nav className={cn("flex space-x-1 sm:space-x-2", className)}>
+      {links.map((link) => (
+        <NavLink
+          key={link.path}
+          to={link.path}
+          className={({ isActive }) =>
+            cn(
+              "px-3 py-2 text-sm rounded-md transition-colors",
+              "hover:bg-slate-100 dark:hover:bg-navy-700",
+              isActive
+                ? "text-teal-600 dark:text-teal-400 font-medium"
+                : "text-slate-700 dark:text-slate-300"
+            )
+          }
+        >
+          {link.name}
+        </NavLink>
+      ))}
     </nav>
   );
 };
