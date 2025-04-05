@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Route } from 'react-router-dom';
 import VerifyIntegrationsPage from '../pages/VerifyIntegrations';
@@ -7,7 +8,7 @@ import AppLayout from '../components/layout/AppLayout';
 const UtilityRoutes = [
   <Route 
     key="verify-integrations" 
-    path="/verify-integrations" 
+    path="verify-integrations" 
     element={
       <AppLayout>
         <VerifyIntegrationsPage />
@@ -16,7 +17,7 @@ const UtilityRoutes = [
   />,
   <Route 
     key="accessibility-test" 
-    path="/accessibility-test" 
+    path="accessibility-test" 
     element={
       <AppLayout>
         <AccessibilityTestPage />

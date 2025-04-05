@@ -1,11 +1,12 @@
 
 import { Routes, Route } from 'react-router-dom';
-import AppLayout from '../components/layout/AppLayout';
 import Home from '../pages/Home';
-import NotFound from '../pages/NotFound';
+import AppLayout from '../components/layout/AppLayout';
 import DashboardRoutes from './DashboardRoutes';
 import AuthRoutes from './AuthRoutes';
 import MainRoutes from './MainRoutes';
+import UtilityRoutes from './UtilityRoutes';
+import MobileRoutes from './MobileRoutes';
 
 const AppRoutes = () => {
   return (
@@ -23,7 +24,17 @@ const AppRoutes = () => {
         <Route key={`auth-route-${index}`} {...route} />
       ))}
       
-      {/* Include Main Routes */}
+      {/* Include Utility Routes */}
+      {UtilityRoutes.map((route, index) => (
+        <Route key={`utility-route-${index}`} {...route} />
+      ))}
+      
+      {/* Include Mobile Routes when needed */}
+      {MobileRoutes.map((route, index) => (
+        <Route key={`mobile-route-${index}`} {...route} />
+      ))}
+      
+      {/* Include Main Routes for everything else */}
       <Route path="*" element={<MainRoutes />} />
     </Routes>
   );

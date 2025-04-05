@@ -1,7 +1,5 @@
-
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Home from '../pages/Home';
 import NotFound from '../pages/NotFound';
 import AppLayout from '../components/layout/AppLayout';
 import AccessibilityTestPage from '../pages/AccessibilityTestPage';
@@ -22,7 +20,7 @@ const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAnd
 const MainRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<AppLayout><Home /></AppLayout>} />
+      {/* Main marketing pages */}
       <Route path="about" element={<AppLayout><AboutUs /></AppLayout>} />
       <Route path="for-advisors" element={<AppLayout><ForAdvisors /></AppLayout>} />
       <Route path="for-firms" element={<AppLayout><ForFirms /></AppLayout>} />
@@ -31,7 +29,8 @@ const MainRoutes = () => {
       <Route path="sitemap" element={<AppLayout><Sitemap /></AppLayout>} />
       <Route path="contact" element={<AppLayout><ContactUs /></AppLayout>} />
       <Route path="blog/*" element={<AppLayout><Blog /></AppLayout>} />
-      <Route path="accessibility-test" element={<AppLayout><AccessibilityTestPage /></AppLayout>} />
+      
+      {/* Other specialized pages */}
       <Route 
         path="security-accessibility" 
         element={
@@ -42,6 +41,8 @@ const MainRoutes = () => {
           </AppLayout>
         } 
       />
+      
+      {/* Fallback for any unmatched routes */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
