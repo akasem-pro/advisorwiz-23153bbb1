@@ -16,29 +16,41 @@ export { trackWebVitals, recordPerformanceMark };
 export const initPerformanceMonitoring = () => {
   try {
     // Start tracking web vitals
-    trackWebVitals();
+    try {
+      trackWebVitals();
+    } catch (error) {
+      console.warn("Error initializing web vitals tracking:", error);
+    }
     
     // Initialize enhanced performance tracking
-    initEnhancedPerformanceTracking();
+    try {
+      initEnhancedPerformanceTracking();
+    } catch (error) {
+      console.warn("Error initializing enhanced performance tracking:", error);
+    }
     
     // Record initial page load performance
     if (typeof window !== 'undefined') {
-      // Record page load
-      recordPerformanceMark('app-loaded');
-      
-      // Setup performance observer for long tasks
-      if ('PerformanceObserver' in window) {
-        try {
-          const observer = new PerformanceObserver((list) => {
-            list.getEntries().forEach((entry) => {
-              console.log('Long task detected:', entry);
+      try {
+        // Record page load
+        recordPerformanceMark('app-loaded');
+        
+        // Setup performance observer for long tasks
+        if ('PerformanceObserver' in window) {
+          try {
+            const observer = new PerformanceObserver((list) => {
+              list.getEntries().forEach((entry) => {
+                console.log('Long task detected:', entry);
+              });
             });
-          });
-          
-          observer.observe({ type: 'longtask', buffered: true });
-        } catch (e) {
-          console.warn('PerformanceObserver for longtask not supported');
+            
+            observer.observe({ type: 'longtask', buffered: true });
+          } catch (e) {
+            console.warn('PerformanceObserver for longtask not supported');
+          }
         }
+      } catch (error) {
+        console.warn("Error recording performance marks:", error);
       }
     }
     console.log("Performance monitoring initialized");

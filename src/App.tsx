@@ -18,17 +18,38 @@ const App: React.FC = () => {
     // Initialize analytics, performance monitoring, and asynchronous error handling
     try {
       console.log("Initializing app services...");
-      initAnalytics();
-      initPerformanceMonitoring();
-      setupErrorHandling();
+      
+      // Initialize services with error handling for each
+      try {
+        initAnalytics();
+      } catch (error) {
+        console.error("Error initializing analytics:", error);
+      }
+      
+      try {
+        initPerformanceMonitoring();
+      } catch (error) {
+        console.error("Error initializing performance monitoring:", error);
+      }
+      
+      try {
+        setupErrorHandling();
+      } catch (error) {
+        console.error("Error setting up error handling:", error);
+      }
       
       // Initialize matching worker if supported
       if (typeof Worker !== 'undefined') {
-        initMatchingWorker();
+        try {
+          initMatchingWorker();
+        } catch (error) {
+          console.error("Error initializing matching worker:", error);
+        }
       }
+      
       console.log("App services initialized successfully");
     } catch (error) {
-      console.error("Error initializing app services:", error);
+      console.error("Error during app initialization:", error);
     }
   }, []);
 

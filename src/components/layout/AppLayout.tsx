@@ -30,7 +30,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   animation = 'fade',
   animationDuration = 'normal',
   skipToContentId = 'main-content',
-  hideFooter = true,
+  hideFooter = false,
   showFooter = false
 }) => {
   // Override hideFooter if showFooter is explicitly true
@@ -44,7 +44,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       showTrustBadges={showTrustBadges}
       fullWidth={fullWidth}
       className={className}
-      contentClassName={cn("pt-72 md:pt-80", contentClassName)}
+      contentClassName={cn("pt-16 md:pt-24", contentClassName)}
       withoutPadding={withoutPadding}
       animation={animation}
       animationDuration={animationDuration}

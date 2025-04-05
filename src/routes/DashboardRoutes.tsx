@@ -1,6 +1,6 @@
 
-import { lazy, Suspense } from 'react';
-import { Route } from 'react-router-dom';
+import { lazy, Suspense, ReactNode } from 'react';
+import { RouteProps } from 'react-router-dom';
 import { PageLoadingFallback } from '../components/LazyComponents';
 import AuthGuard from '../components/auth/AuthGuard';
 
@@ -19,113 +19,188 @@ const Analytics = lazy(() => import('../pages/Analytics'));
 const Team = lazy(() => import('../pages/Team'));
 const AdminAnalytics = lazy(() => import('../pages/AdminAnalytics'));
 
-// Export dashboard routes as an array of Route components
-const DashboardRoutes = [
-  <Route key="dashboard-root" path="dashboard" element={<div>Dashboard Home</div>} />,
+// Define the route object type
+interface DashboardRouteType {
+  props: RouteProps;
+}
+
+// Create dashboard routes array with proper typing
+const DashboardRoutes: DashboardRouteType[] = [
+  {
+    props: {
+      path: "dashboard",
+      element: <div>Dashboard Home</div>
+    }
+  },
   
-  <Route key="advisor-dashboard" path="advisor-dashboard" element={
-    <AuthGuard userTypes={['advisor', 'firm_admin']}>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <AdvisorDashboard />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  {
+    props: {
+      path: "advisor-dashboard",
+      element: (
+        <AuthGuard userTypes={['advisor', 'firm_admin']}>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <AdvisorDashboard />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
   
-  <Route key="consumer-dashboard" path="consumer-dashboard" element={
-    <AuthGuard userTypes={['consumer']}>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <ConsumerDashboard />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  {
+    props: {
+      path: "consumer-dashboard",
+      element: (
+        <AuthGuard userTypes={['consumer']}>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <ConsumerDashboard />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
   
-  <Route key="firm-dashboard" path="firm-dashboard" element={
-    <AuthGuard userTypes={['firm_admin']}>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <FirmDashboard />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  {
+    props: {
+      path: "firm-dashboard",
+      element: (
+        <AuthGuard userTypes={['firm_admin']}>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <FirmDashboard />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
   
-  <Route key="admin-analytics" path="admin/analytics" element={
-    <AuthGuard userTypes={['admin']}>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <AdminAnalytics />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  {
+    props: {
+      path: "admin/analytics",
+      element: (
+        <AuthGuard userTypes={['admin']}>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <AdminAnalytics />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
   
-  <Route key="schedule" path="schedule" element={
-    <AuthGuard>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <Schedule />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  {
+    props: {
+      path: "schedule",
+      element: (
+        <AuthGuard>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <Schedule />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
   
-  <Route key="chat" path="chat" element={
-    <AuthGuard>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <Chat />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  {
+    props: {
+      path: "chat",
+      element: (
+        <AuthGuard>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <Chat />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
   
-  <Route key="consumer-profile" path="consumer-profile" element={
-    <AuthGuard>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <ConsumerProfile />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  {
+    props: {
+      path: "consumer-profile",
+      element: (
+        <AuthGuard>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <ConsumerProfile />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
   
-  <Route key="advisor-profile" path="advisor-profile" element={
-    <AuthGuard>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <AdvisorProfile />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  {
+    props: {
+      path: "advisor-profile",
+      element: (
+        <AuthGuard>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <AdvisorProfile />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
   
-  <Route key="firm-profile" path="firm-profile" element={
-    <AuthGuard>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <FirmProfile />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  {
+    props: {
+      path: "firm-profile",
+      element: (
+        <AuthGuard>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <FirmProfile />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
   
-  <Route key="settings" path="settings" element={
-    <AuthGuard>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <Settings />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  {
+    props: {
+      path: "settings",
+      element: (
+        <AuthGuard>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <Settings />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
   
-  <Route key="leads" path="leads" element={
-    <AuthGuard>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <LeadManagementPage />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  {
+    props: {
+      path: "leads",
+      element: (
+        <AuthGuard>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <LeadManagementPage />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
   
-  <Route key="analytics" path="analytics" element={
-    <AuthGuard>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <Analytics />
-      </Suspense>
-    </AuthGuard>
-  } />,
+  {
+    props: {
+      path: "analytics",
+      element: (
+        <AuthGuard>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <Analytics />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  },
   
-  <Route key="team" path="team" element={
-    <AuthGuard>
-      <Suspense fallback={<PageLoadingFallback />}>
-        <Team />
-      </Suspense>
-    </AuthGuard>
-  } />
+  {
+    props: {
+      path: "team",
+      element: (
+        <AuthGuard>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <Team />
+          </Suspense>
+        </AuthGuard>
+      )
+    }
+  }
 ];
 
 export default DashboardRoutes;

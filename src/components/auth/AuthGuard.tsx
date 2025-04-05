@@ -5,7 +5,7 @@ import { useUser } from '../../context/UserContext';
 import { supabase } from '../../integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '../../features/auth/context/AuthProvider';
-import { getEffectiveAuthStatus } from '../../utils/mockAuthUtils';
+import { getEffectiveAuthStatus, isPreviewEnvironment } from '../../utils/mockAuthUtils';
 import { UserType } from '../../types/profileTypes';
 
 interface AuthGuardProps {
@@ -30,8 +30,8 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
         
         // For development/testing purposes
         // This allows us to bypass authentication in development
-        if (process.env.NODE_ENV === 'development' || window.location.hostname.includes('localhost')) {
-          console.log("[AuthGuard] Development environment detected, bypassing auth check");
+        if (isPreviewEnvironment()) {
+          console.log("[AuthGuard] Development/preview environment detected, bypassing auth check");
           setIsAuthenticated(true);
           setChecking(false);
           return;
@@ -39,17 +39,6 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
         
         if (user) {
           console.log("[AuthGuard] User authenticated via Auth context:", user.email);
-          setIsAuthenticated(true);
-          setChecking(false);
-          return;
-        }
-        
-        const isPreviewEnv = window.location.hostname.includes('preview') || 
-                             window.location.hostname.includes('lovableproject') ||
-                             window.location.hostname.includes('localhost');
-        
-        if (isPreviewEnv && localStorage.getItem('mock_auth_user')) {
-          console.log("[AuthGuard] Preview environment with mock user detected");
           setIsAuthenticated(true);
           setChecking(false);
           return;
@@ -72,12 +61,12 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
         } catch (supabaseError) {
           console.error("[AuthGuard] Supabase auth check failed:", supabaseError);
           // If Supabase check fails, allow access in development environments
-          setIsAuthenticated(process.env.NODE_ENV === 'development');
+          setIsAuthenticated(isPreviewEnvironment());
         }
       } catch (err) {
         console.error("[AuthGuard] Exception during auth check:", err);
         // For safety, allow access in development environments
-        setIsAuthenticated(process.env.NODE_ENV === 'development');
+        setIsAuthenticated(isPreviewEnvironment());
       } finally {
         setChecking(false);
       }
@@ -98,20 +87,15 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, userTypes }) => {
   const effectiveIsAuthenticated = getEffectiveAuthStatus(isAuthenticated);
   
   console.log("[AuthGuard] Auth decision:", { 
-    effectiveIsAuthenticated, 
-    isAuthenticated, 
-    isPreviewEnv: window.location.hostname.includes('preview') || 
-                  window.location.hostname.includes('lovableproject') ||
-                  window.location.hostname.includes('localhost'), 
+    effectiveIsAuthenticated,
+    isAuthenticated,
+    isPreviewEnv: isPreviewEnvironment(),
     hasMockUser: !!localStorage.getItem('mock_auth_user'),
     path: location.pathname
   });
 
   // For development/preview environments, always treat as authenticated
-  if (process.env.NODE_ENV === 'development' || 
-      window.location.hostname.includes('localhost') || 
-      window.location.hostname.includes('preview') || 
-      window.location.hostname.includes('lovableproject')) {
+  if (isPreviewEnvironment()) {
     console.log("[AuthGuard] Development/preview environment, bypassing auth check");
     
     // Handle user type restrictions even in development

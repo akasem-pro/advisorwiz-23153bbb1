@@ -120,10 +120,12 @@ const AppRoutes = () => {
           />
         ))}
         
-        {/* Dashboard Routes - Fixed to render properly */}
-        {DashboardRoutes}
+        {/* Dashboard Routes */}
+        {DashboardRoutes.map((route, index) => (
+          <Route key={`dashboard-route-${index}`} {...route.props} />
+        ))}
         
-        <Route path="/" element={<AppLayout hideFooter={true}><Outlet /></AppLayout>}>
+        <Route path="/" element={<AppLayout hideFooter={false}><Outlet /></AppLayout>}>
           {contentPageRoutes.map((routeProps, index) => (
             <Route 
               key={`content-${index}`} 
