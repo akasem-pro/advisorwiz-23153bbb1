@@ -1,15 +1,20 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Switch } from '../ui/switch';
-import { Link } from 'react-router-dom';
-import { ExternalLink, Shield, ToggleLeft, ToggleRight } from 'lucide-react';
-import { trackCookieConsentEvent, CookieConsentEvent, updateCookieSettings, getCookieSettings } from '../../utils/analytics/trackers';
+import { Shield } from 'lucide-react';
+import { getCookieSettings, updateCookieSettings } from '../../utils/analytics/trackers/cookieBanner';
+import { trackEvent, AnalyticsEventType } from '../../services/analytics/core';
 
 interface CookieSettingsProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+}
+
+// Cookie consent events 
+enum CookieConsentEvent {
+  SETTINGS_OPENED = 'cookie_settings_opened',
+  SETTINGS_SAVED = 'cookie_settings_saved'
 }
 
 const CookieSettings: React.FC<CookieSettingsProps> = ({ open, onOpenChange }) => {
@@ -32,7 +37,11 @@ const CookieSettings: React.FC<CookieSettingsProps> = ({ open, onOpenChange }) =
       });
       
       // Track settings opened event
-      trackCookieConsentEvent(CookieConsentEvent.SETTINGS_OPENED);
+      trackEvent(
+        AnalyticsEventType.CONSENT, 
+        CookieConsentEvent.SETTINGS_OPENED,
+        1
+      );
     }
   }, [open]);
 
@@ -46,6 +55,14 @@ const CookieSettings: React.FC<CookieSettingsProps> = ({ open, onOpenChange }) =
   const handleSave = () => {
     // Save settings to localStorage
     updateCookieSettings(settings);
+    
+    // Track the settings update
+    trackEvent(
+      AnalyticsEventType.CONSENT,
+      CookieConsentEvent.SETTINGS_SAVED,
+      1,
+      settings
+    );
     
     // Close dialog
     onOpenChange(false);

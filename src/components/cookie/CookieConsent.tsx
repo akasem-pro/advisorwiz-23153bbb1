@@ -3,10 +3,18 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { Shield } from 'lucide-react';
 import { 
-  trackCookieConsentEvent, 
-  CookieConsentEvent,
   updateCookieSettings
-} from '../../utils/analytics/trackers';
+} from '../../utils/analytics/trackers/cookieBanner';
+import { trackEvent, AnalyticsEventType } from '../../services/analytics/core';
+
+// Cookie consent events (moved from trackers)
+enum CookieConsentEvent {
+  BANNER_SHOWN = 'cookie_banner_shown',
+  CONSENT_ACCEPTED = 'cookie_consent_accepted',
+  CONSENT_DECLINED = 'cookie_consent_declined',
+  SETTINGS_OPENED = 'cookie_settings_opened',
+  SETTINGS_SAVED = 'cookie_settings_saved'
+}
 
 const CookieConsent: React.FC = () => {
   const [showConsent, setShowConsent] = useState(false);
@@ -20,7 +28,12 @@ const CookieConsent: React.FC = () => {
       const timer = setTimeout(() => {
         setShowConsent(true);
         // Track banner shown event
-        trackCookieConsentEvent(CookieConsentEvent.BANNER_SHOWN);
+        trackEvent(
+          AnalyticsEventType.CONSENT, 
+          CookieConsentEvent.BANNER_SHOWN,
+          1,
+          { timestamp: Date.now() }
+        );
       }, 1500);
       
       return () => clearTimeout(timer);
@@ -39,7 +52,18 @@ const CookieConsent: React.FC = () => {
     setShowConsent(false);
     
     // Track the acceptance event
-    trackCookieConsentEvent(CookieConsentEvent.CONSENT_ACCEPTED);
+    trackEvent(
+      AnalyticsEventType.CONSENT,
+      CookieConsentEvent.CONSENT_ACCEPTED,
+      1,
+      { 
+        settings: {
+          analytics: true,
+          marketing: false,
+          personalization: false
+        }
+      }
+    );
   };
   
   const handleDecline = () => {
@@ -54,7 +78,18 @@ const CookieConsent: React.FC = () => {
     setShowConsent(false);
     
     // Track the decline event
-    trackCookieConsentEvent(CookieConsentEvent.CONSENT_DECLINED);
+    trackEvent(
+      AnalyticsEventType.CONSENT,
+      CookieConsentEvent.CONSENT_DECLINED,
+      1,
+      { 
+        settings: {
+          analytics: false,
+          marketing: false,
+          personalization: false
+        }
+      }
+    );
   };
   
   // If user has already given consent, don't render anything

@@ -4,7 +4,8 @@ import CookieConsent from './CookieConsent';
 import CookieSettings from './CookieSettings';
 import { Button } from '../ui/button';
 import { Settings } from 'lucide-react';
-import { getCookieSettings } from '../../utils/analytics/trackers';
+import { getCookieSettings } from '../../utils/analytics/trackers/cookieBanner';
+import { trackInteraction, AnalyticsEventType } from '../../services/analytics/core';
 
 const CookieManager: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
@@ -28,6 +29,14 @@ const CookieManager: React.FC = () => {
     };
   }, []);
   
+  const handleOpenSettings = () => {
+    setShowSettings(true);
+    // Track this interaction
+    trackInteraction('open_cookie_settings', 'button', {
+      source: 'cookie_settings_button'
+    });
+  };
+  
   return (
     <>
       {/* Consent popup */}
@@ -45,7 +54,7 @@ const CookieManager: React.FC = () => {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => setShowSettings(true)}
+            onClick={handleOpenSettings}
             className="rounded-full bg-white dark:bg-slate-800 shadow-md border border-slate-200 dark:border-slate-700"
             aria-label="Cookie Settings"
           >
