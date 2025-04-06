@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import Header from './Header';
 import MobileNavbar from './MobileNavbar';
 import BaseLayout from './BaseLayout';
@@ -30,11 +30,27 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
   hideFooter = true,
   showFooter = false
 }) => {
+  const mountTime = useRef(Date.now());
+  
   // Debug rendering
   useEffect(() => {
     console.log('MobileLayout rendering with children:', !!children);
     console.log('MobileLayout showFooter:', showFooter);
     console.log('MobileLayout contentClassName:', contentClassName);
+    
+    // Additional debug logging
+    const mountDuration = Date.now() - mountTime.current;
+    console.log(`MobileLayout mounted after ${mountDuration}ms`);
+    
+    // Log DOM structure
+    setTimeout(() => {
+      const container = document.querySelector('.mobile-content-container');
+      if (container) {
+        console.log('MobileLayout container children:', container.childNodes.length);
+      } else {
+        console.warn('MobileLayout container not found in DOM');
+      }
+    }, 100);
   }, [children, showFooter, contentClassName]);
 
   // Override hideFooter if showFooter is explicitly true
@@ -55,7 +71,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
       hideFooter={finalHideFooter}
     >
       <div id={skipToContentId} className="mobile-content-container">
-        {children}
+        {children || <div className="p-4 text-center">Loading content...</div>}
       </div>
     </BaseLayout>
   );

@@ -13,9 +13,16 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       // Only allow connections from localhost
       host: "localhost",
+      clientPort: 8080,
+      protocol: 'ws',
     },
     // Restrict access to local connections only
     cors: false,
+    headers: {
+      'Access-Control-Allow-Origin': 'null',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp'
+    },
     // Prevent directory traversal
     fs: {
       strict: true,
@@ -56,6 +63,7 @@ export default defineConfig(({ mode }) => ({
         }
       }
     },
+    sourcemap: false, // Disable source maps in production
   },
   // Improve Content Security Policy headers
   csp: {
