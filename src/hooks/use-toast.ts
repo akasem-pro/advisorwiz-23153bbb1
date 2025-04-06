@@ -11,14 +11,10 @@ export type ToastProps = {
   className?: string;
 };
 
-interface Toast {
-  (props: ToastProps): void;
-  (title: string, props?: Omit<ToastProps, "title">): void;
-}
-
 // Define a custom toast function type that accepts either an object or a string + object
-const useToast = () => {
-  const toast: Toast = (titleOrProps: string | ToastProps, options?: Omit<ToastProps, "title">) => {
+export const useToast = () => {
+  // Unified toast function that handles both calling patterns
+  const toast = (titleOrProps: string | ToastProps, options?: Omit<ToastProps, "title">) => {
     // If first argument is a string, use it as title and second argument as options
     if (typeof titleOrProps === 'string') {
       const title = titleOrProps;
@@ -86,4 +82,4 @@ const useToast = () => {
   };
 };
 
-export { useToast, sonnerToast as toast };
+export { sonnerToast as toast };
