@@ -133,7 +133,7 @@ const ConsumerProfile: React.FC = () => {
 
   return (
     <AnimatedRoute animation="fade">
-      <div className="min-h-screen flex flex-col">
+      <div className="consumer-profile-container min-h-screen flex flex-col">
         <PageSEO 
           title="Complete Your Consumer Profile | AdvisorWiz"
           description="Tell us about your financial situation and goals so we can match you with advisors that best meet your needs."

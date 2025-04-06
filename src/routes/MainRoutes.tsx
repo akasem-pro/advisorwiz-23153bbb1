@@ -14,9 +14,6 @@ import ContactUs from '../pages/ContactUs';
 import Blog from '../pages/Blog';
 import { useIsMobile } from '../hooks/use-mobile';
 import MobileLayout from '../components/layout/MobileLayout';
-import ConsumerProfile from '../pages/ConsumerProfile';
-import AdvisorProfile from '../pages/AdvisorProfile';
-import FirmProfile from '../pages/FirmProfile';
 
 // Lazily load the security and accessibility page
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -41,10 +38,7 @@ const MainRoutes = () => {
       <Route path="/contact" element={<PageLayout><ContactUs /></PageLayout>} />
       <Route path="/blog/*" element={<PageLayout><Blog /></PageLayout>} />
       
-      {/* Profile pages - add directly here to avoid routing conflicts */}
-      <Route path="/consumer-profile" element={<PageLayout><ConsumerProfile /></PageLayout>} />
-      <Route path="/advisor-profile" element={<PageLayout><AdvisorProfile /></PageLayout>} />
-      <Route path="/firm-profile" element={<PageLayout><FirmProfile /></PageLayout>} />
+      {/* Profile routes are now handled in the AppRoutes component to avoid duplication */}
       
       {/* Other specialized pages */}
       <Route 

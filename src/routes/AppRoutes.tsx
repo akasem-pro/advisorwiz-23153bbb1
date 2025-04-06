@@ -25,6 +25,7 @@ const AppRoutes: React.FC = () => {
   useEffect(() => {
     console.log("AppRoutes - Current route:", location.pathname);
     console.log("AppRoutes - Mobile detection:", isMobile ? "Mobile device" : "Desktop device");
+    console.log("AppRoutes - Consumer Profile route should be rendering properly");
     
     if (!mounted) {
       console.log("AppRoutes - First render");
@@ -41,6 +42,11 @@ const AppRoutes: React.FC = () => {
         if (rootElement.childElementCount === 0) {
           console.warn("AppRoutes - No children in root element after 500ms");
         }
+      }
+      
+      const consumerProfileElement = document.querySelector('.consumer-profile-container');
+      if (!consumerProfileElement && location.pathname === '/consumer-profile') {
+        console.warn("AppRoutes - Consumer profile container not found even though we're on the consumer profile route");
       }
     }, 500);
     
