@@ -1,3 +1,4 @@
+
 import React, { useState, lazy, Suspense } from 'react';
 import { Mail, ArrowRight } from 'lucide-react';
 import { Button } from '../ui/button';

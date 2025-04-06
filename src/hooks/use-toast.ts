@@ -20,7 +20,10 @@ export interface ToastFunction {
 // Custom hook for toast functionality
 export const useToast = () => {
   // Unified toast function that handles both calling patterns
-  const toast = ((titleOrProps: string | ToastProps, options?: Omit<ToastProps, "title">) => {
+  const toast: ToastFunction = (
+    titleOrProps: string | ToastProps, 
+    options?: Omit<ToastProps, "title">
+  ) => {
     // If first argument is a string, use it as title and second argument as options
     if (typeof titleOrProps === 'string') {
       const title = titleOrProps;
@@ -72,7 +75,7 @@ export const useToast = () => {
         });
       }
     }
-  }) as ToastFunction;
+  };
 
   const dismiss = (toastId?: string) => {
     if (toastId) {
