@@ -1,139 +1,18 @@
 
-import React, { useEffect } from 'react';
-import { useIsMobile } from '../hooks/use-mobile';
-import ASOBanner from '../components/marketing/ASOBanner';
-import ReviewRequestModal from '../components/marketing/ReviewRequestModal';
-import MarketingChannelsWidget from '../components/marketing/MarketingChannelsWidget';
-import MobileAppPromotion from '../components/marketing/MobileAppPromotion';
-import PromotionalBanner from '../components/promotions/PromotionalBanner';
-import { trackAppStoreEvent } from '../utils/analytics/marketingHelper';
-import ConsistentSection from '../components/ui/design-system/ConsistentSection';
-import ConsistentContainer from '../components/ui/design-system/ConsistentContainer';
+import React from 'react';
 import AppLayout from '../components/layout/AppLayout';
-import PageSEO from '../components/seo/PageSEO';
-import useLandingPageTracking from '../hooks/useLandingPageTracking';
-
-// Importing all required home sections
 import HeroSection from '../components/home/HeroSection';
-import HowItWorksSection from '../components/home/HowItWorksSection';
-import BenefitsSection from '../components/home/BenefitsSection';
-import TestimonialsSection from '../components/home/TestimonialsSection';
-import FAQSection from '../components/home/FAQSection';
-import MainCTASection from '../components/home/MainCTASection';
-import PricingCTASection from '../components/home/PricingCTASection';
 
-const Home = () => {
-  const isMobile = useIsMobile();
-  const { trackSectionView } = useLandingPageTracking();
-  
-  // Track page view and sections
-  useEffect(() => {
-    // Track home page view for ASO
-    trackAppStoreEvent('view', 'web', { page: 'home' });
-    
-    // Track each section when the component mounts
-    trackSectionView('hero-section', 'Hero');
-    trackSectionView('benefits-section', 'Benefits');
-    trackSectionView('how-it-works-section', 'How It Works');
-    trackSectionView('testimonials-section', 'Testimonials');
-    trackSectionView('faq-section', 'FAQ');
-    trackSectionView('pricing-cta-section', 'Pricing CTA');
-    trackSectionView('main-cta-section', 'Main CTA');
-  }, [trackSectionView]);
-
-  const handleReviewSubmitted = (rating: number, feedback?: string) => {
-    console.log('Review submitted:', rating, feedback);
-  };
-
+const Home: React.FC = () => {
   return (
-    <AppLayout fullWidth withoutPadding hideFooter={true}>
-      <PageSEO 
-        title="AdvisorWiz - Connecting Financial Advisors with Clients"
-        description="AdvisorWiz connects consumers with trusted financial advisors through an innovative matching platform."
-        keywords="financial advisor, matching platform, find advisor, financial planning"
-        canonicalUrl="https://advisorwiz.com/"
-      />
-      
-      {/* Main Home Content */}
-      <div className="overflow-hidden">
-        {/* Promotional Banner - Only show on mobile */}
-        {isMobile && (
-          <PromotionalBanner
-            id="home-promo-1"
-            message="Get our mobile app for a better experience!"
-            ctaText="Download"
-            ctaUrl="/download"
-            variant="primary"
-          />
-        )}
-        
-        {/* Hero Section */}
-        <div id="hero-section" className="animate-fade-in" style={{animationDuration: '0.8s'}}>
-          <HeroSection />
-        </div>
-        
-        {/* Marketing widget - Only on desktop with reduced prominence */}
-        {!isMobile && (
-          <ConsistentSection background="transparent" className="py-2">
-            <ConsistentContainer>
-              <MarketingChannelsWidget orientation="horizontal" />
-            </ConsistentContainer>
-          </ConsistentSection>
-        )}
-        
-        {/* How It Works - Add animation */}
-        <div id="how-it-works-section" className="scroll-mt-20 animate-fade-in" style={{animationDuration: '0.8s', animationDelay: '0.1s'}}>
-          <HowItWorksSection />
-        </div>
-        
-        {/* Benefits Section */}
-        <div id="benefits-section" className="scroll-mt-20">
-          <BenefitsSection />
-        </div>
-        
-        {/* Mobile App Promotion - Only show when relevant */}
-        {!isMobile && (
-          <ConsistentSection background="accent" className="py-4" centered={true}>
-            <ConsistentContainer width="md">
-              <h2 className="text-xl md:text-2xl font-bold text-center mb-3 text-navy-900 dark:text-white">
-                AdvisorWiz Mobile App
-              </h2>
-              <MobileAppPromotion className="max-w-4xl mx-auto" />
-            </ConsistentContainer>
-          </ConsistentSection>
-        )}
-        
-        {/* Testimonials Section */}
-        <div id="testimonials-section" className="scroll-mt-20">
-          <TestimonialsSection />
-        </div>
-        
-        {/* FAQ Section */}
-        <div id="faq-section" className="scroll-mt-20">
-          <FAQSection />
-        </div>
-        
-        {/* CTA Section */}
-        <div id="cta-section" className="scroll-mt-20">
-          <MainCTASection />
-        </div>
-        
-        {/* Pricing CTA - Positioned strategically */}
-        <div id="pricing-section" className="scroll-mt-20">
-          <PricingCTASection />
-        </div>
+    <AppLayout>
+      <HeroSection />
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-4">Welcome to AdvisorWiz</h1>
+        <p className="mb-4">
+          Find the perfect financial advisor for your unique needs and goals.
+        </p>
       </div>
-      
-      {/* Review Request Modal - Less intrusive */}
-      <ReviewRequestModal 
-        sessionCount={3}
-        minTimeOnSite={180}
-        pageVisitThreshold={4}
-        onReviewSubmitted={handleReviewSubmitted}
-      />
-      
-      {/* App Store Banner - Show at bottom only */}
-      <ASOBanner variant="both" position="bottom" />
     </AppLayout>
   );
 };

@@ -1,23 +1,13 @@
 
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import AppRoutes from './routes/AppRoutes';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider } from './context/UserContext';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import { FeedbackProvider } from './context/FeedbackContext';
-import { Toaster } from './components/ui/sonner';
-import { initAppOptimizations } from './utils/appOptimizations';
+import { Toaster } from 'sonner';
+import AppRoutes from './routes/AppRoutes';
 import './App.css';
-
-// Initialize app optimizations
-if (typeof window !== 'undefined') {
-  try {
-    initAppOptimizations();
-  } catch (error) {
-    console.warn('Failed to initialize app optimizations:', error);
-  }
-}
 
 const App: React.FC = () => {
   console.log("App component rendering");

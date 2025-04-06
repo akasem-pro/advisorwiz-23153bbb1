@@ -247,6 +247,6 @@ export const getRouteByPath = (path: string) => {
 
 // Helper function to get all routes as an array
 export const getAllRoutes = () => {
+  console.log("Getting all routes");
   return Object.values(routes);
 };
-
