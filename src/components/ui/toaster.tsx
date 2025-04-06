@@ -1,6 +1,6 @@
+
 import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "@/components/ui/toast";
 import { useEffect, useState } from "react";
-import { Toaster as SonnerToaster } from "sonner";
 
 // Define a toast item type
 type ToastItem = {
@@ -50,44 +50,29 @@ export function Toaster() {
   }, []);
 
   return (
-    <>
-      {/* Use Sonner for toast notifications */}
-      <SonnerToaster 
-        position="bottom-right"
-        toastOptions={{
-          style: { 
-            background: 'var(--background)',
-            color: 'var(--foreground)',
-            border: '1px solid var(--border)'
-          }
-        }}
-      />
-      
-      {/* Keep the custom implementation for compatibility */}
-      <ToastProvider>
-        {toasts.map(({ id, title, description, action, variant, ...props }) => {
-          // Remove incompatible props
-          const { type, icon, jsx, richColors, invert, ...compatibleProps } = props;
-          
-          return (
-            <Toast key={id} {...compatibleProps} variant={variant}>
-              <div className="grid gap-1">
-                {title && <ToastTitle>{title}</ToastTitle>}
-                {description && (
-                  <ToastDescription>{description}</ToastDescription>
-                )}
-              </div>
-              {action && (
-                typeof action === 'object' && action !== null
-                  ? <div>{action as React.ReactNode}</div>
-                  : null
+    <ToastProvider>
+      {toasts.map(({ id, title, description, action, variant, ...props }) => {
+        // Remove incompatible props
+        const { type, icon, jsx, richColors, invert, ...compatibleProps } = props;
+        
+        return (
+          <Toast key={id} {...compatibleProps} variant={variant}>
+            <div className="grid gap-1">
+              {title && <ToastTitle>{title}</ToastTitle>}
+              {description && (
+                <ToastDescription>{description}</ToastDescription>
               )}
-              <ToastClose />
-            </Toast>
-          );
-        })}
-        <ToastViewport />
-      </ToastProvider>
-    </>
+            </div>
+            {action && (
+              typeof action === 'object' && action !== null
+                ? <div>{action as React.ReactNode}</div>
+                : null
+            )}
+            <ToastClose />
+          </Toast>
+        );
+      })}
+      <ToastViewport />
+    </ToastProvider>
   );
 }
