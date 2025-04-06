@@ -1,91 +1,41 @@
 
-import { toast as sonnerToast } from "sonner";
-import { ReactNode } from "react";
+import { toast } from "sonner";
 
-export type ToastProps = {
+type ToastProps = {
   title?: string;
   description?: React.ReactNode;
   variant?: "default" | "destructive";
-  action?: ReactNode;
+  action?: React.ReactNode;
   duration?: number;
-  className?: string;
 };
 
-// Define toast function type that accepts either an object or a string + object
-export interface ToastFunction {
-  (props: ToastProps): void;
-  (title: string, props?: Omit<ToastProps, "title">): void;
-}
-
-// Custom hook for toast functionality
-export const useToast = () => {
-  // Unified toast function that handles both calling patterns
-  const toast = ((titleOrProps: string | ToastProps, options?: Omit<ToastProps, "title">) => {
-    // If first argument is a string, use it as title and second argument as options
+export function useToast() {
+  function showToast(props: ToastProps): void;
+  function showToast(title: string, props?: Omit<ToastProps, "title">): void;
+  function showToast(titleOrProps: string | ToastProps, options?: Omit<ToastProps, "title">) {
     if (typeof titleOrProps === 'string') {
       const title = titleOrProps;
-      const { description, variant, action, duration, className, ...rest } = options || {};
+      const { description, variant, action, duration, ...rest } = options || {};
       
-      // Map our variant to sonner's type
-      const toastType = variant === "destructive" ? "error" : "default";
-      
-      if (toastType === "default") {
-        return sonnerToast(title, {
-          description,
-          duration,
-          action: action && typeof action === 'object' ? action : undefined,
-          className,
-          ...rest
-        });
+      if (variant === "destructive") {
+        toast.error(title, { description, duration, action });
       } else {
-        return sonnerToast.error(title, {
-          description,
-          duration,
-          action: action && typeof action === 'object' ? action : undefined,
-          className,
-          ...rest
-        });
+        toast(title, { description, duration, action });
       }
-    } 
-    // If first argument is an object, extract title and use rest as options
-    else {
-      const { title, description, variant, action, duration, className, ...rest } = titleOrProps;
-      
-      // Map our variant to sonner's type
-      const toastType = variant === "destructive" ? "error" : "default";
-      
-      if (toastType === "default") {
-        return sonnerToast(title || "", {
-          description,
-          duration,
-          action: action && typeof action === 'object' ? action : undefined,
-          className,
-          ...rest
-        });
-      } else {
-        return sonnerToast.error(title || "", {
-          description,
-          duration,
-          action: action && typeof action === 'object' ? action : undefined,
-          className,
-          ...rest
-        });
-      }
-    }
-  }) as ToastFunction;
-
-  const dismiss = (toastId?: string) => {
-    if (toastId) {
-      sonnerToast.dismiss(toastId);
     } else {
-      sonnerToast.dismiss();
+      const { title, description, variant, action, duration, ...rest } = titleOrProps;
+      
+      if (variant === "destructive") {
+        toast.error(title || "", { description, duration, action });
+      } else {
+        toast(title || "", { description, duration, action });
+      }
     }
-  };
+  }
 
   return {
-    toast,
-    dismiss
+    toast: showToast
   };
-};
+}
 
-export { sonnerToast as toast };
+export { toast };

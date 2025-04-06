@@ -3,7 +3,7 @@ import React, { useState, lazy, Suspense } from 'react';
 import { Mail, ArrowRight } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 // Lazy load the success message component for optimization
 const SuccessMessage = lazy(() => import('../ui/SuccessMessage'));
@@ -12,14 +12,12 @@ const NewsletterSection: React.FC = () => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes('@')) {
-      toast("Invalid email", {
-        description: "Please enter a valid email address.",
-        variant: "destructive",
+      toast.error("Invalid email", {
+        description: "Please enter a valid email address."
       });
       return;
     }
@@ -28,8 +26,8 @@ const NewsletterSection: React.FC = () => {
 
     // Simulate API call
     setTimeout(() => {
-      toast("Success!", {
-        description: "You've been subscribed to our newsletter.",
+      toast.success("Success!", {
+        description: "You've been subscribed to our newsletter."
       });
       setEmail('');
       setIsSubmitting(false);
@@ -44,43 +42,6 @@ const NewsletterSection: React.FC = () => {
         });
       }
     }, 1000);
-
-    // In a real application, you would make an API call here
-    // try {
-    //   const response = await fetch('/api/subscribe', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ email }),
-    //   });
-    //   const data = await response.json();
-    //   
-    //   if (response.ok) {
-    //     toast({
-    //       title: "Success!",
-    //       description: "You've been subscribed to our newsletter.",
-    //     });
-    //     setEmail('');
-    //     setIsSubscribed(true);
-    //     
-    //     // Track conversion
-    //     if (typeof window !== 'undefined' && 'gtag' in window) {
-    //       window.gtag('event', 'newsletter_subscription', {
-    //         'event_category': 'engagement',
-    //         'event_label': 'homepage_newsletter'
-    //       });
-    //     }
-    //   } else {
-    //     throw new Error(data.message || 'Something went wrong');
-    //   }
-    // } catch (error) {
-    //   toast({
-    //     title: "Failed to subscribe",
-    //     description: error.message,
-    //     variant: "destructive",
-    //   });
-    // } finally {
-    //   setIsSubmitting(false);
-    // }
   };
 
   return (

@@ -6,8 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider } from './context/UserContext';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import { FeedbackProvider } from './context/FeedbackContext';
-import { Toaster } from './components/ui/sonner';
-import { initAppOptimizations } from './utils/appOptimizations';
+import { Toaster } from 'sonner';
 import './App.css';
 
 // Proper ErrorBoundary component
@@ -15,7 +14,6 @@ class ErrorBoundaryComponent extends Component<{children: ReactNode}, {hasError:
   state = { hasError: false, error: null };
   
   static getDerivedStateFromError(error: Error) {
-    // Update state so the next render will show the fallback UI
     console.error("Error caught by error boundary:", error);
     return { hasError: true, error };
   }
@@ -43,15 +41,6 @@ class ErrorBoundaryComponent extends Component<{children: ReactNode}, {hasError:
     }
     
     return this.props.children;
-  }
-}
-
-// Initialize app optimizations
-if (typeof window !== 'undefined') {
-  try {
-    initAppOptimizations();
-  } catch (error) {
-    console.warn('Failed to initialize app optimizations:', error);
   }
 }
 
