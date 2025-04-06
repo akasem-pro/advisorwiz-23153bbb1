@@ -94,19 +94,6 @@ const AppointmentCategoryManager: React.FC<AppointmentCategoryManagerProps> = ({
     );
   };
 
-  const resetToDefaults = () => {
-    const defaultCats = DEFAULT_CATEGORIES.map(cat => ({
-      ...cat,
-      id: `cat-${cat.label.toLowerCase().replace(/ /g, '_')}`
-    }));
-    
-    setCategories(defaultCats);
-    
-    toast("Reset to defaults", {
-      description: 'Appointment categories have been reset to default values.'
-    });
-  };
-
   const handleSaveCategories = () => {
     if (advisorProfile) {
       setAdvisorProfile({
@@ -115,8 +102,9 @@ const AppointmentCategoryManager: React.FC<AppointmentCategoryManagerProps> = ({
       });
       
       setSaved(true);
-      toast("Categories saved", {
-        description: 'Your appointment categories have been updated.'
+      toast({
+        title: 'Categories saved',
+        description: 'Your appointment categories have been updated.',
       });
       
       setTimeout(() => {
@@ -124,6 +112,20 @@ const AppointmentCategoryManager: React.FC<AppointmentCategoryManagerProps> = ({
         onClose();
       }, 1500);
     }
+  };
+
+  const resetToDefaults = () => {
+    const defaultCats = DEFAULT_CATEGORIES.map(cat => ({
+      ...cat,
+      id: `cat-${cat.label.toLowerCase().replace(/ /g, '_')}`
+    }));
+    
+    setCategories(defaultCats);
+    
+    toast({
+      title: 'Reset to defaults',
+      description: 'Appointment categories have been reset to default values.',
+    });
   };
 
   return (

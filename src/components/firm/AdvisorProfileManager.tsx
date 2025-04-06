@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FinancialFirm, useUser } from '../../context/UserContext';
@@ -21,8 +20,9 @@ const AdvisorProfileManager: React.FC<AdvisorProfileManagerProps> = ({ firm }) =
   const { filteredAdvisors, searchQuery, setSearchQuery } = useAdvisorList({ firm });
   
   const handleInvite = () => {
-    toast("Invitation sent", {
-      description: `An invitation has been sent to ${email}`
+    toast({
+      title: "Invitation sent",
+      description: `An invitation has been sent to ${email}`,
     });
     setEmail('');
     setShowInvite(false);

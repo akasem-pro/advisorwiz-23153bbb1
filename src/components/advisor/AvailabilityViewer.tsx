@@ -1,14 +1,10 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, MessageCircle } from 'lucide-react';
 import { TimeSlot, Chat, useUser, Appointment } from '../../context/UserContext';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { toast } from "@/hooks/use-toast";
-import DaySelector from './availability/DaySelector';
-import DailyAvailability from './availability/DailyAvailability';
-import ActionButtons from './availability/ActionButtons';
-import { formatTime, convertTo24Hour } from './availability/timeUtils';
 
 interface AvailabilityViewerProps {
   availability: TimeSlot[];
@@ -36,6 +32,14 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
     );
   }
 
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const adjustedHour = hour % 12 || 12;
+    return `${adjustedHour}:${minutes} ${period}`;
+  };
+
   const availabilityByDay = availability.reduce((acc, slot) => {
     if (!acc[slot.day]) {
       acc[slot.day] = [];
@@ -54,28 +58,35 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
     };
   });
 
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
-    setSelectedSlot(null);
-  };
-
-  const handleSlotSelect = (timeDisplay: string) => {
-    setSelectedSlot(timeDisplay);
-  };
-
   const handleBooking = () => {
     if (!selectedSlot || !consumerProfile) {
-      toast("Please select a time slot", {
-        description: "You need to select a time slot and be logged in to book a meeting"
+      toast({
+        title: "Please select a time slot",
+        description: "You need to select a time slot and be logged in to book a meeting",
+        variant: "destructive"
       });
       return;
     }
 
     const [startTimeStr, endTimeStr] = selectedSlot.split(' - ');
     
+    const convertTo24Hour = (timeStr: string) => {
+      const [timePart, period] = timeStr.split(' ');
+      let [hours, minutes] = timePart.split(':').map(Number);
+      
+      if (period === 'PM' && hours < 12) {
+        hours += 12;
+      } else if (period === 'AM' && hours === 12) {
+        hours = 0;
+      }
+      
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    };
+    
     const startTime = convertTo24Hour(startTimeStr);
     const endTime = convertTo24Hour(endTimeStr);
 
+    // Convert date to ISO string for the selected date
     const scheduledStart = new Date(selectedDate);
     const [startHours, startMinutes] = startTime.split(':').map(Number);
     scheduledStart.setHours(startHours, startMinutes, 0);
@@ -94,6 +105,7 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
       status: 'pending',
       notes: '',
       location: 'video',
+      // Add backward compatibility properties
       date: selectedDate.toISOString(),
       startTime,
       endTime
@@ -101,8 +113,9 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
     
     addAppointment(newAppointment);
     
-    toast("Booking Request Sent", {
-      description: `Your booking request with ${advisorName} has been sent for ${format(selectedDate, 'EEEE, MMMM d')} at ${selectedSlot}.`
+    toast({
+      title: "Booking Request Sent",
+      description: `Your booking request with ${advisorName} has been sent for ${format(selectedDate, 'EEEE, MMMM d')} at ${selectedSlot}.`,
     });
 
     navigate('/schedule');
@@ -110,8 +123,10 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
 
   const handleStartChat = () => {
     if (!consumerProfile) {
-      toast("Please complete your profile", {
-        description: "You need to complete your profile to chat with advisors"
+      toast({
+        title: "Please complete your profile",
+        description: "You need to complete your profile to chat with advisors",
+        variant: "destructive"
       });
       return;
     }
@@ -150,26 +165,82 @@ const AvailabilityViewer: React.FC<AvailabilityViewerProps> = ({
         Availability Schedule
       </h3>
 
-      <DaySelector 
-        weekDays={weekDays} 
-        selectedDate={selectedDate} 
-        onDateSelect={handleDateSelect} 
-      />
+      <div className="grid grid-cols-7 gap-1 text-center mb-4">
+        {weekDays.map(day => (
+          <div 
+            key={day.dayName}
+            className={`p-2 cursor-pointer rounded ${
+              format(selectedDate, 'EEEE').toLowerCase() === day.dayName 
+                ? 'bg-teal-100 text-teal-800 font-medium'
+                : 'hover:bg-slate-50'
+            }`}
+            onClick={() => {
+              setSelectedDate(day.date);
+              setSelectedSlot(null);
+            }}
+          >
+            <div className="text-xs uppercase text-slate-500">{day.dayName.slice(0, 3)}</div>
+            <div className="font-medium">{day.formattedDate}</div>
+          </div>
+        ))}
+      </div>
 
-      <DailyAvailability 
-        selectedDate={selectedDate}
-        availabilityByDay={availabilityByDay}
-        selectedSlot={selectedSlot}
-        formatTime={formatTime}
-        onSlotSelect={handleSlotSelect}
-      />
+      <div className="p-4 bg-slate-50 rounded-lg">
+        <h4 className="font-medium mb-3">
+          {format(selectedDate, 'EEEE, MMMM d')}
+        </h4>
 
-      <ActionButtons 
-        advisorName={advisorName}
-        selectedSlot={selectedSlot}
-        onChatClick={handleStartChat}
-        onBookingClick={handleBooking}
-      />
+        {availabilityByDay[format(selectedDate, 'EEEE').toLowerCase() as TimeSlot['day']] ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {availabilityByDay[format(selectedDate, 'EEEE').toLowerCase() as TimeSlot['day']]
+              .map((slot, index) => {
+                const timeDisplay = `${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}`;
+                return (
+                  <div
+                    key={index}
+                    className={`p-2 text-center rounded-md cursor-pointer border transition-colors ${
+                      selectedSlot === timeDisplay
+                        ? 'bg-teal-100 border-teal-300 text-teal-800'
+                        : 'border-slate-200 hover:border-teal-200 hover:bg-teal-50'
+                    }`}
+                    onClick={() => setSelectedSlot(timeDisplay)}
+                  >
+                    <div className="flex items-center justify-center">
+                      <Clock className="mr-1 w-4 h-4" />
+                      <span>{timeDisplay}</span>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        ) : (
+          <p className="text-slate-500 text-center py-4">
+            No availability on this day.
+          </p>
+        )}
+      </div>
+
+      <div className="flex justify-between">
+        <button
+          type="button"
+          onClick={handleStartChat}
+          className="btn-outline inline-flex items-center"
+        >
+          <MessageCircle className="mr-2 w-4 h-4" />
+          Message {advisorName}
+        </button>
+
+        {selectedSlot && (
+          <button
+            type="button"
+            onClick={handleBooking}
+            className="btn-primary inline-flex items-center"
+          >
+            Book Consultation
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </button>
+        )}
+      </div>
     </div>
   );
 };

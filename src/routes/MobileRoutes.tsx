@@ -1,21 +1,21 @@
 
-import React from 'react';
-import { RouteItem } from './AppRoutes';
-import MobileLayout from '../components/layout/MobileLayout';
+import { lazy, Suspense } from 'react';
+import { PageLoadingFallback } from '../components/LazyComponents';
 
-// Define mobile-specific routes
-const MobileRoutes: RouteItem[] = [
+// Lazy loaded mobile pages
+const LandingPage = lazy(() => import('../pages/LandingPage'));
+
+// Export the mobile routes to be used in AppRoutes
+const MobileRoutes = [
   {
-    path: "/mobile",
-    element: <MobileLayout><div>Mobile Home</div></MobileLayout>
-  },
-  {
-    path: "/mobile/dashboard",
-    element: <MobileLayout><div>Mobile Dashboard</div></MobileLayout>
-  },
-  {
-    path: "/mobile/profile",
-    element: <MobileLayout><div>Mobile Profile</div></MobileLayout>
+    props: {
+      path: "/mobile-landing",
+      element: (
+        <Suspense fallback={<PageLoadingFallback />}>
+          <LandingPage />
+        </Suspense>
+      )
+    }
   }
 ];
 

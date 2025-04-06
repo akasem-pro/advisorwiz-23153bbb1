@@ -12,12 +12,6 @@ import Pricing from '../pages/Pricing';
 import Sitemap from '../pages/Sitemap';
 import ContactUs from '../pages/ContactUs';
 import Blog from '../pages/Blog';
-import Home from '../pages/Home';
-import Terms from '../pages/Terms';
-import Privacy from '../pages/Privacy';
-import Disclaimer from '../pages/Disclaimer';
-import Cookies from '../pages/Cookies';
-import Careers from '../pages/Careers';
 
 // Lazily load the security and accessibility page
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -25,9 +19,6 @@ const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAnd
 const MainRoutes = () => {
   return (
     <Routes>
-      {/* Home page */}
-      <Route path="/" element={<AppLayout><Home /></AppLayout>} />
-      
       {/* Main marketing pages */}
       <Route path="/about" element={<AppLayout><AboutUs /></AppLayout>} />
       <Route path="/for-advisors" element={<AppLayout><ForAdvisors /></AppLayout>} />
@@ -37,13 +28,6 @@ const MainRoutes = () => {
       <Route path="/sitemap" element={<AppLayout><Sitemap /></AppLayout>} />
       <Route path="/contact" element={<AppLayout><ContactUs /></AppLayout>} />
       <Route path="/blog/*" element={<AppLayout><Blog /></AppLayout>} />
-      
-      {/* Legal pages */}
-      <Route path="/terms" element={<AppLayout><Terms /></AppLayout>} />
-      <Route path="/privacy" element={<AppLayout><Privacy /></AppLayout>} />
-      <Route path="/disclaimer" element={<AppLayout><Disclaimer /></AppLayout>} />
-      <Route path="/cookies" element={<AppLayout><Cookies /></AppLayout>} />
-      <Route path="/careers" element={<AppLayout><Careers /></AppLayout>} />
       
       {/* Other specialized pages */}
       <Route 

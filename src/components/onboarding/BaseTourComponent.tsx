@@ -40,7 +40,8 @@ const BaseTourComponent: React.FC<BaseTourComponentProps> = ({
   } = useOnboardingTour(
     userType,
     () => {
-      toast(completionMessage.title, {
+      toast({
+        title: completionMessage.title,
         description: completionMessage.description,
         duration: 5000,
       });
@@ -53,7 +54,8 @@ const BaseTourComponent: React.FC<BaseTourComponentProps> = ({
       localStorage.setItem(TOUR_NAMES[tourName], 'true');
     },
     () => {
-      toast("Tour Skipped", {
+      toast({
+        title: "Tour Skipped",
         description: "You can restart the tour anytime from your settings menu.",
         duration: 3000,
       });

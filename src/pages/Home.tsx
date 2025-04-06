@@ -28,8 +28,6 @@ const Home = () => {
   
   // Track page view and sections
   useEffect(() => {
-    console.log("Home component rendered"); // Debug log
-    
     // Track home page view for ASO
     trackAppStoreEvent('view', 'web', { page: 'home' });
     
@@ -48,7 +46,7 @@ const Home = () => {
   };
 
   return (
-    <AppLayout fullWidth withoutPadding hideFooter={false} showFooter={true}>
+    <AppLayout fullWidth withoutPadding hideFooter={true}>
       <PageSEO 
         title="AdvisorWiz - Connecting Financial Advisors with Clients"
         description="AdvisorWiz connects consumers with trusted financial advisors through an innovative matching platform."
@@ -58,16 +56,6 @@ const Home = () => {
       
       {/* Main Home Content */}
       <div className="overflow-hidden">
-        {/* Debug info - visible only in development */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 mx-4 mt-4">
-            <p className="font-bold">Debug Info:</p>
-            <p>Home page rendered successfully</p>
-            <p>isMobile: {isMobile ? 'true' : 'false'}</p>
-            <p>Current time: {new Date().toLocaleTimeString()}</p>
-          </div>
-        )}
-        
         {/* Promotional Banner - Only show on mobile */}
         {isMobile && (
           <PromotionalBanner

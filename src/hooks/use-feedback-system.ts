@@ -2,6 +2,7 @@
 import { useState, useCallback } from 'react';
 import { useToast } from './use-toast';
 import { useFeedback } from '../context/FeedbackContext';
+import { ToastActionElement } from "@/components/ui/toast";
 
 type FeedbackType = 'success' | 'error' | 'warning' | 'info';
 
@@ -9,7 +10,7 @@ interface FeedbackOptions {
   title?: string;
   description: string;
   duration?: number;
-  action?: React.ReactNode;
+  action?: ToastActionElement;
   variant?: FeedbackType;
   // For in-page feedback
   dismissable?: boolean;
@@ -27,15 +28,12 @@ export const useFeedbackSystem = () => {
   const showToast = useCallback((options: FeedbackOptions) => {
     if (!isFeedbackEnabled) return;
     
-    // Map variant to the toast variant
-    const variant = options.variant === 'error' ? 'destructive' : 'default';
-    
     toast({
-      title: options.title || "",
+      title: options.title,
       description: options.description,
       duration: options.duration || 5000,
       action: options.action,
-      variant
+      variant: options.variant === 'error' ? 'destructive' : 'default',
     });
   }, [toast, isFeedbackEnabled]);
   

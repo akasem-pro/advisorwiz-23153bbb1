@@ -1,25 +1,29 @@
+
 import React from 'react';
-import { RouteItem } from './AppRoutes';
 import VerifyIntegrationsPage from '../pages/VerifyIntegrations';
 import AccessibilityTestPage from '../pages/AccessibilityTestPage';
 import AppLayout from '../components/layout/AppLayout';
 
-const UtilityRoutes: RouteItem[] = [
+const UtilityRoutes = [
   {
-    path: "/verify-integrations",
-    element: (
-      <AppLayout>
-        <VerifyIntegrationsPage />
-      </AppLayout>
-    )
+    props: {
+      path: "/verify-integrations",
+      element: (
+        <AppLayout>
+          <VerifyIntegrationsPage />
+        </AppLayout>
+      )
+    }
   },
   {
-    path: "/accessibility-test",
-    element: (
-      <AppLayout>
-        <AccessibilityTestPage />
-      </AppLayout>
-    )
+    props: {
+      path: "/accessibility-test",
+      element: (
+        <AppLayout>
+          <AccessibilityTestPage />
+        </AppLayout>
+      )
+    }
   }
   // Other utility routes can be added here
 ];

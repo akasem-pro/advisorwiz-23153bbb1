@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import AccessibilityDashboard from '../components/admin/AccessibilityDashboard';
@@ -16,7 +17,8 @@ const AccessibilityTestPage: React.FC = () => {
     localStorage.removeItem('hasSeenOnboardingTour');
     setShowTour(true);
     
-    toast("Tour Started", {
+    toast({
+      title: "Tour Started",
       description: "Follow the guided tour to learn about the platform features.",
       duration: 3000,
     });

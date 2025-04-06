@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Calendar, Clock, PlusCircle, Calendar as CalendarIcon } from 'lucide-react';
 import { useUser } from '../context/UserContext';
@@ -73,8 +74,9 @@ const Schedule = () => {
                 {userType === 'advisor' && (
                   <button
                     className="btn-primary btn-sm inline-flex items-center"
-                    onClick={() => toast("Feature Coming Soon", {
-                      description: "Setting up available times will be available soon."
+                    onClick={() => toast({
+                      title: "Feature Coming Soon",
+                      description: "Setting up available times will be available soon.",
                     })}
                   >
                     <PlusCircle className="mr-1 h-4 w-4" />

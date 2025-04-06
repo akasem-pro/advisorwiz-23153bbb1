@@ -36,10 +36,10 @@ const Blog: React.FC = () => {
       
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          <h1 className="section-title text-3xl font-bold mb-4">
+          <h1 className="section-title">
             {slug ? `Blog Post: ${slug}` : 'Financial Insights Blog'}
           </h1>
-          <p className="section-description text-lg text-gray-600 mb-8">
+          <p className="section-description">
             {slug 
               ? 'Detailed information about this specific financial topic.' 
               : 'Stay informed with our latest articles and insights on personal finance and investing.'}
