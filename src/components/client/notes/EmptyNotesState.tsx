@@ -3,6 +3,27 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 
+/**
+ * EmptyNotesState Component
+ * 
+ * This component displays a placeholder UI when a client has no notes.
+ * It shows a message encouraging the user to add notes and provides a button to do so.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Function} props.onAddNote - Callback function triggered when the "Add Your First Note" button is clicked
+ * 
+ * @example
+ * ```tsx
+ * <EmptyNotesState onAddNote={() => setIsAddNoteOpen(true)} />
+ * ```
+ * 
+ * @remarks
+ * This component uses:
+ * - Tailwind CSS for styling
+ * - Button component from shadcn/ui
+ * - PlusCircle icon from lucide-react
+ */
 interface EmptyNotesStateProps {
   onAddNote: () => void;
 }
@@ -21,6 +42,7 @@ const EmptyNotesState: React.FC<EmptyNotesStateProps> = ({ onAddNote }) => {
         variant="outline" 
         onClick={onAddNote}
         className="flex items-center"
+        aria-label="Add your first note"
       >
         <PlusCircle className="mr-2 h-4 w-4" />
         Add Your First Note

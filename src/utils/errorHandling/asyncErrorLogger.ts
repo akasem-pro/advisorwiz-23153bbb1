@@ -1,7 +1,8 @@
 
 /**
  * Asynchronous error logging utility
- * Provides non-blocking error logging capabilities
+ * Provides non-blocking error logging capabilities with enhanced formatting
+ * and structured output to improve error traceability and debugging.
  */
 
 // Queue for storing errors to be processed asynchronously
@@ -10,6 +11,8 @@ const errorQueue: Array<{
   details: any;
   level: 'info' | 'warn' | 'error' | 'fatal';
   timestamp: Date;
+  source?: string;
+  code?: string;
 }> = [];
 
 // Flag to track if processing is already in progress
@@ -17,18 +20,28 @@ let isProcessing = false;
 
 /**
  * Log an error asynchronously without blocking the main thread
+ * 
+ * @param message - Error message to log
+ * @param details - Additional error details or context
+ * @param level - Severity level of the error
+ * @param source - Optional source of the error (component, function, etc.)
+ * @param code - Optional error code for categorization
  */
 export const logErrorAsync = (
   message: string,
   details?: any,
-  level: 'info' | 'warn' | 'error' | 'fatal' = 'error'
+  level: 'info' | 'warn' | 'error' | 'fatal' = 'error',
+  source?: string,
+  code?: string
 ): void => {
   // Add error to the queue
   errorQueue.push({
     message,
     details,
     level,
-    timestamp: new Date()
+    timestamp: new Date(),
+    source,
+    code
   });
   
   // Start processing if not already in progress
@@ -39,6 +52,7 @@ export const logErrorAsync = (
 
 /**
  * Process the error queue asynchronously using microtasks
+ * This ensures errors are logged without blocking the main thread
  */
 const processErrorQueue = (): void => {
   if (errorQueue.length === 0) {
@@ -53,29 +67,34 @@ const processErrorQueue = (): void => {
     try {
       const error = errorQueue.shift();
       if (error) {
-        // Log based on level
+        // Format error information
+        const formattedTimestamp = error.timestamp.toISOString();
+        const sourceInfo = error.source ? ` [${error.source}]` : '';
+        const codeInfo = error.code ? ` (${error.code})` : '';
+        
+        // Log based on level with enhanced formatting
         switch (error.level) {
           case 'info':
             console.info(
-              `[${error.timestamp.toISOString()}] [INFO] ${error.message}`,
+              `[${formattedTimestamp}] [INFO]${sourceInfo}${codeInfo} ${error.message}`,
               error.details
             );
             break;
           case 'warn':
             console.warn(
-              `[${error.timestamp.toISOString()}] [WARNING] ${error.message}`,
+              `[${formattedTimestamp}] [WARNING]${sourceInfo}${codeInfo} ${error.message}`,
               error.details
             );
             break;
           case 'error':
             console.error(
-              `[${error.timestamp.toISOString()}] [ERROR] ${error.message}`,
+              `[${formattedTimestamp}] [ERROR]${sourceInfo}${codeInfo} ${error.message}`,
               error.details
             );
             break;
           case 'fatal':
             console.error(
-              `[${error.timestamp.toISOString()}] [FATAL] ${error.message}`,
+              `[${formattedTimestamp}] [FATAL]${sourceInfo}${codeInfo} ${error.message}`,
               error.details
             );
             break;
@@ -95,51 +114,90 @@ const processErrorQueue = (): void => {
 /**
  * Flush all pending error logs immediately
  * Useful before app termination or during critical failures
+ * 
+ * @returns {number} Number of logs flushed
  */
-export const flushErrorLogs = (): void => {
+export const flushErrorLogs = (): number => {
+  const logCount = errorQueue.length;
   while (errorQueue.length > 0) {
     const error = errorQueue.shift();
     if (error) {
-      console.error(`[FLUSH] ${error.message}`, error.details);
+      const sourceInfo = error.source ? ` [${error.source}]` : '';
+      console.error(`[FLUSH]${sourceInfo} ${error.message}`, error.details);
+    }
+  }
+  return logCount;
+};
+
+/**
+ * Register unhandled exception handlers to catch errors at global level
+ * 
+ * @param options - Configuration options for error handling
+ */
+export const registerGlobalErrorHandlers = (options?: {
+  captureRejections?: boolean;
+  captureExceptions?: boolean;
+  captureBeforeUnload?: boolean;
+}): void => {
+  if (typeof window !== 'undefined') {
+    const opts = {
+      captureRejections: true,
+      captureExceptions: true,
+      captureBeforeUnload: true,
+      ...options
+    };
+    
+    // Handle unhandled promise rejections
+    if (opts.captureRejections) {
+      window.addEventListener('unhandledrejection', (event) => {
+        logErrorAsync(
+          'Unhandled Promise Rejection',
+          {
+            reason: event.reason,
+            stack: event.reason?.stack
+          },
+          'error',
+          'window.onunhandledrejection'
+        );
+      });
+    }
+
+    // Handle uncaught exceptions
+    if (opts.captureExceptions) {
+      window.addEventListener('error', (event) => {
+        logErrorAsync(
+          'Uncaught Exception',
+          {
+            message: event.message,
+            filename: event.filename,
+            lineno: event.lineno,
+            colno: event.colno,
+            error: event.error
+          },
+          'fatal',
+          'window.onerror'
+        );
+      });
+    }
+    
+    // Handle before unload to flush any remaining logs
+    if (opts.captureBeforeUnload) {
+      window.addEventListener('beforeunload', () => {
+        flushErrorLogs();
+      });
     }
   }
 };
 
 /**
- * Register unhandled exception handlers to catch errors at global level
+ * Set the maximum queue size for error logs
+ * When queue exceeds this size, oldest logs will be dropped
+ * 
+ * @param maxSize - Maximum number of logs to keep in queue
  */
-export const registerGlobalErrorHandlers = (): void => {
-  if (typeof window !== 'undefined') {
-    // Handle unhandled promise rejections
-    window.addEventListener('unhandledrejection', (event) => {
-      logErrorAsync(
-        'Unhandled Promise Rejection',
-        {
-          reason: event.reason,
-          stack: event.reason?.stack
-        },
-        'error'
-      );
-    });
-
-    // Handle uncaught exceptions
-    window.addEventListener('error', (event) => {
-      logErrorAsync(
-        'Uncaught Exception',
-        {
-          message: event.message,
-          filename: event.filename,
-          lineno: event.lineno,
-          colno: event.colno,
-          error: event.error
-        },
-        'fatal'
-      );
-    });
-    
-    // Handle before unload to flush any remaining logs
-    window.addEventListener('beforeunload', () => {
-      flushErrorLogs();
-    });
+export const setMaxQueueSize = (maxSize: number): void => {
+  // Remove oldest logs if queue exceeds maximum size
+  while (errorQueue.length > maxSize) {
+    errorQueue.shift();
   }
 };

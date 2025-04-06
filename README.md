@@ -8,6 +8,7 @@ AdvisorWiz is a comprehensive platform that connects consumers with financial ad
 - **Intelligent Matching System**: Connects consumers with the most compatible financial advisors
 - **Secure Communication**: Chat and call functionality for smooth advisor-client interactions
 - **Appointment Scheduling**: Easily schedule and manage appointments
+- **Client Management**: Keep detailed notes and track interactions with clients
 - **Comprehensive Profiles**: Detailed profiles for both advisors and consumers
 - **Team Management**: Tools for firms to manage their team of advisors
 - **Analytics Dashboard**: Insights into performance, engagement, and conversion
@@ -44,6 +45,18 @@ npm run dev
 
 AdvisorWiz is built using a component-based architecture with React, TypeScript, and Tailwind CSS. The application follows a feature-based organization pattern where code is organized by domain rather than by type.
 
+### Key Technical Features
+
+- **TypeScript**: Strong typing for improved code quality and developer experience
+- **React**: Component-based UI with hooks for state management
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development
+- **Shadcn UI**: High-quality UI components built on Radix UI primitives
+- **Supabase**: Backend services for authentication, database, and storage
+- **React Query**: Data fetching and state management
+- **React Router**: Client-side routing
+- **Error Handling**: Comprehensive error management with async logging
+- **Performance Monitoring**: Built-in performance tracking and optimization
+
 [Learn more about our architecture](./docs/ARCHITECTURE.md)
 
 ## Core Modules
@@ -51,6 +64,7 @@ AdvisorWiz is built using a component-based architecture with React, TypeScript,
 - **Authentication**: User registration, login, and profile management
 - **Matching System**: Proprietary algorithm for advisor-client compatibility
 - **Scheduling**: Appointment management system
+- **Client Management**: Note-taking and interaction tracking
 - **Communication**: Chat and call functionality
 - **Analytics**: Performance tracking and reporting
 
@@ -64,8 +78,10 @@ AdvisorWiz is built using a component-based architecture with React, TypeScript,
 
 ### Specialized Documentation
 
-- [Matching System](./src/services/matching/docs/README.md) - Documentation for the matching algorithm
-- [Type System](./src/types/README.md) - Guide to the TypeScript type organization
+- [Matching System](./docs/matching-system.md) - Documentation for the matching algorithm
+- [Error Handling](./docs/error-handling.md) - Guide to the error management system
+- [Analytics Integration](./docs/analytics.md) - Guide to the analytics implementation
+- [Type System](./docs/type-system.md) - Guide to the TypeScript type organization
 
 ## Testing
 
