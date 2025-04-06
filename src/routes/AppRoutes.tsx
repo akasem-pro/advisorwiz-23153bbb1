@@ -52,7 +52,7 @@ const AppRoutes: React.FC = () => {
       {/* Explicitly define the home route to LandingPage for a richer experience */}
       <Route path="/" element={<LandingPage />} />
       
-      {/* Profile pages - add them directly here to ensure they work */}
+      {/* Profile pages - ensure ConsumerProfile is accessible to unauthenticated users */}
       <Route path="/consumer-profile" element={<PageLayout><ConsumerProfile /></PageLayout>} />
       <Route path="/advisor-profile" element={<PageLayout><AdvisorProfile /></PageLayout>} />
       <Route path="/firm-profile" element={<PageLayout><FirmProfile /></PageLayout>} />
