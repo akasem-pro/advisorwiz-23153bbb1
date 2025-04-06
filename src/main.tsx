@@ -9,7 +9,7 @@ import { setupAnalytics, setupWebVitalsTracking } from './services/analytics';
 setupAnalytics({
   googleAnalyticsId: import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-EXAMPLE', // Replace with your actual ID
   debug: process.env.NODE_ENV === 'development',
-  samplingRate: 1.0, // Track all events
+  sampling: 1.0, // Track all events
   batchSize: 10,
   batchIntervalMs: 2000
 }).then(() => {

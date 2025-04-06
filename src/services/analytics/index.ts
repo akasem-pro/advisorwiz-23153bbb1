@@ -61,9 +61,11 @@ export const setupAnalytics = async (config: {
     }
     
     // Initialize our core analytics
+    const { initializeAnalytics } = await import('./analyticsService');
     initializeAnalytics();
     
     // Set up web vitals tracking
+    const { initWebVitalsTracking } = await import('./providers/webVitalsProvider');
     initWebVitalsTracking();
     
     return true;
