@@ -6,7 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider } from './context/UserContext';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import { FeedbackProvider } from './context/FeedbackContext';
-import { Toaster as SonnerToaster } from 'sonner';
+import { Toaster } from './components/ui/sonner';
 import { initAppOptimizations } from './utils/appOptimizations';
 import './App.css';
 
@@ -67,7 +67,7 @@ const App: React.FC = () => {
               <FeedbackProvider>
                 <Suspense fallback={<div>Loading...</div>}>
                   <AppRoutes />
-                  <SonnerToaster position="bottom-right" />
+                  <Toaster position="bottom-right" />
                 </Suspense>
               </FeedbackProvider>
             </UserProvider>
