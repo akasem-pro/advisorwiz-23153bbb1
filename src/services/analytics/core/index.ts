@@ -37,14 +37,15 @@ export {
   trackError
 } from './tracking';
 
+// Import required types and functions for initialization
+import { AnalyticsConfig } from './types';
+import { updateConfig, getConfig } from './config';
+import { getProviders } from './buffer';
+
 /**
  * Initialize the analytics system
  */
 export const initializeAnalytics = async (customConfig?: Partial<AnalyticsConfig>): Promise<void> => {
-  // Import modules to ensure proper initialization order
-  const { updateConfig, getConfig } = await import('./config');
-  const { getProviders } = await import('./buffer');
-  
   // Apply custom configuration
   if (customConfig) {
     updateConfig(customConfig);
@@ -76,6 +77,7 @@ export const initializeAnalytics = async (customConfig?: Partial<AnalyticsConfig
 /**
  * Expose a method to clear all tracking data
  */
+import { clearBuffer } from './buffer';
 export const clearAnalyticsData = (): void => {
   clearBuffer();
 };
