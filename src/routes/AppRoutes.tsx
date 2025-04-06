@@ -22,7 +22,7 @@ const AppRoutes: React.FC = () => {
       
       {/* Then render all other routes */}
       {allRoutes
-        .filter(route => route.path !== '/') // Skip home route as we defined it explicitly
+        .filter(route => route.path !== '/' && !route.path.includes('*')) // Skip home route & wildcard routes as they're handled differently
         .map((route, index) => (
           <Route 
             key={`route-${index}`} 

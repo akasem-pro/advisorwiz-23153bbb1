@@ -26,6 +26,8 @@ import Notifications from '../pages/Notifications';
 import CallClient from '../pages/CallClient';
 import CallClientSelect from '../pages/CallClientSelect';
 import ClientDetail from '../pages/ClientDetail';
+import Terms from '../pages/Terms';
+import Privacy from '../pages/Privacy';
 
 // Lazy loaded components
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -88,6 +90,16 @@ export const routes = {
         </React.Suspense>
       </AppLayout>
     )
+  },
+  
+  // Legal pages
+  terms: {
+    path: '/terms',
+    element: <AppLayout><Terms /></AppLayout>
+  },
+  privacy: {
+    path: '/privacy',
+    element: <AppLayout><Privacy /></AppLayout>
   },
   
   // Profile routes (accessible to both authenticated and unauthenticated users)

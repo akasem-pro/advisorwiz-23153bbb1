@@ -12,6 +12,8 @@ import Pricing from '../pages/Pricing';
 import Sitemap from '../pages/Sitemap';
 import ContactUs from '../pages/ContactUs';
 import Blog from '../pages/Blog';
+import Terms from '../pages/Terms';
+import Privacy from '../pages/Privacy';
 
 // Lazily load the security and accessibility page
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -28,6 +30,10 @@ const MainRoutes = () => {
       <Route path="/sitemap" element={<AppLayout><Sitemap /></AppLayout>} />
       <Route path="/contact" element={<AppLayout><ContactUs /></AppLayout>} />
       <Route path="/blog/*" element={<AppLayout><Blog /></AppLayout>} />
+      
+      {/* Legal pages */}
+      <Route path="/terms" element={<AppLayout><Terms /></AppLayout>} />
+      <Route path="/privacy" element={<AppLayout><Privacy /></AppLayout>} />
       
       {/* Other specialized pages */}
       <Route 
