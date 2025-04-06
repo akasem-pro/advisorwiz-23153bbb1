@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import AppLayout from '../components/layout/AppLayout';
@@ -92,10 +91,7 @@ const ClientDetail: React.FC = () => {
   ];
 
   const handleScheduleAppointment = () => {
-    toast({
-      title: "Scheduling appointment",
-      description: "Redirecting to schedule page",
-    });
+    toast("Scheduling appointment - Redirecting to schedule page");
     // In a real app, this would navigate to the scheduling page
   };
 
@@ -155,7 +151,7 @@ const ClientDetail: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col items-center mb-6">
-                    {client.profilePicture ? (
+                    {client?.profilePicture ? (
                       <img 
                         src={client.profilePicture} 
                         alt={client.name} 
@@ -163,12 +159,12 @@ const ClientDetail: React.FC = () => {
                       />
                     ) : (
                       <div className="w-24 h-24 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mb-3">
-                        <span className="text-3xl font-medium">{client.name.charAt(0)}</span>
+                        <span className="text-3xl font-medium">{client?.name.charAt(0)}</span>
                       </div>
                     )}
-                    <h2 className="text-xl font-semibold">{client.name}</h2>
+                    <h2 className="text-xl font-semibold">{client?.name}</h2>
                     
-                    {client.matchScore && (
+                    {client?.matchScore && (
                       <div className="mt-2 text-sm text-slate-600">
                         <span className="font-medium">Match Score:</span> {client.matchScore}%
                       </div>
@@ -178,17 +174,17 @@ const ClientDetail: React.FC = () => {
                   <div className="space-y-4">
                     <div className="flex items-center">
                       <Mail className="h-4 w-4 mr-3 text-slate-500" />
-                      <span>{client.email}</span>
+                      <span>{client?.email}</span>
                     </div>
                     
-                    {client.phone && (
+                    {client?.phone && (
                       <div className="flex items-center">
                         <Phone className="h-4 w-4 mr-3 text-slate-500" />
                         <span>{client.phone}</span>
                       </div>
                     )}
                     
-                    {client.lastContact && (
+                    {client?.lastContact && (
                       <div className="flex items-center">
                         <Clock className="h-4 w-4 mr-3 text-slate-500" />
                         <span>Last contact: {client.lastContact}</span>
@@ -201,7 +197,7 @@ const ClientDetail: React.FC = () => {
                         <span className="text-sm font-medium">Tags</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {client.tags.map((tag, index) => (
+                        {client?.tags.map((tag, index) => (
                           <Badge key={index} variant="outline" className="bg-slate-100">
                             {tag}
                           </Badge>
@@ -211,13 +207,13 @@ const ClientDetail: React.FC = () => {
                   </div>
                   
                   <div className="grid grid-cols-2 gap-2 mt-6">
-                    <Link to={`/call/${client.id}`}>
+                    <Link to={`/call/${client?.id}`}>
                       <Button className="w-full" variant="outline">
                         <Phone className="mr-2 h-4 w-4" />
                         Call
                       </Button>
                     </Link>
-                    <Link to={`/call/${client.id}`}>
+                    <Link to={`/call/${client?.id}`}>
                       <Button className="w-full" variant="outline">
                         <Video className="mr-2 h-4 w-4" />
                         Video
@@ -252,24 +248,24 @@ const ClientDetail: React.FC = () => {
                       <div className="bg-slate-50 p-4 rounded-lg">
                         <div className="text-sm text-slate-600 mb-1">Next Appointment</div>
                         <div className="font-medium">
-                          {client.appointmentHistory?.find(a => a.status === 'upcoming')?.title || 'No upcoming appointments'}
+                          {client?.appointmentHistory?.find(a => a.status === 'upcoming')?.title || 'No upcoming appointments'}
                         </div>
                         <div className="text-sm text-slate-500">
-                          {client.appointmentHistory?.find(a => a.status === 'upcoming')?.date
-                            ? new Date(client.appointmentHistory?.find(a => a.status === 'upcoming')?.date || '').toLocaleDateString()
+                          {client?.appointmentHistory?.find(a => a.status === 'upcoming')?.date
+                            ? new Date(client?.appointmentHistory?.find(a => a.status === 'upcoming')?.date || '').toLocaleDateString()
                             : 'Schedule one now'}
                         </div>
                       </div>
                       <div className="bg-slate-50 p-4 rounded-lg">
                         <div className="text-sm text-slate-600 mb-1">Last Interaction</div>
                         <div className="font-medium">Phone Call</div>
-                        <div className="text-sm text-slate-500">{client.lastContact}</div>
+                        <div className="text-sm text-slate-500">{client?.lastContact}</div>
                       </div>
                     </div>
                     
                     <h3 className="text-lg font-medium mb-4">Recent Activity</h3>
                     <div className="space-y-4">
-                      {client.appointmentHistory?.slice(0, 3).map((appointment, index) => (
+                      {client?.appointmentHistory?.slice(0, 3).map((appointment, index) => (
                         <div key={index} className="flex items-start border-b pb-3 last:border-0">
                           <div className={`p-2 rounded-full mr-3 ${
                             appointment.status === 'completed' ? 'bg-blue-100' : 
@@ -309,7 +305,7 @@ const ClientDetail: React.FC = () => {
                     </div>
                     
                     <div className="space-y-4">
-                      {client.appointmentHistory?.map((appointment, index) => (
+                      {client?.appointmentHistory?.map((appointment, index) => (
                         <div key={index} className="flex items-start border-b pb-4 last:border-0">
                           <div className={`p-2 rounded-full mr-3 ${
                             appointment.status === 'completed' ? 'bg-blue-100' : 
@@ -351,7 +347,7 @@ const ClientDetail: React.FC = () => {
                     </div>
                     
                     <div className="space-y-4">
-                      {client.notes?.map((note, index) => (
+                      {client?.notes?.map((note, index) => (
                         <Card key={index}>
                           <CardContent className="p-4">
                             <div className="flex justify-between items-start">
