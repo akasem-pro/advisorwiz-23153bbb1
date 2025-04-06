@@ -1,42 +1,16 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import AppLayout from '../components/layout/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { ChevronLeft, User } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
-import { 
-  User, 
-  Phone, 
-  Video, 
-  Mail, 
-  Calendar, 
-  ClipboardList, 
-  ChevronLeft,
-  BarChart,
-  Clock,
-  Tag
-} from 'lucide-react';
+import { Card, CardContent } from '../components/ui/card';
 import BreadcrumbNav from '../components/navigation/BreadcrumbNav';
 import AuthGuard from '../components/auth/AuthGuard';
 import { useToast } from '../components/ui/use-toast';
-
-interface ClientData {
-  id: string;
-  name: string;
-  profilePicture?: string;
-  email: string;
-  phone?: string;
-  lastContact?: string;
-  tags: string[];
-  matchScore?: number;
-  notes?: string[];
-  appointmentHistory?: {
-    date: string;
-    title: string;
-    status: 'completed' | 'upcoming' | 'cancelled';
-  }[];
-}
+import ClientProfileCard from '../components/client/ClientProfileCard';
+import ClientTabs from '../components/client/ClientTabs';
+import { ClientData } from '../types/clientTypes';
 
 const ClientDetail: React.FC = () => {
   const { clientId } = useParams<{ clientId: string }>();
@@ -142,269 +116,20 @@ const ClientDetail: React.FC = () => {
           <div className="flex flex-col lg:flex-row gap-8 mt-6">
             {/* Client Profile Card */}
             <div className="lg:w-1/3">
-              <Card className="shadow-sm border-slate-200 dark:border-navy-700">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">Client Profile</CardTitle>
-                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Active</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col items-center mb-8">
-                    {client?.profilePicture ? (
-                      <img 
-                        src={client.profilePicture} 
-                        alt={client.name} 
-                        className="w-28 h-28 rounded-full mb-4"
-                      />
-                    ) : (
-                      <div className="w-28 h-28 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mb-4">
-                        <span className="text-4xl font-medium">{client?.name.charAt(0)}</span>
-                      </div>
-                    )}
-                    <h2 className="text-2xl font-semibold">{client?.name}</h2>
-                    
-                    {client?.matchScore && (
-                      <div className="mt-2 text-sm text-slate-600">
-                        <span className="font-medium">Match Score:</span> {client.matchScore}%
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-5">
-                    <div className="flex items-center">
-                      <Mail className="h-5 w-5 mr-3 text-slate-500" />
-                      <span>{client?.email}</span>
-                    </div>
-                    
-                    {client?.phone && (
-                      <div className="flex items-center">
-                        <Phone className="h-5 w-5 mr-3 text-slate-500" />
-                        <span>{client.phone}</span>
-                      </div>
-                    )}
-                    
-                    {client?.lastContact && (
-                      <div className="flex items-center">
-                        <Clock className="h-5 w-5 mr-3 text-slate-500" />
-                        <span>Last contact: {client.lastContact}</span>
-                      </div>
-                    )}
-                    
-                    <div className="pt-4">
-                      <div className="flex items-center mb-3">
-                        <Tag className="h-5 w-5 mr-2 text-slate-500" />
-                        <span className="font-medium">Tags</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {client?.tags.map((tag, index) => (
-                          <Badge key={index} variant="outline" className="bg-slate-100 px-3 py-1">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  
-                    <div className="grid grid-cols-2 gap-3 mt-8">
-                      <Link to={`/call/${client?.id}`}>
-                        <Button className="w-full" variant="outline">
-                          <Phone className="mr-2 h-4 w-4" />
-                          Call
-                        </Button>
-                      </Link>
-                      <Link to={`/call/${client?.id}`}>
-                        <Button className="w-full" variant="outline">
-                          <Video className="mr-2 h-4 w-4" />
-                          Video
-                        </Button>
-                      </Link>
-                      <Button className="w-full col-span-2 bg-blue-600 hover:bg-blue-700" onClick={handleScheduleAppointment}>
-                        <Calendar className="mr-2 h-4 w-4" />
-                        Schedule Meeting
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <ClientProfileCard 
+                client={client} 
+                onScheduleAppointment={handleScheduleAppointment} 
+              />
             </div>
             
             {/* Main Content Area */}
             <div className="lg:w-2/3">
-              <Card className="shadow-sm border-slate-200 dark:border-navy-700">
-                <CardHeader className="pb-3">
-                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid grid-cols-4 w-full">
-                      <TabsTrigger value="overview">Overview</TabsTrigger>
-                      <TabsTrigger value="appointments">Appointments</TabsTrigger>
-                      <TabsTrigger value="notes">Notes</TabsTrigger>
-                      <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </CardHeader>
-                <CardContent>
-                  <TabsContent value="overview" className="mt-0">
-                    <h3 className="text-lg font-medium mb-4">Client Summary</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-                      <div className="bg-slate-50 dark:bg-navy-800/50 p-5 rounded-lg">
-                        <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Next Appointment</div>
-                        <div className="font-medium text-lg">
-                          {client?.appointmentHistory?.find(a => a.status === 'upcoming')?.title || 'No upcoming appointments'}
-                        </div>
-                        <div className="text-sm text-slate-500 mt-1">
-                          {client?.appointmentHistory?.find(a => a.status === 'upcoming')?.date
-                            ? new Date(client?.appointmentHistory?.find(a => a.status === 'upcoming')?.date || '').toLocaleDateString()
-                            : 'Schedule one now'}
-                        </div>
-                      </div>
-                      <div className="bg-slate-50 dark:bg-navy-800/50 p-5 rounded-lg">
-                        <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Last Interaction</div>
-                        <div className="font-medium text-lg">Phone Call</div>
-                        <div className="text-sm text-slate-500 mt-1">{client?.lastContact}</div>
-                      </div>
-                    </div>
-                    
-                    <h3 className="text-lg font-medium mb-4">Recent Activity</h3>
-                    <div className="space-y-5">
-                      {client?.appointmentHistory?.slice(0, 3).map((appointment, index) => (
-                        <div key={index} className="flex items-start border-b pb-4 last:border-0">
-                          <div className={`p-2.5 rounded-full mr-4 ${
-                            appointment.status === 'completed' ? 'bg-blue-100 dark:bg-blue-900/30' : 
-                            appointment.status === 'upcoming' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'
-                          }`}>
-                            <Calendar className={`h-5 w-5 ${
-                              appointment.status === 'completed' ? 'text-blue-600 dark:text-blue-400' : 
-                              appointment.status === 'upcoming' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                            }`} />
-                          </div>
-                          <div>
-                            <div className="font-medium text-base">{appointment.title}</div>
-                            <div className="text-sm text-slate-500 mt-0.5">
-                              {new Date(appointment.date).toLocaleDateString()} at {new Date(appointment.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                            </div>
-                            <div className="text-xs mt-2">
-                              <Badge variant="outline" className={`${
-                                appointment.status === 'completed' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300' : 
-                                appointment.status === 'upcoming' ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300' : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
-                              }`}>
-                                {appointment.status}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="appointments" className="mt-0">
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-lg font-medium">Appointment History</h3>
-                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={handleScheduleAppointment}>
-                        <Calendar className="mr-2 h-4 w-4" />
-                        New Appointment
-                      </Button>
-                    </div>
-                    
-                    <div className="space-y-5">
-                      {client?.appointmentHistory?.map((appointment, index) => (
-                        <div key={index} className="flex items-start border-b pb-5 last:border-0">
-                          <div className={`p-2.5 rounded-full mr-4 ${
-                            appointment.status === 'completed' ? 'bg-blue-100 dark:bg-blue-900/30' : 
-                            appointment.status === 'upcoming' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'
-                          }`}>
-                            <Calendar className={`h-5 w-5 ${
-                              appointment.status === 'completed' ? 'text-blue-600 dark:text-blue-400' : 
-                              appointment.status === 'upcoming' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                            }`} />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-base">{appointment.title}</div>
-                            <div className="text-sm text-slate-500 mt-0.5">
-                              {new Date(appointment.date).toLocaleDateString()} at {new Date(appointment.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                            </div>
-                            <div className="text-xs mt-2">
-                              <Badge variant="outline" className={`${
-                                appointment.status === 'completed' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300' : 
-                                appointment.status === 'upcoming' ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300' : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
-                              }`}>
-                                {appointment.status}
-                              </Badge>
-                            </div>
-                          </div>
-                          <div>
-                            <Button variant="ghost" size="sm">
-                              <ClipboardList className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="notes" className="mt-0">
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-lg font-medium">Client Notes</h3>
-                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700">Add Note</Button>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      {client?.notes?.map((note, index) => (
-                        <Card key={index} className="shadow-sm border-slate-200 dark:border-navy-700">
-                          <CardContent className="p-5">
-                            <div className="flex justify-between items-start">
-                              <div className="flex-1">
-                                <p className="text-slate-800 dark:text-slate-200">{note}</p>
-                                <div className="text-xs text-slate-500 mt-3">
-                                  Added on {new Date().toLocaleDateString()}
-                                </div>
-                              </div>
-                              <Button variant="ghost" size="sm">Edit</Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="analytics" className="mt-0">
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-lg font-medium">Client Analytics</h3>
-                      <div>
-                        <Button variant="outline" size="sm">
-                          <BarChart className="mr-2 h-4 w-4" />
-                          Generate Report
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-5 mb-8">
-                      <Card className="shadow-sm border-slate-200 dark:border-navy-700">
-                        <CardContent className="p-5">
-                          <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Engagement Score</div>
-                          <div className="text-2xl font-semibold">78%</div>
-                          <div className="text-xs text-green-600 dark:text-green-400 mt-1">↑ 12% from last month</div>
-                        </CardContent>
-                      </Card>
-                      <Card className="shadow-sm border-slate-200 dark:border-navy-700">
-                        <CardContent className="p-5">
-                          <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Response Rate</div>
-                          <div className="text-2xl font-semibold">92%</div>
-                          <div className="text-xs text-green-600 dark:text-green-400 mt-1">↑ 5% from last month</div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                    
-                    <div className="bg-slate-50 dark:bg-navy-800/50 p-8 rounded-lg text-center">
-                      <BarChart className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-                      <h4 className="text-lg font-medium mb-3">Client Analytics Dashboard</h4>
-                      <p className="text-slate-600 dark:text-slate-400 mb-5 max-w-xl mx-auto">
-                        Detailed analytics dashboard coming soon! Track client engagement, 
-                        appointment history, and communication patterns.
-                      </p>
-                      <Button variant="outline">Request Early Access</Button>
-                    </div>
-                  </TabsContent>
-                </CardContent>
-              </Card>
+              <ClientTabs 
+                client={client} 
+                activeTab={activeTab} 
+                setActiveTab={setActiveTab} 
+                onScheduleAppointment={handleScheduleAppointment} 
+              />
             </div>
           </div>
         </div>
