@@ -5,8 +5,7 @@
  */
 
 // Define the gtag function as it's provided by the GA4 script
-// Note: We are removing the Window interface declaration here
-// since it's already declared in trackers/index.ts
+// Using interface merging approach to avoid conflicts
 
 /**
  * Initialize Google Analytics 4

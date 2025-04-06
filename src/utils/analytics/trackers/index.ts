@@ -8,15 +8,14 @@ export * from './facebookMetaTag';
 export * from './pinterestTag';
 export * from './googleAdSense';
 
-// Type definitions to help with global window objects
-declare global {
-  interface Window {
-    dataLayer: any[];
-    gtag?: (...args: any[]) => void;
-    fbq?: any; // Changed to match the 'any' type in metaPixel.ts
-    pintrk?: any;
-    adsbygoogle: any[];
-  }
+// Move all global type definitions to a single interface merging declaration
+// to avoid conflicts with declarations in other files
+interface Window {
+  dataLayer: any[];
+  gtag?: (...args: any[]) => void;
+  fbq?: any;
+  pintrk?: any;
+  adsbygoogle: any[];
 }
 
 // Types for tracking configuration

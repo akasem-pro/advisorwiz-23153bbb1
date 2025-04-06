@@ -1,12 +1,4 @@
-
-// Type definition for window with dataLayer
-interface WindowWithDataLayer extends Window {
-  dataLayer: any[];
-  gtag?: (...args: any[]) => void;
-}
-
-// Access window with dataLayer type
-declare const window: WindowWithDataLayer;
+// We no longer need to redefine WindowWithDataLayer since we're using interface merging
 
 // Define the event parameter structure
 export interface TrackEventParams {
