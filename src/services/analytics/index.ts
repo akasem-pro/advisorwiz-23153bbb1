@@ -4,7 +4,7 @@ export {
   trackEvent, 
   trackPageView,
   isAnalyticsAllowed,
-  initAnalytics,
+  initializeAnalytics,
   UserBehaviorEvent 
 } from './analyticsService';
 
@@ -23,9 +23,9 @@ export {
 
 // Export web vitals tracking
 export { 
-  reportWebVitals,
-  setupWebVitalsTracking 
-} from '../performance/webVitals';
+  initWebVitalsTracking as setupWebVitalsTracking,
+  initWebVitalsTracking
+} from './providers/webVitalsProvider';
 
 /**
  * Initialize the application's analytics system
@@ -61,10 +61,10 @@ export const setupAnalytics = async (config: {
     }
     
     // Initialize our core analytics
-    initAnalytics();
+    initializeAnalytics();
     
     // Set up web vitals tracking
-    setupWebVitalsTracking();
+    initWebVitalsTracking();
     
     return true;
   } catch (error) {
@@ -72,3 +72,6 @@ export const setupAnalytics = async (config: {
     return false;
   }
 };
+
+// For backward compatibility with existing code
+export const initializeAppAnalytics = setupAnalytics;

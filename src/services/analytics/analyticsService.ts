@@ -107,11 +107,15 @@ const flushEvents = async (): Promise<void> => {
         if (!isAnalyticsAllowed('analytics')) continue;
         
         try {
-          const { error } = await supabase.from('analytics_events').insert(
+          // Check if 'analytics_metrics' table exists instead of 'analytics_events'
+          const { error } = await supabase.from('analytics_metrics').insert(
             batch.map(event => ({
-              event_name: event.name,
-              event_data: event.properties || {},
-              created_at: new Date(event.timestamp).toISOString()
+              metric_type: 'event',
+              metric_name: event.name,
+              metric_value: 1,
+              dimension_name: 'event_data',
+              dimension_value: JSON.stringify(event.properties || {}),
+              metric_date: new Date(event.timestamp).toISOString().split('T')[0]
             }))
           );
           
@@ -151,7 +155,7 @@ export const trackEvent = (
   try {
     const opts = {
       sendImmediately: false,
-      trackingType: 'analytics',
+      trackingType: 'analytics' as 'analytics' | 'marketing' | 'personalization',
       ...options
     };
     
@@ -215,7 +219,7 @@ export const trackPageView = (
 /**
  * Initialize analytics tracking
  */
-export const initAnalytics = (): void => {
+export const initializeAnalytics = (): void => {
   // Check if we have consent before initializing
   if (!localStorage.getItem('cookie-consent')) {
     return;
@@ -259,7 +263,7 @@ if (typeof window !== 'undefined') {
   // Wait for cookie consent check
   setTimeout(() => {
     if (localStorage.getItem('cookie-consent')) {
-      initAnalytics();
+      initializeAnalytics();
     }
   }, 100);
 }
