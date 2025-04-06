@@ -19,7 +19,8 @@ export function Toaster() {
 
   // Listen to sonner toast events
   useEffect(() => {
-    const handleToastAdd = (toast: any) => {
+    const handleToastAdd = (event: CustomEvent) => {
+      const toast = event.detail;
       const newToast: ToastItem = {
         id: toast.id,
         title: toast.title,
@@ -30,20 +31,21 @@ export function Toaster() {
       setToasts(prev => [...prev, newToast]);
     };
 
-    const handleToastDismiss = (id: string) => {
+    const handleToastDismiss = (event: CustomEvent) => {
+      const id = event.detail;
       setToasts(prev => prev.filter(toast => toast.id !== id));
     };
 
     // Add event listeners
     if (typeof window !== 'undefined') {
-      window.addEventListener('sonner-toast-add', (e: any) => handleToastAdd(e.detail));
-      window.addEventListener('sonner-toast-dismiss', (e: any) => handleToastDismiss(e.detail));
+      window.addEventListener('sonner-toast-add', handleToastAdd as EventListener);
+      window.addEventListener('sonner-toast-dismiss', handleToastDismiss as EventListener);
     }
 
     return () => {
       if (typeof window !== 'undefined') {
-        window.removeEventListener('sonner-toast-add', (e: any) => handleToastAdd(e.detail));
-        window.removeEventListener('sonner-toast-dismiss', (e: any) => handleToastDismiss(e.detail));
+        window.removeEventListener('sonner-toast-add', handleToastAdd as EventListener);
+        window.removeEventListener('sonner-toast-dismiss', handleToastDismiss as EventListener);
       }
     };
   }, []);
