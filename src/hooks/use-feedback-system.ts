@@ -27,6 +27,7 @@ export const useFeedbackSystem = () => {
   const showToast = useCallback((options: FeedbackOptions) => {
     if (!isFeedbackEnabled) return;
     
+    // Use the title+options pattern instead of passing an object directly
     toast(options.title || "", {
       description: options.description,
       duration: options.duration || 5000,

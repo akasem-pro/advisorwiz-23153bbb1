@@ -13,16 +13,16 @@ export type ToastProps = {
 
 interface Toast {
   (props: ToastProps): void;
-  (title: string, props?: ToastProps): void;
+  (title: string, props?: Omit<ToastProps, "title">): void;
 }
 
 // Define a custom toast function type that accepts either an object or a string + object
 const useToast = () => {
-  const toast: Toast = (titleOrProps: string | ToastProps, props?: ToastProps) => {
-    // If first argument is a string, use it as title and second argument as props
+  const toast: Toast = (titleOrProps: string | ToastProps, options?: Omit<ToastProps, "title">) => {
+    // If first argument is a string, use it as title and second argument as options
     if (typeof titleOrProps === 'string') {
       const title = titleOrProps;
-      const { description, variant, action, duration, className, ...rest } = props || {};
+      const { description, variant, action, duration, className, ...rest } = options || {};
       
       // Map our variant to sonner's type
       const toastType = variant === "destructive" ? "error" : "default";
@@ -45,7 +45,7 @@ const useToast = () => {
         });
       }
     } 
-    // If first argument is an object, extract title and use rest as props
+    // If first argument is an object, extract title and use rest as options
     else {
       const { title, description, variant, action, duration, className, ...rest } = titleOrProps;
       
