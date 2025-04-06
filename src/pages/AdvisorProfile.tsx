@@ -86,7 +86,9 @@ const AdvisorProfile: React.FC = () => {
   };
 
   const handleContinue = () => {
-    navigate('/matches');
+    // Changed from /matches to /advisor-dashboard as a more appropriate destination
+    // since /matches route doesn't exist
+    navigate('/advisor-dashboard');
   };
 
   return (

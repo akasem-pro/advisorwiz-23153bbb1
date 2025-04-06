@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { lazy } from 'react';
 import AppLayout from '../components/layout/AppLayout';
@@ -21,6 +22,7 @@ import FirmProfile from '../pages/FirmProfile';
 import SignIn from '../pages/SignIn';
 import Onboarding from '../pages/Onboarding';
 import Resources from '../pages/Resources';
+import Matches from '../pages/Matches';
 
 // Lazy loaded components
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -231,6 +233,16 @@ export const routes = {
   billing: {
     path: '/billing',
     element: <AppLayout><div>Billing Page</div></AppLayout>
+  },
+  
+  // Add the matches route
+  matches: {
+    path: '/matches',
+    element: (
+      <AuthGuard>
+        <AppLayout><Matches /></AppLayout>
+      </AuthGuard>
+    )
   },
   
   // Fallback route
