@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import AppLayout from '../components/layout/AppLayout';
@@ -92,9 +91,7 @@ const ClientDetail: React.FC = () => {
   ];
 
   const handleScheduleAppointment = () => {
-    toast({
-      description: "Scheduling appointment - Redirecting to schedule page"
-    });
+    toast("Scheduling appointment - Redirecting to schedule page");
     // In a real app, this would navigate to the scheduling page
   };
 
@@ -207,25 +204,25 @@ const ClientDetail: React.FC = () => {
                         ))}
                       </div>
                     </div>
-                  </div>
                   
-                  <div className="grid grid-cols-2 gap-3 mt-8">
-                    <Link to={`/call/${client?.id}`}>
-                      <Button className="w-full" variant="outline">
-                        <Phone className="mr-2 h-4 w-4" />
-                        Call
+                    <div className="grid grid-cols-2 gap-3 mt-8">
+                      <Link to={`/call/${client?.id}`}>
+                        <Button className="w-full" variant="outline">
+                          <Phone className="mr-2 h-4 w-4" />
+                          Call
+                        </Button>
+                      </Link>
+                      <Link to={`/call/${client?.id}`}>
+                        <Button className="w-full" variant="outline">
+                          <Video className="mr-2 h-4 w-4" />
+                          Video
+                        </Button>
+                      </Link>
+                      <Button className="w-full col-span-2 bg-blue-600 hover:bg-blue-700" onClick={handleScheduleAppointment}>
+                        <Calendar className="mr-2 h-4 w-4" />
+                        Schedule Meeting
                       </Button>
-                    </Link>
-                    <Link to={`/call/${client?.id}`}>
-                      <Button className="w-full" variant="outline">
-                        <Video className="mr-2 h-4 w-4" />
-                        Video
-                      </Button>
-                    </Link>
-                    <Button className="w-full col-span-2 bg-blue-600 hover:bg-blue-700" onClick={handleScheduleAppointment}>
-                      <Calendar className="mr-2 h-4 w-4" />
-                      Schedule Meeting
-                    </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
