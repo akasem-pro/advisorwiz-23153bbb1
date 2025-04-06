@@ -30,7 +30,8 @@ export const getAllRoutes = (): RouteConfig[] => {
   return Object.values(allRouteConfigs);
 };
 
-export { RouteConfig };
+// Use 'export type' for re-exporting types when isolatedModules is enabled
+export type { RouteConfig };
 export { publicRoutes };
 export { profileRoutes };
 export { authRoutes };
