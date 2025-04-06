@@ -83,8 +83,15 @@
   @apply transition-colors duration-200;
 }
 
-.element-active {
-  @apply transition-transform duration-100 active:scale-98;
+/* Fix: Replace active:scale-98 with custom implementation */
+@layer utilities {
+  .element-active {
+    @apply transition-transform duration-100;
+  }
+  
+  .element-active:active {
+    transform: scale(0.98);
+  }
 }
 
 /* Consistent entrance animations */

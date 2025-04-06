@@ -1,4 +1,9 @@
 
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Import all CSS files first */
 @import './base/reset.css';
 @import './base/typography.css';
@@ -14,11 +19,6 @@
 @import './utilities/spacing.css';
 @import './utilities/fonts.css';
 @import './utilities/effects.css';
-
-/* Tailwind directives */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* Tour highlight effects */
 .tour-highlight {
