@@ -5,8 +5,9 @@ import { getCookieSettings } from '../../utils/analytics/trackers/cookieBanner';
 import { flushMetricsBuffer } from '../../utils/performance/enhanced';
 import { supabase } from '../../integrations/supabase/client';
 
-// Size for batching events before sending
-const BATCH_SIZE = 10;
+// Default settings for batching events
+const DEFAULT_BATCH_SIZE = 10;
+const DEFAULT_BATCH_INTERVAL_MS = 2000;
 
 // Events waiting to be sent
 let eventQueue: Array<{
@@ -17,6 +18,10 @@ let eventQueue: Array<{
 
 // Is a flush already scheduled?
 let flushScheduled = false;
+
+// Configurable settings
+let batchSize = DEFAULT_BATCH_SIZE;
+let batchIntervalMs = DEFAULT_BATCH_INTERVAL_MS;
 
 /**
  * Check if analytics tracking is allowed based on user consent
@@ -59,12 +64,12 @@ const scheduleFlush = (): void => {
     window.requestIdleCallback(() => {
       flushEvents();
       flushScheduled = false;
-    }, { timeout: 2000 });
+    }, { timeout: batchIntervalMs });
   } else {
     setTimeout(() => {
       flushEvents();
       flushScheduled = false;
-    }, 2000);
+    }, batchIntervalMs);
   }
 };
 
@@ -99,15 +104,15 @@ const flushEvents = async (): Promise<void> => {
     if (supabase) {
       const batchPromises = [];
       
-      // Process in batches of 10
-      for (let i = 0; i < events.length; i += BATCH_SIZE) {
-        const batch = events.slice(i, i + BATCH_SIZE);
+      // Process in batches
+      for (let i = 0; i < events.length; i += batchSize) {
+        const batch = events.slice(i, i + batchSize);
         
         // Skip if no analytics permission
         if (!isAnalyticsAllowed('analytics')) continue;
         
         try {
-          // Check if 'analytics_metrics' table exists instead of 'analytics_events'
+          // Insert into analytics_metrics table
           const { error } = await supabase.from('analytics_metrics').insert(
             batch.map(event => ({
               metric_type: 'event',
@@ -178,7 +183,7 @@ export const trackEvent = (
     }
     
     // Send immediately or schedule
-    if (opts.sendImmediately || eventQueue.length >= BATCH_SIZE) {
+    if (opts.sendImmediately || eventQueue.length >= batchSize) {
       flushEvents();
     } else {
       scheduleFlush();
@@ -219,7 +224,17 @@ export const trackPageView = (
 /**
  * Initialize analytics tracking
  */
-export const initializeAnalytics = (): void => {
+export const initializeAnalytics = (config?: {
+  batchSize?: number;
+  batchIntervalMs?: number;
+  samplingRate?: number;
+}): void => {
+  // Apply configuration if provided
+  if (config) {
+    if (config.batchSize) batchSize = config.batchSize;
+    if (config.batchIntervalMs) batchIntervalMs = config.batchIntervalMs;
+  }
+
   // Check if we have consent before initializing
   if (!localStorage.getItem('cookie-consent')) {
     return;

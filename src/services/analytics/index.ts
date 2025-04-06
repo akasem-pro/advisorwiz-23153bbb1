@@ -64,7 +64,11 @@ export const setupAnalytics = async (config: {
     
     // Initialize our core analytics
     const { initializeAnalytics } = await import('./analyticsService');
-    initializeAnalytics();
+    initializeAnalytics({
+      batchSize: config.batchSize,
+      batchIntervalMs: config.batchIntervalMs,
+      samplingRate: config.sampling
+    });
     
     // Set up web vitals tracking
     const { initWebVitalsTracking } = await import('./providers/webVitalsProvider');
