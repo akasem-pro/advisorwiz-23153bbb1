@@ -1,7 +1,6 @@
-
 import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "@/components/ui/toast";
 import { useEffect, useState } from "react";
-import { toast as sonnerToast } from "sonner";
+import { Toaster as SonnerToaster } from "sonner";
 
 // Define a toast item type
 type ToastItem = {
@@ -51,29 +50,35 @@ export function Toaster() {
   }, []);
 
   return (
-    <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, variant, ...props }) {
-        // Remove incompatible props
-        const { type, icon, jsx, richColors, invert, ...compatibleProps } = props;
-        
-        return (
-          <Toast key={id} {...compatibleProps} variant={variant}>
-            <div className="grid gap-1">
-              {title && <ToastTitle>{title}</ToastTitle>}
-              {description && (
-                <ToastDescription>{description}</ToastDescription>
+    <>
+      {/* Use the simpler Sonner toaster component directly */}
+      <SonnerToaster position="bottom-right" />
+      
+      {/* Keep the custom implementation for compatibility */}
+      <ToastProvider>
+        {toasts.map(function ({ id, title, description, action, variant, ...props }) {
+          // Remove incompatible props
+          const { type, icon, jsx, richColors, invert, ...compatibleProps } = props;
+          
+          return (
+            <Toast key={id} {...compatibleProps} variant={variant}>
+              <div className="grid gap-1">
+                {title && <ToastTitle>{title}</ToastTitle>}
+                {description && (
+                  <ToastDescription>{description}</ToastDescription>
+                )}
+              </div>
+              {action && (
+                typeof action === 'object' && action !== null
+                  ? <div>{action as React.ReactNode}</div>
+                  : null
               )}
-            </div>
-            {action && (
-              typeof action === 'object' && action !== null
-                ? <div>{action as React.ReactNode}</div>
-                : null
-            )}
-            <ToastClose />
-          </Toast>
-        );
-      })}
-      <ToastViewport />
-    </ToastProvider>
+              <ToastClose />
+            </Toast>
+          );
+        })}
+        <ToastViewport />
+      </ToastProvider>
+    </>
   );
 }
