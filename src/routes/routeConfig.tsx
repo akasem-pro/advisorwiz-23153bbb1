@@ -25,6 +25,7 @@ import Matches from '../pages/Matches';
 import Notifications from '../pages/Notifications';
 import CallClient from '../pages/CallClient';
 import CallClientSelect from '../pages/CallClientSelect';
+import ClientDetail from '../pages/ClientDetail';
 
 // Lazy loaded components
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -277,6 +278,16 @@ export const routes = {
     )
   },
   
+  // Add client detail route
+  clientDetail: {
+    path: '/client/:clientId',
+    element: (
+      <AuthGuard userTypes={['advisor', 'firm_admin']}>
+        <ClientDetail />
+      </AuthGuard>
+    )
+  },
+  
   // Fallback route
   notFound: {
     path: '*',
@@ -284,7 +295,7 @@ export const routes = {
   }
 };
 
-// Helper function to get route element by path
+// Helper function to get route by path
 export const getRouteByPath = (path: string) => {
   return Object.values(routes).find(route => route.path === path);
 };
