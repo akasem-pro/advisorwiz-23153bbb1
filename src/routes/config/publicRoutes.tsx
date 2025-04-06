@@ -24,7 +24,7 @@ export const publicRoutes: Record<string, RouteConfig> = {
   // Public routes
   home: {
     path: '/',
-    element: <AppLayout><Home /></AppLayout>
+    element: <Home />
   },
   about: {
     path: '/about',
