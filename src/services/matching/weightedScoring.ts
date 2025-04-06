@@ -1,4 +1,5 @@
-import { createHash } from 'crypto';
+
+// Remove crypto import and replace with a browser-compatible hash function
 import { MatchPreferences } from '../../context/UserContextDefinition';
 import { MatchingStrategy } from './strategies/MatchingStrategy';
 import { DefaultMatchingStrategy } from './strategies/DefaultMatchingStrategy';
@@ -33,12 +34,24 @@ export const setMatchingStrategy = (strategyName: string): void => {
 
 /**
  * Generate a stable hash for preferences object
+ * Browser-compatible implementation that doesn't rely on Node.js crypto
  * @param preferences Match preferences
  * @returns Hash string
  */
 const generatePreferencesHash = (preferences: MatchPreferences): string => {
   const json = JSON.stringify(preferences);
-  return createHash('md5').update(json).digest('hex').substring(0, 8);
+  
+  // Simple hash function for browser environments
+  let hash = 0;
+  for (let i = 0; i < json.length; i++) {
+    const char = json.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  
+  // Convert to a positive hex string and take first 8 chars
+  const hashString = Math.abs(hash).toString(16).padStart(8, '0');
+  return hashString.substring(0, 8);
 };
 
 /**
