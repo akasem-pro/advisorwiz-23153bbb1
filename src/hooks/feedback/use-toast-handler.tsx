@@ -7,10 +7,10 @@ type ToastType = 'success' | 'error' | 'warning' | 'info';
 
 // Define the options type
 interface ToastOptions {
-  title?: string;
   description?: string;
   duration?: number;
   action?: React.ReactNode;
+  onDismiss?: () => void;
 }
 
 /**
@@ -30,9 +30,11 @@ export const useToastHandler = () => {
                       feedbackItem.variant === 'warning' ? 'warning' : 
                       feedbackItem.variant === 'success' ? 'success' : 'default';
     
-    toast[toastType]?.(feedbackItem.description, {
+    // For Sonner, the first argument is the message (title)
+    // and options are passed as the second argument
+    toast[toastType]?.(feedbackItem.title || '', {
+      description: feedbackItem.description,
       id: feedbackItem.id,
-      title: feedbackItem.title,
       duration: options.duration || 5000,
       action: options.action,
       onDismiss: onClose
@@ -43,10 +45,11 @@ export const useToastHandler = () => {
    * Show a success toast notification
    */
   const showSuccess = useCallback((message: string, options?: ToastOptions) => {
-    toast.success(message, {
-      title: options?.title || "Success",
+    // For Sonner, use message as first arg (title), and pass other options
+    toast.success(options?.description || message, {
       duration: options?.duration || 5000,
-      action: options?.action
+      action: options?.action,
+      onDismiss: options?.onDismiss
     });
   }, []);
   
@@ -54,10 +57,11 @@ export const useToastHandler = () => {
    * Show an error toast notification
    */
   const showError = useCallback((message: string, options?: ToastOptions) => {
-    toast.error(message, {
-      title: options?.title || "Error",
+    // For Sonner, use message as first arg (title), and pass other options
+    toast.error(options?.description || message, {
       duration: options?.duration || 7000,
-      action: options?.action
+      action: options?.action,
+      onDismiss: options?.onDismiss
     });
   }, []);
   
@@ -65,10 +69,11 @@ export const useToastHandler = () => {
    * Show a warning toast notification
    */
   const showWarning = useCallback((message: string, options?: ToastOptions) => {
-    toast.warning(message, {
-      title: options?.title || "Warning",
+    // For Sonner, use message as first arg (title), and pass other options
+    toast.warning(options?.description || message, {
       duration: options?.duration || 5000,
-      action: options?.action
+      action: options?.action,
+      onDismiss: options?.onDismiss
     });
   }, []);
   
@@ -76,10 +81,11 @@ export const useToastHandler = () => {
    * Show an info toast notification
    */
   const showInfo = useCallback((message: string, options?: ToastOptions) => {
-    toast.info(message, {
-      title: options?.title || "Information",
+    // For Sonner, use message as first arg (title), and pass other options
+    toast.info(options?.description || message, {
       duration: options?.duration || 5000,
-      action: options?.action
+      action: options?.action,
+      onDismiss: options?.onDismiss
     });
   }, []);
   
@@ -123,10 +129,12 @@ export const useToastHandler = () => {
       </button>
     );
     
+    // For Sonner, use message as first arg, and pass options
     toast(message, {
-      title: options?.title,
+      description: options?.description,
       duration: options?.duration || 10000, // Longer duration for action toasts
-      action: actionButton
+      action: actionButton,
+      onDismiss: options?.onDismiss
     });
   }, []);
   
