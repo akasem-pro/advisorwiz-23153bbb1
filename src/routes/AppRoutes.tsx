@@ -7,11 +7,16 @@ import LandingPage from '../pages/LandingPage';
 import Privacy from '../pages/Privacy';
 import Terms from '../pages/Terms';
 import { useIsMobile } from '../hooks/use-mobile';
+import AppLayout from '../components/layout/AppLayout';
+import MobileLayout from '../components/layout/MobileLayout';
 
 const AppRoutes: React.FC = () => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
+  
+  // Get page layout based on device
+  const PageLayout = isMobile ? MobileLayout : AppLayout;
   
   // Log routing for debugging
   useEffect(() => {
@@ -23,9 +28,6 @@ const AppRoutes: React.FC = () => {
       setMounted(true);
     }
   }, [location, isMobile, mounted]);
-  
-  // Get all routes from the centralized configuration
-  const allRoutes = getAllRoutes();
   
   // Additional debugging to track render issues
   useEffect(() => {
@@ -47,9 +49,9 @@ const AppRoutes: React.FC = () => {
       {/* Explicitly define the home route to LandingPage for a richer experience */}
       <Route path="/" element={<LandingPage />} />
       
-      {/* These routes need to be defined at this level for proper handling */}
-      <Route path="/privacy" element={<Privacy />} />
-      <Route path="/terms" element={<Terms />} />
+      {/* Legal pages are defined at this level and use the appropriate layout */}
+      <Route path="/privacy" element={<PageLayout><Privacy /></PageLayout>} />
+      <Route path="/terms" element={<PageLayout><Terms /></PageLayout>} />
       
       {/* Include MainRoutes for all other pages */}
       <Route path="/*" element={<MainRoutes />} />

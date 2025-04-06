@@ -1,39 +1,40 @@
 
 /**
- * Analytics Configuration
- * Centralized configuration for the analytics system
+ * Analytics Config
+ * Manages configuration for the analytics system
  */
 import { AnalyticsConfig } from './types';
 
 // Default configuration
 export const DEFAULT_CONFIG: AnalyticsConfig = {
+  debug: false,
+  samplingRate: 1.0, // Track 100% of events by default
+  errorSamplingRate: 1.0, // Track 100% of errors by default
   batchSize: 10,
   batchIntervalMs: 2000,
-  samplingRate: 1.0, // Track everything by default
-  errorSamplingRate: 1.0, // Track all errors
-  debug: process.env.NODE_ENV === 'development'
+  providersEnabled: ['ga4', 'internal']
 };
 
-// The current configuration
-let currentConfig: AnalyticsConfig = { ...DEFAULT_CONFIG };
+// Current configuration with defaults
+let config: AnalyticsConfig = { ...DEFAULT_CONFIG };
 
 /**
- * Get the current analytics configuration
+ * Get current analytics configuration
  */
 export const getConfig = (): AnalyticsConfig => {
-  return { ...currentConfig };
+  return { ...config };
 };
 
 /**
- * Update the analytics configuration
+ * Update analytics configuration
  */
-export const updateConfig = (newConfig: Partial<AnalyticsConfig>): AnalyticsConfig => {
-  currentConfig = { ...currentConfig, ...newConfig };
+export const updateConfig = (newConfig: Partial<AnalyticsConfig>): void => {
+  config = {
+    ...config,
+    ...newConfig
+  };
   
-  // Debug logging
-  if (currentConfig.debug) {
-    console.log('[Analytics] Configuration updated:', currentConfig);
+  if (config.debug) {
+    console.log('[Analytics] Config updated:', config);
   }
-  
-  return { ...currentConfig };
 };

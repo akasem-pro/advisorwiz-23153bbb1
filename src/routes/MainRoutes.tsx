@@ -12,8 +12,6 @@ import Pricing from '../pages/Pricing';
 import Sitemap from '../pages/Sitemap';
 import ContactUs from '../pages/ContactUs';
 import Blog from '../pages/Blog';
-import Terms from '../pages/Terms';
-import Privacy from '../pages/Privacy';
 import { useIsMobile } from '../hooks/use-mobile';
 import MobileLayout from '../components/layout/MobileLayout';
 
@@ -39,10 +37,6 @@ const MainRoutes = () => {
       <Route path="/sitemap" element={<PageLayout><Sitemap /></PageLayout>} />
       <Route path="/contact" element={<PageLayout><ContactUs /></PageLayout>} />
       <Route path="/blog/*" element={<PageLayout><Blog /></PageLayout>} />
-      
-      {/* Legal pages - ensure these are directly accessible */}
-      <Route path="/terms" element={<Terms />} />
-      <Route path="/privacy" element={<Privacy />} />
       
       {/* Other specialized pages */}
       <Route 

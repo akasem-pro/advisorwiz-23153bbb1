@@ -1,21 +1,21 @@
 
 /**
  * Analytics Core Types
- * Common type definitions for the analytics system
+ * Defines type definitions for the analytics system
  */
 
-// Define standard event types
+// Analytics event types
 export enum AnalyticsEventType {
   PAGE_VIEW = 'page_view',
   USER_INTERACTION = 'user_interaction',
   FEATURE_USAGE = 'feature_usage',
-  CONVERSION = 'conversion',
-  ERROR = 'error',
   PERFORMANCE = 'performance',
+  ERROR = 'error',
+  CONVERSION = 'conversion',
   CONSENT = 'consent'
 }
 
-// Interfaces for analytics data
+// Analytics event structure
 export interface AnalyticsEvent {
   type: string;
   name: string;
@@ -24,18 +24,20 @@ export interface AnalyticsEvent {
   properties?: Record<string, any>;
 }
 
+// Analytics provider interface
 export interface AnalyticsProvider {
   name: string;
+  initialize: () => Promise<void>;
+  trackEvent: (event: AnalyticsEvent) => Promise<void>;
   isEnabled: () => boolean;
-  initialize: () => Promise<boolean>;
-  trackEvent: (event: AnalyticsEvent) => Promise<boolean>;
 }
 
-// Configuration for tracking behavior
+// Analytics configuration 
 export interface AnalyticsConfig {
+  debug: boolean;
+  samplingRate: number;
+  errorSamplingRate: number;
   batchSize: number;
   batchIntervalMs: number;
-  samplingRate: number; // 0-1, 1 = track everything
-  errorSamplingRate: number; // 0-1, higher rate for errors
-  debug: boolean;
+  providersEnabled: string[];
 }

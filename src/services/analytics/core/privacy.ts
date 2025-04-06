@@ -4,10 +4,11 @@
  * Handles consent checking and privacy-related functionality
  */
 import { AnalyticsEventType } from './types';
-import { getCookieSettings } from '../../../utils/analytics/trackers/cookieBanner';
+import { ConsentType, isConsentGiven } from '../consent';
 
 /**
  * Check if tracking is allowed for a given event type
+ * Uses centralized consent management
  */
 export const isTrackingAllowed = (eventType: string): boolean => {
   // Always allow essential events
@@ -16,26 +17,18 @@ export const isTrackingAllowed = (eventType: string): boolean => {
     return true;
   }
   
-  // Get cookie settings
-  const settings = getCookieSettings();
-  
-  // No consent means no tracking
-  if (!settings.hasConsent) {
-    return false;
-  }
-  
   // Check for specific permission based on event type
   switch (eventType) {
     case AnalyticsEventType.PAGE_VIEW:
     case AnalyticsEventType.PERFORMANCE:
-      return settings.analytics;
+      return isConsentGiven(ConsentType.ANALYTICS);
     case AnalyticsEventType.CONVERSION:
     case AnalyticsEventType.USER_INTERACTION:
-      return settings.marketing;
+      return isConsentGiven(ConsentType.MARKETING);
     case AnalyticsEventType.FEATURE_USAGE:
-      return settings.personalization || settings.analytics;
+      return isConsentGiven(ConsentType.PERSONALIZATION) || isConsentGiven(ConsentType.ANALYTICS);
     default:
-      return settings.analytics;
+      return isConsentGiven(ConsentType.ANALYTICS);
   }
 };
 
