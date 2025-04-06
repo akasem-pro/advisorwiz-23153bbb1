@@ -32,11 +32,7 @@ import {
 // Export all error handling utilities
 export {
   // Core types and enums
-  ErrorCategory,
-  ErrorSeverity,
-  AppError,
-  
-  // Core error handling functions
+  initErrorHandling,
   createError,
   handleError,
   withErrorHandling,
@@ -46,7 +42,6 @@ export {
   setErrorLoggingEnabled,
   setMonitoringEnabled,
   setSanitizationEnabled,
-  initErrorHandling,
   
   // Logging utilities
   logErrorAsync,
@@ -62,6 +57,10 @@ export {
   getUserFriendlyMessage,
   errorClassificationRules
 };
+
+// Use 'export type' for type re-exports when isolatedModules is enabled
+export type { AppError };
+export type { ErrorCategory, ErrorSeverity };
 
 /**
  * Initialize the enhanced error handling system with sensible defaults
