@@ -1,15 +1,21 @@
 
 import React, { useEffect, useState } from 'react';
-import { TrackingConfig } from '../../utils/analytics/trackers';
-import { initializeGA4 } from '../../utils/analytics/trackers/googleAnalytics';
-import { initializeMetaPixel } from '../../utils/analytics/trackers/metaPixel';
-import { initializePinterestTag } from '../../utils/analytics/trackers/pinterestTag';
-import { initializeGoogleAdSense } from '../../utils/analytics/trackers/googleAdSense';
+import { setupAnalytics } from '../../services/analytics';
 import { getCookieSettings } from '../../utils/analytics/trackers/cookieBanner';
-import { CookieManager } from '../cookie';
+import CookieManager from '../cookie/CookieManager';
 
 interface TrackingManagerProps {
-  config: TrackingConfig;
+  config: {
+    googleAnalytics?: {
+      measurementId: string;
+      debug?: boolean;
+    };
+    metaPixel?: {
+      pixelId: string;
+      debug?: boolean;
+    };
+    samplingRate?: number;
+  };
 }
 
 /**
@@ -27,30 +33,25 @@ const TrackingManager: React.FC<TrackingManagerProps> = ({ config }) => {
     
     // Only initialize tracking scripts if user has given consent
     if (cookieSettings.hasConsent) {
-      // Initialize Google Analytics if analytics cookies are allowed
-      if (cookieSettings.analytics && config.googleAnalytics) {
-        initializeGA4(config.googleAnalytics);
-      }
-
-      // Initialize marketing trackers if marketing cookies are allowed
-      if (cookieSettings.marketing) {
-        // Meta Pixel
-        if (config.metaPixel) {
-          initializeMetaPixel(config.metaPixel);
-        }
-
-        // Pinterest Tag
-        if (config.pinterestTag) {
-          initializePinterestTag(config.pinterestTag);
-        }
-
-        // Google AdSense
-        if (config.googleAdSense) {
-          initializeGoogleAdSense(config.googleAdSense);
-        }
-      }
+      const initAnalytics = async () => {
+        // Configure analytics based on user consent
+        const analyticsSetup = {
+          googleAnalyticsId: cookieSettings.analytics && config.googleAnalytics ? 
+                            config.googleAnalytics.measurementId : undefined,
+          metaPixelId: cookieSettings.marketing && config.metaPixel ?
+                      config.metaPixel.pixelId : undefined,
+          debug: process.env.NODE_ENV === 'development',
+          sampling: config.samplingRate || 1.0
+        };
+        
+        // Initialize the analytics system
+        await setupAnalytics(analyticsSetup);
+        
+        setIsInitialized(true);
+        console.log('[TrackingManager] Analytics initialized with user consent');
+      };
       
-      setIsInitialized(true);
+      initAnalytics();
     }
   }, [config, isInitialized]);
 

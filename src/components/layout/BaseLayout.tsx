@@ -1,11 +1,9 @@
-
 import React, { ReactNode, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
 import TrustBadges from '../ui/TrustBadges';
 import FloatingSupportButton from '../support/FloatingSupportButton';
-import { initializeTagManager, trackPageView } from '../../utils/tagManager';
-import { trackGA4PageView } from '../../utils/analytics/ga4Integration';
+import { trackPageView } from '../../services/analytics/analyticsService';
 import { cn } from '@/lib/utils';
 import AppFooter from './AppFooter';
 
@@ -50,14 +48,10 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   
   // Handle analytics
   useEffect(() => {
-    initializeTagManager();
     const pageTitle = document.title || 'AdvisorWiz';
     
-    // Track page view with existing system
+    // Track page view with the improved analytics service
     trackPageView(pageTitle, location.pathname);
-    
-    // Track page view with GA4
-    trackGA4PageView(pageTitle, location.pathname);
     
   }, [location]);
 

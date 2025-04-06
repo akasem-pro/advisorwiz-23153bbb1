@@ -1,25 +1,45 @@
 
-import { storeAnalyticsMetric } from '../../utils/performance/core';
-import { sendGA4Event, trackGA4PageView, setGA4UserProperties } from '../../utils/analytics/ga4Integration';
+import { trackUserBehavior, UserBehaviorEvent } from '../../utils/analytics/eventTracker';
+import { trackGA4Event, trackGA4PageView } from '../../utils/analytics/ga4Integration';
+import { getCookieSettings } from '../../utils/analytics/trackers/cookieBanner';
+import { flushMetricsBuffer } from '../../utils/performance/enhanced';
 import { supabase } from '../../integrations/supabase/client';
-import { toast } from 'sonner';
 
-// Check for analytics consent
-export const isAnalyticsAllowed = (): boolean => {
+// Size for batching events before sending
+const BATCH_SIZE = 10;
+
+// Events waiting to be sent
+let eventQueue: Array<{
+  name: string;
+  properties?: Record<string, any>;
+  timestamp: number;
+}> = [];
+
+// Is a flush already scheduled?
+let flushScheduled = false;
+
+/**
+ * Check if analytics tracking is allowed based on user consent
+ */
+export const isAnalyticsAllowed = (trackingType: 'analytics' | 'marketing' | 'personalization' = 'analytics'): boolean => {
   try {
     // Check for consent
     const consent = localStorage.getItem('cookie-consent');
     if (!consent) return false;
     
-    // Check for specific analytics permission
-    const settings = localStorage.getItem('cookie-settings');
-    if (settings) {
-      const parsedSettings = JSON.parse(settings);
-      return parsedSettings.analytics === true;
+    // Check for specific permission
+    const settings = getCookieSettings();
+    
+    // Essential cookies are always allowed
+    if (trackingType === 'analytics') {
+      return settings.analytics === true;
+    } else if (trackingType === 'marketing') {
+      return settings.marketing === true;
+    } else if (trackingType === 'personalization') {
+      return settings.personalization === true;
     }
     
-    // Default to true if consent given but no specific settings saved
-    return true;
+    return false;
   } catch (error) {
     console.error('Failed to check analytics permissions:', error);
     return false;
@@ -27,130 +47,156 @@ export const isAnalyticsAllowed = (): boolean => {
 };
 
 /**
- * Track a custom event across all analytics platforms
+ * Schedule a flush of the event queue
+ */
+const scheduleFlush = (): void => {
+  if (flushScheduled) return;
+  
+  flushScheduled = true;
+  
+  // Use requestIdleCallback if available for better performance
+  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    window.requestIdleCallback(() => {
+      flushEvents();
+      flushScheduled = false;
+    }, { timeout: 2000 });
+  } else {
+    setTimeout(() => {
+      flushEvents();
+      flushScheduled = false;
+    }, 2000);
+  }
+};
+
+/**
+ * Flush events from the queue
+ */
+const flushEvents = async (): Promise<void> => {
+  if (eventQueue.length === 0) return;
+  
+  try {
+    // Create a copy of the current queue and clear it
+    const events = [...eventQueue];
+    eventQueue = [];
+    
+    // Log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[Analytics] Flushing ${events.length} events`);
+    }
+    
+    // Group by provider to minimize API calls
+    const gaEvents = events.filter(e => isAnalyticsAllowed('analytics'));
+    const marketingEvents = events.filter(e => isAnalyticsAllowed('marketing'));
+    
+    // Send to Google Analytics
+    if (gaEvents.length > 0) {
+      gaEvents.forEach(event => {
+        trackGA4Event(event.name, event.properties);
+      });
+    }
+    
+    // Send to backend analytics if available
+    if (supabase) {
+      const batchPromises = [];
+      
+      // Process in batches of 10
+      for (let i = 0; i < events.length; i += BATCH_SIZE) {
+        const batch = events.slice(i, i + BATCH_SIZE);
+        
+        // Skip if no analytics permission
+        if (!isAnalyticsAllowed('analytics')) continue;
+        
+        try {
+          const { error } = await supabase.from('analytics_events').insert(
+            batch.map(event => ({
+              event_name: event.name,
+              event_data: event.properties || {},
+              created_at: new Date(event.timestamp).toISOString()
+            }))
+          );
+          
+          if (error && process.env.NODE_ENV === 'development') {
+            console.error('[Analytics] Error sending events to Supabase:', error);
+          }
+        } catch (err) {
+          console.error('[Analytics] Error in batch processing:', err);
+        }
+      }
+    }
+    
+    // Also flush performance metrics
+    flushMetricsBuffer();
+    
+  } catch (error) {
+    console.error('[Analytics] Error flushing events:', error);
+    
+    // Put events back in queue on failure, but avoid infinite growth
+    if (eventQueue.length < 100) {
+      eventQueue = [...eventQueue, ...eventQueue];
+    }
+  }
+};
+
+/**
+ * Track a custom event
  */
 export const trackEvent = (
   eventName: string, 
   properties?: Record<string, any>, 
   options?: {
-    sendToGA4?: boolean;
-    storeInDatabase?: boolean;
     sendImmediately?: boolean;
+    trackingType?: 'analytics' | 'marketing' | 'personalization';
   }
 ): void => {
   try {
     const opts = {
-      sendToGA4: true,
-      storeInDatabase: true,
       sendImmediately: false,
+      trackingType: 'analytics',
       ...options
     };
     
-    // Skip if analytics not allowed (unless it's a consent-related event)
+    // Skip if not allowed (unless it's a consent-related event)
     const isCookieEvent = eventName.includes('cookie_') || eventName.includes('consent');
-    if (!isCookieEvent && !isAnalyticsAllowed()) {
+    if (!isCookieEvent && !isAnalyticsAllowed(opts.trackingType)) {
       return;
     }
     
-    // Log event in development
+    // Add to queue for batching
+    eventQueue.push({
+      name: eventName,
+      properties,
+      timestamp: Date.now()
+    });
+    
+    // Log in development
     if (process.env.NODE_ENV === 'development') {
       console.log(`[Analytics] Tracking event: ${eventName}`, properties);
     }
     
-    // Track in Google Analytics
-    if (opts.sendToGA4) {
-      sendGA4Event(eventName, properties);
-    }
-    
-    // Store in internal metrics system
-    if (properties?.value && typeof properties.value === 'number') {
-      storeAnalyticsMetric(eventName, properties.value);
+    // Send immediately or schedule
+    if (opts.sendImmediately || eventQueue.length >= BATCH_SIZE) {
+      flushEvents();
     } else {
-      storeAnalyticsMetric(eventName, 1);
+      scheduleFlush();
     }
     
-    // Store in Supabase if needed
-    if (opts.storeInDatabase) {
-      storeEventInDatabase(eventName, properties, opts.sendImmediately);
-    }
+    // Also track using the user behavior system for compatibility
+    trackUserBehavior(eventName as any, properties);
+    
   } catch (error) {
-    console.error('Failed to track event:', error);
+    console.error('[Analytics] Error tracking event:', error);
   }
 };
 
 /**
- * Store event in database
- */
-const storeEventInDatabase = async (
-  eventName: string,
-  properties?: Record<string, any>,
-  sendImmediately: boolean = false
-): Promise<void> => {
-  try {
-    // Get user ID if available
-    const session = await supabase.auth.getSession();
-    const userId = session?.data?.session?.user?.id;
-    
-    // Create metric data for analytics_metrics
-    const metricData = {
-      metric_type: eventName.split('_')[0] || 'event',
-      metric_name: eventName,
-      metric_value: properties?.value || 1,
-      metric_date: new Date().toISOString().split('T')[0],
-      dimension_name: 'event_name',
-      dimension_value: eventName
-    };
-    
-    // Store in Supabase analytics_metrics
-    const { error } = await supabase.from('analytics_metrics').insert(metricData);
-    
-    // If there are additional properties, store them as separate dimensions
-    if (properties && !error) {
-      // Store userId as a dimension if available
-      if (userId) {
-        await supabase.from('analytics_metrics').insert({
-          metric_type: metricData.metric_type,
-          metric_name: metricData.metric_name,
-          metric_value: metricData.metric_value,
-          metric_date: metricData.metric_date,
-          dimension_name: 'user_id',
-          dimension_value: userId
-        });
-      }
-      
-      // Store page path if available
-      if (properties.page_path) {
-        await supabase.from('analytics_metrics').insert({
-          metric_type: metricData.metric_type,
-          metric_name: metricData.metric_name,
-          metric_value: metricData.metric_value,
-          metric_date: metricData.metric_date,
-          dimension_name: 'page_path',
-          dimension_value: properties.page_path
-        });
-      }
-    }
-    
-    if (error && process.env.NODE_ENV === 'development') {
-      console.error('Failed to store event in database:', error);
-    }
-  } catch (error) {
-    // Silent fail in production
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Failed to store event in database:', error);
-    }
-  }
-};
-
-/**
- * Track page views consistently across platforms
+ * Track page views
  */
 export const trackPageView = (
   pageTitle: string,
   pagePath: string = window.location.pathname,
   properties?: Record<string, any>
 ): void => {
-  if (!isAnalyticsAllowed()) return;
+  if (!isAnalyticsAllowed('analytics')) return;
   
   const fullProperties = {
     page_title: pageTitle,
@@ -162,116 +208,61 @@ export const trackPageView = (
   // Track in GA4
   trackGA4PageView(pageTitle, pagePath, fullProperties);
   
-  // Track as generic event
-  trackEvent('page_view', fullProperties, { storeInDatabase: true });
-};
-
-/**
- * Track user engagement with features
- */
-export const trackFeatureEngagement = (
-  featureName: string,
-  action: 'view' | 'click' | 'use' | 'complete',
-  properties?: Record<string, any>
-): void => {
-  const eventName = `feature_${action}`;
-  
-  trackEvent(eventName, {
-    feature_name: featureName,
-    ...properties
-  });
-};
-
-/**
- * Track user conversion/success metrics
- */
-export const trackConversion = (
-  conversionType: string,
-  value?: number,
-  properties?: Record<string, any>
-): void => {
-  trackEvent('conversion', {
-    conversion_type: conversionType,
-    value,
-    ...properties
-  }, { sendImmediately: true });
-  
-  // Show success toast for certain conversions
-  if (['signup_completed', 'appointment_booked', 'match_confirmed'].includes(conversionType)) {
-    toast.success('Success! Your action was completed.');
-  }
-};
-
-/**
- * Set user properties for better analytics segmentation
- */
-export const setUserProperties = (properties: Record<string, any>): void => {
-  if (!isAnalyticsAllowed()) return;
-  
-  // Set in GA4
-  setGA4UserProperties(properties);
-  
-  // Store in database for future reference
-  storeUserProperties(properties);
-};
-
-/**
- * Store user properties in database
- */
-const storeUserProperties = async (properties: Record<string, any>): Promise<void> => {
-  try {
-    // Get user ID
-    const session = await supabase.auth.getSession();
-    const userId = session?.data?.session?.user?.id;
-    
-    if (!userId) return;
-    
-    // Store user properties as analytics metrics
-    Object.entries(properties).forEach(async ([key, value]) => {
-      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-        await supabase.from('analytics_metrics').insert({
-          metric_type: 'user_property',
-          metric_name: key,
-          metric_value: typeof value === 'number' ? value : 1,
-          metric_date: new Date().toISOString().split('T')[0],
-          dimension_name: 'property_name',
-          dimension_value: String(value)
-        });
-      }
-    });
-  } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Failed to store user properties:', error);
-    }
-  }
+  // Track as generic event for other systems
+  trackEvent('page_view', fullProperties);
 };
 
 /**
  * Initialize analytics tracking
  */
 export const initAnalytics = (): void => {
+  // Check if we have consent before initializing
+  if (!localStorage.getItem('cookie-consent')) {
+    return;
+  }
+  
   // Generate session ID if not exists
   if (!localStorage.getItem('session_id')) {
     localStorage.setItem('session_id', `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`);
   }
   
-  // Track initial page view
-  const pageTitle = document.title;
-  const pageUrl = window.location.pathname;
-  trackPageView(pageTitle, pageUrl);
+  // Set up flush on page unload
+  window.addEventListener('beforeunload', () => {
+    flushEvents();
+  });
   
-  // Set up navigation tracking for single page apps
-  if (typeof window !== 'undefined' && 'addEventListener' in window) {
-    const originalPushState = history.pushState;
-    history.pushState = function(...args) {
-      originalPushState.apply(this, args);
-      trackPageView(document.title, window.location.pathname);
-    };
+  // Set up navigation tracking for SPAs
+  const originalPushState = history.pushState;
+  history.pushState = function(...args) {
+    originalPushState.apply(this, args);
     
-    window.addEventListener('popstate', () => {
+    // After navigation completes, track the page view
+    setTimeout(() => {
       trackPageView(document.title, window.location.pathname);
-    });
-  }
+    }, 0);
+  };
+  
+  window.addEventListener('popstate', () => {
+    setTimeout(() => {
+      trackPageView(document.title, window.location.pathname);
+    }, 0);
+  });
+  
+  // Track initial page view
+  trackPageView(document.title, window.location.pathname);
   
   console.log('[Analytics] Analytics tracking initialized');
 };
+
+// Initialize on import
+if (typeof window !== 'undefined') {
+  // Wait for cookie consent check
+  setTimeout(() => {
+    if (localStorage.getItem('cookie-consent')) {
+      initAnalytics();
+    }
+  }, 100);
+}
+
+// Export core functions for direct use
+export { UserBehaviorEvent };

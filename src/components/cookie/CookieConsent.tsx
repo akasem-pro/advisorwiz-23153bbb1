@@ -2,12 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { Shield } from 'lucide-react';
-import { 
-  updateCookieSettings
-} from '../../utils/analytics/trackers/cookieBanner';
-import { trackEvent, AnalyticsEventType } from '../../services/analytics/core';
+import { updateCookieSettings } from '../../utils/analytics/trackers/cookieBanner';
+import { trackEvent } from '../../services/analytics/analyticsService';
 
-// Cookie consent events (moved from trackers)
+// Cookie consent events
 enum CookieConsentEvent {
   BANNER_SHOWN = 'cookie_banner_shown',
   CONSENT_ACCEPTED = 'cookie_consent_accepted',
@@ -27,13 +25,10 @@ const CookieConsent: React.FC = () => {
     if (!hasConsent) {
       const timer = setTimeout(() => {
         setShowConsent(true);
-        // Track banner shown event
-        trackEvent(
-          AnalyticsEventType.CONSENT, 
-          CookieConsentEvent.BANNER_SHOWN,
-          1,
-          { timestamp: Date.now() }
-        );
+        // Track banner shown event (this works without consent)
+        trackEvent(CookieConsentEvent.BANNER_SHOWN, {
+          timestamp: Date.now()
+        }, { sendImmediately: true });
       }, 1500);
       
       return () => clearTimeout(timer);
@@ -51,19 +46,19 @@ const CookieConsent: React.FC = () => {
     
     setShowConsent(false);
     
-    // Track the acceptance event
-    trackEvent(
-      AnalyticsEventType.CONSENT,
-      CookieConsentEvent.CONSENT_ACCEPTED,
-      1,
-      { 
-        settings: {
-          analytics: true,
-          marketing: false,
-          personalization: false
-        }
+    // Track the acceptance event (this works without consent)
+    trackEvent(CookieConsentEvent.CONSENT_ACCEPTED, { 
+      settings: {
+        analytics: true,
+        marketing: false,
+        personalization: false
       }
-    );
+    }, { sendImmediately: true });
+    
+    // Initialize analytics now that we have consent
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   };
   
   const handleDecline = () => {
@@ -77,19 +72,14 @@ const CookieConsent: React.FC = () => {
     
     setShowConsent(false);
     
-    // Track the decline event
-    trackEvent(
-      AnalyticsEventType.CONSENT,
-      CookieConsentEvent.CONSENT_DECLINED,
-      1,
-      { 
-        settings: {
-          analytics: false,
-          marketing: false,
-          personalization: false
-        }
+    // Track the decline event (this works without consent)
+    trackEvent(CookieConsentEvent.CONSENT_DECLINED, { 
+      settings: {
+        analytics: false,
+        marketing: false,
+        personalization: false
       }
-    );
+    }, { sendImmediately: true });
   };
   
   // If user has already given consent, don't render anything
@@ -108,24 +98,24 @@ const CookieConsent: React.FC = () => {
             </h3>
           </div>
           
-          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-            We use cookies to enhance your browsing experience, analyze website traffic, and show personalized content. 
-            By accepting, you consent to our use of cookies as described in our cookie policy.
+          <p className="text-slate-600 dark:text-slate-400 mb-4">
+            We use cookies to improve your experience on our site, show you personalized content, and analyze our traffic. 
+            By clicking "Accept All", you consent to our use of cookies. You can also manage individual cookie preferences.
           </p>
           
-          <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+          <div className="flex flex-col sm:flex-row gap-3 justify-end mt-6">
             <Button 
-              onClick={handleAccept}
-              className="bg-black hover:bg-gray-800 text-white flex-1"
-            >
-              Accept All
-            </Button>
-            <Button 
-              onClick={handleDecline}
               variant="outline" 
-              className="border-gray-300 hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-700 flex-1"
+              onClick={handleDecline}
+              className="w-full sm:w-auto order-2 sm:order-1"
             >
               Essential Only
+            </Button>
+            <Button 
+              onClick={handleAccept}
+              className="w-full sm:w-auto order-1 sm:order-2"
+            >
+              Accept All
             </Button>
           </div>
         </div>

@@ -1,64 +1,74 @@
 
-import {
-  initializeAnalytics,
-  registerProvider,
+// Export the main analytics service functions
+export { 
+  trackEvent, 
   trackPageView,
-  trackInteraction,
-  trackFeature,
-  trackPerformance,
-  trackError,
-  clearAnalyticsData,
-  AnalyticsEventType
+  isAnalyticsAllowed,
+  initAnalytics,
+  UserBehaviorEvent 
+} from './analyticsService';
+
+// Export hooks for React components
+export { useAnalytics, usePageTracking } from '../../hooks/useAnalytics';
+
+// Export types for better developer experience
+export type { GA4EventParams, GA4EcommerceItem } from '../../utils/analytics/types';
+
+// Export the analytics provider core components
+export {
+  AnalyticsEventType,
+  type AnalyticsEvent,
+  type AnalyticsProvider
 } from './core';
-import { createGoogleAnalyticsProvider } from './providers/googleAnalyticsProvider';
+
+// Export web vitals tracking
+export { 
+  reportWebVitals,
+  setupWebVitalsTracking 
+} from '../performance/webVitals';
 
 /**
  * Initialize the application's analytics system
  */
-export const initializeAppAnalytics = async (
-  config: {
-    googleAnalyticsId?: string;
-    debug?: boolean;
-    samplingRate?: number;
-    batchSize?: number;
-    batchIntervalMs?: number;
-  } = {}
-) => {
+export const setupAnalytics = async (config: {
+  googleAnalyticsId?: string;
+  metaPixelId?: string;
+  debug?: boolean;
+  sampling?: number; // 0-1, percentage of events to track
+} = {}) => {
+  // Import trackers conditionally to avoid unused code
+  const { initializeGA4 } = await import('../../utils/analytics/trackers/googleAnalytics');
+  
+  // Check if we have consent
+  const consent = localStorage.getItem('cookie-consent');
+  if (!consent) {
+    return;
+  }
+  
   try {
-    // Register providers
+    // Initialize Google Analytics if available
     if (config.googleAnalyticsId) {
-      registerProvider(createGoogleAnalyticsProvider(
-        config.googleAnalyticsId,
-        config.debug
-      ));
+      initializeGA4({
+        measurementId: config.googleAnalyticsId,
+        debug: config.debug
+      });
     }
     
-    // Initialize the analytics core
-    await initializeAnalytics({
-      debug: config.debug,
-      samplingRate: config.samplingRate,
-      batchSize: config.batchSize,
-      batchIntervalMs: config.batchIntervalMs
-    });
+    // Initialize Meta Pixel if available
+    if (config.metaPixelId) {
+      const { initializeMetaPixel } = await import('../../utils/analytics/trackers/metaPixel');
+      initializeMetaPixel({ pixelId: config.metaPixelId });
+    }
     
-    // Return success
+    // Initialize our core analytics
+    initAnalytics();
+    
+    // Set up web vitals tracking
+    setupWebVitalsTracking();
+    
     return true;
   } catch (error) {
     console.error('Failed to initialize analytics:', error);
     return false;
   }
 };
-
-// Export everything from core for direct use
-export {
-  trackPageView,
-  trackInteraction,
-  trackFeature,
-  trackPerformance,
-  trackError,
-  clearAnalyticsData,
-  AnalyticsEventType
-};
-
-// Export hooks (re-export to have them available from the same module)
-export { useAnalytics, usePageTracking } from '../../hooks/useAnalytics';
