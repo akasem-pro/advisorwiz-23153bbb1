@@ -20,6 +20,28 @@ export const useToastHandler = () => {
   const { toast } = useToast();
   
   /**
+   * Show a toast notification with configured appearance based on feed item
+   */
+  const showToastNotification = useCallback((
+    feedbackItem: any, 
+    options: any, 
+    onClose?: () => void
+  ) => {
+    // Map our variant to sonner's type
+    const toastType = feedbackItem.variant === 'error' ? 'error' : 
+                      feedbackItem.variant === 'warning' ? 'warning' : 
+                      feedbackItem.variant === 'success' ? 'success' : 'default';
+    
+    toast({
+      title: feedbackItem.title,
+      description: feedbackItem.description,
+      variant: feedbackItem.variant === 'error' ? 'destructive' : 'default',
+      duration: options.duration || 5000,
+      action: options.action
+    });
+  }, [toast]);
+  
+  /**
    * Show a success toast notification
    */
   const showSuccess = useCallback((message: string, options?: ToastOptions) => {
@@ -118,6 +140,7 @@ export const useToastHandler = () => {
   }, [toast]);
   
   return {
+    showToastNotification,
     showSuccess,
     showError,
     showWarning,
