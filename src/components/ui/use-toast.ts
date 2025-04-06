@@ -5,7 +5,10 @@ import { toast } from 'sonner';
 // Create a simplified hook that's compatible with existing code
 export const useToast = () => {
   return {
-    toast,
+    toast: (message: string | React.ReactNode) => {
+      // Allow direct string messages
+      toast(message);
+    },
     dismiss: (toastId?: string) => {
       // Sonner's dismiss function takes the id directly
       if (toastId) {
