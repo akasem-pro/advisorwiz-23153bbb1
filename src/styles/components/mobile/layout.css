@@ -1,60 +1,44 @@
 
-/* Mobile footer optimizations */
-.mobile-footer {
-  @apply pt-8 pb-20; /* Extra bottom padding for mobile nav */
+/* 
+ * Mobile Layout Styles
+ * Contains specific styles for the mobile layout components
+ */
+
+.mobile-container {
+  padding: 1rem;
+  width: 100%;
 }
 
-.mobile-footer-heading {
-  @apply text-lg font-medium mb-3 text-teal-400;
+.mobile-content-container {
+  width: 100%;
+  padding: 0.5rem;
 }
 
-.mobile-footer-link {
-  @apply py-2 block;
+.mobile-section {
+  margin-bottom: 2rem;
 }
 
-/* Mobile footer disclaimer text */
-.mobile-footer-disclaimer {
-  @apply text-xs leading-relaxed px-4;
+.mobile-header {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--heading-color);
 }
 
-/* Mobile card grid */
-.mobile-card-grid {
-  @apply grid gap-3;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+.mobile-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
 }
 
-/* Responsive image optimizations */
-.mobile-responsive-img {
-  @apply w-full h-auto object-cover;
-  content-visibility: auto; /* Modern browsers: defer offscreen image rendering */
-}
-
-/* Core Web Vitals optimizations */
-.mobile-lcp-image {
-  @apply w-full;
-  content-visibility: auto;
-  contain: content;
-  loading: eager; /* Prioritize loading for LCP images */
-}
-
-/* Mobile first optimizations for CSS grid layouts */
-.mobile-grid {
-  @apply grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 md:gap-4;
-}
-
-/* Prevent CLS (Cumulative Layout Shift) on images */
-.mobile-aspect-container {
-  @apply relative w-full overflow-hidden;
-}
-
-.mobile-aspect-square {
-  @apply aspect-square;
-}
-
-.mobile-aspect-video {
-  @apply aspect-video;
-}
-
-.mobile-aspect-portrait {
-  aspect-ratio: 2/3;
+@media (prefers-color-scheme: dark) {
+  .mobile-card {
+    background-color: var(--card-bg-dark);
+  }
+  
+  .mobile-header {
+    color: var(--heading-color-dark);
+  }
 }

@@ -33,7 +33,9 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
   // Debug rendering
   useEffect(() => {
     console.log('MobileLayout rendering with children:', !!children);
-  }, [children]);
+    console.log('MobileLayout showFooter:', showFooter);
+    console.log('MobileLayout contentClassName:', contentClassName);
+  }, [children, showFooter, contentClassName]);
 
   // Override hideFooter if showFooter is explicitly true
   const finalHideFooter = showFooter ? false : hideFooter;
@@ -52,7 +54,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
       skipToContentId={skipToContentId}
       hideFooter={finalHideFooter}
     >
-      <div id={skipToContentId} className="mobile-contain">
+      <div id={skipToContentId} className="mobile-content-container">
         {children}
       </div>
     </BaseLayout>

@@ -6,14 +6,17 @@ import MainRoutes from './MainRoutes';
 import LandingPage from '../pages/LandingPage';
 import Privacy from '../pages/Privacy';
 import Terms from '../pages/Terms';
+import { useIsMobile } from '../hooks/use-mobile';
 
 const AppRoutes: React.FC = () => {
   const location = useLocation();
+  const isMobile = useIsMobile();
   
   // Log routing for debugging
   useEffect(() => {
     console.log("AppRoutes - Current route:", location.pathname);
-  }, [location]);
+    console.log("AppRoutes - Mobile detection:", isMobile ? "Mobile device" : "Desktop device");
+  }, [location, isMobile]);
   
   // Get all routes from the centralized configuration
   const allRoutes = getAllRoutes();
@@ -23,26 +26,12 @@ const AppRoutes: React.FC = () => {
       {/* Explicitly define the home route to LandingPage for a richer experience */}
       <Route path="/" element={<LandingPage />} />
       
-      {/* Explicitly define critical pages that need special handling */}
+      {/* These routes need to be defined at this level for proper handling */}
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
       
-      {/* Include MainRoutes for all marketing pages */}
+      {/* Include MainRoutes for all other pages */}
       <Route path="/*" element={<MainRoutes />} />
-      
-      {/* Then render all other routes (this might be redundant with the catch-all above) */}
-      {allRoutes
-        .filter(route => route.path !== '/' && 
-                         route.path !== '/privacy' && 
-                         route.path !== '/terms' && 
-                         !route.path.includes('*')) 
-        .map((route, index) => (
-          <Route 
-            key={`route-${index}`} 
-            path={route.path} 
-            element={route.element} 
-          />
-        ))}
     </Routes>
   );
 };
