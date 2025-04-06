@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { lazy } from 'react';
 import AppLayout from '../components/layout/AppLayout';
@@ -21,6 +20,7 @@ import ConsumerProfile from '../pages/ConsumerProfile';
 import FirmProfile from '../pages/FirmProfile';
 import SignIn from '../pages/SignIn';
 import Onboarding from '../pages/Onboarding';
+import Resources from '../pages/Resources';
 
 // Lazy loaded components
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -218,7 +218,7 @@ export const routes = {
   // Resources and utility routes
   resources: {
     path: '/resources',
-    element: <AppLayout><div>Resources Page</div></AppLayout>
+    element: <AppLayout><Resources /></AppLayout>
   },
   messages: {
     path: '/messages',
