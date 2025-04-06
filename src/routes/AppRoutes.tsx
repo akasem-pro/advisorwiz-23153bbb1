@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { getAllRoutes } from './routeConfig';
-import Home from '../pages/Home';
+import { getAllRoutes } from './config';
 import MainRoutes from './MainRoutes';
 import LandingPage from '../pages/LandingPage';
 
