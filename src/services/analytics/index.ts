@@ -35,6 +35,8 @@ export const setupAnalytics = async (config: {
   metaPixelId?: string;
   debug?: boolean;
   sampling?: number; // 0-1, percentage of events to track
+  batchSize?: number; // Number of events to batch before sending
+  batchIntervalMs?: number; // Time interval for batching events
 } = {}) => {
   // Import trackers conditionally to avoid unused code
   const { initializeGA4 } = await import('../../utils/analytics/trackers/googleAnalytics');
