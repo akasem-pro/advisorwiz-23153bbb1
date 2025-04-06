@@ -1,0 +1,27 @@
+
+/* Mobile Form Optimizations */
+.mobile-label {
+  @apply text-sm font-medium mb-1;
+}
+
+.mobile-input {
+  @apply h-11 text-base px-3;
+}
+
+.mobile-select {
+  @apply h-11 text-base;
+}
+
+.mobile-button {
+  @apply h-11 text-base font-medium rounded-lg;
+}
+
+/* Fix for mobile dialog/modals */
+.mobile-dialog {
+  @apply p-4 rounded-t-xl fixed bottom-0 left-0 right-0 bg-white dark:bg-navy-800 z-50;
+}
+
+/* Mobile touch friendly interactive elements */
+.mobile-interactive {
+  @apply transition-transform active:scale-95 touch-manipulation;
+}

@@ -1,0 +1,60 @@
+
+/* Mobile footer optimizations */
+.mobile-footer {
+  @apply pt-8 pb-20; /* Extra bottom padding for mobile nav */
+}
+
+.mobile-footer-heading {
+  @apply text-lg font-medium mb-3 text-teal-400;
+}
+
+.mobile-footer-link {
+  @apply py-2 block;
+}
+
+/* Mobile footer disclaimer text */
+.mobile-footer-disclaimer {
+  @apply text-xs leading-relaxed px-4;
+}
+
+/* Mobile card grid */
+.mobile-card-grid {
+  @apply grid gap-3;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+/* Responsive image optimizations */
+.mobile-responsive-img {
+  @apply w-full h-auto object-cover;
+  content-visibility: auto; /* Modern browsers: defer offscreen image rendering */
+}
+
+/* Core Web Vitals optimizations */
+.mobile-lcp-image {
+  @apply w-full;
+  content-visibility: auto;
+  contain: content;
+  loading: eager; /* Prioritize loading for LCP images */
+}
+
+/* Mobile first optimizations for CSS grid layouts */
+.mobile-grid {
+  @apply grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 md:gap-4;
+}
+
+/* Prevent CLS (Cumulative Layout Shift) on images */
+.mobile-aspect-container {
+  @apply relative w-full overflow-hidden;
+}
+
+.mobile-aspect-square {
+  @apply aspect-square;
+}
+
+.mobile-aspect-video {
+  @apply aspect-video;
+}
+
+.mobile-aspect-portrait {
+  aspect-ratio: 2/3;
+}

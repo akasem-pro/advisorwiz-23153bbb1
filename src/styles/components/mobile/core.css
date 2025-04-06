@@ -1,0 +1,53 @@
+
+/* Core mobile optimization classes */
+.mobile-container {
+  @apply px-3 py-2;
+}
+
+.mobile-section {
+  @apply py-4;
+}
+
+.mobile-card {
+  @apply bg-white dark:bg-navy-800 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-navy-700;
+}
+
+.mobile-header {
+  @apply text-xl font-bold mb-2;
+}
+
+/* Mobile spacing optimizations */
+.mobile-mt-0 {
+  @apply mt-0;
+}
+
+.mobile-mb-2 {
+  @apply mb-2;
+}
+
+.mobile-p-3 {
+  @apply p-3;
+}
+
+.mobile-px-3 {
+  @apply px-3;
+}
+
+.mobile-py-2 {
+  @apply py-2;
+}
+
+/* Fix for mobile touch targets */
+.mobile-touch-target {
+  @apply min-h-[44px] min-w-[44px];
+}
+
+/* CSS containment for better performance */
+.mobile-contain {
+  contain: content;
+}
+
+/* Mobile friendly lists */
+.mobile-list-item {
+  @apply py-3 px-2 border-b border-slate-200 dark:border-navy-700 flex items-center gap-3;
+}

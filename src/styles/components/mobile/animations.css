@@ -1,0 +1,31 @@
+
+/* Define animations within a layer directive */
+@layer utilities {
+  .animate-slide-in-up {
+    animation: slide-in-up 0.3s ease-out forwards;
+  }
+
+  @keyframes slide-in-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+/* Mobile skeleton loaders for perceived performance */
+.mobile-skeleton {
+  @apply rounded bg-slate-200 dark:bg-navy-700 animate-pulse;
+}
+
+.mobile-skeleton-text {
+  @apply h-4 rounded w-3/4 bg-slate-200 dark:bg-navy-700 animate-pulse mb-2;
+}
+
+.mobile-skeleton-image {
+  @apply h-32 rounded w-full bg-slate-200 dark:bg-navy-700 animate-pulse mb-2;
+}
