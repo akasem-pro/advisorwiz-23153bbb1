@@ -1,4 +1,3 @@
-// We no longer need to redefine WindowWithDataLayer since we're using interface merging
 
 // Define the event parameter structure
 export interface TrackEventParams {

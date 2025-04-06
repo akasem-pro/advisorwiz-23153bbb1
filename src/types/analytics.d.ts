@@ -4,12 +4,19 @@
  */
 
 // This centralizes all window augmentations for tracking libraries
-// to avoid conflicts between multiple declarations
 interface Window {
+  // Google Analytics / Tag Manager
   dataLayer: any[];
   gtag?: (...args: any[]) => void;
+  
+  // Meta/Facebook Pixel
   fbq?: any;
+  
+  // Pinterest Tag
   pintrk?: any;
-  adsbygoogle?: any[];
+  
+  // Google AdSense
+  adsbygoogle: any[];
+  
   // Add any other tracking globals here
 }

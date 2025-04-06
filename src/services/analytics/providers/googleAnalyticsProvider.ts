@@ -6,12 +6,6 @@ interface GA4EventParameters {
   [key: string]: any;
 }
 
-// Using interface merging instead of redeclaring Window to avoid conflicts
-interface Window {
-  gtag?: (...args: any[]) => void;
-  dataLayer?: any[];
-}
-
 /**
  * Google Analytics 4 Provider
  */

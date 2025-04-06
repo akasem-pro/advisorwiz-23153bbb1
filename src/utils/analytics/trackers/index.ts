@@ -8,16 +8,6 @@ export * from './facebookMetaTag';
 export * from './pinterestTag';
 export * from './googleAdSense';
 
-// Move all global type definitions to a single interface merging declaration
-// to avoid conflicts with declarations in other files
-interface Window {
-  dataLayer: any[];
-  gtag?: (...args: any[]) => void;
-  fbq?: any;
-  pintrk?: any;
-  adsbygoogle: any[];
-}
-
 // Types for tracking configuration
 export interface TrackingConfig {
   googleAnalytics?: {

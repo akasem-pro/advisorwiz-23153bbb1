@@ -4,9 +4,6 @@
  * Provides utilities for tracking events in GA4 format
  */
 
-// Define the gtag function as it's provided by the GA4 script
-// Using interface merging approach to avoid conflicts
-
 /**
  * Initialize Google Analytics 4
  * @param measurementId GA4 measurement ID (G-XXXXXXXX)
