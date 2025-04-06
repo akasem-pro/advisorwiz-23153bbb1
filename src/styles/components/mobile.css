@@ -87,7 +87,25 @@
 
 /* Fix for mobile dialog/modals */
 .mobile-dialog {
-  @apply p-4 rounded-t-xl fixed bottom-0 left-0 right-0 bg-white dark:bg-navy-800 z-50 animate-slide-in-up;
+  @apply p-4 rounded-t-xl fixed bottom-0 left-0 right-0 bg-white dark:bg-navy-800 z-50;
+}
+
+/* Define the animation within a layer directive */
+@layer utilities {
+  .animate-slide-in-up {
+    animation: slide-in-up 0.3s ease-out forwards;
+  }
+
+  @keyframes slide-in-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
 }
 
 /* Safe area padding for iOS */
@@ -192,3 +210,4 @@
 .mobile-list-item {
   @apply py-3 px-2 border-b border-slate-200 dark:border-navy-700 flex items-center gap-3;
 }
+
