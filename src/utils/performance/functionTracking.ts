@@ -1,115 +1,116 @@
 
-import { trackEnhancedPerformance } from './enhanced';
+import { recordPerformanceMark } from './webVitals';
 
-/**
- * Wraps a function with performance tracking
- * 
- * @param fn The function to wrap
- * @param name The name of the function for tracking
- * @returns A wrapped function that tracks performance
- */
-export function trackFunctionPerformance<T extends (...args: any[]) => any>(
-  fn: T,
-  name: string
-): T {
-  return ((...args: Parameters<T>): ReturnType<T> => {
-    const startTime = performance.now();
-    try {
-      const result = fn(...args);
-      
-      // For promises, track when they resolve
-      if (result instanceof Promise) {
-        return result.finally(() => {
-          const endTime = performance.now();
-          const duration = endTime - startTime;
-          
-          trackEnhancedPerformance(`function_${name}`, duration, {
-            tags: { 
-              async: 'true',
-              succeeded: 'true'
-            }
-          });
-        }) as ReturnType<T>;
-      } else {
-        // For synchronous functions, track immediately
-        const endTime = performance.now();
-        const duration = endTime - startTime;
-        
-        trackEnhancedPerformance(`function_${name}`, duration, {
-          tags: { 
-            async: 'false',
-            succeeded: 'true'
-          }
-        });
-        
-        return result;
-      }
-    } catch (error) {
-      // Track errors
-      const endTime = performance.now();
-      const duration = endTime - startTime;
-      
-      trackEnhancedPerformance(`function_${name}`, duration, {
-        tags: { 
-          async: 'false',
-          succeeded: 'false',
-          error: error instanceof Error ? error.name : 'unknown'
-        }
-      });
-      
-      throw error;
-    }
-  }) as T;
+interface PerformanceTrackingOptions {
+  functionName?: string;
+  componentName?: string;
+  threshold?: number;
+  logPerformance?: boolean;
+  trackInAnalytics?: boolean;
 }
 
 /**
- * HOC that wraps a React component with performance tracking
+ * Higher-order function that wraps a function with performance tracking
  */
-export function withPerformanceTracking<P extends object>(
-  Component: React.ComponentType<P>,
-  componentName: string
-): React.FC<P> {
-  const WrappedComponent: React.FC<P> = (props) => {
-    const startTime = performance.now();
+export function withPerformanceTracking<T extends (...args: any[]) => any>(
+  fn: T,
+  options: PerformanceTrackingOptions = {}
+): T {
+  const {
+    functionName = fn.name || 'anonymous',
+    threshold = 100,
+    logPerformance = true,
+    trackInAnalytics = false
+  } = options;
+  
+  const wrappedFunction = function(this: any, ...args: Parameters<T>): ReturnType<T> {
+    // Function start mark
+    const startMarkName = `${functionName}-start`;
+    const endMarkName = `${functionName}-end`;
+    const measureName = `${functionName}-execution-time`;
     
-    // Use useEffect to measure when component completes initial render
-    React.useEffect(() => {
-      const endTime = performance.now();
-      const duration = endTime - startTime;
+    recordPerformanceMark(startMarkName);
+    
+    try {
+      // Execute the original function
+      const result = fn.apply(this, args);
       
-      trackEnhancedPerformance(`component_render_${componentName}`, duration, {
-        tags: { initial: 'true' }
-      });
-      
-      // Also measure subsequent renders
-      const originalRender = Component.prototype?.render;
-      if (originalRender && typeof originalRender === 'function') {
-        Component.prototype.render = function(...args: any[]) {
-          const renderStartTime = performance.now();
-          const result = originalRender.apply(this, args);
-          const renderEndTime = performance.now();
-          
-          trackEnhancedPerformance(`component_render_${componentName}`, renderEndTime - renderStartTime, {
-            tags: { initial: 'false' }
-          });
-          
-          return result;
-        };
+      // Handle promises
+      if (result instanceof Promise) {
+        return result.then((value) => {
+          // Record end mark after promise resolves
+          recordPerformanceMark(endMarkName);
+          measurePerformance();
+          return value;
+        }).catch((error) => {
+          // Record end mark even if promise rejects
+          recordPerformanceMark(endMarkName);
+          measurePerformance();
+          throw error;
+        }) as ReturnType<T>;
       }
       
-      // Clean up on unmount
-      return () => {
-        if (originalRender) {
-          Component.prototype.render = originalRender;
-        }
-      };
-    }, []);
+      // Record end mark for synchronous functions
+      recordPerformanceMark(endMarkName);
+      measurePerformance();
+      return result;
+    } catch (error) {
+      // Record end mark even if function throws
+      recordPerformanceMark(endMarkName);
+      measurePerformance();
+      throw error;
+    }
     
-    return <Component {...props} />;
-  };
+    function measurePerformance() {
+      if (typeof window === 'undefined' || !window.performance) return;
+      
+      try {
+        // Measure execution time
+        window.performance.measure(measureName, startMarkName, endMarkName);
+        
+        // Get the measurement
+        const measurements = window.performance.getEntriesByName(measureName, 'measure');
+        const duration = measurements.length > 0 ? measurements[0].duration : 0;
+        
+        // Log if above threshold or if logging is always enabled
+        if (logPerformance && (duration > threshold || trackInAnalytics)) {
+          console.log(`⏱️ ${functionName} took ${duration.toFixed(2)}ms to execute`);
+        }
+        
+        // Track in analytics if enabled and above threshold
+        if (trackInAnalytics && duration > threshold) {
+          // Import analytics service dynamically to avoid circular dependencies
+          import('../../services/analytics/analyticsService').then(module => {
+            module.trackEvent('performance_metric', {
+              function_name: functionName,
+              duration_ms: Math.round(duration),
+              threshold_ms: threshold
+            });
+          }).catch(err => {
+            console.error('Failed to track performance in analytics:', err);
+          });
+        }
+        
+        // Clean up performance entries
+        window.performance.clearMarks(startMarkName);
+        window.performance.clearMarks(endMarkName);
+        window.performance.clearMeasures(measureName);
+      } catch (error) {
+        console.error('Error measuring performance:', error);
+      }
+    }
+  } as unknown as T;
   
-  // Set display name for debugging
-  WrappedComponent.displayName = `WithPerformanceTracking(${componentName})`;
-  
-  return WrappedComponent;
+  return wrappedFunction;
+}
+
+/**
+ * Component performance tracking HOC
+ */
+export function trackComponentPerformance<T extends React.ComponentType<any>>(
+  Component: T, 
+  options: PerformanceTrackingOptions = {}
+): T {
+  // Implementation would go here
+  return Component;
 }
