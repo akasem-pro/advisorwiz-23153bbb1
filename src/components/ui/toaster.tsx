@@ -1,3 +1,4 @@
+
 import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "@/components/ui/toast";
 import { useEffect, useState } from "react";
 import { Toaster as SonnerToaster } from "sonner";
@@ -51,7 +52,7 @@ export function Toaster() {
 
   return (
     <>
-      {/* Use the simpler Sonner toaster component directly */}
+      {/* Use the Sonner toaster component */}
       <SonnerToaster position="bottom-right" />
       
       {/* Keep the custom implementation for compatibility */}
