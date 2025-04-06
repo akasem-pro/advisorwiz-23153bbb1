@@ -17,26 +17,17 @@ const NotesTab: React.FC<NotesTabProps> = ({ client }) => {
   
   const handleAddNote = () => {
     // In a real application, this would call an API to add a note
-    toast({
-      title: "Note functionality",
-      description: "Add note feature will be implemented soon"
-    });
+    toast("Add note feature will be implemented soon");
   };
   
   const handleEditNote = (index: number) => {
     // In a real application, this would open an edit modal
-    toast({
-      title: "Note functionality",
-      description: "Edit note feature will be implemented soon"
-    });
+    toast("Edit note feature will be implemented soon");
   };
   
   const handleDeleteNote = (index: number) => {
     // In a real application, this would call an API to delete a note
-    toast({
-      title: "Note functionality",
-      description: "Delete note feature will be implemented soon"
-    });
+    toast("Delete note feature will be implemented soon");
   };
   
   return (
