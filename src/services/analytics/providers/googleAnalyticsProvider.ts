@@ -33,13 +33,13 @@ export class GoogleAnalyticsProvider implements AnalyticsProvider {
     return false;
   }
   
-  async initialize(): Promise<boolean> {
-    if (!this.isEnabled()) return false;
+  async initialize(): Promise<void> {
+    if (!this.isEnabled()) return;
     
     try {
       // Skip if already initialized
       if (window.gtag) {
-        return true;
+        return;
       }
       
       // Create script elements
@@ -63,22 +63,22 @@ export class GoogleAnalyticsProvider implements AnalyticsProvider {
       document.head.appendChild(script1);
       document.head.appendChild(script2);
       
-      return new Promise((resolve) => {
-        script1.onload = () => resolve(true);
+      // Wait for script to load
+      await new Promise<void>((resolve, reject) => {
+        script1.onload = () => resolve();
         script1.onerror = () => {
           console.error('Failed to load Google Analytics');
-          resolve(false);
+          resolve(); // Resolve anyway to prevent breaking the chain
         };
       });
     } catch (error) {
       console.error('Error initializing Google Analytics:', error);
-      return false;
     }
   }
   
-  async trackEvent(event: AnalyticsEvent): Promise<boolean> {
+  async trackEvent(event: AnalyticsEvent): Promise<void> {
     if (!this.isEnabled() || !window.gtag) {
-      return false;
+      return;
     }
     
     try {
@@ -87,11 +87,8 @@ export class GoogleAnalyticsProvider implements AnalyticsProvider {
       
       // Send to GA4
       window.gtag('event', gaEvent.name, gaEvent.params);
-      
-      return true;
     } catch (error) {
       console.error('Error tracking GA event:', error);
-      return false;
     }
   }
   
