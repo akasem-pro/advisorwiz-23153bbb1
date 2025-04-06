@@ -45,6 +45,7 @@ const Blog: React.FC = () => {
               : 'Stay informed with our latest articles and insights on personal finance and investing.'}
           </p>
           
+          {/* Content will be added in future updates */}
           <div className="mt-8">
             <InlineFeedback 
               variant="info" 

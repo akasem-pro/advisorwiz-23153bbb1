@@ -15,7 +15,7 @@ const Privacy: React.FC = () => {
       description="How we collect, use, and protect your personal information."
       canonicalUrl="https://advisorwiz.com/privacy"
       breadcrumbs={breadcrumbs}
-      lastUpdated="April 5, 2025"
+      lastUpdated="Feb 20th, 2025"
     >
       <PrivacyContent />
     </LegalPageLayout>

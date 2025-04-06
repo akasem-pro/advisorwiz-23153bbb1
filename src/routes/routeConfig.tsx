@@ -5,7 +5,7 @@ import AppLayout from '../components/layout/AppLayout';
 import AuthGuard from '../components/auth/AuthGuard';
 import { PageLoadingFallback } from '../components/LazyComponents';
 
-// Main pages
+// Pages
 import Home from '../pages/Home';
 import AboutUs from '../pages/AboutUs';
 import ForAdvisors from '../pages/ForAdvisors';
@@ -21,11 +21,6 @@ import ConsumerProfile from '../pages/ConsumerProfile';
 import FirmProfile from '../pages/FirmProfile';
 import SignIn from '../pages/SignIn';
 import Onboarding from '../pages/Onboarding';
-import Terms from '../pages/Terms';
-import Privacy from '../pages/Privacy';
-import Disclaimer from '../pages/Disclaimer';
-import Cookies from '../pages/Cookies';
-import Careers from '../pages/Careers';
 
 // Lazy loaded components
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -88,28 +83,6 @@ export const routes = {
         </React.Suspense>
       </AppLayout>
     )
-  },
-  
-  // Legal pages
-  terms: {
-    path: '/terms',
-    element: <AppLayout><Terms /></AppLayout>
-  },
-  privacy: {
-    path: '/privacy',
-    element: <AppLayout><Privacy /></AppLayout>
-  },
-  disclaimer: {
-    path: '/disclaimer',
-    element: <AppLayout><Disclaimer /></AppLayout>
-  },
-  cookies: {
-    path: '/cookies',
-    element: <AppLayout><Cookies /></AppLayout>
-  },
-  careers: {
-    path: '/careers',
-    element: <AppLayout><Careers /></AppLayout>
   },
   
   // Profile routes (accessible to both authenticated and unauthenticated users)
@@ -276,3 +249,4 @@ export const getRouteByPath = (path: string) => {
 export const getAllRoutes = () => {
   return Object.values(routes);
 };
+
