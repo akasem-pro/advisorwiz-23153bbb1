@@ -9,6 +9,9 @@ import Terms from '../pages/Terms';
 import { useIsMobile } from '../hooks/use-mobile';
 import AppLayout from '../components/layout/AppLayout';
 import MobileLayout from '../components/layout/MobileLayout';
+import ConsumerProfile from '../pages/ConsumerProfile';
+import AdvisorProfile from '../pages/AdvisorProfile';
+import FirmProfile from '../pages/FirmProfile';
 
 const AppRoutes: React.FC = () => {
   const location = useLocation();
@@ -48,6 +51,11 @@ const AppRoutes: React.FC = () => {
     <Routes>
       {/* Explicitly define the home route to LandingPage for a richer experience */}
       <Route path="/" element={<LandingPage />} />
+      
+      {/* Profile pages - add them directly here to ensure they work */}
+      <Route path="/consumer-profile" element={<PageLayout><ConsumerProfile /></PageLayout>} />
+      <Route path="/advisor-profile" element={<PageLayout><AdvisorProfile /></PageLayout>} />
+      <Route path="/firm-profile" element={<PageLayout><FirmProfile /></PageLayout>} />
       
       {/* Legal pages are defined at this level and use the appropriate layout */}
       <Route path="/privacy" element={<PageLayout><Privacy /></PageLayout>} />

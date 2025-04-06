@@ -28,7 +28,7 @@ const FormSection: React.FC<FormSectionProps> = ({ title, children }) => (
 );
 
 const ConsumerProfile: React.FC = () => {
-  const { consumerProfile, setConsumerProfile, saveProfileChanges } = useUser();
+  const { consumerProfile, setConsumerProfile, saveProfileChanges, isAuthenticated } = useUser();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState('');
@@ -44,6 +44,13 @@ const ConsumerProfile: React.FC = () => {
   });
 
   useEffect(() => {
+    // Initialize with empty data first to prevent blank page
+    if (!isAuthenticated) {
+      console.log("User is not authenticated, showing default form");
+      // We don't redirect here to allow guest users to see the form
+      return;
+    }
+
     if (!consumerProfile) {
       console.warn("Consumer profile is not initialized.");
     } else {
@@ -59,7 +66,7 @@ const ConsumerProfile: React.FC = () => {
         investmentGoals: consumerProfile.financialGoals?.join(', ') || ''
       });
     }
-  }, [consumerProfile]);
+  }, [consumerProfile, isAuthenticated]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -71,6 +78,18 @@ const ConsumerProfile: React.FC = () => {
     setIsLoading(true);
     setFormError('');
     setFormSuccess('');
+
+    if (!isAuthenticated) {
+      setFormError('You need to sign in to save your profile.');
+      toast.error('Please sign in to save your profile');
+      setIsLoading(false);
+      
+      // Redirect to sign in page after a short delay
+      setTimeout(() => {
+        navigate('/sign-in', { state: { returnUrl: '/consumer-profile' } });
+      }, 2000);
+      return;
+    }
 
     if (!consumerProfile) {
       setFormError('Consumer profile is not initialized. Please refresh the page.');
@@ -125,6 +144,22 @@ const ConsumerProfile: React.FC = () => {
         
         <main className="flex-grow pt-20">
           <div className="container mx-auto px-4 py-8 max-w-4xl">
+            {!isAuthenticated && (
+              <div className="bg-yellow-50 border border-yellow-200 text-yellow-600 p-4 rounded-md flex items-center mb-6">
+                <AlertTriangle className="h-5 w-5 mr-2" />
+                <div>
+                  <p className="font-medium">You're not signed in</p>
+                  <p className="text-sm">You can view this form, but you'll need to sign in to save your profile.</p>
+                  <button 
+                    onClick={() => navigate('/sign-in', { state: { returnUrl: '/consumer-profile' } })}
+                    className="mt-2 text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    Sign in now
+                  </button>
+                </div>
+              </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="space-y-6">
               {formError && (
                 <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-md flex items-center">

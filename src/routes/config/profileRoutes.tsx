@@ -19,7 +19,10 @@ export const profileRoutes: Record<string, RouteConfig> = {
   },
   consumerProfile: {
     path: '/consumer-profile',
-    element: <AppLayout><ConsumerProfile /></AppLayout>
+    element: <AppLayout><ConsumerProfile /></AppLayout>,
+    meta: {
+      publicRoute: true // Ensure this is accessible without authentication
+    }
   },
   firmProfile: {
     path: '/firm-profile',

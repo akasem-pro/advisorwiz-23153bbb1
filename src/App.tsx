@@ -17,18 +17,16 @@ const App: React.FC = () => {
   console.log("App component rendering");
   
   return (
-    <Router>
-      <ThemeProvider>
-        <AuthProvider>
-          <UserProvider>
-            <FeedbackProvider>
-              <AppRoutes />
-              <Toaster position="top-right" richColors />
-            </FeedbackProvider>
-          </UserProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </Router>
+    <ThemeProvider>
+      <AuthProvider>
+        <UserProvider>
+          <FeedbackProvider>
+            <AppRoutes />
+            <Toaster position="top-right" richColors />
+          </FeedbackProvider>
+        </UserProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 
