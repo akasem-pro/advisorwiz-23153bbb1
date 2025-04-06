@@ -8,6 +8,7 @@ import { setupErrorHandling } from './utils/errorHandling';
 
 // Initialize error handling and performance monitoring
 try {
+  console.log("Starting application initialization...");
   setupErrorHandling();
   initPerformanceMonitoring();
   console.log("Application services initialized");
@@ -19,6 +20,7 @@ try {
 const rootElement = document.getElementById('root');
 if (rootElement) {
   try {
+    console.log("Rendering application to DOM...");
     ReactDOM.createRoot(rootElement).render(
       <React.StrictMode>
         <App />

@@ -87,11 +87,13 @@ export function handleError(
   
   // Show toast notification if requested - this is synchronous and user-facing
   if (showToast) {
-    // Using sonner toast directly for error handling
+    // Using sonner toast for error handling
+    const description = appError.severity === ErrorSeverity.HIGH || appError.severity === ErrorSeverity.FATAL
+      ? 'Please try again or contact support if the problem persists.'
+      : undefined;
+      
     toast.error(appError.message, {
-      description: appError.severity === ErrorSeverity.HIGH || appError.severity === ErrorSeverity.FATAL
-        ? 'Please try again or contact support if the problem persists.'
-        : undefined,
+      description,
       duration: getSeverityDuration(appError.severity)
     });
   }

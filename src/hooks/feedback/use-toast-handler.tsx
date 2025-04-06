@@ -1,6 +1,6 @@
 
-import { useToast } from "../use-toast";
 import { useCallback } from "react";
+import { toast } from "sonner";
 
 // Define the toast types
 type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -17,8 +17,6 @@ interface ToastOptions {
  * Hook for handling toast notifications with standardized appearance
  */
 export const useToastHandler = () => {
-  const { toast } = useToast();
-  
   /**
    * Show a toast notification with configured appearance based on feed item
    */
@@ -32,66 +30,58 @@ export const useToastHandler = () => {
                       feedbackItem.variant === 'warning' ? 'warning' : 
                       feedbackItem.variant === 'success' ? 'success' : 'default';
     
-    toast({
+    toast[toastType]?.(feedbackItem.description, {
+      id: feedbackItem.id,
       title: feedbackItem.title,
-      description: feedbackItem.description,
-      variant: feedbackItem.variant === 'error' ? 'destructive' : 'default',
       duration: options.duration || 5000,
-      action: options.action
+      action: options.action,
+      onDismiss: onClose
     });
-  }, [toast]);
+  }, []);
   
   /**
    * Show a success toast notification
    */
   const showSuccess = useCallback((message: string, options?: ToastOptions) => {
-    toast({
+    toast.success(message, {
       title: options?.title || "Success",
-      description: message,
-      variant: "default",
       duration: options?.duration || 5000,
       action: options?.action
     });
-  }, [toast]);
+  }, []);
   
   /**
    * Show an error toast notification
    */
   const showError = useCallback((message: string, options?: ToastOptions) => {
-    toast({
+    toast.error(message, {
       title: options?.title || "Error",
-      description: message,
-      variant: "destructive",
       duration: options?.duration || 7000,
       action: options?.action
     });
-  }, [toast]);
+  }, []);
   
   /**
    * Show a warning toast notification
    */
   const showWarning = useCallback((message: string, options?: ToastOptions) => {
-    toast({
+    toast.warning(message, {
       title: options?.title || "Warning",
-      description: message,
-      variant: "default",
       duration: options?.duration || 5000,
       action: options?.action
     });
-  }, [toast]);
+  }, []);
   
   /**
    * Show an info toast notification
    */
   const showInfo = useCallback((message: string, options?: ToastOptions) => {
-    toast({
+    toast.info(message, {
       title: options?.title || "Information",
-      description: message,
-      variant: "default",
       duration: options?.duration || 5000,
       action: options?.action
     });
-  }, [toast]);
+  }, []);
   
   /**
    * Show a toast with a custom title and settings
@@ -101,16 +91,16 @@ export const useToastHandler = () => {
     message: string,
     options?: ToastOptions
   ) => {
-    const variant = type === 'error' ? "destructive" : "default";
-    
-    toast({
-      title: options?.title || type.charAt(0).toUpperCase() + type.slice(1),
-      description: message,
-      variant,
-      duration: options?.duration || (type === 'error' ? 7000 : 5000),
-      action: options?.action
-    });
-  }, [toast]);
+    if (type === 'success') {
+      showSuccess(message, options);
+    } else if (type === 'error') {
+      showError(message, options);
+    } else if (type === 'warning') {
+      showWarning(message, options);
+    } else {
+      showInfo(message, options);
+    }
+  }, [showSuccess, showError, showWarning, showInfo]);
   
   /**
    * Show a toast with an action button
@@ -123,21 +113,22 @@ export const useToastHandler = () => {
   ) => {
     const actionButton = (
       <button 
-        onClick={onAction}
+        onClick={(e) => {
+          e.preventDefault();
+          onAction();
+        }}
         className="px-3 py-1.5 rounded bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors"
       >
         {actionLabel}
       </button>
     );
     
-    toast({
+    toast(message, {
       title: options?.title,
-      description: message,
-      variant: "default",
       duration: options?.duration || 10000, // Longer duration for action toasts
       action: actionButton
     });
-  }, [toast]);
+  }, []);
   
   return {
     showToastNotification,

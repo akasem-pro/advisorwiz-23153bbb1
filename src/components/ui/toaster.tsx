@@ -1,4 +1,3 @@
-
 import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "@/components/ui/toast";
 import { useEffect, useState } from "react";
 import { Toaster as SonnerToaster } from "sonner";
@@ -19,7 +18,7 @@ export function Toaster() {
 
   // Listen to sonner toast events
   useEffect(() => {
-    const handleToastAdd = (event: CustomEvent) => {
+    const handleToastAdd = (event: any) => {
       const toast = event.detail;
       const newToast: ToastItem = {
         id: toast.id,
@@ -31,7 +30,7 @@ export function Toaster() {
       setToasts(prev => [...prev, newToast]);
     };
 
-    const handleToastDismiss = (event: CustomEvent) => {
+    const handleToastDismiss = (event: any) => {
       const id = event.detail;
       setToasts(prev => prev.filter(toast => toast.id !== id));
     };
@@ -52,12 +51,21 @@ export function Toaster() {
 
   return (
     <>
-      {/* Use the Sonner toaster component */}
-      <SonnerToaster position="bottom-right" />
+      {/* Use Sonner for toast notifications */}
+      <SonnerToaster 
+        position="bottom-right"
+        toastOptions={{
+          style: { 
+            background: 'var(--background)',
+            color: 'var(--foreground)',
+            border: '1px solid var(--border)'
+          }
+        }}
+      />
       
       {/* Keep the custom implementation for compatibility */}
       <ToastProvider>
-        {toasts.map(function ({ id, title, description, action, variant, ...props }) {
+        {toasts.map(({ id, title, description, action, variant, ...props }) => {
           // Remove incompatible props
           const { type, icon, jsx, richColors, invert, ...compatibleProps } = props;
           

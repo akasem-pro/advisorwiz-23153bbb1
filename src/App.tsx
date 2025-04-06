@@ -15,6 +15,8 @@ class ErrorBoundaryComponent extends Component<{children: ReactNode}, {hasError:
   state = { hasError: false, error: null };
   
   static getDerivedStateFromError(error: Error) {
+    // Update state so the next render will show the fallback UI
+    console.error("Error caught by error boundary:", error);
     return { hasError: true, error };
   }
   
