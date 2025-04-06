@@ -10,6 +10,7 @@ import QuickActionPanel from '../components/advisor/QuickActionPanel';
 import AdvisorQuickPathWidget from '../components/advisor/AdvisorQuickPathWidget';
 import TrustBadges from '../components/ui/TrustBadges';
 import FloatingSupportButton from '../components/support/FloatingSupportButton';
+import ClientList from '../components/advisor/ClientList';
 
 const AdvisorDashboard: React.FC = () => {
   const { advisorProfile } = useUser();
@@ -70,9 +71,14 @@ const AdvisorDashboard: React.FC = () => {
             </Link>
           </div>
           
-          {/* Quick Actions Panel - Updated Component */}
+          {/* Quick Actions Panel */}
           <div className="lg:col-span-2">
             <QuickActionPanel />
+          </div>
+          
+          {/* Client List for Easy Calling - New Section */}
+          <div className="lg:col-span-2">
+            <ClientList />
           </div>
           
           {/* Appointments Card */}

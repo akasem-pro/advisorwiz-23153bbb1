@@ -23,6 +23,7 @@ interface QuickActionProps {
   variant?: "default" | "outline" | "secondary" | "ghost" | "link" | "destructive";
   className?: string;
   onClick?: () => void;
+  badgeCount?: number;
 }
 
 const QuickAction: React.FC<QuickActionProps> = ({ 
@@ -31,7 +32,8 @@ const QuickAction: React.FC<QuickActionProps> = ({
   href, 
   variant = "outline",
   className,
-  onClick
+  onClick,
+  badgeCount
 }) => {
   return (
     <Button 
@@ -43,6 +45,11 @@ const QuickAction: React.FC<QuickActionProps> = ({
       <Link to={href}>
         {icon}
         <span className="text-sm">{label}</span>
+        {badgeCount !== undefined && badgeCount > 0 && (
+          <span className="ml-auto bg-red-500 text-white text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+            {badgeCount > 99 ? '99+' : badgeCount}
+          </span>
+        )}
       </Link>
     </Button>
   );
@@ -82,18 +89,20 @@ const QuickActionPanel: React.FC = () => {
       <CardContent className="grid grid-cols-2 gap-2">
         <QuickAction 
           icon={<CalendarClock className="h-4 w-4" />} 
-          label={`Appointments ${upcomingAppointments > 0 ? `(${upcomingAppointments})` : ''}`} 
+          label="Appointments" 
           href="/schedule" 
           variant={upcomingAppointments > 0 ? "default" : "outline"}
           className={upcomingAppointments > 0 ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}
+          badgeCount={upcomingAppointments}
         />
         
         <QuickAction 
           icon={<MessageCircle className="h-4 w-4" />} 
-          label={`Messages ${unreadMessageCount > 0 ? `(${unreadMessageCount})` : ''}`}
+          label="Messages"
           href="/chat"
           variant={unreadMessageCount > 0 ? "default" : "outline"}
           className={unreadMessageCount > 0 ? "bg-purple-600 hover:bg-purple-700 text-white" : ""}
+          badgeCount={unreadMessageCount}
         />
         
         <QuickAction 
@@ -129,7 +138,7 @@ const QuickActionPanel: React.FC = () => {
         <QuickAction 
           icon={<Phone className="h-4 w-4" />} 
           label="Call Client" 
-          href="/call" 
+          href="/call/select" 
         />
       </CardContent>
     </Card>

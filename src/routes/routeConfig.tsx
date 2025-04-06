@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { lazy } from 'react';
 import AppLayout from '../components/layout/AppLayout';
@@ -23,6 +22,9 @@ import SignIn from '../pages/SignIn';
 import Onboarding from '../pages/Onboarding';
 import Resources from '../pages/Resources';
 import Matches from '../pages/Matches';
+import Notifications from '../pages/Notifications';
+import CallClient from '../pages/CallClient';
+import CallClientSelect from '../pages/CallClientSelect';
 
 // Lazy loaded components
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
@@ -241,6 +243,36 @@ export const routes = {
     element: (
       <AuthGuard>
         <AppLayout><Matches /></AppLayout>
+      </AuthGuard>
+    )
+  },
+  
+  // Add the notifications route
+  notifications: {
+    path: '/notifications',
+    element: (
+      <AuthGuard>
+        <AppLayout><Notifications /></AppLayout>
+      </AuthGuard>
+    )
+  },
+  
+  // Add the call client route
+  call: {
+    path: '/call/:clientId',
+    element: (
+      <AuthGuard>
+        <CallClient />
+      </AuthGuard>
+    )
+  },
+  
+  // Add the call client select route
+  callSelect: {
+    path: '/call/select',
+    element: (
+      <AuthGuard>
+        <CallClientSelect />
       </AuthGuard>
     )
   },
