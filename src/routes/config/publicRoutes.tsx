@@ -15,6 +15,7 @@ import Terms from '../../pages/Terms';
 import Privacy from '../../pages/Privacy';
 import { PageLoadingFallback } from '../../components/LazyComponents';
 import { RouteConfig } from './types';
+import LandingPage from '../../pages/LandingPage';
 
 // Lazy loaded components
 const LazySecurityAndAccessibilityPage = lazy(() => import('../../pages/SecurityAndAccessibilityPage'));
@@ -24,7 +25,7 @@ export const publicRoutes: Record<string, RouteConfig> = {
   // Public routes
   home: {
     path: '/',
-    element: <Home />
+    element: <AppLayout><LandingPage /></AppLayout>
   },
   about: {
     path: '/about',
