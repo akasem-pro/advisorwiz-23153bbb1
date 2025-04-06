@@ -8,7 +8,7 @@ export type ToastProps = {
   variant?: "default" | "destructive";
   action?: ReactNode;
   duration?: number;
-  className?: string; // Add className support
+  className?: string;
 };
 
 const useToast = () => {
