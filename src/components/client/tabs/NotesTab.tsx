@@ -1,33 +1,85 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { PlusCircle, Edit, Trash } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import { ClientData } from '@/types/clientTypes';
 import { useToast } from '@/components/ui/use-toast';
-import { format } from 'date-fns';
+import NoteCard from '../notes/NoteCard';
+import NoteForm from '../notes/NoteForm';
+import EmptyNotesState from '../notes/EmptyNotesState';
+import DeleteConfirmDialog from '../notes/DeleteConfirmDialog';
+
+interface Note {
+  content: string;
+  createdAt: Date;
+}
 
 interface NotesTabProps {
   client: ClientData;
 }
 
 const NotesTab: React.FC<NotesTabProps> = ({ client }) => {
-  const [notes, setNotes] = useState(client?.notes || []);
+  // Transform string notes into objects with content and date
+  const initialNotes: Note[] = (client?.notes || []).map(noteText => ({
+    content: noteText,
+    createdAt: new Date()  // In a real app, this would come from the server
+  }));
+
+  const [notes, setNotes] = useState<Note[]>(initialNotes);
+  const [isNoteFormOpen, setIsNoteFormOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [currentNoteIndex, setCurrentNoteIndex] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
   
   const handleAddNote = () => {
-    // In a real application, this would call an API to add a note
-    toast("Add note feature will be implemented soon");
+    setIsEditing(false);
+    setCurrentNoteIndex(null);
+    setIsNoteFormOpen(true);
   };
   
   const handleEditNote = (index: number) => {
-    // In a real application, this would open an edit modal
-    toast("Edit note feature will be implemented soon");
+    setIsEditing(true);
+    setCurrentNoteIndex(index);
+    setIsNoteFormOpen(true);
   };
   
   const handleDeleteNote = (index: number) => {
-    // In a real application, this would call an API to delete a note
-    toast("Delete note feature will be implemented soon");
+    setCurrentNoteIndex(index);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleSaveNote = (noteText: string) => {
+    // In a real app, this would call an API to save the note
+    if (isEditing && currentNoteIndex !== null) {
+      // Edit existing note
+      const updatedNotes = [...notes];
+      updatedNotes[currentNoteIndex] = {
+        ...updatedNotes[currentNoteIndex],
+        content: noteText
+      };
+      setNotes(updatedNotes);
+      toast("Note updated successfully");
+    } else {
+      // Add new note
+      const newNote: Note = {
+        content: noteText,
+        createdAt: new Date()
+      };
+      setNotes([newNote, ...notes]);
+      toast("Note added successfully");
+    }
+    setIsNoteFormOpen(false);
+  };
+
+  const handleConfirmDelete = () => {
+    // In a real app, this would call an API to delete the note
+    if (currentNoteIndex !== null) {
+      const filteredNotes = notes.filter((_, i) => i !== currentNoteIndex);
+      setNotes(filteredNotes);
+      toast("Note deleted successfully");
+      setIsDeleteDialogOpen(false);
+    }
   };
   
   return (
@@ -40,61 +92,37 @@ const NotesTab: React.FC<NotesTabProps> = ({ client }) => {
         </Button>
       </div>
       
-      {notes && notes.length > 0 ? (
+      {notes.length > 0 ? (
         <div className="space-y-4">
           {notes.map((note, index) => (
-            <Card key={index} className="shadow-sm border-slate-200 dark:border-navy-700 hover:shadow-md transition-shadow">
-              <CardContent className="p-5">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <p className="text-slate-800 dark:text-slate-200">{note}</p>
-                    <div className="text-xs text-slate-500 mt-3">
-                      Added on {format(new Date(), 'MMM dd, yyyy')}
-                    </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => handleEditNote(index)}
-                      className="text-slate-600 hover:text-slate-900"
-                    >
-                      <Edit className="h-4 w-4 mr-1" />
-                      Edit
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => handleDeleteNote(index)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash className="h-4 w-4 mr-1" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <NoteCard
+              key={index}
+              note={note}
+              index={index}
+              onEdit={handleEditNote}
+              onDelete={handleDeleteNote}
+            />
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center p-8 text-center bg-slate-50 dark:bg-navy-800/50 rounded-lg">
-          <div className="p-3 bg-slate-100 dark:bg-navy-700 rounded-full mb-4">
-            <PlusCircle className="h-8 w-8 text-slate-400" />
-          </div>
-          <h4 className="text-lg font-medium mb-2">No Notes Yet</h4>
-          <p className="text-slate-500 mb-4 max-w-sm">
-            Add notes about client interactions, preferences, and follow-up items.
-          </p>
-          <Button 
-            variant="outline" 
-            onClick={handleAddNote}
-            className="flex items-center"
-          >
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add Your First Note
-          </Button>
-        </div>
+        <EmptyNotesState onAddNote={handleAddNote} />
       )}
+
+      {/* Note Form Dialog */}
+      <NoteForm
+        isOpen={isNoteFormOpen}
+        onClose={() => setIsNoteFormOpen(false)}
+        onSave={handleSaveNote}
+        title={isEditing ? "Edit Note" : "Add Note"}
+        initialValue={isEditing && currentNoteIndex !== null ? notes[currentNoteIndex].content : ""}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </>
   );
 };
