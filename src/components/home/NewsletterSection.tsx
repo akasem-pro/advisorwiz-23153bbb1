@@ -1,4 +1,3 @@
-
 import React, { useState, lazy, Suspense } from 'react';
 import { Mail, ArrowRight } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -17,8 +16,7 @@ const NewsletterSection: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes('@')) {
-      toast({
-        title: "Invalid email",
+      toast("Invalid email", {
         description: "Please enter a valid email address.",
         variant: "destructive",
       });
@@ -29,8 +27,7 @@ const NewsletterSection: React.FC = () => {
 
     // Simulate API call
     setTimeout(() => {
-      toast({
-        title: "Success!",
+      toast("Success!", {
         description: "You've been subscribed to our newsletter.",
       });
       setEmail('');

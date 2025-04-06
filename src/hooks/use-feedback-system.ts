@@ -27,8 +27,7 @@ export const useFeedbackSystem = () => {
   const showToast = useCallback((options: FeedbackOptions) => {
     if (!isFeedbackEnabled) return;
     
-    toast({
-      title: options.title,
+    toast(options.title || "", {
       description: options.description,
       duration: options.duration || 5000,
       action: options.action,

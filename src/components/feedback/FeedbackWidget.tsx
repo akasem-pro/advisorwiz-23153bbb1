@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X, MessageSquare, ThumbsUp, ThumbsDown, Bug } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -64,8 +63,7 @@ const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({
       });
 
       // Show success message
-      toast({
-        title: 'Thank you for your feedback!',
+      toast('Thank you for your feedback!', {
         description: 'Your input helps us improve AdvisorWiz.',
         variant: 'default'
       });
@@ -75,8 +73,7 @@ const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({
       setFeedbackType('suggestion');
       setIsOpen(false);
     } catch (error) {
-      toast({
-        title: 'Unable to submit feedback',
+      toast('Unable to submit feedback', {
         description: 'Please try again later.',
         variant: 'destructive'
       });

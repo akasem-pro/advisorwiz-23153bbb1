@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -56,8 +55,7 @@ const ContactForm: React.FC = () => {
       }
 
       // Show success message
-      toast({
-        title: "Message sent successfully",
+      toast("Message sent successfully", {
         description: "We'll get back to you as soon as possible.",
         variant: "default"
       });
@@ -89,8 +87,7 @@ const ContactForm: React.FC = () => {
       
     } catch (error) {
       console.error('Error submitting contact form:', error);
-      toast({
-        title: "Failed to send message",
+      toast("Failed to send message", {
         description: "Please try again or contact us directly via email.",
         variant: "destructive"
       });

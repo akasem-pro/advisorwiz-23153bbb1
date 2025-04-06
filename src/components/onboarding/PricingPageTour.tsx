@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Joyride from 'react-joyride';
 import { useOnboardingTour } from '../../hooks/onboarding/use-onboarding-tour';
@@ -29,15 +28,13 @@ const PricingPageTour: React.FC<PricingPageTourProps> = ({
   } = useOnboardingTour(
     userType === 'enterprise' ? 'firm_admin' : userType, // Map 'enterprise' to 'firm_admin' for compatibility
     () => {
-      toast({
-        title: "Pricing Tour Complete!",
+      toast("Pricing Tour Complete!", {
         description: "Now you understand our pricing options. Feel free to choose the plan that fits your needs!",
         duration: 5000,
       });
     },
     () => {
-      toast({
-        title: "Tour Skipped",
+      toast("Tour Skipped", {
         description: "You can restart the tour anytime by clicking the 'Tour' button.",
         duration: 3000,
       });

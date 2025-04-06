@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import Joyride from 'react-joyride';
 import { useOnboardingTour } from '../../hooks/onboarding/use-onboarding-tour';
@@ -31,8 +30,7 @@ const AdvisorOnboardingTour: React.FC<AdvisorOnboardingTourProps> = ({
     () => {
       if (!isMounted.current) return;
       
-      toast({
-        title: "Profile Setup Tour Complete!",
+      toast("Profile Setup Tour Complete!", {
         description: "You're now ready to start connecting with potential clients. Complete your profile to increase your visibility.",
         duration: 5000,
       });
@@ -47,8 +45,7 @@ const AdvisorOnboardingTour: React.FC<AdvisorOnboardingTourProps> = ({
     () => {
       if (!isMounted.current) return;
       
-      toast({
-        title: "Tour Skipped",
+      toast("Tour Skipped", {
         description: "You can restart the tour anytime from your settings menu.",
         duration: 3000,
       });

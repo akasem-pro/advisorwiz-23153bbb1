@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import Joyride from 'react-joyride';
 import { useOnboardingTour } from '../../hooks/onboarding/use-onboarding-tour';
@@ -40,8 +39,7 @@ const BaseTourComponent: React.FC<BaseTourComponentProps> = ({
   } = useOnboardingTour(
     userType,
     () => {
-      toast({
-        title: completionMessage.title,
+      toast(completionMessage.title, {
         description: completionMessage.description,
         duration: 5000,
       });
@@ -54,8 +52,7 @@ const BaseTourComponent: React.FC<BaseTourComponentProps> = ({
       localStorage.setItem(TOUR_NAMES[tourName], 'true');
     },
     () => {
-      toast({
-        title: "Tour Skipped",
+      toast("Tour Skipped", {
         description: "You can restart the tour anytime from your settings menu.",
         duration: 3000,
       });

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MessageCircle, Phone, Mail, HelpCircle, X } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -17,8 +16,7 @@ export const SupportPanel: React.FC<SupportPanelProps> = ({ isOpen, onClose }) =
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: 'Support request sent',
+    toast('Support request sent', {
       description: 'Our team will get back to you shortly',
       variant: 'default'
     });

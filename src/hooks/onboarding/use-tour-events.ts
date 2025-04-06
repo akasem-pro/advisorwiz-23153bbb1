@@ -77,16 +77,14 @@ export const useTourEvents = ({
       
       // Show completion toast
       if (status === STATUS.FINISHED) {
-        toast({
-          title: "Tour Complete!",
+        toast("Tour Complete!", {
           description: "You're all set to start using AdvisorWiz. Enjoy the platform!",
           duration: 5000,
         });
         
         if (onComplete) onComplete();
       } else if (status === STATUS.SKIPPED) {
-        toast({
-          title: "Tour Skipped",
+        toast("Tour Skipped", {
           description: "You can always access the tour later from the help menu.",
           duration: 3000,
         });
