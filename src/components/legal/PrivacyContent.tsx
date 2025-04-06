@@ -1,28 +1,37 @@
 
 import React from 'react';
+import { useIsMobile } from '../../hooks/use-mobile';
 
 const PrivacyContent: React.FC = () => {
+  const isMobile = useIsMobile();
+  
+  // Apply mobile specific classes if on a mobile device
+  const textClass = isMobile ? 'text-sm' : 'mb-6';
+  const headingClass = isMobile ? 'text-lg font-semibold mt-6 mb-3' : 'text-xl font-semibold mt-8 mb-4';
+  const subHeadingClass = isMobile ? 'text-base font-medium mt-4 mb-2' : 'text-lg font-medium mt-6 mb-3';
+  const listClass = isMobile ? 'list-disc pl-5 mb-4' : 'list-disc pl-6 mb-6';
+  
   return (
     <>
-      <p className="mb-6">
+      <p className={textClass}>
         Welcome to AdvisorWiz! Your privacy is important to us. This Privacy Policy outlines 
         how we collect, use, and protect your personal information when you use our platform. 
         By accessing or using AdvisorWiz, you agree to the terms of this Privacy Policy.
       </p>
       
-      <h2 className="text-xl font-semibold mt-8 mb-4">1. Information We Collect</h2>
-      <p className="mb-3">We collect information from both users (consumers) and financial advisors or firms:</p>
+      <h2 className={headingClass}>1. Information We Collect</h2>
+      <p className={isMobile ? 'mb-2' : 'mb-3'}>We collect information from both users (consumers) and financial advisors or firms:</p>
       
-      <h3 className="text-lg font-medium mt-6 mb-3">1.1 Information Collected from Users (Consumers)</h3>
-      <ul className="list-disc pl-6 mb-4">
+      <h3 className={subHeadingClass}>1.1 Information Collected from Users (Consumers)</h3>
+      <ul className={listClass}>
         <li><strong>Personal Information:</strong> Name, email address, phone number, and other contact details provided when signing up.</li>
         <li><strong>Financial Information:</strong> Information provided for financial advisory services (we do not store sensitive financial data).</li>
         <li><strong>Usage Data:</strong> Information on how you interact with our platform, such as page visits, clicks, and preferences.</li>
         <li><strong>Device Information:</strong> IP address, browser type, and operating system for security and analytics purposes.</li>
       </ul>
       
-      <h3 className="text-lg font-medium mt-6 mb-3">1.2 Information Collected from Financial Advisors or Firms</h3>
-      <ul className="list-disc pl-6 mb-6">
+      <h3 className={subHeadingClass}>1.2 Information Collected from Financial Advisors or Firms</h3>
+      <ul className={listClass}>
         <li><strong>Business Information:</strong> Name, company details, regulatory certifications, and professional credentials.</li>
         <li><strong>Contact Information:</strong> Email, phone number, business address.</li>
         <li><strong>Profile Data:</strong> Information related to expertise, services, and availability provided to match consumers with advisors.</li>

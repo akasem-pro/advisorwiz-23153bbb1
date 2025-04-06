@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import NotFound from '../pages/NotFound';
 import AppLayout from '../components/layout/AppLayout';
 import { lazy, Suspense } from 'react';
@@ -14,36 +14,45 @@ import ContactUs from '../pages/ContactUs';
 import Blog from '../pages/Blog';
 import Terms from '../pages/Terms';
 import Privacy from '../pages/Privacy';
+import { useIsMobile } from '../hooks/use-mobile';
+import MobileLayout from '../components/layout/MobileLayout';
 
 // Lazily load the security and accessibility page
 const LazySecurityAndAccessibilityPage = lazy(() => import('../pages/SecurityAndAccessibilityPage'));
 
 const MainRoutes = () => {
+  const isMobile = useIsMobile();
+  
+  // Select the appropriate layout based on device type
+  const PageLayout = isMobile ? MobileLayout : AppLayout;
+  
+  console.log('MainRoutes rendering with path:', window.location.pathname);
+  
   return (
     <Routes>
       {/* Main marketing pages */}
-      <Route path="/about" element={<AppLayout><AboutUs /></AppLayout>} />
-      <Route path="/for-advisors" element={<AppLayout><ForAdvisors /></AppLayout>} />
-      <Route path="/for-firms" element={<AppLayout><ForFirms /></AppLayout>} />
-      <Route path="/for-consumers" element={<AppLayout><ForConsumers /></AppLayout>} />
-      <Route path="/pricing" element={<AppLayout><Pricing /></AppLayout>} />
-      <Route path="/sitemap" element={<AppLayout><Sitemap /></AppLayout>} />
-      <Route path="/contact" element={<AppLayout><ContactUs /></AppLayout>} />
-      <Route path="/blog/*" element={<AppLayout><Blog /></AppLayout>} />
+      <Route path="/about" element={<PageLayout><AboutUs /></PageLayout>} />
+      <Route path="/for-advisors" element={<PageLayout><ForAdvisors /></PageLayout>} />
+      <Route path="/for-firms" element={<PageLayout><ForFirms /></PageLayout>} />
+      <Route path="/for-consumers" element={<PageLayout><ForConsumers /></PageLayout>} />
+      <Route path="/pricing" element={<PageLayout><Pricing /></PageLayout>} />
+      <Route path="/sitemap" element={<PageLayout><Sitemap /></PageLayout>} />
+      <Route path="/contact" element={<PageLayout><ContactUs /></PageLayout>} />
+      <Route path="/blog/*" element={<PageLayout><Blog /></PageLayout>} />
       
-      {/* Legal pages */}
-      <Route path="/terms" element={<AppLayout><Terms /></AppLayout>} />
-      <Route path="/privacy" element={<AppLayout><Privacy /></AppLayout>} />
+      {/* Legal pages - ensure these are directly accessible */}
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
       
       {/* Other specialized pages */}
       <Route 
         path="/security-accessibility" 
         element={
-          <AppLayout>
+          <PageLayout>
             <Suspense fallback={<ComponentLoadingFallback />}>
               <LazySecurityAndAccessibilityPage />
             </Suspense>
-          </AppLayout>
+          </PageLayout>
         } 
       />
       

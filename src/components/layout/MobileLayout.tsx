@@ -1,5 +1,5 @@
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import Header from './Header';
 import MobileNavbar from './MobileNavbar';
 import BaseLayout from './BaseLayout';
@@ -30,6 +30,11 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
   hideFooter = true,
   showFooter = false
 }) => {
+  // Debug rendering
+  useEffect(() => {
+    console.log('MobileLayout rendering with children:', !!children);
+  }, [children]);
+
   // Override hideFooter if showFooter is explicitly true
   const finalHideFooter = showFooter ? false : hideFooter;
 
@@ -38,7 +43,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
       header={<Header />}
       footer={finalHideFooter ? null : undefined} // Pass null to completely hide footer, undefined to use default
       mobileNavbar={<MobileNavbar />}
-      contentClassName={cn("pt-56 pb-24", contentClassName)} // Increased bottom padding for footer visibility with navbar
+      contentClassName={cn("pt-16 pb-20 min-h-screen", contentClassName)} // Adjusted padding for better visibility
       showSocialProof={showSocialProof}
       showTrustBadges={showTrustBadges}
       withoutPadding={withoutPadding}
@@ -47,7 +52,9 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
       skipToContentId={skipToContentId}
       hideFooter={finalHideFooter}
     >
-      {children}
+      <div id={skipToContentId} className="mobile-contain">
+        {children}
+      </div>
     </BaseLayout>
   );
 };
