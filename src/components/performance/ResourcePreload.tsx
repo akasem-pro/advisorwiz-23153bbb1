@@ -16,8 +16,8 @@ const ResourcePreload: React.FC<ResourcePreloadProps> = ({ currentRoute }) => {
     const baseResources = [
       {
         url: '/images/logo.png',
-        as: 'image',
-        importance: 'high'
+        as: 'image' as const,
+        importance: 'high' as const
       }
     ];
     
@@ -29,8 +29,8 @@ const ResourcePreload: React.FC<ResourcePreloadProps> = ({ currentRoute }) => {
           ...baseResources,
           {
             url: '/images/hero-bg.jpg',
-            as: 'image',
-            importance: 'high'
+            as: 'image' as const,
+            importance: 'high' as const
           }
         ];
       case '/pricing':
@@ -39,8 +39,8 @@ const ResourcePreload: React.FC<ResourcePreloadProps> = ({ currentRoute }) => {
           ...baseResources,
           {
             url: '/images/pricing-bg.jpg',
-            as: 'image',
-            importance: 'auto'
+            as: 'image' as const,
+            importance: 'auto' as const
           }
         ];
       default:
