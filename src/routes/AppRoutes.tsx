@@ -3,6 +3,8 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { getAllRoutes } from './routeConfig';
 import Home from '../pages/Home';
+import MainRoutes from './MainRoutes';
+import LandingPage from '../pages/LandingPage';
 
 const AppRoutes: React.FC = () => {
   console.log("AppRoutes component rendering");
@@ -12,8 +14,11 @@ const AppRoutes: React.FC = () => {
   
   return (
     <Routes>
-      {/* Explicitly define the home route first */}
-      <Route path="/" element={<Home />} />
+      {/* Explicitly define the home route to LandingPage for a richer experience */}
+      <Route path="/" element={<LandingPage />} />
+      
+      {/* Include MainRoutes for all marketing pages */}
+      <Route path="/*" element={<MainRoutes />} />
       
       {/* Then render all other routes */}
       {allRoutes
