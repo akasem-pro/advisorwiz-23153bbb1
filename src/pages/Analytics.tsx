@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import BreadcrumbTrail from '../components/navigation/BreadcrumbTrail';
@@ -21,7 +21,16 @@ const engagementData = [
 ];
 
 const Analytics: React.FC = () => {
-  console.log("Analytics component rendering");
+  console.log("Analytics page component rendering");
+  
+  useEffect(() => {
+    console.log("Analytics page mounted");
+    document.title = "Analytics Dashboard";
+    
+    return () => {
+      console.log("Analytics page unmounted");
+    };
+  }, []);
   
   return (
     <div className="space-y-6">
