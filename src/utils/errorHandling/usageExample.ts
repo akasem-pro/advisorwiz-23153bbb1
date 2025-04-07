@@ -71,7 +71,9 @@ function ExampleComponent() {
     handleError, 
     withEnhancedErrorHandling, 
     withEnhancedAsyncErrorHandling,
-    showRetryableError 
+    showRetryableError,
+    ErrorCategory,
+    ErrorSeverity
   } = useEnhancedErrorHandler();
   
   const handleClick = () => {

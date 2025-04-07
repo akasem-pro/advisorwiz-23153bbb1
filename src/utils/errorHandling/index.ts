@@ -29,9 +29,9 @@ import {
   errorClassificationRules
 } from './errorClassification';
 
-// Export all error handling utilities
+// Export all error handling utilities and enums directly
 export {
-  // Core types and enums
+  // Core error handling functions
   initErrorHandling,
   createError,
   handleError,
@@ -55,12 +55,15 @@ export {
   // Classification utilities
   classifyError,
   getUserFriendlyMessage,
-  errorClassificationRules
+  errorClassificationRules,
+  
+  // Enums - export directly so they can be used as values
+  ErrorCategory,
+  ErrorSeverity
 };
 
-// Use 'export type' for type re-exports when isolatedModules is enabled
+// Export interface as type
 export type { AppError };
-export type { ErrorCategory, ErrorSeverity };
 
 /**
  * Initialize the enhanced error handling system with sensible defaults
