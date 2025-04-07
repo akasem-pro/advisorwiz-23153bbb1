@@ -1,96 +1,24 @@
 
 import { initErrorHandling } from './errorHandler';
-import { 
-  ErrorCategory, 
-  ErrorSeverity,
-  AppError,
-  createError,
-  handleError,
-  withErrorHandling,
-  withAsyncErrorHandling,
-  setErrorLoggingEnabled,
-  setMonitoringEnabled,
-  setSanitizationEnabled,
-  flushAllErrorLogs
-} from './errorHandler';
+import { ErrorSeverity as HandlerErrorSeverity } from './errorHandler';
+import { ErrorSeverity as SupabaseErrorSeverity } from './supabaseErrorHandler';
 
-import {
-  logErrorAsync,
-  flushErrorLogs,
-  registerGlobalErrorHandlers,
-  configureErrorLogger,
-  getErrorLogStats,
-  setMaxQueueSize
-} from './asyncErrorLogger';
+// Re-export with renamed enums to avoid conflicts
+export { HandlerErrorSeverity, SupabaseErrorSeverity };
 
-import {
-  classifyError,
-  getUserFriendlyMessage,
-  errorClassificationRules
-} from './errorClassification';
+// Export everything else
+export * from './errorHandler';
+export * from './supabaseErrorHandler';
+export * from './asyncErrorLogger';
 
-// Export all error handling utilities and enums directly
-export {
-  // Core error handling functions
-  initErrorHandling,
-  createError,
-  handleError,
-  withErrorHandling,
-  withAsyncErrorHandling,
-  
-  // Configuration functions
-  setErrorLoggingEnabled,
-  setMonitoringEnabled,
-  setSanitizationEnabled,
-  
-  // Logging utilities
-  logErrorAsync,
-  flushErrorLogs,
-  flushAllErrorLogs,
-  registerGlobalErrorHandlers,
-  configureErrorLogger,
-  getErrorLogStats,
-  setMaxQueueSize,
-  
-  // Classification utilities
-  classifyError,
-  getUserFriendlyMessage,
-  errorClassificationRules,
-  
-  // Enums - export directly so they can be used as values
-  ErrorCategory,
-  ErrorSeverity
-};
-
-// Export interface as type
-export type { AppError };
+// Override the ErrorSeverity re-exports to avoid duplicates
+export { HandlerErrorSeverity as ErrorSeverity };
 
 /**
- * Initialize the enhanced error handling system with sensible defaults
+ * Initialize the asynchronous error handling system
  */
-export function setupErrorHandling(options?: {
-  enableLogging?: boolean;
-  enableMonitoring?: boolean;
-  enableSanitization?: boolean;
-  logToConsole?: boolean;
-  logToDisk?: boolean;
-  logToMonitoring?: boolean;
-}): void {
-  // Configure the error logger
-  configureErrorLogger({
-    logToConsole: options?.logToConsole !== undefined ? options.logToConsole : true,
-    logToDisk: options?.logToDisk !== undefined ? options.logToDisk : false,
-    logToMonitoring: options?.logToMonitoring !== undefined ? options.logToMonitoring : true
-  });
-  
-  // Initialize the error handler
-  initErrorHandling({
-    enableLogging: options?.enableLogging !== undefined ? options.enableLogging : true,
-    enableMonitoring: options?.enableMonitoring !== undefined ? options.enableMonitoring : true,
-    enableSanitization: options?.enableSanitization !== undefined ? options.enableSanitization : true
-  });
-  
-  console.info('[Error Handling] Enhanced error handling system setup complete');
+export function setupErrorHandling(): void {
+  initErrorHandling();
 }
 
 export default setupErrorHandling;
