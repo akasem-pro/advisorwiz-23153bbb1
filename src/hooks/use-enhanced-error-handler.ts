@@ -72,7 +72,7 @@ export const useEnhancedErrorHandler = () => {
       appError.userFriendlyMessage = userFriendlyMessage;
     }
     
-    // Handle the error with our enhanced error handler
+    // Fix: Pass monitored as a boolean not a string
     return handleError(appError, showToast, monitored);
   }, []);
   

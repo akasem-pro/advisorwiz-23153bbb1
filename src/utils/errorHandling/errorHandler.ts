@@ -285,7 +285,7 @@ export function handleError(
   
   // Report to monitoring if enabled and requested
   if (reportToMonitoring && monitoringEnabled && !appError.reported) {
-    // Use void to avoid waiting for the promise
+    // Fix: Use void to avoid waiting for the promise without calling Boolean as a function
     void reportToMonitoring(appError);
   }
   
