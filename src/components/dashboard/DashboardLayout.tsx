@@ -35,6 +35,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   useEffect(() => {
     console.log("DashboardLayout rendered with children:", !!children);
     console.log("DashboardLayout children type:", children ? typeof children : 'none');
+    console.log("DashboardLayout children details:", JSON.stringify(children, null, 2));
   }, [children]);
   
   // Default navigation items for the sidebar

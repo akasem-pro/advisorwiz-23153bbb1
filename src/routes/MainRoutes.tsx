@@ -25,7 +25,7 @@ const MainRoutes: React.FC = () => {
                                 route.path === '/leads' || 
                                 route.path === '/team';
         
-        console.log(`Rendering route: ${route.path}, isDashboard: ${isDashboardRoute}`);
+        console.log(`Rendering route: ${route.path}, isDashboard: ${isDashboardRoute}, element:`, !!route.element);
         
         return (
           <Route

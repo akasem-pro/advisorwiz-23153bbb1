@@ -13,7 +13,7 @@ const AppRoutes: React.FC = () => {
   }, [location]);
   
   return (
-    <div className="app-routes-container w-full">
+    <div className="app-routes-container w-full h-full min-h-screen">
       <MainRoutes />
     </div>
   );

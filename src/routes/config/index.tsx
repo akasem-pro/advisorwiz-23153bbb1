@@ -25,11 +25,13 @@ const dashboardRoutes: RouteConfig[] = [
 
 // Combine all routes
 export const getAllRoutes = (): RouteConfig[] => {
-  console.log("Getting all routes", { publicRoutes, dashboardRoutes });
-  return [
-    ...publicRoutes,
-    ...dashboardRoutes,
-  ];
+  const allRoutes = [...publicRoutes, ...dashboardRoutes];
+  console.log("Getting all routes", { 
+    publicRoutes: publicRoutes.map(r => r.path), 
+    dashboardRoutes: dashboardRoutes.map(r => r.path),
+    allRoutes: allRoutes.map(r => r.path)
+  });
+  return allRoutes;
 };
 
 // Get a specific route by path
