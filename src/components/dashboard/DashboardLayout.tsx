@@ -64,8 +64,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           sidebarCollapsed ? "ml-20" : "ml-64"
         )}>
           <DashboardHeader 
-            title={title || ''} 
-            subtitle={subtitle} 
+            title={title || 'Analytics'} 
+            subtitle={subtitle || 'Performance metrics and key indicators'} 
             actionButtons={actionButtons}
             userType="advisor"
             sidebarCollapsed={sidebarCollapsed}
