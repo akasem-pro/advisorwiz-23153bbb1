@@ -1,4 +1,3 @@
-
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { 
@@ -72,8 +71,7 @@ export const useEnhancedErrorHandler = () => {
       appError.userFriendlyMessage = userFriendlyMessage;
     }
     
-    // The third parameter to handleError needs to be a boolean, not a string
-    // We're passing the monitored flag to indicate if this error should be reported to monitoring
+    // Fixed: Pass monitored as boolean for the third parameter to handleError
     return handleError(appError, showToast, monitored);
   }, []);
   
