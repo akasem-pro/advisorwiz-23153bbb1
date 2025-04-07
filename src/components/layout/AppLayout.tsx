@@ -16,7 +16,6 @@ interface AppLayoutProps {
   };
   contentClassName?: string;
   className?: string;
-  // Add missing props that are used in LandingPage.tsx
   hideSocialProof?: boolean;
   withoutPadding?: boolean;
   hideFooter?: boolean;
@@ -33,8 +32,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   contentClassName,
   className,
   hideFooter = false,
-  // We're not using hideSocialProof and withoutPadding here, but we include them in the interface
-  // to prevent TypeScript errors when they're passed in LandingPage.tsx
+  withoutPadding = false,
+  hideSocialProof = false
 }) => {
   console.log("AppLayout rendering with children:", !!children);
   
@@ -51,7 +50,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       )}>
         <div className={cn(
           "container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow",
-          fullWidth && "max-w-none px-0 sm:px-0 lg:px-0"
+          fullWidth && "max-w-none px-0 sm:px-0 lg:px-0",
+          withoutPadding && "py-0"
         )}>
           {children}
         </div>

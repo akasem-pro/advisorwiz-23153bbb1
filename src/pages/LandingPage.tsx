@@ -12,11 +12,11 @@ const LandingPage: React.FC = () => {
   
   return (
     <AppLayout
-      header={<div />}
       fullWidth={true}
-      hideSocialProof={true}
-      withoutPadding={true}
+      className="landing-page-layout"
       contentClassName="p-0"
+      headerProps={{ transparent: true }}
+      hideFooter={false}
     >
       <div className="landing-page">
         <HeroSection />
