@@ -12,6 +12,9 @@ import MobileLayout from '../components/layout/MobileLayout';
 import ConsumerProfile from '../pages/ConsumerProfile';
 import AdvisorProfile from '../pages/AdvisorProfile';
 import FirmProfile from '../pages/FirmProfile';
+import NotFound from '../pages/NotFound';
+import PageErrorBoundary from '../components/error/PageErrorBoundary';
+import { lazyLoad } from '../utils/optimization/lazyComponentLoader';
 
 const AppRoutes: React.FC = () => {
   const location = useLocation();
@@ -25,7 +28,6 @@ const AppRoutes: React.FC = () => {
   useEffect(() => {
     console.log("AppRoutes - Current route:", location.pathname);
     console.log("AppRoutes - Mobile detection:", isMobile ? "Mobile device" : "Desktop device");
-    console.log("AppRoutes - Consumer Profile route should be rendering properly");
     
     if (!mounted) {
       console.log("AppRoutes - First render");
@@ -33,43 +35,67 @@ const AppRoutes: React.FC = () => {
     }
   }, [location, isMobile, mounted]);
   
-  // Additional debugging to track render issues
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const rootElement = document.getElementById('root');
-      if (rootElement) {
-        console.log("Root element children count:", rootElement.childElementCount);
-        if (rootElement.childElementCount === 0) {
-          console.warn("AppRoutes - No children in root element after 500ms");
-        }
-      }
-      
-      const consumerProfileElement = document.querySelector('.consumer-profile-container');
-      if (!consumerProfileElement && location.pathname === '/consumer-profile') {
-        console.warn("AppRoutes - Consumer profile container not found even though we're on the consumer profile route");
-      }
-    }, 500);
-    
-    return () => clearTimeout(timeout);
-  }, [location.pathname]);
-  
   return (
-    <Routes>
-      {/* Explicitly define the home route to LandingPage for a richer experience */}
-      <Route path="/" element={<LandingPage />} />
-      
-      {/* Profile pages - ensure ConsumerProfile is accessible to unauthenticated users */}
-      <Route path="/consumer-profile" element={<PageLayout><ConsumerProfile /></PageLayout>} />
-      <Route path="/advisor-profile" element={<PageLayout><AdvisorProfile /></PageLayout>} />
-      <Route path="/firm-profile" element={<PageLayout><FirmProfile /></PageLayout>} />
-      
-      {/* Legal pages are defined at this level and use the appropriate layout */}
-      <Route path="/privacy" element={<PageLayout><Privacy /></PageLayout>} />
-      <Route path="/terms" element={<PageLayout><Terms /></PageLayout>} />
-      
-      {/* Include MainRoutes for all other pages */}
-      <Route path="/*" element={<MainRoutes />} />
-    </Routes>
+    <PageErrorBoundary>
+      <Routes>
+        {/* Explicitly define the home route to LandingPage for a richer experience */}
+        <Route 
+          path="/" 
+          element={
+            <PageErrorBoundary>
+              <LandingPage />
+            </PageErrorBoundary>
+          } 
+        />
+        
+        {/* Profile pages - ensure ConsumerProfile is accessible to unauthenticated users */}
+        <Route 
+          path="/consumer-profile" 
+          element={
+            <PageErrorBoundary>
+              <PageLayout><ConsumerProfile /></PageLayout>
+            </PageErrorBoundary>
+          } 
+        />
+        <Route 
+          path="/advisor-profile" 
+          element={
+            <PageErrorBoundary>
+              <PageLayout><AdvisorProfile /></PageLayout>
+            </PageErrorBoundary>
+          } 
+        />
+        <Route 
+          path="/firm-profile" 
+          element={
+            <PageErrorBoundary>
+              <PageLayout><FirmProfile /></PageLayout>
+            </PageErrorBoundary>
+          } 
+        />
+        
+        {/* Legal pages are defined at this level and use the appropriate layout */}
+        <Route 
+          path="/privacy" 
+          element={
+            <PageErrorBoundary>
+              <PageLayout><Privacy /></PageLayout>
+            </PageErrorBoundary>
+          } 
+        />
+        <Route 
+          path="/terms" 
+          element={
+            <PageErrorBoundary>
+              <PageLayout><Terms /></PageLayout>
+            </PageErrorBoundary>
+          } 
+        />
+        
+        {/* Include MainRoutes for all other pages */}
+        <Route path="/*" element={<MainRoutes />} />
+      </Routes>
+    </PageErrorBoundary>
   );
 };
 

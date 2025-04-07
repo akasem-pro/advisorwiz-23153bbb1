@@ -8,6 +8,7 @@ import { FeedbackProvider } from './context/FeedbackContext';
 import { Toaster } from 'sonner';
 import AppRoutes from './routes/AppRoutes';
 import { initAppOptimizations } from './utils/appOptimizations';
+import OptimizedAppRoot from './components/performance/OptimizedAppRoot';
 import './App.css';
 
 // Initialize app optimizations
@@ -22,8 +23,10 @@ const App: React.FC = () => {
         <AuthProvider>
           <UserProvider>
             <FeedbackProvider>
-              <AppRoutes />
-              <Toaster position="top-right" richColors />
+              <OptimizedAppRoot>
+                <AppRoutes />
+                <Toaster position="top-right" richColors />
+              </OptimizedAppRoot>
             </FeedbackProvider>
           </UserProvider>
         </AuthProvider>
