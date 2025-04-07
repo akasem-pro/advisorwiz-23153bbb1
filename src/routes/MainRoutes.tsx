@@ -1,11 +1,14 @@
 
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { getAllRoutes } from './config';
 import NotFound from '../pages/NotFound';
 import { PageLoadingFallback } from '../components/LazyComponents';
 import PageErrorBoundary from '../components/error/PageErrorBoundary';
 import DashboardLayout from '../components/dashboard/DashboardLayout';
+
+// Lazy load LandingPage component
+const LazyLandingPage = lazy(() => import('../pages/LandingPage'));
 
 const MainRoutes: React.FC = () => {
   const routes = getAllRoutes();
@@ -59,7 +62,7 @@ const MainRoutes: React.FC = () => {
       <Route path="/" element={
         <PageErrorBoundary>
           <Suspense fallback={<PageLoadingFallback />}>
-            {React.lazy(() => import('../pages/LandingPage')).default}
+            <LazyLandingPage />
           </Suspense>
         </PageErrorBoundary>
       } />
