@@ -1,4 +1,3 @@
-
 import { toast } from 'sonner';
 import { logErrorAsync, flushErrorLogs, registerGlobalErrorHandlers } from './asyncErrorLogger';
 
@@ -285,8 +284,8 @@ export function handleError(
   
   // Report to monitoring if enabled and requested
   if (reportToMonitoring && monitoringEnabled && !appError.reported) {
-    // Fix: Don't call Boolean as a function, just call the reportToMonitoring function directly
-    void reportToMonitoring(appError);
+    // Fix: Don't call as a function, just call the reportToMonitoring function directly
+    reportToMonitoring(appError);
   }
   
   // Show toast notification if requested - this is synchronous and user-facing
