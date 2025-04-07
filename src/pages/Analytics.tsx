@@ -37,6 +37,8 @@ const Analytics: React.FC = () => {
     { label: 'Analytics' }
   ];
   
+  console.log("Analytics component - Rendering content with breadcrumbs:", breadcrumbItems);
+  
   return (
     <div className="analytics-page space-y-6">
       <BreadcrumbTrail items={breadcrumbItems} className="mb-4" />

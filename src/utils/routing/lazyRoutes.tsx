@@ -18,6 +18,9 @@ export const createLazyRoute = (
   // Create the lazy component
   const LazyComponent = lazy(importCallback);
   
+  // Additional logging for debugging
+  console.log(`Creating lazy route for: ${path}`);
+  
   // Return the route config
   return {
     path,

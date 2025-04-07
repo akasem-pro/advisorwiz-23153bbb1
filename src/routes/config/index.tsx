@@ -12,7 +12,7 @@ const publicRoutes: RouteConfig[] = [
   createLazyRoute('/sign-up', () => import('../../pages/SignIn'), { meta: { title: 'Sign Up' } }),
 ];
 
-// Dashboard routes with layout
+// Dashboard routes
 const dashboardRoutes: RouteConfig[] = [
   createLazyRoute('/advisor-dashboard', () => import('../../pages/AdvisorDashboard')),
   createLazyRoute('/analytics', () => import('../../pages/Analytics')),

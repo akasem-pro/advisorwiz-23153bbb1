@@ -19,6 +19,7 @@ const MainRoutes: React.FC = () => {
         // Check if this is a dashboard route that needs the dashboard layout
         const isDashboardRoute = route.path.startsWith('/advisor-dashboard') || 
                                 route.path === '/analytics' || 
+                                route.path === '/admin-analytics' ||
                                 route.path === '/schedule' || 
                                 route.path === '/chat' || 
                                 route.path === '/leads' || 

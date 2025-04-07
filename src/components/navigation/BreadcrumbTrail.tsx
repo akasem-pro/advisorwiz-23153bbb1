@@ -17,6 +17,11 @@ interface BreadcrumbTrailProps {
 const BreadcrumbTrail: React.FC<BreadcrumbTrailProps> = ({ items, className }) => {
   console.log("Rendering BreadcrumbTrail with items:", items);
   
+  if (!items || items.length === 0) {
+    console.log("No breadcrumb items provided");
+    return null;
+  }
+  
   return (
     <nav className={cn("flex", className)} aria-label="Breadcrumb">
       <ol className="inline-flex items-center space-x-1 md:space-x-2">
