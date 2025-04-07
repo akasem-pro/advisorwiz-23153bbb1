@@ -72,8 +72,8 @@ export const useEnhancedErrorHandler = () => {
       appError.userFriendlyMessage = userFriendlyMessage;
     }
     
-    // Pass monitored as a boolean to the handleError function (it's the 3rd parameter)
-    // The reportToMonitoring parameter expects a boolean, not a string
+    // The third parameter to handleError needs to be a boolean, not a string
+    // We're passing the monitored flag to indicate if this error should be reported to monitoring
     return handleError(appError, showToast, monitored);
   }, []);
   

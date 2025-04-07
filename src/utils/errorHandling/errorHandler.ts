@@ -285,7 +285,7 @@ export function handleError(
   
   // Report to monitoring if enabled and requested
   if (reportToMonitoring && monitoringEnabled && !appError.reported) {
-    // Fixed: Use void to indicate we're intentionally ignoring the promise
+    // Use void to properly handle the Promise returned by reportToMonitoring
     void reportToMonitoring(appError);
   }
   
