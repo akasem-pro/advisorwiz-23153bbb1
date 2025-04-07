@@ -284,8 +284,8 @@ export function handleError(
   
   // Report to monitoring if enabled and requested
   if (reportToMonitoring && monitoringEnabled && !appError.reported) {
-    // Fix: Don't call as a function, just call the reportToMonitoring function directly
-    reportToMonitoring(appError);
+    // Fixed: Don't treat reportToMonitoring as a boolean, call the function directly
+    void reportToMonitoring(appError);
   }
   
   // Show toast notification if requested - this is synchronous and user-facing
