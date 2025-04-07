@@ -19,11 +19,16 @@ const MainRoutes: React.FC = () => {
         {/* Root route with direct component */}
         <Route path="/" element={<LandingPage />} />
         
-        {/* Direct routes */}
+        {/* Direct routes for sign-up with both path variants */}
         <Route path="/sign-up" element={<Onboarding />} />
+        <Route path="/signup" element={<Onboarding />} />
         
-        {/* Map other configured routes except for root and sign-up which we handle separately */}
-        {routes.filter(route => route.path !== '/' && route.path !== '/sign-up').map((route) => {
+        {/* Map other configured routes except for explicitly handled ones */}
+        {routes.filter(route => 
+          route.path !== '/' && 
+          route.path !== '/sign-up' && 
+          route.path !== '/signup'
+        ).map((route) => {
           // Check if this is a dashboard route that needs the dashboard layout
           const isDashboardRoute = route.path.startsWith('/advisor-dashboard') || 
                                  route.path === '/analytics' || 
@@ -54,7 +59,6 @@ const MainRoutes: React.FC = () => {
         })}
         
         {/* Common redirects */}
-        <Route path="/signup" element={<Navigate to="/sign-up" replace />} />
         <Route path="/login" element={<Navigate to="/sign-in" replace />} />
         <Route path="/signin" element={<Navigate to="/sign-in" replace />} />
         <Route path="/dashboard" element={<Navigate to="/advisor-dashboard" replace />} />

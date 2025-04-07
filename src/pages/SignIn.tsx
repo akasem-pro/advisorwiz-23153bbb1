@@ -1,71 +1,111 @@
 
-import React from 'react';
-import AnimatedRoute from '../components/ui/AnimatedRoute';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AppLayout from '../components/layout/AppLayout';
 import PageSEO from '../components/seo/PageSEO';
-import { useSignInPage } from '../features/auth/hooks/useSignInPage';
-import SignInLayout from '../features/auth/components/SignInLayout';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 
-/**
- * Sign In page component
- */
 const SignIn: React.FC = () => {
-  const {
-    formState,
-    networkStatus,
-    handleSignInSubmit,
-    handleSignUpSubmit,
-    handleConnectionRetry,
-    isSignInDisabled,
-    isSignUpDisabled
-  } = useSignInPage();
-  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  console.log('Rendering SignIn component');
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      // This would be implemented with actual auth integration
+      console.log('Sign in with', { email, password });
+      setTimeout(() => {
+        navigate('/');
+        setIsLoading(false);
+      }, 1000);
+    } catch (error) {
+      console.error('SignIn error:', error);
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <AnimatedRoute animation="fade">
+    <AppLayout
+      headerProps={{ transparent: false }}
+      hideFooter={false}
+      fullWidth={false}
+    >
       <PageSEO
         title="Sign In | AdvisorWiz"
-        description="Sign in to your AdvisorWiz account to manage your profile, connect with financial advisors, or manage your client relationships."
-        noIndex={true}
+        description="Sign in to your AdvisorWiz account"
+        canonicalUrl="https://advisorwiz.com/sign-in"
       />
       
-      <SignInLayout
-        title="Welcome to AdvisorWiz"
-        description="Sign in to your account or create a new one"
-        activeTab={formState.activeTab}
-        onTabChange={formState.handleTabChange}
-        formError={formState.formError}
-        networkStatus={networkStatus}
-        onRetry={handleConnectionRetry}
-        onSignIn={handleSignInSubmit}
-        onSignUp={handleSignUpSubmit}
-        signInProps={{
-          email: formState.signInEmail,
-          setEmail: formState.setSignInEmail,
-          password: formState.signInPassword,
-          setPassword: formState.setSignInPassword,
-          errors: {
-            signInEmail: formState.errors.signInEmail,
-            signInPassword: formState.errors.signInPassword
-          },
-          isLoading: formState.isLoading,
-          isDisabled: isSignInDisabled
-        }}
-        signUpProps={{
-          email: formState.signUpEmail,
-          setEmail: formState.setSignUpEmail,
-          password: formState.signUpPassword,
-          setPassword: formState.setSignUpPassword,
-          confirmPassword: formState.confirmPassword,
-          setConfirmPassword: formState.setConfirmPassword,
-          errors: {
-            signUpEmail: formState.errors.signUpEmail,
-            signUpPassword: formState.errors.signUpPassword,
-            confirmPassword: formState.errors.confirmPassword
-          },
-          isLoading: formState.isLoading,
-          isDisabled: isSignUpDisabled
-        }}
-      />
-    </AnimatedRoute>
+      <div className="flex justify-center items-center min-h-[calc(100vh-200px)] py-12">
+        <Card className="w-full max-w-md mx-auto">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
+            <CardDescription className="text-center">
+              Enter your credentials to access your account
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            <form onSubmit={handleSignIn} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium">Email</label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@example.com" 
+                  required 
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="password" className="text-sm font-medium">Password</label>
+                  <a href="#" className="text-sm text-teal-600 hover:text-teal-500">
+                    Forgot password?
+                  </a>
+                </div>
+                <Input 
+                  id="password" 
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password" 
+                  required 
+                />
+              </div>
+              
+              <Button 
+                type="submit" 
+                className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Signing in...' : 'Sign In'}
+              </Button>
+              
+              <div className="text-center text-sm">
+                Don't have an account?{' '}
+                <a 
+                  onClick={() => navigate('/sign-up')}
+                  className="text-teal-600 hover:text-teal-500 cursor-pointer"
+                >
+                  Sign up
+                </a>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </AppLayout>
   );
 };
 

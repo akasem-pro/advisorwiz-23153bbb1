@@ -1,5 +1,5 @@
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import AppFooter from './AppFooter';
 import Header from './Header';
 import { cn } from '@/lib/utils';
@@ -36,6 +36,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   hideSocialProof = false
 }) => {
   console.log("AppLayout rendering with children:", !!children);
+  
+  useEffect(() => {
+    console.log("AppLayout mounted");
+    return () => console.log("AppLayout unmounted");
+  }, []);
   
   return (
     <div className={cn("flex min-h-screen flex-col bg-white dark:bg-navy-950", className)}>

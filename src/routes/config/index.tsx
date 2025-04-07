@@ -12,9 +12,11 @@ const publicRoutes: RouteConfig[] = [
   // Use direct component reference for home and signup routes to avoid lazy loading issues
   { path: '/', element: <LandingPage /> },
   { path: '/sign-up', element: <Onboarding /> },
+  { path: '/signup', element: <Onboarding /> }, // Add explicit route for /signup
   createLazyRoute('/contact', () => import('../../pages/ContactUs')),
   createLazyRoute('/about', () => import('../../pages/AboutUs')),
   createLazyRoute('/sign-in', () => import('../../pages/SignIn')),
+  createLazyRoute('/signin', () => import('../../pages/SignIn')), // Add explicit route for /signin
 ];
 
 // Dashboard routes
