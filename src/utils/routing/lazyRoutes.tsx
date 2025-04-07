@@ -14,7 +14,7 @@ export function createLazyRoute(
   options: {
     meta?: RouteConfig['meta'];
     withErrorBoundary?: boolean;
-    withLayout?: (component: React.ReactNode) => React.ReactNode;
+    withLayout?: (component: React.ReactElement) => React.ReactElement;
   } = {}
 ): RouteConfig {
   const LazyComponent = React.lazy(importFn);
@@ -22,7 +22,7 @@ export function createLazyRoute(
   // Setup component name for performance tracking
   const componentName = path.replace(/\//g, '-').replace(/^-/, '') || 'root';
   
-  const RouteComponent = () => {
+  const RouteComponent = (): React.ReactElement => {
     // Record performance metrics for the route
     React.useEffect(() => {
       recordPerformanceMark(`route-${componentName}-mounted`);
@@ -50,7 +50,7 @@ export function createLazyRoute(
   
   return {
     path,
-    element: <RouteComponent />, // This is now valid because RouteComponent returns a JSX element
+    element: <RouteComponent />,
     meta: options.meta
   };
 }
@@ -66,7 +66,7 @@ export function createLazyRoutes(
   }>,
   commonOptions: {
     withErrorBoundary?: boolean;
-    withLayout?: (component: React.ReactNode) => React.ReactNode;
+    withLayout?: (component: React.ReactElement) => React.ReactElement;
   } = {}
 ): RouteConfig[] {
   return routes.map(route => createLazyRoute(
