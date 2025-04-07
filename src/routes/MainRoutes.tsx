@@ -17,7 +17,7 @@ const MainRoutes: React.FC = () => {
       {/* Map all configured routes */}
       {routes.map((route) => {
         // Check if this is a dashboard route that needs the dashboard layout
-        const isDashboardRoute = route.path.includes('/advisor-dashboard') || 
+        const isDashboardRoute = route.path.startsWith('/advisor-dashboard') || 
                                route.path === '/analytics' || 
                                route.path === '/admin-analytics' ||
                                route.path === '/schedule' || 

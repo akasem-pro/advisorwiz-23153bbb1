@@ -1,3 +1,4 @@
+
 import React, { ReactNode, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AnimatedRoute from '../ui/AnimatedRoute';
@@ -24,6 +25,7 @@ export interface BaseLayoutProps {
   withoutPadding?: boolean;
   skipToContentId?: string;
   hideFooter?: boolean;
+  hideSocialProof?: boolean;
 }
 
 const BaseLayout: React.FC<BaseLayoutProps> = ({
@@ -42,7 +44,8 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   mainClassName = '',
   withoutPadding = true,
   skipToContentId,
-  hideFooter = false
+  hideFooter = false,
+  hideSocialProof = false
 }) => {
   const location = useLocation();
   

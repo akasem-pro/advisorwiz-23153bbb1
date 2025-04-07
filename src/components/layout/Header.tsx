@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
@@ -21,7 +22,12 @@ const navigationLinks = [
   { name: 'Contact', path: '/contact' },
 ];
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  transparent?: boolean;
+  className?: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ transparent, className }) => {
   const location = useLocation();
   const { isAuthenticated, consumerProfile, advisorProfile, userType } = useUser();
   const { user, signOut } = useAuth();
@@ -88,10 +94,11 @@ const Header: React.FC = () => {
     <>
       <header className={cn(
         "fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out",
-        "bg-white dark:bg-navy-900/95 backdrop-blur-sm",
+        transparent ? "bg-transparent" : "bg-white dark:bg-navy-900/95 backdrop-blur-sm",
         "border-b border-slate-200/80 dark:border-navy-700/80",
         "shadow-sm",
-        isMobile ? "h-14" : "h-16"
+        isMobile ? "h-14" : "h-16",
+        className
       )}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 h-full">
           <div className="flex justify-between items-center h-full">

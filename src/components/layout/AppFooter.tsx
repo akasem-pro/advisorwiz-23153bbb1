@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Twitter, Facebook, Linkedin, Instagram } from 'lucide-react';
@@ -7,12 +6,16 @@ import { cn } from '@/lib/utils';
 import { Separator } from "../ui/separator";
 import Logo from './Logo';
 
-const AppFooter: React.FC = () => {
+interface AppFooterProps {
+  className?: string;
+}
+
+const AppFooter: React.FC<AppFooterProps> = ({ className }) => {
   const { theme } = useTheme();
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-navy-950 text-white py-10">
+    <footer className={cn("bg-navy-950 text-white py-10", className)}>
       <div className="container mx-auto px-4 md:px-6">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
