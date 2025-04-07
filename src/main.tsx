@@ -13,9 +13,9 @@ setupErrorHandling();
 const initApp = async () => {
   try {
     await setupAnalytics({
-      googleAnalyticsId: import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-EXAMPLE', // Replace with your actual ID
+      googleAnalyticsId: import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-EXAMPLE',
       debug: process.env.NODE_ENV === 'development',
-      sampling: 1.0, // Track all events
+      sampling: 1.0,
       batchSize: 10,
       batchIntervalMs: 2000
     });
