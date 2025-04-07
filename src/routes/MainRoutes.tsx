@@ -17,14 +17,14 @@ const MainRoutes: React.FC = () => {
       {/* Map all configured routes */}
       {routes.map((route) => {
         // Check if this is a dashboard route that needs the dashboard layout
-        const isDashboardRoute = route.path.startsWith('/advisor-dashboard') || 
-                                route.path === '/analytics' || 
-                                route.path === '/admin-analytics' ||
-                                route.path === '/schedule' || 
-                                route.path === '/chat' || 
-                                route.path === '/leads' || 
-                                route.path === '/team' ||
-                                route.path === '/settings';
+        const isDashboardRoute = route.path.includes('/advisor-dashboard') || 
+                               route.path === '/analytics' || 
+                               route.path === '/admin-analytics' ||
+                               route.path === '/schedule' || 
+                               route.path === '/chat' || 
+                               route.path === '/leads' || 
+                               route.path === '/team' ||
+                               route.path === '/settings';
         
         console.log(`Rendering route: ${route.path}, isDashboard: ${isDashboardRoute}, element:`, !!route.element);
         
@@ -52,6 +52,7 @@ const MainRoutes: React.FC = () => {
       {/* Common redirects for alternate route paths */}
       <Route path="/signup" element={<Navigate to="/sign-up" replace />} />
       <Route path="/login" element={<Navigate to="/sign-in" replace />} />
+      <Route path="/signin" element={<Navigate to="/sign-in" replace />} />
       <Route path="/dashboard" element={<Navigate to="/advisor-dashboard" replace />} />
       
       {/* Catch-all route for 404 - must be last */}

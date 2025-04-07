@@ -41,6 +41,7 @@ export const useSignInPage = () => {
   
   // Handle tab change
   const handleTabChange = (value: string) => {
+    console.log("Changing tab to:", value);
     setActiveTab(value);
     setFormError('');
     resetErrors();
@@ -171,6 +172,7 @@ export const useSignInPage = () => {
   
   // Handle sign in form submission
   const handleSignInSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log("Sign In form submitted");
     return handleSignIn(
       e, 
       signInEmail, 
@@ -184,6 +186,7 @@ export const useSignInPage = () => {
   
   // Handle sign up form submission
   const handleSignUpSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log("Sign Up form submitted");
     return handleSignUp(
       e, 
       signUpEmail,

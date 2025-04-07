@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface BreadcrumbItem {
   label: string;
@@ -15,41 +15,33 @@ interface BreadcrumbTrailProps {
 }
 
 const BreadcrumbTrail: React.FC<BreadcrumbTrailProps> = ({ items, className }) => {
-  console.log("Rendering BreadcrumbTrail with items:", items);
-  
   if (!items || items.length === 0) {
-    console.log("No breadcrumb items provided");
+    console.warn('BreadcrumbTrail: No items provided');
     return null;
   }
   
   return (
-    <nav className={cn("flex", className)} aria-label="Breadcrumb">
-      <ol className="inline-flex items-center space-x-1 md:space-x-2">
-        {items.map((item, index) => {
-          const isLast = index === items.length - 1;
+    <nav className={cn("flex items-center text-sm text-slate-600 dark:text-slate-400", className)}>
+      {items.map((item, index) => (
+        <React.Fragment key={index}>
+          {index > 0 && (
+            <ChevronRight className="mx-2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+          )}
           
-          return (
-            <li key={item.label} className="inline-flex items-center">
-              {index > 0 && (
-                <ChevronRight className="mx-1 h-4 w-4 text-slate-400" />
-              )}
-              
-              {item.path && !isLast ? (
-                <Link 
-                  to={item.path}
-                  className="text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                  {item.label}
-                </span>
-              )}
-            </li>
-          );
-        })}
-      </ol>
+          {item.path ? (
+            <Link
+              to={item.path}
+              className="hover:text-slate-900 dark:hover:text-slate-200"
+            >
+              {item.label}
+            </Link>
+          ) : (
+            <span className="font-medium text-slate-900 dark:text-white">
+              {item.label}
+            </span>
+          )}
+        </React.Fragment>
+      ))}
     </nav>
   );
 };

@@ -64,6 +64,8 @@ const AuthFormContainer: React.FC<AuthFormContainerProps> = ({
                            formError.toLowerCase().includes('network') || 
                            networkStatus === 'offline';
 
+  console.log("AuthFormContainer rendering with activeTab:", activeTab);
+
   return (
     <Card className="w-full shadow-md">
       <CardHeader className="px-4 sm:px-6 pt-8 pb-4">
@@ -71,7 +73,7 @@ const AuthFormContainer: React.FC<AuthFormContainerProps> = ({
         <CardDescription className="text-center text-sm sm:text-base mt-3 text-slate-600 dark:text-slate-300">{description}</CardDescription>
       </CardHeader>
       
-      <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
+      <Tabs defaultValue={activeTab} value={activeTab} onValueChange={onTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-4" aria-label="Authentication options">
           <TabsTrigger value="signin" className="text-sm sm:text-base py-2">Sign In</TabsTrigger>
           <TabsTrigger value="signup" className="text-sm sm:text-base py-2">Sign Up</TabsTrigger>

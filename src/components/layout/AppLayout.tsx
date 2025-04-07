@@ -1,58 +1,57 @@
 
-import React from 'react';
+import React, { ReactNode } from 'react';
+import AppFooter from './AppFooter';
 import Header from './Header';
-import BaseLayout from './BaseLayout';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
-  children: React.ReactNode;
-  hideSocialProof?: boolean;
+  children: ReactNode;
   fullWidth?: boolean;
-  className?: string;
-  showTrustBadges?: boolean;
+  headerProps?: {
+    transparent?: boolean;
+    className?: string;
+  };
+  footerProps?: {
+    className?: string;
+  };
   contentClassName?: string;
-  withoutPadding?: boolean;
-  animation?: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale' | 'none';
-  animationDuration?: 'fast' | 'normal' | 'slow';
-  skipToContentId?: string;
-  hideFooter?: boolean;
-  showFooter?: boolean;
+  className?: string;
 }
 
-const AppLayout: React.FC<AppLayoutProps> = ({ 
-  children, 
-  hideSocialProof = false,
+/**
+ * Standard layout for application pages with consistent header and footer
+ */
+const AppLayout: React.FC<AppLayoutProps> = ({
+  children,
   fullWidth = false,
-  className = '',
-  showTrustBadges = false,
+  headerProps,
+  footerProps,
   contentClassName,
-  withoutPadding = true,
-  animation = 'fade',
-  animationDuration = 'normal',
-  skipToContentId = 'main-content',
-  hideFooter = false,
-  showFooter = false
+  className,
 }) => {
-  // Override hideFooter if showFooter is explicitly true
-  const finalHideFooter = showFooter ? false : hideFooter;
-
+  console.log("AppLayout rendering with children:", !!children);
+  
   return (
-    <BaseLayout
-      header={<Header />}
-      footer={finalHideFooter ? null : undefined}
-      showSocialProof={!hideSocialProof}
-      showTrustBadges={showTrustBadges}
-      fullWidth={fullWidth}
-      className={className}
-      contentClassName={cn("pt-16 md:pt-24", contentClassName)}
-      withoutPadding={withoutPadding}
-      animation={animation}
-      animationDuration={animationDuration}
-      skipToContentId={skipToContentId}
-      hideFooter={finalHideFooter}
-    >
-      {children}
-    </BaseLayout>
+    <div className={cn("flex min-h-screen flex-col bg-white dark:bg-navy-950", className)}>
+      <Header 
+        transparent={headerProps?.transparent} 
+        className={headerProps?.className} 
+      />
+      
+      <main className={cn(
+        "flex-grow flex flex-col",
+        contentClassName
+      )}>
+        <div className={cn(
+          "container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow",
+          fullWidth && "max-w-none px-0 sm:px-0 lg:px-0"
+        )}>
+          {children}
+        </div>
+      </main>
+      
+      <AppFooter className={footerProps?.className} />
+    </div>
   );
 };
 
