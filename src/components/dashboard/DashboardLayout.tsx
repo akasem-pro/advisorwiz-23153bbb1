@@ -1,102 +1,60 @@
 
-import React, { ReactNode, useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useUser } from '../../context/UserContext';
-import AnimatedRoute from '../ui/AnimatedRoute';
-import { useIsMobile } from '../../hooks/use-mobile';
-import Sidebar from './Sidebar';
+import React, { ReactNode } from 'react';
 import DashboardHeader from './DashboardHeader';
-import MobileDashboard from './MobileDashboard';
-import { getNavigationItems } from './dashboardNavigation';
-import { useNavigation } from '../../hooks/use-navigation';
+import Sidebar from './Sidebar';
 import { cn } from '@/lib/utils';
+import PageErrorBoundary from '../error/PageErrorBoundary';
 
 interface DashboardLayoutProps {
   children: ReactNode;
-  title: string;
+  title?: string;
   subtitle?: string;
   actionButtons?: ReactNode;
+  breadcrumb?: ReactNode;
+  className?: string;
   contentClassName?: string;
+  fullWidth?: boolean;
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ 
-  children, 
-  title, 
+/**
+ * Standard layout for dashboard pages with consistent header, navigation, and error handling
+ */
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({
+  children,
+  title,
   subtitle,
   actionButtons,
-  contentClassName
+  breadcrumb,
+  className,
+  contentClassName,
+  fullWidth = false,
 }) => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { userType, isAuthenticated, setIsAuthenticated, setUserType } = useUser();
-  const navigate = useNavigate();
-  const isMobile = useIsMobile();
-  const location = useLocation();
-  const { navigateTo } = useNavigation();
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/sign-in');
-    }
-  }, [isAuthenticated, navigate]);
-
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUserType(null);
-    navigateTo('/');
-  };
-
-  const navigationItems = getNavigationItems(userType);
-
-  if (isMobile) {
-    return (
-      <MobileDashboard 
-        title={title} 
-        subtitle={subtitle}
-        userType={userType}
-      >
-        {children}
-      </MobileDashboard>
-    );
-  }
-
   return (
-    <AnimatedRoute animation="fade">
-      <div className="min-h-screen bg-slate-50 dark:bg-navy-950 flex text-navy-900 dark:text-slate-100">
-        <Sidebar 
-          sidebarCollapsed={sidebarCollapsed}
-          setSidebarCollapsed={setSidebarCollapsed}
-          userType={userType}
-          navigationItems={navigationItems}
-          handleLogout={handleLogout}
-        />
-
-        <div 
-          className={cn(
-            "transition-all duration-300 ease-in-out flex-1",
-            sidebarCollapsed ? 'ml-16' : 'ml-56'
-          )}
-        >
-          <DashboardHeader 
-            title={title} 
-            subtitle={subtitle}
-            userType={userType}
-            sidebarCollapsed={sidebarCollapsed}
-            actionButtons={actionButtons}
-          />
+    <PageErrorBoundary>
+      <div className={cn("flex min-h-screen bg-slate-50 dark:bg-navy-950", className)}>
+        <Sidebar />
+        
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <DashboardHeader title={title} subtitle={subtitle} actionButtons={actionButtons} />
           
-          <main className={cn(
-            "p-3 bg-slate-50 dark:bg-navy-950", // Reduced padding
-            contentClassName
-          )}>
-            {children}
+          <main className="flex-1 overflow-auto p-4 md:p-6">
+            {breadcrumb && (
+              <div className="mb-4">
+                {breadcrumb}
+              </div>
+            )}
+            
+            <div className={cn(
+              "mx-auto",
+              contentClassName,
+              !fullWidth && "max-w-7xl"
+            )}>
+              {children}
+            </div>
           </main>
         </div>
       </div>
-    </AnimatedRoute>
+    </PageErrorBoundary>
   );
 };
 
