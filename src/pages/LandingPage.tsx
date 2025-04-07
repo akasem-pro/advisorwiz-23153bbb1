@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import AppLayout from '../components/layout/AppLayout';
 import HeroSection from '../components/home/HeroSection';
 import HowItWorksSection from '../components/home/HowItWorksSection';
@@ -9,6 +9,12 @@ import FAQSection from '../components/home/FAQSection';
 
 const LandingPage: React.FC = () => {
   console.log("Rendering LandingPage component");
+  
+  useEffect(() => {
+    // Additional logging to debug rendering
+    console.log("LandingPage mounted");
+    return () => console.log("LandingPage unmounted");
+  }, []);
   
   return (
     <AppLayout

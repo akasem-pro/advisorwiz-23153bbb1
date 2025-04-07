@@ -3,17 +3,18 @@ import React from 'react';
 import { RouteConfig } from '../types/RouteConfig';
 import { createLazyRoute } from '../../utils/routing/lazyRoutes';
 
-// Import direct component for home route to avoid lazy loading issues
+// Import direct component for home and signup routes to avoid lazy loading issues
 import LandingPage from '../../pages/LandingPage';
+import Onboarding from '../../pages/Onboarding';
 
 // Import route definitions
 const publicRoutes: RouteConfig[] = [
-  // Use direct component reference for the home route to avoid lazy loading issues
+  // Use direct component reference for home and signup routes to avoid lazy loading issues
   { path: '/', element: <LandingPage /> },
+  { path: '/sign-up', element: <Onboarding /> },
   createLazyRoute('/contact', () => import('../../pages/ContactUs')),
   createLazyRoute('/about', () => import('../../pages/AboutUs')),
   createLazyRoute('/sign-in', () => import('../../pages/SignIn')),
-  createLazyRoute('/sign-up', () => import('../../pages/SignIn'), { meta: { title: 'Sign Up' } }),
 ];
 
 // Dashboard routes

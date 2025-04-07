@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AnimatedRoute from '../components/ui/AnimatedRoute';
@@ -23,6 +24,8 @@ const Onboarding: React.FC = () => {
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [formError, setFormError] = useState('');
+
+  console.log("Rendering Onboarding component, step:", step);
 
   const handleContinue = () => {
     if (step === 1 && selectedUserType) {
@@ -131,15 +134,15 @@ const Onboarding: React.FC = () => {
         
         <main className="flex-grow pt-20">
           <div className="container mx-auto px-4 py-12 max-w-4xl">
-            <div className="glass-card rounded-2xl overflow-hidden shadow-lg">
+            <div className="bg-white dark:bg-navy-800 rounded-2xl overflow-hidden shadow-lg">
               <div className="p-8 md:p-12">
                 {step === 1 ? (
                   <div className="animate-fade-in">
                     <div className="text-center mb-10">
-                      <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4">
+                      <h1 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 dark:text-white mb-4">
                         Welcome to AdvisorWiz
                       </h1>
-                      <p className="text-slate-600 max-w-2xl mx-auto">
+                      <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
                         Choose which type of user you are to get started with your personalized experience.
                       </p>
                     </div>
@@ -237,7 +240,7 @@ const Onboarding: React.FC = () => {
                   {step > 1 ? (
                     <button
                       onClick={handleBack}
-                      className="flex items-center text-navy-700 hover:text-navy-900 transition-colors"
+                      className="flex items-center text-navy-700 dark:text-navy-200 hover:text-navy-900 dark:hover:text-white transition-colors"
                     >
                       <ArrowLeft className="mr-2 w-5 h-5" />
                       Back
@@ -246,7 +249,7 @@ const Onboarding: React.FC = () => {
                     <div>
                       <button 
                         onClick={handleSignIn}
-                        className="text-navy-700 hover:text-navy-900 transition-colors"
+                        className="text-navy-700 dark:text-navy-200 hover:text-navy-900 dark:hover:text-white transition-colors"
                       >
                         Already have an account? Sign in
                       </button>
@@ -256,7 +259,7 @@ const Onboarding: React.FC = () => {
                   <button
                     onClick={handleContinue}
                     disabled={(step === 1 && !selectedUserType) || isRegistering}
-                    className={`btn-primary inline-flex items-center ${
+                    className={`btn-primary inline-flex items-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-md ${
                       (step === 1 && !selectedUserType) || isRegistering ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                   >
@@ -280,8 +283,6 @@ const Onboarding: React.FC = () => {
             </div>
           </div>
         </main>
-
-        {/* Removed the AppFooter component */}
       </div>
     </AnimatedRoute>
   );

@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { getAllRoutes } from './config';
 import NotFound from '../pages/NotFound';
 import LandingPage from '../pages/LandingPage';
+import Onboarding from '../pages/Onboarding';
 import DashboardLayout from '../components/dashboard/DashboardLayout';
 import { PageLoadingFallback } from '../components/LazyComponents';
 
@@ -18,8 +19,11 @@ const MainRoutes: React.FC = () => {
         {/* Root route with direct component */}
         <Route path="/" element={<LandingPage />} />
         
-        {/* Map all configured routes except for root */}
-        {routes.filter(route => route.path !== '/').map((route) => {
+        {/* Direct routes */}
+        <Route path="/sign-up" element={<Onboarding />} />
+        
+        {/* Map other configured routes except for root and sign-up which we handle separately */}
+        {routes.filter(route => route.path !== '/' && route.path !== '/sign-up').map((route) => {
           // Check if this is a dashboard route that needs the dashboard layout
           const isDashboardRoute = route.path.startsWith('/advisor-dashboard') || 
                                  route.path === '/analytics' || 
