@@ -36,4 +36,9 @@ export const getAllRoutes = (): RouteConfig[] => {
   ];
 };
 
+// Get a specific route by path
+export const getRouteByPath = (path: string): RouteConfig | undefined => {
+  return getAllRoutes().find(route => route.path === path);
+};
+
 export default getAllRoutes;
