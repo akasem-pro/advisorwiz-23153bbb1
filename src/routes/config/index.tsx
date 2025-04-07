@@ -2,6 +2,7 @@
 import { RouteConfig } from '../types/RouteConfig';
 import { createLazyRoute } from '../../utils/routing/lazyRoutes';
 import DashboardLayout from '../../components/dashboard/DashboardLayout';
+import React from 'react';
 
 // Import route definitions
 const publicRoutes: RouteConfig[] = [
