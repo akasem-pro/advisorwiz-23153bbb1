@@ -1,5 +1,5 @@
 
-import React, { ErrorInfo, Suspense, useState } from 'react';
+import React, { ErrorInfo, Suspense } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider } from './context/UserContext';
 import { AuthProvider } from './features/auth/context/AuthProvider';
@@ -66,10 +66,10 @@ const App: React.FC = () => {
         <AuthProvider>
           <UserProvider>
             <FeedbackProvider>
-              <Suspense fallback={<div>Loading...</div>}>
+              <div className="app-container">
                 <AppRoutes />
                 <Toaster position="top-right" richColors />
-              </Suspense>
+              </div>
             </FeedbackProvider>
           </UserProvider>
         </AuthProvider>

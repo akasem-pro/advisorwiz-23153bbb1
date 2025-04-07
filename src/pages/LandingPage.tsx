@@ -8,21 +8,21 @@ import MainCTASection from '../components/home/MainCTASection';
 import FAQSection from '../components/home/FAQSection';
 
 const LandingPage: React.FC = () => {
-  console.log("Rendering LandingPage component");
+  console.log("LandingPage component rendering");
   
   useEffect(() => {
-    // Additional logging to debug rendering
     console.log("LandingPage mounted");
     return () => console.log("LandingPage unmounted");
   }, []);
   
   return (
     <AppLayout
-      fullWidth={true}
-      className="landing-page-layout min-h-screen"
+      fullWidth={false}
+      className="landing-page-layout"
       contentClassName="p-0"
-      headerProps={{ transparent: true }}
+      headerProps={{ transparent: false }}
       hideFooter={false}
+      withoutPadding={true}
     >
       <main className="landing-page">
         <HeroSection />

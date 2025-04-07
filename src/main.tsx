@@ -5,8 +5,7 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 
-// Simple initialization to eliminate potential issues
-console.log('Initializing application...');
+console.log('Starting application...');
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

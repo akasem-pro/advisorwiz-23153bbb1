@@ -35,7 +35,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   withoutPadding = false,
   hideSocialProof = false
 }) => {
-  console.log("AppLayout rendering with children:", !!children);
+  console.log("AppLayout rendering");
   
   useEffect(() => {
     console.log("AppLayout mounted");
@@ -49,18 +49,18 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         className={headerProps?.className} 
       />
       
-      <div className={cn(
-        "flex-grow flex flex-col w-full",
+      <main className={cn(
+        "flex-grow w-full pt-16", // Add padding top for header
         contentClassName
       )}>
         <div className={cn(
-          "w-full mx-auto flex-grow",
+          "w-full mx-auto",
           !fullWidth && "container px-4 sm:px-6 lg:px-8",
           !withoutPadding && "py-8"
         )}>
           {children}
         </div>
-      </div>
+      </main>
       
       {!hideFooter && <AppFooter className={footerProps?.className} />}
     </div>
