@@ -1,3 +1,4 @@
+
 import { toast } from 'sonner';
 import { logErrorAsync, flushErrorLogs, registerGlobalErrorHandlers } from './asyncErrorLogger';
 
@@ -284,7 +285,7 @@ export function handleError(
   
   // Report to monitoring if enabled and requested
   if (reportToMonitoring && monitoringEnabled && !appError.reported) {
-    // Fixed: Don't treat reportToMonitoring as a boolean, call the function directly
+    // Fixed: Use void to indicate we're intentionally ignoring the promise
     void reportToMonitoring(appError);
   }
   
