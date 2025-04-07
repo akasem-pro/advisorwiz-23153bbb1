@@ -1,9 +1,10 @@
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import DashboardHeader from './DashboardHeader';
 import Sidebar from './Sidebar';
 import { cn } from '@/lib/utils';
 import PageErrorBoundary from '../error/PageErrorBoundary';
+import { Home, Calendar, MessageSquare, Settings, Users, PieChart, Target } from 'lucide-react';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -29,13 +30,43 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   contentClassName,
   fullWidth = false,
 }) => {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  // Default navigation items for the sidebar
+  const navigationItems = [
+    { label: 'Dashboard', icon: Home, link: '/advisor-dashboard' },
+    { label: 'Analytics', icon: PieChart, link: '/analytics' },
+    { label: 'Schedule', icon: Calendar, link: '/schedule' },
+    { label: 'Messages', icon: MessageSquare, link: '/chat' },
+    { label: 'Leads', icon: Target, link: '/leads' },
+    { label: 'Team', icon: Users, link: '/team' },
+    { label: 'Settings', icon: Settings, link: '/settings' }
+  ];
+  
+  // Mock function for logout
+  const handleLogout = () => {
+    console.log('Logout clicked');
+  };
+
   return (
     <PageErrorBoundary>
       <div className={cn("flex min-h-screen bg-slate-50 dark:bg-navy-950", className)}>
-        <Sidebar />
+        <Sidebar 
+          sidebarCollapsed={sidebarCollapsed} 
+          setSidebarCollapsed={setSidebarCollapsed} 
+          userType="advisor"
+          navigationItems={navigationItems}
+          handleLogout={handleLogout}
+        />
         
         <div className="flex-1 flex flex-col overflow-hidden">
-          <DashboardHeader title={title} subtitle={subtitle} actionButtons={actionButtons} />
+          <DashboardHeader 
+            title={title || ''} 
+            subtitle={subtitle} 
+            actionButtons={actionButtons}
+            userType="advisor"
+            sidebarCollapsed={sidebarCollapsed}
+          />
           
           <main className="flex-1 overflow-auto p-4 md:p-6">
             {breadcrumb && (

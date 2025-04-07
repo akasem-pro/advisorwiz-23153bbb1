@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, BellRing, HelpCircle, Menu, X } from 'lucide-react';
@@ -11,9 +10,9 @@ import { useIsMobile } from '../../hooks/use-mobile';
 interface DashboardHeaderProps {
   title: string;
   subtitle?: string;
-  userType: UserType;
+  userType: "consumer" | "advisor" | "firm_admin" | "admin" | "guest";
   sidebarCollapsed: boolean;
-  actionButtons?: React.ReactNode; // Added this prop
+  actionButtons?: React.ReactNode;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ 
@@ -21,7 +20,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   subtitle, 
   userType,
   sidebarCollapsed,
-  actionButtons // Include the new prop
+  actionButtons 
 }) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -45,7 +44,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
     if (!showNotifications) {
-      // Mark as read when opening
       setTimeout(() => {
         setNotifications(notifications.map(n => ({ ...n, read: true })));
       }, 3000);
@@ -78,7 +76,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </div>
         
         <div className="flex items-center space-x-1 md:space-x-4">
-          {/* Search input logic */}
           {!isMobile && !searchOpen ? (
             <div className="relative hidden md:block">
               <input 
@@ -120,7 +117,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             </div>
           ) : null}
           
-          {/* Right side actions */}
           <div className="relative">
             <Button 
               variant="ghost" 
@@ -140,7 +136,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               )}
             </Button>
             
-            {/* Notifications dropdown */}
             {showNotifications && (
               <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-navy-800 rounded-lg shadow-lg border border-slate-200 dark:border-navy-700 overflow-hidden z-30">
                 <div className="p-3 border-b border-slate-200 dark:border-navy-700 flex justify-between items-center">
@@ -207,7 +202,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             </div>
           </Button>
           
-          {/* Display actionButtons if provided */}
           {actionButtons && (
             <div className="ml-2">
               {actionButtons}

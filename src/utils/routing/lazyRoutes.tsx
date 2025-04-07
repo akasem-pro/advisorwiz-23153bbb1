@@ -50,7 +50,7 @@ export function createLazyRoute(
   
   return {
     path,
-    element: <RouteComponent />,
+    element: <RouteComponent />, // This is now valid because RouteComponent returns a JSX element
     meta: options.meta
   };
 }
