@@ -15,15 +15,15 @@ const publicRoutes: RouteConfig[] = [
 // Dashboard routes with layout
 const dashboardRoutes: RouteConfig[] = [
   createLazyRoute('/advisor-dashboard', () => import('../../pages/AdvisorDashboard'), {
-    withLayout: (component) => <DashboardLayout>{component}</DashboardLayout>,
+    withLayout: (component) => (<DashboardLayout>{component}</DashboardLayout>),
     meta: { requiresAuth: true, title: 'Advisor Dashboard' }
   }),
   createLazyRoute('/analytics', () => import('../../pages/Analytics'), {
-    withLayout: (component) => <DashboardLayout>{component}</DashboardLayout>,
+    withLayout: (component) => (<DashboardLayout>{component}</DashboardLayout>),
     meta: { requiresAuth: true, title: 'Analytics Dashboard' }
   }),
   createLazyRoute('/admin-analytics', () => import('../../pages/AdminAnalytics'), {
-    withLayout: (component) => <DashboardLayout>{component}</DashboardLayout>,
+    withLayout: (component) => (<DashboardLayout>{component}</DashboardLayout>),
     meta: { requiresAuth: true, title: 'Admin Analytics Dashboard' }
   }),
 ];
