@@ -12,7 +12,7 @@ const HeroSection: React.FC = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white dark:from-navy-950 dark:via-navy-900 dark:to-navy-900 pt-12 pb-12 sm:pt-16 sm:pb-16">
+    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white dark:from-navy-950 dark:via-navy-900 dark:to-navy-900 pt-20 pb-12 sm:pt-24 sm:pb-16">
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Hero Content */}
         <div className="text-center max-w-4xl mx-auto pt-8 pb-10 sm:pt-10">
@@ -59,11 +59,11 @@ const HeroSection: React.FC = () => {
         {!isMobile && <HeroStatistics className="mt-6 animate-fade-in" style={{animationDelay: '0.4s'}} />}
       </div>
       
-      {/* Background Elements - More subtle and modern */}
+      {/* Background Elements */}
       <div className="absolute top-0 inset-x-0 h-48 bg-gradient-to-br from-teal-50/20 to-navy-50/20 dark:from-teal-900/5 dark:to-navy-800/5 -z-10"></div>
       
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200/70 dark:via-navy-700/50 to-transparent"></div>
-    </div>
+    </section>
   );
 };
 

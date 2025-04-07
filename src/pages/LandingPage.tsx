@@ -13,18 +13,18 @@ const LandingPage: React.FC = () => {
   return (
     <AppLayout
       fullWidth={true}
-      className="landing-page-layout"
+      className="landing-page-layout min-h-screen"
       contentClassName="p-0"
       headerProps={{ transparent: true }}
       hideFooter={false}
     >
-      <div className="landing-page">
+      <main className="landing-page">
         <HeroSection />
         <HowItWorksSection />
         <BenefitsSection />
         <MainCTASection />
         <FAQSection />
-      </div>
+      </main>
     </AppLayout>
   );
 };

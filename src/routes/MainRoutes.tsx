@@ -15,10 +15,10 @@ const MainRoutes: React.FC = () => {
     
     return (
       <Routes>
-        {/* Root route with direct component for stability */}
+        {/* Root route with direct component */}
         <Route path="/" element={<LandingPage />} />
         
-        {/* Map all configured routes except for root which we handle separately */}
+        {/* Map all configured routes except for root */}
         {routes.filter(route => route.path !== '/').map((route) => {
           // Check if this is a dashboard route that needs the dashboard layout
           const isDashboardRoute = route.path.startsWith('/advisor-dashboard') || 
@@ -29,8 +29,6 @@ const MainRoutes: React.FC = () => {
                                  route.path === '/leads' || 
                                  route.path === '/team' ||
                                  route.path === '/settings';
-          
-          console.log(`Rendering route: ${route.path}, isDashboard: ${isDashboardRoute}`);
           
           return (
             <Route
@@ -51,13 +49,13 @@ const MainRoutes: React.FC = () => {
           );
         })}
         
-        {/* Common redirects for alternate route paths */}
+        {/* Common redirects */}
         <Route path="/signup" element={<Navigate to="/sign-up" replace />} />
         <Route path="/login" element={<Navigate to="/sign-in" replace />} />
         <Route path="/signin" element={<Navigate to="/sign-in" replace />} />
         <Route path="/dashboard" element={<Navigate to="/advisor-dashboard" replace />} />
         
-        {/* Catch-all route for 404 - must be last */}
+        {/* Catch-all route for 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     );

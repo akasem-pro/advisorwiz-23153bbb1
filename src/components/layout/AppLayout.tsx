@@ -44,18 +44,18 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         className={headerProps?.className} 
       />
       
-      <main className={cn(
-        "flex-grow flex flex-col",
+      <div className={cn(
+        "flex-grow flex flex-col w-full",
         contentClassName
       )}>
         <div className={cn(
-          "container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow",
-          fullWidth && "max-w-none px-0 sm:px-0 lg:px-0",
-          withoutPadding && "py-0"
+          "w-full mx-auto flex-grow",
+          !fullWidth && "container px-4 sm:px-6 lg:px-8",
+          !withoutPadding && "py-8"
         )}>
           {children}
         </div>
-      </main>
+      </div>
       
       {!hideFooter && <AppFooter className={footerProps?.className} />}
     </div>
