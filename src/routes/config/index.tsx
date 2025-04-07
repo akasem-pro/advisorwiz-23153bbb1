@@ -5,7 +5,7 @@ import React from 'react';
 
 // Import route definitions
 const publicRoutes: RouteConfig[] = [
-  createLazyRoute('/', () => import('../../pages/Home')),
+  createLazyRoute('/', () => import('../../pages/LandingPage')),
   createLazyRoute('/contact', () => import('../../pages/ContactUs')),
   createLazyRoute('/about', () => import('../../pages/AboutUs')),
   createLazyRoute('/sign-in', () => import('../../pages/SignIn')),
@@ -21,6 +21,7 @@ const dashboardRoutes: RouteConfig[] = [
   createLazyRoute('/chat', () => import('../../pages/Chat')),
   createLazyRoute('/leads', () => import('../../pages/LeadManagementPage')),
   createLazyRoute('/team', () => import('../../pages/Team')),
+  createLazyRoute('/settings', () => import('../../pages/Settings')),
 ];
 
 // Combine all routes

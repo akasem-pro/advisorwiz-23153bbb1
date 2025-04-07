@@ -19,6 +19,8 @@ const App: React.FC = () => {
   
   useEffect(() => {
     console.log("App mounted");
+    // Log the current path to help with debugging
+    console.log("Current path:", window.location.pathname);
   }, []);
   
   return (

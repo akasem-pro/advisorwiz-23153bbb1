@@ -23,7 +23,8 @@ const MainRoutes: React.FC = () => {
                                 route.path === '/schedule' || 
                                 route.path === '/chat' || 
                                 route.path === '/leads' || 
-                                route.path === '/team';
+                                route.path === '/team' ||
+                                route.path === '/settings';
         
         console.log(`Rendering route: ${route.path}, isDashboard: ${isDashboardRoute}, element:`, !!route.element);
         
