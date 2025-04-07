@@ -21,6 +21,21 @@ const App: React.FC = () => {
     console.log("App mounted");
     // Log the current path to help with debugging
     console.log("Current path:", window.location.pathname);
+    
+    // Add more detailed debugging for the blank page issue
+    console.log("Window location:", window.location.href);
+    console.log("Document ready state:", document.readyState);
+    
+    // Listen for document ready state changes
+    const handleReadyStateChange = () => {
+      console.log("Document ready state changed:", document.readyState);
+    };
+    
+    document.addEventListener('readystatechange', handleReadyStateChange);
+    
+    return () => {
+      document.removeEventListener('readystatechange', handleReadyStateChange);
+    };
   }, []);
   
   return (

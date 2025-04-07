@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useLocation, Navigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import MainRoutes from './MainRoutes';
 
 const AppRoutes: React.FC = () => {
@@ -11,9 +11,14 @@ const AppRoutes: React.FC = () => {
     console.log("AppRoutes - Current route:", location.pathname);
     console.log("AppRoutes - Rendering MainRoutes component");
     
+    // Add more detailed logging to help diagnose the blank page issue
+    console.log("AppRoutes - Document title:", document.title);
+    console.log("AppRoutes - Is document visible:", !document.hidden);
+    console.log("AppRoutes - Window location:", window.location.href);
+    
     // Force navigation to home page if we're at the root and having issues
-    if (location.pathname === '/onboarding') {
-      console.log("AppRoutes - On onboarding page, navigation should work correctly");
+    if (location.pathname === '/') {
+      console.log("AppRoutes - On root path, ensuring landing page renders");
     }
   }, [location]);
   

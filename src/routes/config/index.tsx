@@ -1,11 +1,15 @@
 
+import React from 'react';
 import { RouteConfig } from '../types/RouteConfig';
 import { createLazyRoute } from '../../utils/routing/lazyRoutes';
-import React from 'react';
+
+// Import direct component for home route to avoid lazy loading issues
+import LandingPage from '../../pages/LandingPage';
 
 // Import route definitions
 const publicRoutes: RouteConfig[] = [
-  createLazyRoute('/', () => import('../../pages/LandingPage')),
+  // Use direct component reference for the home route to avoid lazy loading issues
+  { path: '/', element: <LandingPage />, key: 'home' },
   createLazyRoute('/contact', () => import('../../pages/ContactUs')),
   createLazyRoute('/about', () => import('../../pages/AboutUs')),
   createLazyRoute('/sign-in', () => import('../../pages/SignIn')),

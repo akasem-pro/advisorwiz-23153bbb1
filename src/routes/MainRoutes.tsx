@@ -6,8 +6,9 @@ import NotFound from '../pages/NotFound';
 import { PageLoadingFallback } from '../components/LazyComponents';
 import PageErrorBoundary from '../components/error/PageErrorBoundary';
 import DashboardLayout from '../components/dashboard/DashboardLayout';
+import LandingPage from '../pages/LandingPage'; // Direct import for root route
 
-// Lazy load LandingPage component
+// Lazy load other pages as needed
 const LazyLandingPage = lazy(() => import('../pages/LandingPage'));
 
 const MainRoutes: React.FC = () => {
@@ -62,7 +63,7 @@ const MainRoutes: React.FC = () => {
       <Route path="/" element={
         <PageErrorBoundary>
           <Suspense fallback={<PageLoadingFallback />}>
-            <LazyLandingPage />
+            <LandingPage />
           </Suspense>
         </PageErrorBoundary>
       } />
