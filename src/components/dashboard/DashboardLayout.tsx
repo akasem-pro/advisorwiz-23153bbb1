@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import DashboardHeader from './DashboardHeader';
 import Sidebar from './Sidebar';
 import { cn } from '@/lib/utils';
@@ -31,6 +31,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   fullWidth = false,
 }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  useEffect(() => {
+    console.log("DashboardLayout rendered with children:", !!children);
+  }, [children]);
   
   // Default navigation items for the sidebar
   const navigationItems = [

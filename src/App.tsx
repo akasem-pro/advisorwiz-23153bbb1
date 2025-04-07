@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider } from './context/UserContext';
@@ -16,6 +16,10 @@ initAppOptimizations();
 
 const App: React.FC = () => {
   console.log("App component rendering");
+  
+  useEffect(() => {
+    console.log("App mounted");
+  }, []);
   
   return (
     <Router>
