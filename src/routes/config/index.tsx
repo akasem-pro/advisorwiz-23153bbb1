@@ -1,7 +1,6 @@
 
 import { RouteConfig } from '../types/RouteConfig';
 import { createLazyRoute } from '../../utils/routing/lazyRoutes';
-import DashboardLayout from '../../components/dashboard/DashboardLayout';
 import React from 'react';
 
 // Import route definitions
@@ -26,6 +25,7 @@ const dashboardRoutes: RouteConfig[] = [
 
 // Combine all routes
 export const getAllRoutes = (): RouteConfig[] => {
+  console.log("Getting all routes", { publicRoutes, dashboardRoutes });
   return [
     ...publicRoutes,
     ...dashboardRoutes,

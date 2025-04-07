@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -20,10 +21,10 @@ const engagementData = [
 ];
 
 const Analytics: React.FC = () => {
-  console.log("Analytics page component rendering");
+  console.log("Analytics page component rendering", new Date().toISOString());
   
   useEffect(() => {
-    console.log("Analytics page mounted");
+    console.log("Analytics page mounted", new Date().toISOString());
     document.title = "Analytics Dashboard";
     
     return () => {
@@ -37,7 +38,7 @@ const Analytics: React.FC = () => {
   ];
   
   return (
-    <div className="space-y-6">
+    <div className="analytics-page space-y-6">
       <BreadcrumbTrail items={breadcrumbItems} className="mb-4" />
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">

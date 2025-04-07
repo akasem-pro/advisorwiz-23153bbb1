@@ -5,14 +5,10 @@ import { getAllRoutes } from './config';
 import NotFound from '../pages/NotFound';
 import { PageLoadingFallback } from '../components/LazyComponents';
 import PageErrorBoundary from '../components/error/PageErrorBoundary';
-import { useAnalytics } from '../hooks/useAnalytics';
 import DashboardLayout from '../components/dashboard/DashboardLayout';
 
 const MainRoutes: React.FC = () => {
   const routes = getAllRoutes();
-  
-  // Track page views for analytics
-  // useAnalytics({ trackScrollDepth: true, trackTimeOnPage: true });
   
   console.log("MainRoutes - Loading with routes:", routes.map(r => r.path).join(', '));
   
@@ -21,14 +17,14 @@ const MainRoutes: React.FC = () => {
       {/* Map all configured routes */}
       {routes.map((route) => {
         // Check if this is a dashboard route that needs the dashboard layout
-        const isDashboardRoute = route.path.includes('dashboard') || 
+        const isDashboardRoute = route.path.startsWith('/advisor-dashboard') || 
                                 route.path === '/analytics' || 
                                 route.path === '/schedule' || 
                                 route.path === '/chat' || 
                                 route.path === '/leads' || 
                                 route.path === '/team';
         
-        console.log(`Configuring route: ${route.path}, isDashboard: ${isDashboardRoute}`);
+        console.log(`Rendering route: ${route.path}, isDashboard: ${isDashboardRoute}`);
         
         return (
           <Route
@@ -38,7 +34,9 @@ const MainRoutes: React.FC = () => {
               <PageErrorBoundary>
                 <Suspense fallback={<PageLoadingFallback />}>
                   {isDashboardRoute ? (
-                    <DashboardLayout>{route.element}</DashboardLayout>
+                    <DashboardLayout>
+                      {route.element}
+                    </DashboardLayout>
                   ) : (
                     route.element
                   )}

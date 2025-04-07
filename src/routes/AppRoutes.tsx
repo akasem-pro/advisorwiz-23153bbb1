@@ -6,12 +6,17 @@ import MainRoutes from './MainRoutes';
 const AppRoutes: React.FC = () => {
   const location = useLocation();
   
-  // Log routing for debugging
+  // Enhanced logging for debugging
   useEffect(() => {
     console.log("AppRoutes - Current route:", location.pathname);
+    console.log("AppRoutes - Rendering MainRoutes component");
   }, [location]);
   
-  return <MainRoutes />;
+  return (
+    <div className="app-routes-container">
+      <MainRoutes />
+    </div>
+  );
 };
 
 export default AppRoutes;
