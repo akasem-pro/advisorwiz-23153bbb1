@@ -59,7 +59,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           handleLogout={handleLogout}
         />
         
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className={cn(
+          "flex-1 flex flex-col overflow-hidden",
+          sidebarCollapsed ? "ml-20" : "ml-64"
+        )}>
           <DashboardHeader 
             title={title || ''} 
             subtitle={subtitle} 

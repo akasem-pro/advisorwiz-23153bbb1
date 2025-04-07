@@ -13,6 +13,8 @@ const MainRoutes: React.FC = () => {
   // Track page views for analytics
   useAnalytics({ trackScrollDepth: true, trackTimeOnPage: true });
   
+  console.log("MainRoutes - Loading with routes:", routes.map(r => r.path).join(', '));
+  
   return (
     <Routes>
       {/* Map all configured routes */}

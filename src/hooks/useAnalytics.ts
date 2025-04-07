@@ -1,14 +1,27 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import {
-  trackPageView,
-  trackInteraction,
-  trackFeature,
-  trackPerformance,
-  trackError,
-  AnalyticsEventType
-} from '../services/analytics/core';
+
+// Simplified version for debugging
+const trackPageView = (title: string, path: string, dimensions?: Record<string, string>) => {
+  console.log(`Analytics: Page view - ${title} (${path})`, dimensions);
+};
+
+const trackInteraction = (type: string, target: string, properties?: Record<string, any>) => {
+  console.log(`Analytics: Interaction - ${type} on ${target}`, properties);
+};
+
+const trackFeature = (featureName: string, action: string, properties?: Record<string, any>) => {
+  console.log(`Analytics: Feature - ${featureName} ${action}`, properties);
+};
+
+const trackPerformance = (metric: string, value: number, properties?: Record<string, any>) => {
+  console.log(`Analytics: Performance - ${metric}: ${value}`, properties);
+};
+
+const trackError = (errorType: string, message: string, properties?: Record<string, any>) => {
+  console.log(`Analytics: Error - ${errorType}: ${message}`, properties);
+};
 
 interface AnalyticsHookOptions {
   trackScrollDepth?: boolean;
@@ -128,7 +141,7 @@ export const useAnalytics = (options: AnalyticsHookOptions = {}) => {
     trackView,
     trackFormSubmit,
     trackFeatureUsage,
-    trackError: trackError
+    trackError
   };
 };
 

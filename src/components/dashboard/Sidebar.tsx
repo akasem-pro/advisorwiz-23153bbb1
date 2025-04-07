@@ -1,11 +1,10 @@
 
-import React, { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 import { Button } from '../ui/button';
 import Logo from '../layout/Logo';
 import { UserType } from '../../context/UserContext';
-import { useNavigation } from '../../hooks/use-navigation';
 
 interface SidebarProps {
   sidebarCollapsed: boolean;
@@ -26,7 +25,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   navigationItems,
   handleLogout
 }) => {
-  const { navigateTo, currentPath } = useNavigation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const navigateTo = (path: string) => {
+    console.log(`Navigating to: ${path}`);
+    navigate(path);
+  };
   
   return (
     <aside 
@@ -50,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <nav>
           <ul className="space-y-2">
             {navigationItems.map((item) => {
-              const isActive = currentPath === item.link;
+              const isActive = location.pathname === item.link;
               
               return (
                 <li key={item.label}>

@@ -1,39 +1,39 @@
 
-import { publicRoutes } from './publicRoutes';
-import { profileRoutes } from './profileRoutes';
-import { authRoutes } from './authRoutes';
-import { protectedRoutes } from './protectedRoutes';
-import { utilityRoutes } from './utilityRoutes';
-import { RouteConfig } from './types';
+import { RouteConfig } from '../types/RouteConfig';
+import { createLazyRoute } from '../../utils/routing/lazyRoutes';
+import DashboardLayout from '../../components/dashboard/DashboardLayout';
 
-// Combine all route configurations
-const allRouteConfigs = {
-  ...publicRoutes,
-  ...profileRoutes,
-  ...authRoutes,
-  ...protectedRoutes,
-  ...utilityRoutes,
-};
+// Import route definitions
+const publicRoutes: RouteConfig[] = [
+  createLazyRoute('/', () => import('../../pages/Home')),
+  createLazyRoute('/contact', () => import('../../pages/ContactUs')),
+  createLazyRoute('/about', () => import('../../pages/AboutUs')),
+  createLazyRoute('/sign-in', () => import('../../pages/SignIn')),
+  createLazyRoute('/sign-up', () => import('../../pages/SignIn'), { meta: { title: 'Sign Up' } }),
+];
 
-/**
- * Helper function to get route by path
- */
-export const getRouteByPath = (path: string): RouteConfig | undefined => {
-  return Object.values(allRouteConfigs).find(route => route.path === path);
-};
+// Dashboard routes with layout
+const dashboardRoutes: RouteConfig[] = [
+  createLazyRoute('/advisor-dashboard', () => import('../../pages/AdvisorDashboard'), {
+    withLayout: (component) => <DashboardLayout>{component}</DashboardLayout>,
+    meta: { requiresAuth: true, title: 'Advisor Dashboard' }
+  }),
+  createLazyRoute('/analytics', () => import('../../pages/Analytics'), {
+    withLayout: (component) => <DashboardLayout>{component}</DashboardLayout>,
+    meta: { requiresAuth: true, title: 'Analytics Dashboard' }
+  }),
+  createLazyRoute('/admin-analytics', () => import('../../pages/AdminAnalytics'), {
+    withLayout: (component) => <DashboardLayout>{component}</DashboardLayout>,
+    meta: { requiresAuth: true, title: 'Admin Analytics Dashboard' }
+  }),
+];
 
-/**
- * Helper function to get all routes as an array
- */
+// Combine all routes
 export const getAllRoutes = (): RouteConfig[] => {
-  console.log("Getting all routes");
-  return Object.values(allRouteConfigs);
+  return [
+    ...publicRoutes,
+    ...dashboardRoutes,
+  ];
 };
 
-// Use 'export type' for re-exporting types when isolatedModules is enabled
-export type { RouteConfig };
-export { publicRoutes };
-export { profileRoutes };
-export { authRoutes };
-export { protectedRoutes };
-export { utilityRoutes };
+export default getAllRoutes;
