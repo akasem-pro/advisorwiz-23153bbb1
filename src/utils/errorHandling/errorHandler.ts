@@ -184,6 +184,19 @@ export function initErrorHandling(): void {
 }
 
 /**
+ * Report error to external monitoring service
+ * @param errorId Unique identifier for the error
+ * @param monitored Whether the error should be monitored
+ */
+export function reportToMonitoring(errorId: string, monitored: boolean): void {
+  // Implementation would connect to external monitoring service
+  if (monitored) {
+    console.log(`[Error Monitoring] Reporting error ${errorId} to monitoring service`);
+    // Actual implementation would send to external service
+  }
+}
+
+/**
  * Flush all pending error logs
  * Useful in shutdown scenarios or critical failures
  */
