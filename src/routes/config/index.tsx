@@ -24,7 +24,7 @@ const dashboardRoutes: RouteConfig[] = [
   createLazyRoute('/settings', () => import('../../pages/Settings')),
 ];
 
-// Combine all routes
+// Combine all routes and export them
 export const getAllRoutes = (): RouteConfig[] => {
   const allRoutes = [...publicRoutes, ...dashboardRoutes];
   console.log("Getting all routes", { 

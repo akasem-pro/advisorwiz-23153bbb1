@@ -55,6 +55,15 @@ const MainRoutes: React.FC = () => {
       <Route path="/signin" element={<Navigate to="/sign-in" replace />} />
       <Route path="/dashboard" element={<Navigate to="/advisor-dashboard" replace />} />
       
+      {/* Add a direct route to home/index for clarity */}
+      <Route path="/" element={
+        <PageErrorBoundary>
+          <Suspense fallback={<PageLoadingFallback />}>
+            {React.lazy(() => import('../pages/LandingPage')).default}
+          </Suspense>
+        </PageErrorBoundary>
+      } />
+      
       {/* Catch-all route for 404 - must be last */}
       <Route path="*" element={<NotFound />} />
     </Routes>

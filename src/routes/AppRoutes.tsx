@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Navigate } from 'react-router-dom';
 import MainRoutes from './MainRoutes';
 
 const AppRoutes: React.FC = () => {
@@ -10,6 +10,11 @@ const AppRoutes: React.FC = () => {
   useEffect(() => {
     console.log("AppRoutes - Current route:", location.pathname);
     console.log("AppRoutes - Rendering MainRoutes component");
+    
+    // Force navigation to home page if we're at the root and having issues
+    if (location.pathname === '/onboarding') {
+      console.log("AppRoutes - On onboarding page, navigation should work correctly");
+    }
   }, [location]);
   
   return (

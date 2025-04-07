@@ -13,6 +13,7 @@ import SuccessToast from './header/SuccessToast';
 import HeaderActions from './header/HeaderActions';
 
 const navigationLinks = [
+  { name: 'Home', path: '/' },
   { name: 'Firms', path: '/for-firms' },
   { name: 'Advisors', path: '/for-advisors' },
   { name: 'Consumers', path: '/for-consumers' },
