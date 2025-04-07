@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BreadcrumbTrail } from '../components/navigation/BreadcrumbTrail';
+import BreadcrumbTrail from '../components/navigation/BreadcrumbTrail';
 
 const Settings: React.FC = () => {
   console.log("Rendering Settings page");
