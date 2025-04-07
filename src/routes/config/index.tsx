@@ -9,7 +9,7 @@ import LandingPage from '../../pages/LandingPage';
 // Import route definitions
 const publicRoutes: RouteConfig[] = [
   // Use direct component reference for the home route to avoid lazy loading issues
-  { path: '/', element: <LandingPage />, key: 'home' },
+  { path: '/', element: <LandingPage /> },
   createLazyRoute('/contact', () => import('../../pages/ContactUs')),
   createLazyRoute('/about', () => import('../../pages/AboutUs')),
   createLazyRoute('/sign-in', () => import('../../pages/SignIn')),
