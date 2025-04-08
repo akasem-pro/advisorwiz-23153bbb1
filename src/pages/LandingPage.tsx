@@ -12,25 +12,26 @@ const LandingPage: React.FC = () => {
   
   useEffect(() => {
     console.log("LandingPage mounted");
+    document.title = "AdvisorWiz - Connect with Financial Advisors";
     return () => console.log("LandingPage unmounted");
   }, []);
   
   return (
     <AppLayout
-      fullWidth={false}
+      fullWidth={true}
       className="landing-page-layout"
       contentClassName="p-0"
       headerProps={{ transparent: false }}
       hideFooter={false}
       withoutPadding={true}
     >
-      <main className="landing-page">
+      <div className="landing-page">
         <HeroSection />
         <HowItWorksSection />
         <BenefitsSection />
         <MainCTASection />
         <FAQSection />
-      </main>
+      </div>
     </AppLayout>
   );
 };

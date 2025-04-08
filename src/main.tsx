@@ -14,3 +14,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </BrowserRouter>
   </React.StrictMode>
 );
+
+// Log confirmation that the app has rendered
+console.log('Application rendered successfully');

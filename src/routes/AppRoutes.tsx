@@ -2,7 +2,6 @@
 import React from 'react';
 import { useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import MainRoutes from './MainRoutes';
-import DashboardRoutes from './DashboardRoutes';
 import AuthGuard from '../components/auth/AuthGuard';
 import NotFound from '../pages/NotFound';
 import AppLayout from '../components/layout/AppLayout';
@@ -14,6 +13,11 @@ import Settings from '../pages/Settings';
 import Matches from '../pages/Matches';
 import Notifications from '../pages/Notifications';
 import Resources from '../pages/Resources';
+import LandingPage from '../pages/LandingPage';
+import AboutUs from '../pages/AboutUs';
+import ContactUs from '../pages/ContactUs';
+import Onboarding from '../pages/Onboarding';
+import SignIn from '../pages/SignIn';
 
 const AppRoutes: React.FC = () => {
   const location = useLocation();
@@ -23,8 +27,22 @@ const AppRoutes: React.FC = () => {
   return (
     <div className="app-routes-container w-full h-full min-h-screen">
       <Routes>
-        {/* Include MainRoutes for public pages */}
-        <MainRoutes />
+        {/* Public routes */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/about" element={<AppLayout><AboutUs /></AppLayout>} />
+        <Route path="/contact" element={<AppLayout><ContactUs /></AppLayout>} />
+        <Route path="/sign-up" element={<Onboarding />} />
+        <Route path="/signup" element={<Onboarding />} />
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/login" element={<SignIn />} />
+        
+        {/* Resources (publicly accessible) */}
+        <Route path="/resources" element={
+          <AppLayout>
+            <Resources />
+          </AppLayout>
+        } />
         
         {/* User specific routes with auth guard */}
         <Route path="/messages" element={
@@ -75,12 +93,6 @@ const AppRoutes: React.FC = () => {
           </AuthGuard>
         } />
         
-        <Route path="/resources" element={
-          <AppLayout>
-            <Resources />
-          </AppLayout>
-        } />
-        
         <Route path="/chat/*" element={
           <AuthGuard>
             <AppLayout>
@@ -89,10 +101,8 @@ const AppRoutes: React.FC = () => {
           </AuthGuard>
         } />
         
-        {/* Include DashboardRoutes */}
-        {DashboardRoutes.map((route, index) => (
-          <Route key={index} path={route.path} element={route.element} />
-        ))}
+        {/* Include remaining routes from MainRoutes */}
+        <MainRoutes />
         
         {/* Catch-all route for 404 */}
         <Route path="*" element={<NotFound />} />

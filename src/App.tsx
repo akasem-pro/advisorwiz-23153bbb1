@@ -1,5 +1,5 @@
 
-import React, { ErrorInfo, Suspense } from 'react';
+import React, { ErrorInfo, Suspense, useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider } from './context/UserContext';
 import { AuthProvider } from './features/auth/context/AuthProvider';
@@ -60,13 +60,26 @@ const AppErrorFallback: React.FC<{ error?: Error | null }> = ({ error }) => (
 const App: React.FC = () => {
   console.log("App component rendering");
   
+  useEffect(() => {
+    console.log("App component mounted");
+    
+    // Basic check to ensure the DOM is loaded properly
+    if (document.getElementById('root')) {
+      console.log("Root element found and accessible");
+    } else {
+      console.error("Root element not found - may cause rendering issues");
+    }
+    
+    return () => console.log("App component unmounted");
+  }, []);
+
   return (
     <ErrorBoundary fallback={<AppErrorFallback />}>
       <ThemeProvider>
         <AuthProvider>
           <UserProvider>
             <FeedbackProvider>
-              <div className="app-container">
+              <div className="app-container bg-white dark:bg-navy-950">
                 <AppRoutes />
                 <Toaster position="top-right" richColors />
               </div>
