@@ -35,7 +35,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   withoutPadding = false,
   hideSocialProof = false
 }) => {
-  console.log("AppLayout rendering");
+  console.log("AppLayout rendering with children:", children ? "Has children" : "No children");
   
   useEffect(() => {
     console.log("AppLayout mounted");
