@@ -5,15 +5,27 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 
-console.log('Starting application...');
+// Make sure DOM is ready before mounting
+const rootElement = document.getElementById('root');
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-);
-
-// Log confirmation that the app has rendered
-console.log('Application rendered successfully');
+if (!rootElement) {
+  console.error('Root element not found in the DOM!');
+} else {
+  console.log('Starting application...');
+  
+  try {
+    const root = ReactDOM.createRoot(rootElement);
+    
+    root.render(
+      <React.StrictMode>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </React.StrictMode>
+    );
+    
+    console.log('Application rendered successfully');
+  } catch (error) {
+    console.error('Failed to render application:', error);
+  }
+}

@@ -35,18 +35,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   withoutPadding = false,
   hideSocialProof = false
 }) => {
-  console.log("AppLayout rendering with children:", children ? "Has children" : "No children");
-  
   useEffect(() => {
     console.log("AppLayout mounted");
-    
-    // Debug element visibility in DOM
-    const mainElement = document.querySelector('main');
-    if (mainElement) {
-      console.log("Main element found with height:", mainElement.clientHeight);
-    } else {
-      console.warn("Main element not found in DOM");
-    }
     
     return () => console.log("AppLayout unmounted");
   }, []);

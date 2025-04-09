@@ -1,41 +1,13 @@
 
-import React, { ErrorInfo, Suspense, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider } from './context/UserContext';
 import { AuthProvider } from './features/auth/context/AuthProvider';
 import { FeedbackProvider } from './context/FeedbackContext';
 import { Toaster } from 'sonner';
 import AppRoutes from './routes/AppRoutes';
-import { initAppOptimizations } from './utils/appOptimizations';
+import PageErrorBoundary from './components/error/PageErrorBoundary';
 import './App.css';
-
-// Initialize app optimizations
-initAppOptimizations();
-
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode; fallback: React.ReactNode },
-  { hasError: boolean; error: Error | null }
-> {
-  constructor(props: { children: React.ReactNode; fallback: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("App level error caught:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return this.props.fallback;
-    }
-    return this.props.children;
-  }
-}
 
 const AppErrorFallback: React.FC<{ error?: Error | null }> = ({ error }) => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
@@ -58,23 +30,13 @@ const AppErrorFallback: React.FC<{ error?: Error | null }> = ({ error }) => (
 );
 
 const App: React.FC = () => {
-  console.log("App component rendering");
-  
   useEffect(() => {
     console.log("App component mounted");
-    
-    // Basic check to ensure the DOM is loaded properly
-    if (document.getElementById('root')) {
-      console.log("Root element found and accessible");
-    } else {
-      console.error("Root element not found - may cause rendering issues");
-    }
-    
     return () => console.log("App component unmounted");
   }, []);
 
   return (
-    <ErrorBoundary fallback={<AppErrorFallback />}>
+    <PageErrorBoundary fallback={<AppErrorFallback />}>
       <ThemeProvider>
         <AuthProvider>
           <UserProvider>
@@ -87,7 +49,7 @@ const App: React.FC = () => {
           </UserProvider>
         </AuthProvider>
       </ThemeProvider>
-    </ErrorBoundary>
+    </PageErrorBoundary>
   );
 };
 
